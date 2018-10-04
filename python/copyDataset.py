@@ -123,7 +123,7 @@ fileProductTypeSplit = splitParts[6].split("-")
 fileProductType = fileProductTypeSplit[0]
 # could use the global attribute site_code for the product type
 
-fileTimeFormat = "%Y%m%dZ"
+fileTimeFormat = "%Y%m%d"
 ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
 
 outputName = splitParts[0] + "_" + splitParts[1] + "_" + splitParts[2] \
