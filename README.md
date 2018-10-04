@@ -1,11 +1,11 @@
 # imos-tools
 tools for processing imos data
 
-##retreive list of file from imos thredds server
+## retreive list of file from imos thredds server
 
 python python\catalog.py ABOS/DA/EAC2000 > EAC-2000\EAC-2000-url.txt
 
-##download all files in windows
+## download all files in windows
 
 for /f "delims=" %u in (EAC-2000\EAC-2000-url.txt) do curl -OLs "%u"
 
@@ -13,15 +13,15 @@ for /f "delims=" %u in (EAC-2000\EAC-2000-url.txt) do curl -OLs "%u"
 
 xargs -n 1 curl -Os
 
-##create a combined netCDF file, this creates a file with all input variable in it (TEMP, PSAL, DEPTH, PRES_REL)
+## create a combined netCDF file, this creates a file with all input variable in it (TEMP, PSAL, DEPTH, PRES_REL)
 
 python python/copyDataset.py IMOS_ABOS-DA_STZ_20150515T000001Z_EAC2000_FV01_EAC2000-2016-SBE37SMP-140_END-20161110T221930Z_C-20170703T055824Z.nc IMOS_ABOS-DA_STZ_20150515T000001Z_EAC2000_FV01_EAC2000-2016-SBE37SMP-205_END-20161110T224850Z_C-20170703T055825Z.nc 
 
-###to just select TEMP in the output, copies TEMP and ancillary variables along with LATITUDE, LONGITUDE, TIME, NOMINAL_DEPTH, DEPTH
+### to just select TEMP in the output, copies TEMP and ancillary variables along with LATITUDE, LONGITUDE, TIME, NOMINAL_DEPTH, DEPTH
 
 python python/copyDataset.py -v TEMP IMOS_ABOS-DA_STZ_20150515T000001Z_EAC2000_FV01_EAC2000-2016-SBE37SMP-140_END-20161110T221930Z_C-20170703T055824Z.nc IMOS_ABOS-DA_STZ_20150515T000001Z_EAC2000_FV01_EAC2000-2016-SBE37SMP-205_END-20161110T224850Z_C-20170703T055825Z.nc 
 
-###output file:
+### output file:
 
 	dimensions:
 		OBS = 157233 ;
