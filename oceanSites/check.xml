@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<coriolis_function_report>
+	<function>CO-03-08-03</function>
+	<comment>Control file data format</comment>
+	<date>21/08/2017 05:26:58</date>
+	<netcdf_file>../OS/OS_IMOS-EAC_EAC0500-2015-2016_D_SBE37SMP-140-m.nc</netcdf_file>
+	<rules_file>OceanSitesv1.3_time-series.xml</rules_file>
+	<data_type>OceanSITES time-series data</data_type>
+	<format_version>1.3</format_version>
+	<file_error>The mandatory dimension "DEPTH" is missing.</file_error>
+	<file_error>The mandatory dimension "LATITUDE" is missing.</file_error>
+	<file_error>The mandatory dimension "LONGITUDE" is missing.</file_error>
+	<file_warning>The mandatory global attribute "wmo_platform_code" is missing</file_warning>
+	<file_warning>The mandatory global attribute "principal_investigator_url" is missing</file_warning>
+	<file_warning>The mandatory global attribute "geospatial_lat_units" is missing</file_warning>
+	<file_warning>The mandatory global attribute "geospatial_lon_units" is missing</file_warning>
+	<file_warning>The mandatory global attribute "geospatial_vertical_units" is missing</file_warning>
+	<file_warning>The mandatory global attribute "time_coverage_duration" is missing</file_warning>
+	<file_warning>The mandatory global attribute "time_coverage_resolution" is missing</file_warning>
+	<file_warning>The mandatory global attribute "publisher_name" is missing</file_warning>
+	<file_warning>The mandatory global attribute "publisher_url" is missing</file_warning>
+	<file_warning>The mandatory global attribute "date_modified" is missing</file_warning>
+	<file_error>A dimension of the variable "LATITUDE" is not correct : "LATITUDE" at rank "1" expected</file_error>
+	<file_error>The number of dimensions of the variable "LATITUDE" is not correct : "1" expected</file_error>
+	<file_error>A dimension of the variable "LONGITUDE" is not correct : "LONGITUDE" at rank "1" expected</file_error>
+	<file_error>The number of dimensions of the variable "LONGITUDE" is not correct : "1" expected</file_error>
+	<file_error>A dimension of the variable "DEPTH" is not correct : "DEPTH" at rank "1" expected</file_error>
+	<file_error>The value of the attribute of variable "DEPTH:long_name" is not correct : "Depth of each measurement" expected</file_error>
+	<file_error>The value of the attribute of variable "DEPTH:units" is not correct : "meters?" expected</file_error>
+	<file_error>A dimension of the variable "PRES_REL_QC" is not correct : "DEPTH" at rank "2" expected</file_error>
+	<file_error>The value of the attribute of variable "PRES_REL_QC:flag_meanings" is not correct : "unknown good_data probably_good_data potentially_correctable_bad_data bad_data nominal_value interpolated_value missing_value" expected</file_error>
+	<file_error>The number of dimensions of the variable "PRES_REL_QC" is not correct : "2" expected</file_error>
+	<file_error>A dimension of the variable "PSAL_QC" is not correct : "DEPTH" at rank "2" expected</file_error>
+	<file_error>The value of the attribute of variable "PSAL_QC:flag_meanings" is not correct : "unknown good_data probably_good_data potentially_correctable_bad_data bad_data nominal_value interpolated_value missing_value" expected</file_error>
+	<file_error>The number of dimensions of the variable "PSAL_QC" is not correct : "2" expected</file_error>
+	<file_error>A dimension of the variable "TEMP_QC" is not correct : "DEPTH" at rank "2" expected</file_error>
+	<file_error>The value of the attribute of variable "TEMP_QC:flag_meanings" is not correct : "unknown good_data probably_good_data potentially_correctable_bad_data bad_data nominal_value interpolated_value missing_value" expected</file_error>
+	<file_error>The number of dimensions of the variable "TEMP_QC" is not correct : "2" expected</file_error>
+	<file_error>A dimension of the variable "DEPTH_QC" is not correct : "DEPTH" at rank "1" expected</file_error>
+	<file_error>The value of the attribute of variable "DEPTH_QC:flag_meanings" is not correct : "unknown good_data probably_good_data potentially_correctable_bad_data bad_data nominal_value interpolated_value missing_value" expected</file_error>
+	<file_error>A dimension of the variable "TEMP" is not correct : "DEPTH" at rank "2" expected</file_error>
+	<file_error>The number of dimensions of the variable "TEMP" is not correct : "2" expected</file_error>
+	<file_error>A dimension of the variable "PSAL" is not correct : "DEPTH" at rank "2" expected</file_error>
+	<file_error>The number of dimensions of the variable "PSAL" is not correct : "2" expected</file_error>
+	<file_error>A dimension of the variable "PRES_REL" is not correct : "DEPTH" at rank "2" expected</file_error>
+	<file_error>The number of dimensions of the variable "PRES_REL" is not correct : "2" expected</file_error>
+	<file_error>A dimension of the variable "NOMINAL_DEPTH" is not correct : "TIME" at rank "1" expected</file_error>
+	<file_error>A dimension of the variable "NOMINAL_DEPTH" is not correct : "DEPTH" at rank "2" expected</file_error>
+	<file_error>The mandatory attribute of variable "NOMINAL_DEPTH:_FillValue" is missing</file_error>
+	<file_error>The number of dimensions of the variable "NOMINAL_DEPTH" is not correct : "2" expected</file_error>
+	<file_compliant>no</file_compliant>
+	<status>ok</status>
+</coriolis_function_report>
+Press any key to continue . . . 
