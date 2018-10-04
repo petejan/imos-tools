@@ -13,13 +13,24 @@ for /f "delims=" %u in (EAC-2000\EAC-2000-url.txt) do curl -OLs "%u"
 
 cat EAC-2000/EAC-2000-url.txt | xargs -n 1 curl -Os
 
-## create a combined netCDF file, this creates a file with all input variable in it (TEMP, PSAL, DEPTH, PRES_REL)
+## copyDataset:
+
+	usage: copyDataset.py [-h] [-v VAR] file [file ...]
+
+	positional arguments:
+	  file        input file name
+
+	optional arguments:
+	  -h, --help  show this help message and exit
+	  -v VAR      variable to include in output file (defaults to all)
+
+### create a combined netCDF file, this creates a file with all input variable in it (TEMP, PSAL, DEPTH, PRES_REL)
 
 	python python/copyDataset.py IMOS_ABOS-DA_STZ_20150515T000001Z_EAC2000_FV01_EAC2000-2016-SBE37SMP-140_END-20161110T221930Z_C-20170703T055824Z.nc IMOS_ABOS-DA_STZ_20150515T000001Z_EAC2000_FV01_EAC2000-2016-SBE37SMP-205_END-20161110T224850Z_C-20170703T055825Z.nc 
 
-### to just select TEMP in the output, copies TEMP and ancillary variables along with LATITUDE, LONGITUDE, TIME, NOMINAL_DEPTH, DEPTH
+#### to just select TEMP in the output, copies TEMP and ancillary variables along with LATITUDE, LONGITUDE, TIME, NOMINAL_DEPTH, DEPTH
 
-	python python/copyDataset.py **-v TEMP** IMOS_ABOS-DA_STZ_20150515T000001Z_EAC2000_FV01_EAC2000-2016-SBE37SMP-140_END-20161110T221930Z_C-20170703T055824Z.nc IMOS_ABOS-DA_STZ_20150515T000001Z_EAC2000_FV01_EAC2000-2016-SBE37SMP-205_END-20161110T224850Z_C-20170703T055825Z.nc 
+	python python/copyDataset.py -v TEMP IMOS_ABOS-DA_STZ_20150515T000001Z_EAC2000_FV01_EAC2000-2016-SBE37SMP-140_END-20161110T221930Z_C-20170703T055824Z.nc IMOS_ABOS-DA_STZ_20150515T000001Z_EAC2000_FV01_EAC2000-2016-SBE37SMP-205_END-20161110T224850Z_C-20170703T055825Z.nc 
 
 ### output file:
 
