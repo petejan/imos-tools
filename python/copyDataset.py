@@ -7,6 +7,12 @@ from netCDF4 import Dataset
 import numpy
 import argparse
 
+# netcdf file aggregator for the IMOS mooring specific data case
+# Pete Jansen 2019-10-02
+
+# similar more general tool project https://ncagg.readthedocs.io/en/latest/ (does not work on python3 2019-10-01)
+# has configurable way of dealing with attributes
+
 # file sets to test against
 # http://thredds.aodn.org.au/thredds/catalog/IMOS/ANMN/NRS/NRSKAI/Temperature/catalog.html
 # http://thredds.aodn.org.au/thredds/catalog/IMOS/ANMN/NRS/NRSKAI/Biogeochem_profiles/catalog.html
@@ -45,24 +51,19 @@ if varToAgg is None:
 
 nc.close()
 
-# some of these need re-creating from the combined source data
-globalAttributeBlackList = ['time_coverage_end', 'time_coverage_start',
-                            'time_deployment_end', 'time_deployment_start',
-                            'compliance_checks_passed', 'compliance_checker_version', 'compliance_checker_imos_version',
-                            'date_created',
-                            'deployment_code',
-                            'geospatial_lat_max',
-                            'geospatial_lat_min',
-                            'geospatial_lon_max',
-                            'geospatial_lon_min',
-                            'geospatial_vertical_max',
-                            'geospatial_vertical_min',
-                            'instrument',
-                            'instrument_nominal_depth',
-                            'instrument_sample_interval',
-                            'instrument_serial_number',
-                            'quality_control_log',
-                            'history', 'netcdf_version']
+# split this into   createCatalog - copy needed information into structure
+#                   createTimeArray (1D, OBS) - from list of structures
+#                   createNewFile
+#                   copyAttributes
+#                   updateAttributes
+#                   copyData
+
+#
+# createCatalog - copy needed information into structure
+#
+
+# look over all files, create a time array from all files
+# TODO: maybe delete files here without variables we're not interested in
 
 # look over all files, create a time array from all files
 # TODO: maybe delete files here without variables we're not interested in
@@ -104,14 +105,24 @@ for path_file in files:
 
 idx = maTimeAll.argsort(0) # sort by time dimension
 
+#
+# createTimeArray (1D, OBS) - from list of structures
+#
+
 dsTime = Dataset(files[0], mode="r")
 
 ncTime = dsTime.get_variables_by_attributes(standard_name='time')
 
 dates = num2date(maTimeAll, units=ncTime[0].units, calendar=ncTime[0].calendar)
 
+#
+# createNewFile
+#
+
 # create a new filename
 # IMOS_<Facility-Code>_<Data-Code>_<Start-date>_<Platform-Code>_FV<File-Version>_ <Product-Type>_END-<End-date>_C-<Creation_date>_<PARTX>.nc
+
+# TODO: what to do with <Data-Code> with a reduced number of variables
 
 splitPath = files[0].split("/")
 splitParts = splitPath[-1].split("_") # get the last path item (the file nanme), split by _
@@ -121,6 +132,7 @@ tEndMaksed = num2date(maTimeAll.compressed()[-1], units=ncTime[0].units, calenda
 
 fileProductTypeSplit = splitParts[6].split("-")
 fileProductType = fileProductTypeSplit[0]
+
 # could use the global attribute site_code for the product type
 
 fileTimeFormat = "%Y%m%d"
@@ -139,13 +151,42 @@ print("output file : %s" % outputName)
 
 ncOut = Dataset(outputName,'w',format='NETCDF4')
 
+#
+# create additional dimensions needed
+#
+
 # for d in nc.dimensions:
 #     print("Dimension %s " % d)
 #     ncOut.createDimension(nc.dimensions[d].name, size=nc.dimensions[d].size)
+#
 
 tDim = ncOut.createDimension("OBS", len(maTimeAll))
 iDim = ncOut.createDimension("instrument", len(files))
 strDim = ncOut.createDimension("strlen", 256) # netcdf4 allow variable length strings, should we use them, probably not
+
+#
+# copyAttributes
+#
+
+# some of these need re-creating from the combined source data
+globalAttributeBlackList = ['time_coverage_end', 'time_coverage_start',
+                            'time_deployment_end', 'time_deployment_start',
+                            'compliance_checks_passed', 'compliance_checker_version', 'compliance_checker_imos_version',
+                            'date_created',
+                            'deployment_code',
+                            'geospatial_lat_max',
+                            'geospatial_lat_min',
+                            'geospatial_lon_max',
+                            'geospatial_lon_min',
+                            'geospatial_vertical_max',
+                            'geospatial_vertical_min',
+                            'instrument',
+                            'instrument_nominal_depth',
+                            'instrument_sample_interval',
+                            'instrument_serial_number',
+                            'quality_control_log',
+                            'history', 'netcdf_version']
+
 
 # global attributes
 # TODO: get list of variables, global attributes and dimensions from first pass above
@@ -185,6 +226,10 @@ if len(files) > 255:
     if len(files) > 65535: # your really keen then
         indexVarType = "u4"
 
+#
+# create new variables needed
+#
+
 ncInstrumentIndexVar = ncOut.createVariable("instrument_index", indexVarType, ("OBS",))
 ncInstrumentIndexVar.setncattr("long_name", "which instrument this obs is for")
 ncInstrumentIndexVar.setncattr("instance_dimension", "instrument")
@@ -202,6 +247,10 @@ for path_file in files:
 
 ncFileNameVar[:] = stringtochar(data)
 
+#
+# create a list of variables needed
+#
+
 filen = 0
 
 # include the DEPTH variable
@@ -215,11 +264,17 @@ for v in varNames:
 # variables we want regardless
 varNames += ['LATITUDE', 'LONGITUDE', 'NOMINAL_DEPTH']
 
+varNamesOut = set(varNames)
+
+#
+# copyData
+#
+
 # copy variable data from all files into output file
 
 # should we add uncertainty to variables here if they don't have one from a default set
 
-for v in set(varNames):
+for v in varNamesOut:
     varOrder = -1
     filen = 0
 
@@ -289,21 +344,22 @@ for v in set(varNames):
             # create the output global attributes
             if hasattr(ncVariableOut, 'standard_name'):
                 if ncVariableOut.standard_name == 'latitude':
-                    max = maVariableAll.max(0)
-                    min = maVariableAll.max(0)
-                    ncOut.setncattr("geospatial_lat_max", max)
-                    ncOut.setncattr("geospatial_lat_min", min)
+                    laMax = maVariableAll.max(0)
+                    laMin = maVariableAll.max(0)
+                    ncOut.setncattr("geospatial_lat_max", laMax)
+                    ncOut.setncattr("geospatial_lat_min", laMin)
                 if ncVariableOut.standard_name == 'longitude':
-                    max = maVariableAll.max(0)
-                    min = maVariableAll.max(0)
-                    ncOut.setncattr("geospatial_lon_max", max)
-                    ncOut.setncattr("geospatial_lon_min", min)
+                    loMax = maVariableAll.max(0)
+                    loMin = maVariableAll.max(0)
+                    ncOut.setncattr("geospatial_lon_max", loMax)
+                    ncOut.setncattr("geospatial_lon_min", loMin)
                 if ncVariableOut.standard_name == 'depth':
-                    max = maVariableAll.max(0)
-                    min = maVariableAll.max(0)
-                    ncOut.setncattr("geospatial_vertical_max", max)
-                    ncOut.setncattr("geospatial_vertical_min", min)
+                    dMax = maVariableAll.max(0)
+                    dMin = maVariableAll.max(0)
+                    ncOut.setncattr("geospatial_vertical_max", dMax)
+                    ncOut.setncattr("geospatial_vertical_min", dMin)
 
 nc.close()
 
 ncOut.close()
+
