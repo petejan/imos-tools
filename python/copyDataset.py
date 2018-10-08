@@ -26,10 +26,19 @@ varToAgg = []
 if len(sys.argv) > 1:
     parser = argparse.ArgumentParser()
     parser.add_argument('-v', action='append', dest='var', help='variable to include in output file (defaults to all)')
-    parser.add_argument('file', nargs='+', help='input file name')
+    parser.add_argument('-f', dest='filelist', help='read file names from file')
+    parser.add_argument('file', nargs='*', help='input file name')
     args = parser.parse_args()
 
-    files = args.file
+    if not isinstance(args.filelist, type(None)):
+        with open(args.filelist, "r") as ins:
+            for line in ins:
+                print(line)
+                files.append(line.strip())
+
+    if len(args.file):
+        files = args.file
+
     varToAgg = args.var
 else:
     files=["EAC-2000/IMOS_ABOS-DA_STZ_20150515T000001Z_EAC2000_FV01_EAC2000-2016-SBE37SMP-140_END-20161110T221930Z_C-20170703T055824Z.nc",

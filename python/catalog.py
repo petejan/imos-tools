@@ -30,7 +30,7 @@ if __name__ == '__main__':
     #pprint.pprint(c.datasets)
 
     # serice can be httpService or dapService
-    urls = [s.get("url") for d in c.datasets for s in d.services if s.get("service").lower() == "httpserver"]
+    urls = [s.get("url") for d in c.datasets for s in d.services if s.get("service").lower() == "opendap"]  # httpservice or opendap
 
     for url in urls:
         print(url)
