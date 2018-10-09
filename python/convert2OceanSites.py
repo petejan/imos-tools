@@ -1,11 +1,9 @@
 from datetime import datetime, timedelta
 from netCDF4 import num2date, date2num
-from netCDF4 import stringtochar
 import numpy.ma as ma
-import sys
 from netCDF4 import Dataset
-import numpy
 import argparse
+import re
 
 # IMOS file format convertion to OceanSITES format
 # Pete Jansen 2019-10-09
@@ -146,12 +144,18 @@ for v in varList:
     maVariable = nc1.variables[v][:]  # get the data
     varDims = varList[v].dimensions
 
-    ncVariableOut = ncOut.createVariable(v, varList[v].dtype, varDims)
+    # rename the _quality_control variables _QC
+    varnameOut = re.sub("_quality_control", "_QC", v)
+
+    ncVariableOut = ncOut.createVariable(varnameOut, varList[v].dtype, varDims)
     # copy the variable attributes
     # this is ends up as the super set of all files
     for a in varList[v].ncattrs():
-        print("%s Attribute %s value %s" % (v, a, varList[v].getncattr(a)))
-        ncVariableOut.setncattr(a, varList[v].getncattr(a))
+        print("%s Attribute %s = %s" % (varnameOut, a, varList[v].getncattr(a)))
+        attValue = varList[v].getncattr(a)
+        if isinstance(attValue, unicode):
+            attValue = re.sub("_quality_control", "_QC", varList[v].getncattr(a))
+        ncVariableOut.setncattr(a, attValue)
 
     ncVariableOut[:] = maVariable
 
