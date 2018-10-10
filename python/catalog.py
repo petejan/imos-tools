@@ -27,10 +27,10 @@ if __name__ == '__main__':
     #c = Crawl('http://dods.ndbc.noaa.gov/thredds/catalog/oceansites/DATA/IMOS-ITF/catalog.xml', select=['.*'])
     #c = Crawl('http://dods.ndbc.noaa.gov/thredds/catalog/oceansites/DATA/SOTS/catalog.xml', select=['.*'])
 
-    #pprint.pprint(c.datasets)
+    # print(c.datasets)
 
     # serice can be httpService or dapService
-    urls = [s.get("url") for d in c.datasets for s in d.services if s.get("service").lower() == "opendap"]  # httpservice or opendap
+    urls = [s.get("url") for d in c.datasets for s in d.services if s.get("service").lower() == "httpserver"]  # httpserver or opendap
 
     for url in urls:
         print(url)

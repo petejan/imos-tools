@@ -60,7 +60,8 @@ nc.close()
 # TODO: what to do with <Data-Code> with a reduced number of variables
 
 splitPath = path_file.split("/")
-splitParts = splitPath[-1].split("_") # get the last path item (the file nanme), split by _
+fileName = splitPath[-1]
+splitParts = fileName.split("_") # get the last path item (the file nanme), split by _
 
 tStartMaksed = dates[0]
 tEndMaksed = dates[-1]
@@ -72,12 +73,13 @@ fileProductType = fileProductTypeSplit[0]
 
 fileTimeFormat = "%Y%m%d"
 ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
+sensor = fileProductTypeSplit[2]
 
 outputName = "OS" \
              + "_" + "IMOS-EAC" \
              + "_" + fileProductType + "-" + fileProductTypeSplit[1] \
              + "_D" \
-             + "_" + fileProductTypeSplit[2] + "-" + fileProductTypeSplit[3] + "m" \
+             + "_" + sensor + "-" + fileProductTypeSplit[3] + "m" \
              + ".nc"
 
 print("output file : %s" % outputName)
@@ -121,12 +123,36 @@ for a in dsIn.ncattrs():
 for d in dsIn.dimensions:
     ncOut.createDimension(d, dsIn.dimensions[d].size)
 
+history = dsIn.getncattr("history")
+serialNumber = dsIn.getncattr("instrument_serial_number")
+
 dsIn.close()
 
 ncOut.setncattr("time_coverage_start", dates[0].strftime(ncTimeFormat))
 ncOut.setncattr("time_coverage_end", dates[-1].strftime(ncTimeFormat))
 ncOut.setncattr("date_created", datetime.utcnow().strftime(ncTimeFormat))
-ncOut.setncattr("history", datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC : Convert from IMOS file"))
+ncOut.setncattr("history", history + '\n' + datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC : Convert from IMOS file : ") + fileName)
+
+ncOut.setncattr("data_type", "OceanSITES time-series data")
+ncOut.setncattr("format_version", "1.4")
+ncOut.setncattr("network", "IMOS")
+ncOut.setncattr("institution_references", "http://www.oceansites.org, http://imos.org.au")
+ncOut.setncattr("id", outputName)
+ncOut.setncattr("area", "Pacific Ocean")
+ncOut.setncattr("array", "IMOS-EAC")
+ncOut.setncattr("update_interval", "void")
+ncOut.setncattr("institution", "Commonwealth Scientific and Industrial Research Organisation (CSIRO)")
+ncOut.setncattr("source", "subsurface mooring")
+ncOut.setncattr("naming_authority", "OceanSITES")
+ncOut.setncattr("data_assembly_center", "IMOS")
+ncOut.setncattr("citation", "Ocean Sites. [year-of-data-download], [Title], [Data access URL], accessed [date- of-access]")
+ncOut.setncattr("Conventions", "CF-1.6 OceanSITES-1.3 NCADD-1.2.1")
+ncOut.setncattr("license", "Follows CLIVAR (Climate Variability and Predictability) standards,cf. http://www.clivar.org/data/data_policy.php Data available free of charge. User assumes all risk for use of  data. User must display citation in any publication or product using data. User must contact PI prior to any commercial use of data.")
+ncOut.setncattr("contributor_name", "CSIRO; IMOS; ACE-CRC; MNF")
+ncOut.setncattr("processing_level", "data manually reviewed")
+ncOut.setncattr("QC_indicator", "mixed")
+ncOut.setncattr("sensor_name", sensor + "-" + serialNumber)
+ncOut.setncattr("cdm_data_type", "Station")
 
 #
 # copyData
@@ -142,6 +168,8 @@ for v in varList:
     print("%s file %s" % (v, path_file))
 
     maVariable = nc1.variables[v][:]  # get the data
+    maVariable.mask = msk  # mask off data outside deployment time, not sure what this will do for a ADCP with TIME,DEPTH dimension
+
     varDims = varList[v].dimensions
 
     # rename the _quality_control variables _QC
@@ -153,6 +181,8 @@ for v in varList:
     for a in varList[v].ncattrs():
         print("%s Attribute %s = %s" % (varnameOut, a, varList[v].getncattr(a)))
         attValue = varList[v].getncattr(a)
+
+        # Could restrict this just to the ancillary_variables attribute
         if isinstance(attValue, unicode):
             attValue = re.sub("_quality_control", "_QC", varList[v].getncattr(a))
         ncVariableOut.setncattr(a, attValue)

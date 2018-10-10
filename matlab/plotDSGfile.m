@@ -1,12 +1,13 @@
 % cd ~/ABOS/git/java-ocean-data-delivery/ABOS/
 
 %file = 'IMOS_ABOS-DA_STZ_20150523Z_EAC2000_FV01_EAC2000-Aggregate-PSAL_END-20161109Z_C-20180930Z.nc';
-file = 'IMOS_ABOS-DA_AETVZ_20150523_EAC2000_FV01_EAC2000-Aggregate-TEMP_END-20161109_C-20181004.nc';
+%file = 'EAC3200/IMOS_ABOS-DA_STZ_20150522_EAC3200_FV01_EAC3200-Aggregate-TEMP_END-20161106_C-20181010.nc';
+file = 'EAC3200/IMOS_ABOS-DA_ETVZ_20150522_EAC3200_FV01_EAC3200-Aggregate-LATITUDE_END-20161106_C-20181010.nc';
 %file = 'IMOS_ANMN-NRS_ACESTZ_20080812Z_NRSKAI_FV01_NRSKAI-Aggregate-TEMP_END-20180307Z_C-20180930Z.nc';
 
 instrument = ncread(file, 'instrument_index');
 
-plotVar = 'TEMP';
+plotVar = 'DEPTH';
 
 var = ncread(file, plotVar);
 var_unit = ncreadatt(file, plotVar, 'units');
@@ -29,5 +30,5 @@ end
 grid on
 ylabel([var_name ' (' var_unit ')'], 'Interpreter', 'none')
 datetick('x', 'keeplimits');
-%axis 'ij'
+axis 'ij'
 

@@ -6,6 +6,7 @@ import sys
 from netCDF4 import Dataset
 import numpy
 import argparse
+import glob
 
 # netcdf file aggregator for the IMOS mooring specific data case
 # Pete Jansen 2019-10-02
@@ -37,7 +38,7 @@ if len(sys.argv) > 1:
                 files.append(line.strip())
 
     if len(args.file):
-        files = args.file
+        files = args.file  # files = glob.glob(args.file[0])
 
     varToAgg = args.var
 else:
