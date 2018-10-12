@@ -38,7 +38,8 @@ if len(sys.argv) > 1:
                 files.append(line.strip())
 
     if len(args.file):
-        files = args.file  # files = glob.glob(args.file[0])
+        # files = args.file
+        files = glob.glob(args.file[0])
 
     varToAgg = args.var
 else:
@@ -113,7 +114,7 @@ for path_file in files:
     nc.close()
     filen += 1
 
-idx = maTimeAll.argsort(0) # sort by time dimension
+idx = maTimeAll.compressed().argsort(0)  # sort by time dimension
 
 #
 # createTimeArray (1D, OBS) - from list of structures
@@ -170,7 +171,7 @@ ncOut = Dataset(outputName,'w',format='NETCDF4')
 #     ncOut.createDimension(nc.dimensions[d].name, size=nc.dimensions[d].size)
 #
 
-tDim = ncOut.createDimension("OBS", len(maTimeAll))
+tDim = ncOut.createDimension("OBS", len(maTimeAll.compressed()))
 iDim = ncOut.createDimension("instrument", len(files))
 strDim = ncOut.createDimension("strlen", 256) # netcdf4 allow variable length strings, should we use them, probably not
 
@@ -343,10 +344,10 @@ for v in varNamesOut:
 
         # write the aggregated data to the output file
         if varOrder == 2:
-            maVariableAll.mask = maTimeAll.mask # apply the time mask
+            maVariableAll.mask = maTimeAll.mask  # apply the time mask
             ncVariableOut[:] = maVariableAll[idx][:]
         elif varOrder == 1:
-            maVariableAll.mask = maTimeAll.mask # apply the time mask
+            maVariableAll.mask = maTimeAll.mask  # apply the time mask
             ncVariableOut[:] = maVariableAll[idx]
         elif varOrder == 0:
             ncVariableOut[:] = maVariableAll
