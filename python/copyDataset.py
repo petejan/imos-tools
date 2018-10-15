@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 from netCDF4 import num2date, date2num
 from netCDF4 import stringtochar
 import numpy.ma as ma
@@ -6,6 +6,7 @@ import sys
 from netCDF4 import Dataset
 import numpy
 import argparse
+import glob
 
 # netcdf file aggregator for the IMOS mooring specific data case
 # Pete Jansen 2019-10-02
@@ -37,7 +38,9 @@ if len(sys.argv) > 1:
                 files.append(line.strip())
 
     if len(args.file):
-        files = args.file
+        # print('command line files %s ' % args.file)
+        for f in args.file:
+            files.extend(glob.glob(f))
 
     varToAgg = args.var
 else:
@@ -112,7 +115,8 @@ for path_file in files:
     nc.close()
     filen += 1
 
-idx = maTimeAll.argsort(0) # sort by time dimension
+instrumentIndex.mask = maTimeAll.mask
+idx = maTimeAll.argsort(0)  # sort by time dimension
 
 #
 # createTimeArray (1D, OBS) - from list of structures
@@ -122,7 +126,7 @@ dsTime = Dataset(files[0], mode="r")
 
 ncTime = dsTime.get_variables_by_attributes(standard_name='time')
 
-dates = num2date(maTimeAll, units=ncTime[0].units, calendar=ncTime[0].calendar)
+dates = num2date(maTimeAll[idx].compressed(), units=ncTime[0].units, calendar=ncTime[0].calendar)
 
 #
 # createNewFile
@@ -136,8 +140,8 @@ dates = num2date(maTimeAll, units=ncTime[0].units, calendar=ncTime[0].calendar)
 splitPath = files[0].split("/")
 splitParts = splitPath[-1].split("_") # get the last path item (the file nanme), split by _
 
-tStartMaksed = num2date(maTimeAll.compressed()[0], units=ncTime[0].units, calendar=ncTime[0].calendar)
-tEndMaksed = num2date(maTimeAll.compressed()[-1], units=ncTime[0].units, calendar=ncTime[0].calendar)
+tStartMaksed = dates[0]
+tEndMaksed = dates[-1]
 
 fileProductTypeSplit = splitParts[6].split("-")
 fileProductType = fileProductTypeSplit[0]
@@ -158,7 +162,7 @@ outputName = splitParts[0] + "_" + splitParts[1] + "_" + splitParts[2] \
 
 print("output file : %s" % outputName)
 
-ncOut = Dataset(outputName,'w',format='NETCDF4')
+ncOut = Dataset(outputName, 'w', format='NETCDF4')
 
 #
 # create additional dimensions needed
@@ -169,7 +173,7 @@ ncOut = Dataset(outputName,'w',format='NETCDF4')
 #     ncOut.createDimension(nc.dimensions[d].name, size=nc.dimensions[d].size)
 #
 
-tDim = ncOut.createDimension("OBS", len(maTimeAll))
+tDim = ncOut.createDimension("OBS", len(maTimeAll[idx].compressed()))
 iDim = ncOut.createDimension("instrument", len(files))
 strDim = ncOut.createDimension("strlen", 256) # netcdf4 allow variable length strings, should we use them, probably not
 
@@ -202,7 +206,7 @@ globalAttributeBlackList = ['time_coverage_end', 'time_coverage_start',
 dsIn = Dataset(files[0], mode='r')
 for a in dsIn.ncattrs():
     if not (a in globalAttributeBlackList):
-        print("Attribute %s value %s" % (a, dsIn.getncattr(a)))
+        # print("Attribute %s value %s" % (a, dsIn.getncattr(a)))
         ncOut.setncattr(a, dsIn.getncattr(a))
 
 for d in dsIn.dimensions:
@@ -221,10 +225,12 @@ for a in ncTime[0].ncattrs():
     print("TIME Attribute %s value %s" % (a, ncTime[0].getncattr(a)))
     ncTimesOut.setncattr(a, ncTime[0].getncattr(a))
 
-ncTimesOut[:] = maTimeAll[idx]
+print('Output idx length %d , timeAll length %d' %(len(idx), len(maTimeAll[idx])))
 
-ncOut.setncattr("time_coverage_start", dates[idx][0].strftime(ncTimeFormat))
-ncOut.setncattr("time_coverage_end", dates[idx][-1].strftime(ncTimeFormat))
+ncTimesOut[:] = maTimeAll[idx].compressed()
+
+ncOut.setncattr("time_coverage_start", dates[0].strftime(ncTimeFormat))
+ncOut.setncattr("time_coverage_end", dates[-1].strftime(ncTimeFormat))
 ncOut.setncattr("date_created", datetime.utcnow().strftime(ncTimeFormat))
 ncOut.setncattr("history", datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC : Create Aggregate"))
 
@@ -242,7 +248,7 @@ if len(files) > 255:
 ncInstrumentIndexVar = ncOut.createVariable("instrument_index", indexVarType, ("OBS",))
 ncInstrumentIndexVar.setncattr("long_name", "which instrument this obs is for")
 ncInstrumentIndexVar.setncattr("instance_dimension", "instrument")
-ncInstrumentIndexVar[:] = instrumentIndex[idx]
+ncInstrumentIndexVar[:] = instrumentIndex[idx].compressed()
 
 # create a variable with the source file name
 ncFileNameVar = ncOut.createVariable("source_file", "S1", ("instrument", "strlen"))
@@ -335,7 +341,7 @@ for v in varNamesOut:
             # copy the variable attributes
             # this is ends up as the super set of all files
             for a in varList[v].ncattrs():
-                print("%s Attribute %s value %s" % (v, a, varList[v].getncattr(a)))
+                # print("%s Attribute %s value %s" % (v, a, varList[v].getncattr(a)))
                 ncVariableOut.setncattr(a, varList[v].getncattr(a))
 
             filen += 1
@@ -343,10 +349,10 @@ for v in varNamesOut:
         # write the aggregated data to the output file
         if varOrder == 2:
             maVariableAll.mask = maTimeAll.mask # apply the time mask
-            ncVariableOut[:] = maVariableAll[idx][:]
+            ncVariableOut[:] = maVariableAll[idx][:].compressed()
         elif varOrder == 1:
             maVariableAll.mask = maTimeAll.mask # apply the time mask
-            ncVariableOut[:] = maVariableAll[idx]
+            ncVariableOut[:] = maVariableAll[idx].compressed()
         elif varOrder == 0:
             ncVariableOut[:] = maVariableAll
 
@@ -371,4 +377,7 @@ for v in varNamesOut:
 nc.close()
 
 ncOut.close()
+
+print('Output Filename : %s' % outputName)
+print('Output idx length %d , timeAll length %d indexed %d' %(len(idx), len(maTimeAll), len(maTimeAll[idx])))
 

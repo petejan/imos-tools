@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="898044e3-c90f-4b8d-8fdd-3e146b5b94b7" name="Default Changelist" comment="add oceanSites data manual">
-      <change afterPath="$PROJECT_DIR$/docs/oceansites_data_format_reference_manual.pdf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/python/convert2OceanSites.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/matlab/plotDSGfile.m" beforeDir="false" afterPath="$PROJECT_DIR$/matlab/plotDSGfile.m" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/python/copyDataset.py" beforeDir="false" afterPath="$PROJECT_DIR$/python/copyDataset.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -16,8 +16,10 @@
     <session id="-1624091490">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
+          <entry key="project.closed" value="1" />
+          <entry key="project.open.time.107" value="1" />
           <entry key="project.open.time.4" value="1" />
-          <entry key="project.opened" value="1" />
+          <entry key="project.opened" value="2" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
@@ -34,13 +36,13 @@
         <counts>
           <entry key="Python Console" value="4016" />
           <entry key="dummy" value="83" />
-          <entry key="py" value="6965" />
+          <entry key="py" value="7566" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="PLAIN_TEXT" value="83" />
-          <entry key="Python" value="10981" />
+          <entry key="Python" value="11582" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.vcs.git.usages" />
@@ -82,23 +84,23 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/python/copyDataset.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="748">
-              <caret line="125" selection-start-line="124" selection-end-line="125" />
+            <state relative-caret-position="-1637">
+              <caret line="117" column="15" selection-start-line="117" selection-end-line="117" selection-end-column="15" />
               <folding>
-                <element signature="e#0#40#0" expanded="true" />
+                <element signature="e#0#30#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/python/convert2OceanSites.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-591">
-              <caret line="81" column="83" selection-start-line="81" selection-start-column="83" selection-end-line="81" selection-end-column="83" />
+            <state relative-caret-position="1035">
+              <caret line="69" column="47" selection-start-line="69" selection-start-column="47" selection-end-line="69" selection-end-column="47" />
               <folding>
                 <element signature="e#0#40#0" expanded="true" />
               </folding>
@@ -109,8 +111,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/python/catalog.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="527">
-              <caret line="32" column="132" selection-start-line="32" selection-start-column="132" selection-end-line="32" selection-end-column="132" />
+            <state relative-caret-position="495">
+              <caret line="34" column="16" selection-start-line="34" selection-start-column="16" selection-end-line="34" selection-end-column="16" />
             </state>
           </provider>
         </entry>
@@ -129,7 +131,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/python/netCDF2csv.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1377">
+            <state relative-caret-position="1215">
               <caret line="86" column="78" selection-start-line="86" selection-start-column="78" selection-end-line="86" selection-end-column="78" />
             </state>
           </provider>
@@ -142,6 +144,7 @@
       <find>stat</find>
       <find>station</find>
       <find>compressed</find>
+      <find>compr</find>
     </findStrings>
     <replaceStrings>
       <replace>instrument</replace>
@@ -154,9 +157,9 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/python/netCDF2csv.py" />
-        <option value="$PROJECT_DIR$/python/copyDataset.py" />
         <option value="$PROJECT_DIR$/python/catalog.py" />
         <option value="$PROJECT_DIR$/python/convert2OceanSites.py" />
+        <option value="$PROJECT_DIR$/python/copyDataset.py" />
       </list>
     </option>
   </component>
@@ -182,17 +185,7 @@
             <path>
               <item name="imos-tools" type="b2602c69:ProjectViewProjectNode" />
               <item name="imos-tools" type="462c0819:PsiDirectoryNode" />
-              <item name="docs" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="imos-tools" type="b2602c69:ProjectViewProjectNode" />
-              <item name="imos-tools" type="462c0819:PsiDirectoryNode" />
               <item name="matlab" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="imos-tools" type="b2602c69:ProjectViewProjectNode" />
-              <item name="imos-tools" type="462c0819:PsiDirectoryNode" />
-              <item name="oceanSites" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="imos-tools" type="b2602c69:ProjectViewProjectNode" />
@@ -245,7 +238,7 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/python/copyDataset.py" />
-      <option name="PARAMETERS" value="-v TEMP http://thredds.aodn.org.au/thredds/fileServer/IMOS/ABOS/DA/EAC2000/CTD_timeseries/IMOS_ABOS-DA_STZ_20150515T000001Z_EAC2000_FV01_EAC2000-2016-SBE37SMP-1195_END-20161110T231917Z_C-20170703T055705Z.nc" />
+      <option name="PARAMETERS" value="EAC3200/IMOS*SBE37*.nc" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
@@ -276,13 +269,13 @@
     <frame x="772" y="99" width="1514" height="1053" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.21205962" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.21165438" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.24983256" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
       <window_info anchor="bottom" id="Run" order="2" weight="0.3298647" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.39934713" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.39854318" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
@@ -319,13 +312,6 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/python/copyDataset.py</url>
-          <line>32</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-      </breakpoints>
       <default-breakpoints>
         <breakpoint type="python-exception">
           <properties notifyOnTerminate="true" exception="BaseException">
@@ -340,6 +326,13 @@
     <entry file="file:///Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/netCDF4-1.4.2-py3.7-macosx-10.9-x86_64.egg/netCDF4/utils.py" />
     <entry file="file:///Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/numpy/ma/core.py" />
     <entry file="file:///Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/codecs.py" />
+    <entry file="file://$PROJECT_DIR$/python/catalog.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="495">
+          <caret line="34" column="16" selection-start-line="34" selection-start-column="16" selection-end-line="34" selection-end-column="16" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/python/plotNetCDF.py">
       <provider selected="true" editor-type-id="text-editor">
         <state>
@@ -351,34 +344,27 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/python/netCDF2csv.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1377">
+        <state relative-caret-position="1215">
           <caret line="86" column="78" selection-start-line="86" selection-start-column="78" selection-end-line="86" selection-end-column="78" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/python/catalog.py">
+    <entry file="file://$PROJECT_DIR$/python/convert2OceanSites.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="527">
-          <caret line="32" column="132" selection-start-line="32" selection-start-column="132" selection-end-line="32" selection-end-column="132" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/python/copyDataset.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="748">
-          <caret line="125" selection-start-line="124" selection-end-line="125" />
+        <state relative-caret-position="1035">
+          <caret line="69" column="47" selection-start-line="69" selection-start-column="47" selection-end-line="69" selection-end-column="47" />
           <folding>
             <element signature="e#0#40#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/python/convert2OceanSites.py">
+    <entry file="file://$PROJECT_DIR$/python/copyDataset.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-591">
-          <caret line="81" column="83" selection-start-line="81" selection-start-column="83" selection-end-line="81" selection-end-column="83" />
+        <state relative-caret-position="-1637">
+          <caret line="117" column="15" selection-start-line="117" selection-end-line="117" selection-end-column="15" />
           <folding>
-            <element signature="e#0#40#0" expanded="true" />
+            <element signature="e#0#30#0" expanded="true" />
           </folding>
         </state>
       </provider>
