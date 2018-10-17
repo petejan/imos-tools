@@ -75,9 +75,8 @@ nc.close()
 
 # look over all files, create a time array from all files
 # TODO: maybe delete files here without variables we're not interested in
+# TODO: Create set of variables in all files
 
-# look over all files, create a time array from all files
-# TODO: maybe delete files here without variables we're not interested in
 filen = 0
 for path_file in files:
 
