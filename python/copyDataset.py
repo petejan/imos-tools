@@ -229,17 +229,17 @@ for a in ncTime[0].ncattrs():
 
 ncTimesOut[:] = maTimeAll[idx].compressed()
 
-ncOut.setncattr("time_coverage_start", dates[idx][0].strftime(ncTimeFormat))
-ncOut.setncattr("time_coverage_end", dates[idx][-1].strftime(ncTimeFormat))
+ncOut.setncattr("time_coverage_start", dates[idx].compressed()[0].strftime(ncTimeFormat))
+ncOut.setncattr("time_coverage_end", dates[idx].compressed()[-1].strftime(ncTimeFormat))
 ncOut.setncattr("date_created", datetime.utcnow().strftime(ncTimeFormat))
 ncOut.setncattr("history", datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC : Create Aggregate"))
 
 # instrument index
-indexVarType = "u1"
-if len(files) > 255:
-    indexVarType = "u2"
-    if len(files) > 65535: # your really keen then
-        indexVarType = "u4"
+indexVarType = "i1"
+if len(files) > 128:
+    indexVarType = "i2"
+    if len(files) > 32767: # your really keen then
+        indexVarType = "i4"
 
 #
 # create new variables needed
