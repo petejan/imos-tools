@@ -126,7 +126,7 @@ dsTime = Dataset(files[0], mode="r")
 
 ncTime = dsTime.get_variables_by_attributes(standard_name='time')
 
-dates = num2date(maTimeAll, units=ncTime[0].units, calendar=ncTime[0].calendar)
+dates = num2date(maTimeAll[idx].compressed(), units=ncTime[0].units, calendar=ncTime[0].calendar)
 
 #
 # createNewFile
@@ -229,8 +229,8 @@ for a in ncTime[0].ncattrs():
 
 ncTimesOut[:] = maTimeAll[idx].compressed()
 
-ncOut.setncattr("time_coverage_start", dates[idx].compressed()[0].strftime(ncTimeFormat))
-ncOut.setncattr("time_coverage_end", dates[idx].compressed()[-1].strftime(ncTimeFormat))
+ncOut.setncattr("time_coverage_start", dates[0].strftime(ncTimeFormat))
+ncOut.setncattr("time_coverage_end", dates[-1].strftime(ncTimeFormat))
 ncOut.setncattr("date_created", datetime.utcnow().strftime(ncTimeFormat))
 ncOut.setncattr("history", datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC : Create Aggregate"))
 
