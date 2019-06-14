@@ -2,6 +2,61 @@ from netCDF4 import Dataset
 import numpy as np
 import sys
 
+# flatten a ADCP file
+
+# from this structure
+# double TIME(TIME);
+#     TIME:axis = "T";
+#     TIME:calendar = "gregorian";
+#     TIME:comment = "csiroManualQC adjusted time for a linear drift of 618 seconds.";
+#     TIME:long_name = "time";
+#     TIME:standard_name = "time";
+#     TIME:units = "days since 1950-01-01 00:00:00 UTC";
+#     TIME:valid_max = 90000.;
+#     TIME:valid_min = 0.;
+# float HEIGHT_ABOVE_SENSOR(HEIGHT_ABOVE_SENSOR);
+#     HEIGHT_ABOVE_SENSOR:axis = "Z";
+#     HEIGHT_ABOVE_SENSOR:long_name = "height_above_sensor";
+#     HEIGHT_ABOVE_SENSOR:positive = "up";
+#     HEIGHT_ABOVE_SENSOR:reference_datum = "sensor";
+#     HEIGHT_ABOVE_SENSOR:standard_name = "height";
+#     HEIGHT_ABOVE_SENSOR:units = "m";
+#     HEIGHT_ABOVE_SENSOR:valid_max = 12000.f;
+#     HEIGHT_ABOVE_SENSOR:valid_min = -12000.f;
+# float UCUR(TIME, HEIGHT_ABOVE_SENSOR);
+#
+# to :
+#
+# double TIME(OBS);
+#     TIME:axis = "T";
+#     TIME:calendar = "gregorian";
+#     TIME:comment = "csiroManualQC adjusted time for a linear drift of 618 seconds.";
+#     TIME:long_name = "time";
+#     TIME:standard_name = "time";
+#     TIME:units = "days since 1950-01-01 00:00:00 UTC";
+#     TIME:valid_max = 90000.;
+#     TIME:valid_min = 0.;
+# byte CELL(OBS);
+#     CELL:long_name = "which cell this OBS is from";
+#     CELL:instance_dimension = "HEIGHT_ABOVE_SENSOR";
+#     CELL:comment = "WARNING: is this the correct cell?";
+# float DEPTH(OBS);
+#     DEPTH:ancillary_variables = "DEPTH_quality_control";
+#     DEPTH:coordinates = "TIME LATITUDE LONGITUDE NOMINAL_DEPTH";
+#     DEPTH:_FillValue = 999999.f;
+#     DEPTH:long_name = "actual depth";
+#     DEPTH:positive = "down";
+#     DEPTH:reference_datum = "sea surface";
+#     DEPTH:standard_name = "depth";
+#     DEPTH:units = "m";
+#     DEPTH:valid_max = 12000.f;
+#     DEPTH:valid_min = -5.f;
+# float UCUR(OBS);
+
+# example
+# 12/11/2018  03:07 PM       468,765,047 IMOS_ABOS-DA_AETVZ_20160825T000059Z_EAC4200_FV01_EAC4200-2018-WORKHORSE-ADCP-119_END-20180426T055529Z_C-20181024T032202Z.nc
+# 14/06/2019  10:15 AM       199,585,003 IMOS_ABOS-DA_AETVZ_20160825T000059Z_EAC4200_FV01_EAC4200-2018-WORKHORSE-ADCP-119_END-20180426T055529Z_C-20181024T032202Z.nc.flat.nc
+
 path_file = sys.argv[1]
 # path_file = '/Users/pete/Downloads/IMOS_ABOS-DA_AETVZ_20150515T000000Z_EAC4200_FV01_EAC4200-2016-WORKHORSE-ADCP-726_END-20161104T205740Z_C-20170703T055611Z.nc'
 
