@@ -97,8 +97,9 @@ for path_file in files:
     tEndnum = date2num(tEnd.replace(tzinfo=None), units=ncTime[0].units)
 
     maTime = ma.array(ncTime[0][:])
-    msk = (maTime < tStartnum) | (maTime > tEndnum)
-    maTime.mask = msk
+    #msk = (maTime < tStartnum) | (maTime > tEndnum)
+    #maTime.mask = msk
+    maTime.mask = 0
 
     timeLen = 1
     if len(ncTime[0].shape) > 0:
@@ -276,7 +277,7 @@ ncInstrumentTypeVar[:] = stringtochar(instrument)
 filen = 0
 
 # include the DEPTH variable
-varNames = varToAgg + ['DEPTH']
+varNames = varToAgg # + ['DEPTH']
 
 # add the ancillary variables for the ones requested
 for v in varNames:

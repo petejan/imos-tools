@@ -9,13 +9,14 @@ if __name__ == '__main__':
     #path='ABOS/DA/EAC2000/CTD_timeseries'
     #path='ANMN/NRS/NRSKAI'
     #path='ABOS/SOTS'
-    path='ABOS/SOTS/2016'
+    path='ABOS/SOTS'
 
     if len(sys.argv) > 1:
         path = sys.argv[1]
 
     #skips = Crawl.SKIPS + [".*FV00"]
-    skips = Crawl.SKIPS + [".*FV00", ".*realtime", ".*Real-time", ".*daily", ".*REAL_TIME", ".*regridded", ".*burst", ".*gridded", ".*long-timeseries"]
+    #skips = Crawl.SKIPS + [".*FV00", ".*realtime", ".*Real-time", ".*daily", ".*REAL_TIME", ".*regridded", ".*burst", ".*gridded", ".*long-timeseries"]
+    skips = Crawl.SKIPS + [".*realtime", ".*Real-time", ".*daily", ".*REAL_TIME", ".*regridded", ".*burst", ".*gridded", ".*long-timeseries"]
     #skips = Crawl.SKIPS + [".*realtime", ".*Real-time", ".*daily", ".*REAL_TIME", ".*regridded"]
     #skips = Crawl.SKIPS + [".*regridded"]
 
@@ -23,6 +24,7 @@ if __name__ == '__main__':
     #crawl_path='http://thredds.aodn.org.au/thredds/catalog/IMOS/ANMN/NRS/NRSKAI/Biogeochem_profiles/catalog.html'
 
     c = Crawl(crawl_path, select=['.*FV01'], skip=skips)
+    c = Crawl(crawl_path, select=['.*'], skip=skips)
 
     #c = Crawl('http://dods.ndbc.noaa.gov/thredds/catalog/oceansites/DATA/IMOS-EAC/catalog.xml', select=['.*'])
     #c = Crawl('http://dods.ndbc.noaa.gov/thredds/catalog/oceansites/DATA/IMOS-ITF/catalog.xml', select=['.*'])
@@ -39,18 +41,23 @@ if __name__ == '__main__':
             if s.get("service").lower() == 'opendap':
                 # for the opendap service, check at attribute value
                 #print (s)
+                #print (s.get("url"))
+				
                 nc = Dataset(s.get("url"), mode="r")
                 # check for any global attributes
-                site = nc.getncattr('deployment_code')
-                print(site)
+                #site = nc.getncattr('deployment_code')
+                #print(site)
 
                 # check for variable attributes
-                var = nc.get_variables_by_attributes(standard_name='sea_water_temperature')
+                var = nc.get_variables_by_attributes(long_name='sea_surface_wave_significant_height')
                 #print(var)
                 if var:
                     if use == 1:
                         urls.append(s.get("url"))
                     use = 1
+					
+                nc.close()
+				
             elif s.get("service").lower() == 'httpserver':
                 # save the httpserver url for use later
                 url = s.get("url")
@@ -58,6 +65,7 @@ if __name__ == '__main__':
                     urls.append(url)
                 
 
+    print('')
     for url in urls:
         print(url)
 
