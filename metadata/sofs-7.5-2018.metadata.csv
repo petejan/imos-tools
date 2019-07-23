@@ -1,0 +1,24 @@
+rec_type, var_name, model, serial_number, time_deployment, time_recovery, variable_name, variable_dims, variable_shape, variable_type, variable_value, attribute_name, attribute_type, attribute_value
+GLOBAL,*,,,,,,,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,*,,,,,,,,,,institution,str,ABOS-SOTS
+GLOBAL,*,,,,,,,,,,institution_references,str,http://www.imos.org.au/aodn.html
+GLOBAL,*,,,,,,,,,,site_nominal_depth,float64,4624
+GLOBAL,*,,,,,,,,,,source,str,Surface Mooring
+GLOBAL,*,,,,,,,,,,time_deployment_end,str,2019-03-22T21:40:39Z
+GLOBAL,*,,,,,,,,,,time_deployment_start,str,2018-08-22T13:17:54Z
+VAR,LATITUDE,,,,,LATITUDE,(),(),float64,-47.02274,,,
+VAR_ATT,LATITUDE,,,,,,,,,,axis,str,Y
+VAR_ATT,LATITUDE,,,,,,,,,,long_name,str,latitude
+VAR_ATT,LATITUDE,,,,,,,,,,reference_datum,str,WGS84 geographic coordinate system
+VAR_ATT,LATITUDE,,,,,,,,,,standard_name,str,latitude
+VAR_ATT,LATITUDE,,,,,,,,,,units,str,degrees_north
+VAR_ATT,LATITUDE,,,,,,,,,,valid_max,float64,90
+VAR_ATT,LATITUDE,,,,,,,,,,valid_min,float64,-90
+VAR,LONGITUDE,,,,,LONGITUDE,(),(),float64,142.23341,,,
+VAR_ATT,LONGITUDE,,,,,,,,,,axis,str,X
+VAR_ATT,LONGITUDE,,,,,,,,,,long_name,str,longitude
+VAR_ATT,LONGITUDE,,,,,,,,,,reference_datum,str,WGS84 geographic coordinate system
+VAR_ATT,LONGITUDE,,,,,,,,,,standard_name,str,longitude
+VAR_ATT,LONGITUDE,,,,,,,,,,units,str,degrees_east
+VAR_ATT,LONGITUDE,,,,,,,,,,valid_max,float64,180
+VAR_ATT,LONGITUDE,,,,,,,,,,valid_min,float64,-180

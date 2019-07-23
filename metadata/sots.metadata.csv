@@ -1,0 +1,21 @@
+rec_type, var_name, deployment_code, model, serial_number, time_deployment, time_recovery, variable_name, variable_dims, variable_shape, variable_type, variable_value, attribute_name, attribute_type, attribute_value
+GLOBAL,*,,,,,,,"","",,,abstract,str,"Oceanographic and meteorological data from the Southern Ocean Time Series observatory in the Southern Ocean southwest of Tasmania"
+GLOBAL,*,,,,,,,"","",,,author,str,"Jansen, Peter"
+GLOBAL,*,,,,,,,"","",,,author_email,str,"peter.jansen@csiro.au"
+GLOBAL,*,,,,,,,"","",,,citation,str,"The citation in a list of references is: 'IMOS [year-of-data-download], [Title], [data-access-URL], accessed [date-of-access].'."
+GLOBAL,*,,,,,,,"","",,,institution,str,"ABOS-SOTS"
+GLOBAL,*,,,,,,,"","",,,platform_code,str,"SOFS"
+GLOBAL,*,,,,,,,"","",,,principal_investigator,str,"Trull, Tom; Shulz, Eric"
+GLOBAL,*,,,,,,,"","",,,principal_investigator_email,str,"tom.trull@csiro.au; eshulz@bom.gov.au"
+GLOBAL,*,,,,,,,"","",,,site_code,str,"SOTS"
+GLOBAL,*,,,,,,,,,,,geospatial_vertical_positive,str,down
+GLOBAL,*,,,,,,,,,,,geospatial_lat_units,str,degrees_north
+GLOBAL,*,,,,,,,,,,,geospatial_lon_units,str,degrees_east
+VAR_ATT,NOMINAL_DEPTH,,,,,,,"","",,,axis,str,"Z"
+VAR_ATT,NOMINAL_DEPTH,,,,,,,"","",,,long_name,str,"nominal depth"
+VAR_ATT,NOMINAL_DEPTH,,,,,,,"","",,,positive,str,"down"
+VAR_ATT,NOMINAL_DEPTH,,,,,,,"","",,,reference_datum,str,"sea surface"
+VAR_ATT,NOMINAL_DEPTH,,,,,,,"","",,,standard_name,str,"depth"
+VAR_ATT,NOMINAL_DEPTH,,,,,,,"","",,,units,str,"m"
+VAR_ATT,NOMINAL_DEPTH,,,,,,,"","",,,valid_max,float32,"12000.0"
+VAR_ATT,NOMINAL_DEPTH,,,,,,,"","",,,valid_min,float32,"-5.0"
