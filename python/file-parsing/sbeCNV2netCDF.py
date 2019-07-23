@@ -113,7 +113,7 @@ def main(files):
         matchObj = re.match(first_line_expr, line)
         if not matchObj:
             print("Not a Sea Bird CNV file !")
-            exit(-1)
+            return None
 
         cnt = 1
         while line:

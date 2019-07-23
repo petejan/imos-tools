@@ -161,7 +161,7 @@ def sbe_asc_parse(files):
         matchObj = re.match(first_line_expr, line)
         if not matchObj:
             print("Not a Sea Bird ASC file !")
-            exit(-1)
+            return None
 
         cnt = 1
         while line:

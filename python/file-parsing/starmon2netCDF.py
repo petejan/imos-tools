@@ -77,7 +77,7 @@ def main(file):
         matchObj = re.match(first_line_expr, line)
         if not matchObj:
             print("Not a Starmon-mini DAT file !")
-            exit(-1)
+            return None
 
         cnt = 1
         while line:

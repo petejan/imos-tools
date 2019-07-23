@@ -161,7 +161,7 @@ def main(files):
                     checksum_errors += 1
                     if checksum_errors > 10:
                         print("too many errors, maybe not a nortek file")
-                        exit(-1)
+                        return None
                     binary_file.seek(bad_ck_pos, 0)  # seek back to before packet
                 else:
                     try:
@@ -206,7 +206,7 @@ def main(files):
                 no_sync += 1
                 if no_sync > 100:
                     print("no sync found in first 100 bytes, maybe not a nortek file")
-                    exit(-1)
+                    return None
 
             data = binary_file.read(1)
             bad_ck_pos = binary_file.tell()
@@ -217,7 +217,7 @@ def main(files):
 
     if number_samples_read == 0:
         print("no samples, probably not a nortek aquadopp file")
-        exit(-1)
+        return None
 
     # create an array to store data in (creates another memory copy)
     data_array = np.zeros((11, number_samples_read))

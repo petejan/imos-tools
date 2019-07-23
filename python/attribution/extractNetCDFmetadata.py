@@ -32,15 +32,15 @@ from netCDF4 import Dataset
 #  attribute type
 #  attribute value
 
-def print_line(typ, var_name, dep_code, model, serial_number, time_deployment, time_recovry, variable_name, variable_dims, variable_shape, variable_type, variable_value, attribute_name, attribute_type, attribute_value):
-    if attribute_type == 'str':
-        attribute_value = attribute_value.replace("\"", "'")
-    print("%s,%s,%s,%s,%s,%s,%s,%s,\"%s\",\"%s\",%s,%s,%s,%s,\"%s\"" % (typ, var_name, dep_code, model, serial_number, time_deployment, time_recovry, variable_name, variable_dims, variable_shape, variable_type, variable_value, attribute_name, attribute_type, attribute_value))
+def print_line(typ, var_name, dep_code, model, serial_number, time_deployment, time_recovry, variable_name, variable_dims, variable_shape, attribute_name, type, value):
+    if type == 'str':
+        attribute_value = value.replace("\"", "'").replace(",", " ")
+    print("%s,%s,%s,%s,%s,%s,%s,%s,\"%s\",\"%s\",%s,%s,\"%s\"" % (typ, var_name, dep_code, model, serial_number, time_deployment, time_recovry, variable_name, variable_dims, variable_shape, attribute_name, type, value))
 
 for s in sys.argv[1:]:
     #print(s)
 
-    print("rec_type, var_name, deployment_code, model, serial_number, time_deployment, time_recovery, variable_name, variable_dims, variable_shape, variable_type, variable_value, attribute_name, attribute_type, attribute_value")
+    print("rec_type, var_name, deployment_code, model, serial_number, time_deployment, time_recovery, variable_name, variable_dims, variable_shape, attribute_name, type, value")
 
     nc = Dataset(s)
 
@@ -63,7 +63,7 @@ for s in sys.argv[1:]:
     for a in nc_attrs:
         attr = nc.getncattr(a)
         #print("%s type %s = %s" % (a, type(attr).__name__, attr))
-        print_line('GLOBAL', "*", dep_code, instrument, instrument_serial_number, time_start, time_end, "", "", "", "", "", a, type(attr).__name__, attr)
+        print_line('GLOBAL', "*", dep_code, instrument, instrument_serial_number, time_start, time_end, "", "", "", a, type(attr).__name__, attr)
 
     nc_vars = nc.variables
 
@@ -73,14 +73,14 @@ for s in sys.argv[1:]:
         v_attrs = ncVar.ncattrs()
         # print(len(ncVar.shape))
         if len(ncVar.shape) == 0:
-            print_line('VAR', v, dep_code, instrument, instrument_serial_number, time_start, time_end, v, ncVar.shape, ncVar.dimensions, ncVar.dtype, ncVar[:], "", "", "")
+            print_line('VAR', v, dep_code, instrument, instrument_serial_number, time_start, time_end, v, ncVar.shape, ncVar.dimensions, "", ncVar.dtype, ncVar[:])
         elif (len(ncVar.shape) == 1) & (ncVar.shape[0] == 1):
-            print_line('VAR', v, dep_code, instrument, instrument_serial_number, time_start, time_end, v, ncVar.shape, ncVar.dimensions, ncVar.dtype, ncVar[:], "", "", "")
+            print_line('VAR', v, dep_code, instrument, instrument_serial_number, time_start, time_end, v, ncVar.shape, ncVar.dimensions, "", ncVar.dtype, ncVar[:])
         else:
-            print_line('VAR', v, dep_code, instrument, instrument_serial_number, time_start, time_end, v, ncVar.shape, ncVar.dimensions, ncVar.dtype, "", "", "", "")
+            print_line('VAR', v, dep_code, instrument, instrument_serial_number, time_start, time_end, v, ncVar.shape, ncVar.dimensions, "", ncVar.dtype, "")
 
         for a in v_attrs:
             attr = ncVar.getncattr(a)
-            print_line('VAR_ATT', v, dep_code, instrument, instrument_serial_number, time_start, time_end, "", "", "", "", "", a, type(attr).__name__, attr)
+            print_line('VAR_ATT', v, dep_code, instrument, instrument_serial_number, time_start, time_end, "", "", "", a, type(attr).__name__, attr)
             #print("%s type %s = %s" % (a, type(attr).__name__, attr))
 

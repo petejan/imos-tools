@@ -1,24 +1,24 @@
-rec_type, var_name, model, serial_number, time_deployment, time_recovery, variable_name, variable_dims, variable_shape, variable_type, variable_value, attribute_name, attribute_type, attribute_value
-GLOBAL,*,,,,,,,,,,deployment_code,str,SAZ47-20-2018
-GLOBAL,*,,,,,,,,,,institution,str,ABOS-SOTS
-GLOBAL,*,,,,,,,,,,institution_references,str,http://www.imos.org.au/aodn.html
-GLOBAL,*,,,,,,,,,,site_nominal_depth,float64,4500.0
-GLOBAL,*,,,,,,,,,,source,str,SubSurface Mooring
-GLOBAL,*,,,,,,,,,,time_deployment_start,str,2018-03-09T00:00:00Z
-GLOBAL,*,,,,,,,,,,time_deployment_end,str,2019-03-21T19:15:24Z
-VAR,LATITUDE,,,,,LATITUDE,(),(),float64,-46.792048,,,
-VAR_ATT,LATITUDE,,,,,,,,,,axis,str,Y
-VAR_ATT,LATITUDE,,,,,,,,,,long_name,str,latitude
-VAR_ATT,LATITUDE,,,,,,,,,,reference_datum,str,WGS84 geographic coordinate system
-VAR_ATT,LATITUDE,,,,,,,,,,standard_name,str,latitude
-VAR_ATT,LATITUDE,,,,,,,,,,units,str,degrees_north
-VAR_ATT,LATITUDE,,,,,,,,,,valid_max,float64,90
-VAR_ATT,LATITUDE,,,,,,,,,,valid_min,float64,-90
-VAR,LONGITUDE,,,,,LONGITUDE,(),(),float64,141.794356,,,
-VAR_ATT,LONGITUDE,,,,,,,,,,axis,str,X
-VAR_ATT,LONGITUDE,,,,,,,,,,long_name,str,longitude
-VAR_ATT,LONGITUDE,,,,,,,,,,reference_datum,str,WGS84 geographic coordinate system
-VAR_ATT,LONGITUDE,,,,,,,,,,standard_name,str,longitude
-VAR_ATT,LONGITUDE,,,,,,,,,,units,str,degrees_east
-VAR_ATT,LONGITUDE,,,,,,,,,,valid_max,float64,180
-VAR_ATT,LONGITUDE,,,,,,,,,,valid_min,float64,-180
+rec_type, var_name,deployment_code, model, serial_number, time_deployment, time_recovery, variable_name, variable_dims, variable_shape, attribute_name,type,value
+GLOBAL,*,,,,,,,,,deployment_code,str,SAZ47-20-2018
+GLOBAL,*,,,,,,,,,institution,str,ABOS-SOTS
+GLOBAL,*,,,,,,,,,institution_references,str,http://www.imos.org.au/aodn.html
+GLOBAL,*,,,,,,,,,site_nominal_depth,float64,4500
+GLOBAL,*,,,,,,,,,source,str,SubSurface Mooring
+GLOBAL,*,,,,,,,,,time_deployment_start,str,2018-03-09T00:00:00Z
+GLOBAL,*,,,,,,,,,time_deployment_end,str,2019-03-21T19:15:24Z
+VAR,LATITUDE,,,,,,LATITUDE,(),(),,float64,-46.792048
+VAR_ATT,LATITUDE,,,,,,,,,axis,str,Y
+VAR_ATT,LATITUDE,,,,,,,,,long_name,str,latitude
+VAR_ATT,LATITUDE,,,,,,,,,reference_datum,str,WGS84 geographic coordinate system
+VAR_ATT,LATITUDE,,,,,,,,,standard_name,str,latitude
+VAR_ATT,LATITUDE,,,,,,,,,units,str,degrees_north
+VAR_ATT,LATITUDE,,,,,,,,,valid_max,float64,90
+VAR_ATT,LATITUDE,,,,,,,,,valid_min,float64,-90
+VAR,LONGITUDE,,,,,,LONGITUDE,(),(),,float64,141.794356
+VAR_ATT,LONGITUDE,,,,,,,,,axis,str,X
+VAR_ATT,LONGITUDE,,,,,,,,,long_name,str,longitude
+VAR_ATT,LONGITUDE,,,,,,,,,reference_datum,str,WGS84 geographic coordinate system
+VAR_ATT,LONGITUDE,,,,,,,,,standard_name,str,longitude
+VAR_ATT,LONGITUDE,,,,,,,,,units,str,degrees_east
+VAR_ATT,LONGITUDE,,,,,,,,,valid_max,float64,180
+VAR_ATT,LONGITUDE,,,,,,,,,valid_min,float64,-180

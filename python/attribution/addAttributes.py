@@ -117,8 +117,8 @@ def add_attributes(netCDFfile, metadatafiles):
                         # global attributes
                         if dict1['rec_type'] == 'GLOBAL':
                             name = dict1['attribute_name']
-                            att_type = dict1['attribute_type']
-                            value = parseTypeValue(att_type, dict1['attribute_value'])
+                            att_type = dict1['type']
+                            value = parseTypeValue(att_type, dict1['value'])
                             print("add global %s (%s) = %s" % (name, att_type, value))
                             ds.setncattr(name, value)
 
@@ -128,7 +128,7 @@ def add_attributes(netCDFfile, metadatafiles):
                                 print("Create Variable : %s shape %s" % (dict1["variable_name"], dict1["variable_shape"]))
 
                                 newVar = ds.createVariable(dict1["variable_name"], "d")
-                                newVar[:] = float(dict1["variable_value"])
+                                newVar[:] = float(dict1["value"])
 
                         # variable attributes
                         elif dict1['rec_type'] == 'VAR_ATT':  # variable attribute
@@ -136,8 +136,8 @@ def add_attributes(netCDFfile, metadatafiles):
                             #print(var_name)
                             if var_name in ds_variables:
                                 name = dict1['attribute_name']
-                                att_type = dict1['attribute_type']
-                                value = parseTypeValue(att_type, dict1['attribute_value'])
+                                att_type = dict1['type']
+                                value = parseTypeValue(att_type, dict1['value'])
                                 print("add variable %s attribute %s (%s) = %s" % (var_name, name, att_type, value))
                                 ds_variables[var_name].setncattr(name, value)
 
