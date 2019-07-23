@@ -39,7 +39,10 @@ def main(netCDFfile):
     dt = num2date(time[:], units=time.units, calendar=time.calendar)
     doy = [(x - datetime.datetime(x.year, 1, 1)).total_seconds()/3600/24 for x in dt]
 
-    depth = ds.variables['PRES_REL'][:]+1
+    if "PRES" in ds.variables:
+        depth = ds.variables['PRES'][:]+1
+    elif "PRES_REL" in ds.variables:
+        depth = ds.variables['PRES_REL'][:]+1
 
     print("netCDF data ", doy[0:2], lat, lon, nom_depth, time.shape)
 

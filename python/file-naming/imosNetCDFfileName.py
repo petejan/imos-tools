@@ -49,7 +49,8 @@ def main(files):
     deployment = ds.deployment_code
     instrument = ds.instrument_model
     instrument_sn = ds.instrument_serial_number
-    nominal_depth = ds.instrument_nominal_depth
+
+    nominal_depth = ds.variables["NOMINAL_DEPTH"][:]
 
     product_code = deployment + "-" + instrument + "-" + instrument_sn + "-" + "{0:.0f}".format(nominal_depth) + "m"
     product_code = product_code.replace(" ", "-")
@@ -66,6 +67,9 @@ def main(files):
     codesCat = ""
     for c in codes:
         codesCat += c
+
+    if len(codesCat) == 0:
+        codesCat = "R"
 
     ds.close()
 

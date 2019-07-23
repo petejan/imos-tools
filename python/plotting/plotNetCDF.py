@@ -220,8 +220,10 @@ for path_file in sys.argv[1:len(sys.argv)]:
         # create a legend entry made from serial_number and depth
         if hasattr(plot_var, 'sensor_serial_number'):
             sn = plot_var.getncattr('sensor_serial_number').split('; ')
-        else:
+        elif hasattr(plot_var, 'sensor_serial_number'):
             sn = nc.getncattr('instrument_serial_number').split('; ')
+        else:
+            sn = 'not found'
 
         if hasattr(plot_var, 'sensor_depth'):
             dpth = plot_var.getncattr('sensor_depth').split('; ')

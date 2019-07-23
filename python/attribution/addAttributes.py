@@ -84,7 +84,7 @@ def add_attributes(netCDFfile, metadatafiles):
                     if 'deployment_code' in dict1:
                         if len(dict1['deployment_code']) > 0 and dict1['deployment_code'] != deployment_code:
                             match = False
-                            print("deployment not match : ", dict1['deployment_code'])
+                            #print("deployment not match : ", dict1['deployment_code'])
 
                     # match time
                     if len(dict1['time_deployment']) > 0:
@@ -99,20 +99,20 @@ def add_attributes(netCDFfile, metadatafiles):
                     # match instrument
                     # fuzzie matching : https://medium.com/@categitau/fuzzy-string-matching-in-python-68f240d910fe
                     if len(dict1['model']) > 0:
-                        fuz = fuzz.ratio(instrument_model, dict1['model'])
+                        fuz = fuzz.ratio(instrument_model.lower(), dict1['model'].lower())
                         print("fuzz ", fuz, instrument_model, dict1['model'])
                         if fuz < 70:
                             match = False
-                            print("instrument_model not match : ", dict1['model'])
+                            #print("instrument_model not match : ", dict1['model'])
                     if len(dict1['serial_number']) > 0:
-                        fuz = fuzz.ratio(instrument_serial_number, dict1['serial_number'])
+                        fuz = fuzz.ratio(instrument_serial_number.lower(), dict1['serial_number'].lower())
                         print("fuzz ", fuz, instrument_serial_number, dict1['serial_number'])
                         if fuz < 70:
                             match = False
-                            print("serial_number not match : ", dict1['serial_number'])
+                            #print("serial_number not match : ", dict1['serial_number'])
 
                     if match:
-                        print(dict1)
+                        print("match ", dict1)
 
                         # global attributes
                         if dict1['rec_type'] == 'GLOBAL':

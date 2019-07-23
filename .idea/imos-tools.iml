@@ -6,7 +6,7 @@
       <excludeFolder url="file://$MODULE_DIR$/EAC-2000" />
       <excludeFolder url="file://$MODULE_DIR$/NRSKAI" />
     </content>
-    <orderEntry type="jdk" jdkName="Python 2.7" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Python 3.7" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
   <component name="TestRunnerService">

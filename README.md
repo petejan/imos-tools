@@ -1,6 +1,31 @@
 # imos-tools
 tools for processing imos data
 
+## processing data files
+
+convert RAW instrument files to netCDF file, adding IMOS (or OceanSites) attributes
+
+Sea Bird cnv file example,
+
+~~~
+- create a netCDF file from a RAW file
+python3 python/file-parsing/sbeCNV2netCDF.py SBE37SMP-ODO-RS232_03715969_2019_03_27.cnv 
+- add salinity
+python python\processing\addPSAL.py data\SBE37-1777-1000m.asc.nc
+
+- add attributes to the netCDF file
+python python/attribution/addAttributes.py data/SOFS-7.5-2018-TriAXYS-2019-07-21.nc metadata/imos.metadata.csv metadata/sots.metadata.csv metadata/sofs-7.5-2018.metadata.csv metadata/sofs-7.5-2018-instrument-metadata.csv
+
+-- add oceandb (CARS) values for temperature and salinity at sensor depth, latitude/longitude and time of year to existing file
+
+-- rename to IMOS complient file name
+python python/file-naming/imosNetCDFfileName.py data/SOFS-7.5-2018-TriAXYS-2019-07-21.nc
+
+- create a metadata input file from an existing netCDF file
+python3 extractNetCDF.py IMOS_ABOS-SOTS_COSTZ_20180801_SOFS_FV00_SOFS-7.5-2018-SBE37SMP-ODO-RS232-03715969-30m_END-20190327_C-20190606.nc > SBE37SMP-ODO-RS232_03715969_2019_03_27.cnv.metadata
+~~~
+
+
 ## retreive list of file from imos thredds server
 
 python python\catalog.py ABOS/DA/EAC2000 > EAC-2000\EAC-2000-url.txt
