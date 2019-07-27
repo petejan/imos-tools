@@ -4,9 +4,9 @@ GLOBAL,*,,,,,,,,,author,str,"Jansen, Peter"
 GLOBAL,*,,,,,,,,,author_email,str,peter.jansen@csiro.au
 GLOBAL,*,,,,,,,,,citation,str,"The citation in a list of references is: 'IMOS [year-of-data-download], [Title], [data-access-URL], accessed [date-of-access].'."
 GLOBAL,*,,,,,,,,,institution,str,ABOS-SOTS
-GLOBAL,*,,,,,,,,,platform_code,str,SOFS
-GLOBAL,*,,,,,,,,,principal_investigator,str,"Trull, Tom; Shulz, Eric"
-GLOBAL,*,,,,,,,,,principal_investigator_email,str,tom.trull@csiro.au; eshulz@bom.gov.au
+GLOBAL,*,,,,,,,,,platform_code,str,SAZ47
+GLOBAL,*,,,,,,,,,principal_investigator,str,"Trull, Tom"
+GLOBAL,*,,,,,,,,,principal_investigator_email,str,tom.trull@csiro.au
 GLOBAL,*,,,,,,,,,site_code,str,SOTS
 GLOBAL,*,,,,,,,,,geospatial_vertical_positive,str,down
 GLOBAL,*,,,,,,,,,geospatial_lat_units,str,degrees_north

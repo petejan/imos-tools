@@ -23,7 +23,8 @@ import psycopg2.extras
 
 def print_line(typ, var_name, dep_code, model, serial_number, time_deployment, time_recovry, variable_name, variable_dims, variable_shape, attribute_name, type, value):
     if type == 'str':
-        attribute_value = value.replace("\"", "'").replace(",", " ")
+        attribute_value = value.replace("\"", "'").replace(",", "\\,")
+    model = model.replace(",", "")
     print("%s,%s,%s,%s,%s,%s,%s,%s,\"%s\",\"%s\",%s,%s,\"%s\"" % (typ, var_name, dep_code, model, serial_number, time_deployment, time_recovry, variable_name, variable_dims, variable_shape, attribute_name, type, value))
 
 
@@ -31,62 +32,86 @@ def get_db_metadata(select):
     conn = psycopg2.connect(host="localhost", database="IMOS-DEPLOY", user="pete", password="password")
 
     # create a cursor
-    cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    cur_site = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    cur_inst = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
-    # output variable : LATITUDE, LONGITUDE, NOMINAL_DEPTH
-    #        globals : geospatial_lat_max, geospatial_lon_max, geospatial_vertical_max, site_nominal_depth, deployment_code, instrument_nominal_depth
-
-    print("rec_type, var_name, deployment_code, model, serial_number, time_deployment, time_recovery, variable_name, variable_dims, variable_shape, attribute_name, type, value")
+    # select deployment specific attributes
+    cur_site.execute("select * from cmdfieldsite join cmdsitelocation on (cmdfsid = cmdsl_fsid) "
+                " join cmddeploymentdetails on (cmdslid = cmddd_slid) "
+                "where cmdddname like '"+select+"' "
+                "order by cmdslname, cmdddname")
 
     # select instrument specific attributes
-    cur.execute("select * from cmdfieldsite join cmdsitelocation on (cmdfsid = cmdsl_fsid) "
+    cur_inst.execute("select * from cmdfieldsite join cmdsitelocation on (cmdfsid = cmdsl_fsid) "
                 " join cmddeploymentdetails on (cmdslid = cmddd_slid) "
                 " join cmditemlink on (cmdddid = cmdil_ddid) "
                 " join cmditemdetail on (cmdidid = cmdil_childidid)	"
                 "where cmdddname like '"+select+"' "
                 "order by cmdslname, cmdddname, cmdidbrand, cmdidmodel, cmdidserialnumber")
 
-    for row in cur:
+    # output variable : LATITUDE, LONGITUDE, NOMINAL_DEPTH
+    #        globals : geospatial_lat_max, geospatial_lon_max, geospatial_vertical_max, site_nominal_depth, deployment_code, instrument_nominal_depth
+
+    print("rec_type, var_name, deployment_code, model, serial_number, time_deployment, time_recovery, variable_name, variable_dims, variable_shape, attribute_name, type, value")
+
+    for row in cur_inst:
         #print(row['cmdslname'], row['cmdddname'], row['cmdddlatitude'], row['cmdddlongitude'], row['cmddddeploymentdate'], row['cmdddrecoverydate'], row['cmdidmodel'], row['cmdidserialnumber'], row['cmdildepth'], row['cmdiddescription'])
         print_line("GLOBAL", "", "", row['cmdidmodel'], row['cmdidserialnumber'],
                    row['cmddddeploymentdate'], row['cmdddrecoverydate'], "", "",
                    "", 'deployment_code', "str", row['cmdddname'])
+    print()
 
-        print_line("VAR", "NOMINAL_DEPTH", row['cmdddname'], row['cmdidmodel'], row['cmdidserialnumber'],
-                   row['cmddddeploymentdate'], row['cmdddrecoverydate'],
-                   "NOMINAL_DEPTH", "()", "()", "", "float64", row['cmdildepth'])
-        print_line("GLOBAL", "", row["cmdddname"], row['cmdidmodel'], row['cmdidserialnumber'],
-                   row['cmddddeploymentdate'], row['cmdddrecoverydate'], "", "",
-                   "", 'instrument_nominal_depth', "float64", row['cmdildepth'])
-
-    # select deployment specific attributes
-    cur.execute("select * from cmdfieldsite join cmdsitelocation on (cmdfsid = cmdsl_fsid) "
-                " join cmddeploymentdetails on (cmdslid = cmddd_slid) "
-                "where cmdddname like '"+select+"' "
-                "order by cmdslname, cmdddname")
-
-    for row in cur:
+    for row in cur_site:
         print_line("VAR", "LATITUDE", row['cmdddname'], "", "",
                    row['cmddddeploymentdate'], row['cmdddrecoverydate'], "LATITUDE", "()", "()", "", "float64",
                    row['cmdddlatitude'])
         print_line("VAR", "LONGITUDE", row['cmdddname'], "", "",
                    row['cmddddeploymentdate'], row['cmdddrecoverydate'], "LONGITUDE", "()", "()", "", "float64",
                    row['cmdddlongitude'])
-        print_line("GLOBAL", "", row["cmdddname"], "", "",
-                   row['cmddddeploymentdate'], row['cmdddrecoverydate'], "", "",
-                   "", 'geospatial_lat_max', "float64", row['cmdddlatitude'])
-        print_line("GLOBAL", "", row["cmdddname"], "", "",
-                   row['cmddddeploymentdate'], row['cmdddrecoverydate'], "", "",
-                   "", 'geospatial_lat_min', "float64", row['cmdddlatitude'])
-        print_line("GLOBAL", "", row["cmdddname"], "", "",
-                   row['cmddddeploymentdate'], row['cmdddrecoverydate'], "", "",
-                   "", 'geospatial_lon_max', "float64", row['cmdddlongitude'])
-        print_line("GLOBAL", "", row["cmdddname"], "", "",
-                   row['cmddddeploymentdate'], row['cmdddrecoverydate'], "", "",
-                   "", 'geospatial_lon_min', "float64", row['cmdddlongitude'])
+        # print_line("GLOBAL", "", row["cmdddname"], "", "",
+        #            row['cmddddeploymentdate'], row['cmdddrecoverydate'], "", "",
+        #            "", 'geospatial_lat_max', "float64", row['cmdddlatitude'])
+        # print_line("GLOBAL", "", row["cmdddname"], "", "",
+        #            row['cmddddeploymentdate'], row['cmdddrecoverydate'], "", "",
+        #            "", 'geospatial_lat_min', "float64", row['cmdddlatitude'])
+        # print_line("GLOBAL", "", row["cmdddname"], "", "",
+        #            row['cmddddeploymentdate'], row['cmdddrecoverydate'], "", "",
+        #            "", 'geospatial_lon_max', "float64", row['cmdddlongitude'])
+        # print_line("GLOBAL", "", row["cmdddname"], "", "",
+        #            row['cmddddeploymentdate'], row['cmdddrecoverydate'], "", "",
+        #            "", 'geospatial_lon_min', "float64", row['cmdddlongitude'])
+
+        # print_line("GLOBAL", "", row["cmdddname"], "", "",
+        #            row['cmddddeploymentdate'], row['cmdddrecoverydate'], "", "",
+        #            "", 'site_nominal_depth', "float64", row['cmdsldepth'])
+    print()
+
+    ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
+    cur_site.scroll(0,  mode='absolute')
+    for row in cur_site:
         print_line("GLOBAL", "", row["cmdddname"], "", "",
                    row['cmddddeploymentdate'], row['cmdddrecoverydate'], "", "",
                    "", 'site_nominal_depth', "float64", row['cmdsldepth'])
+        print_line("GLOBAL", "", row["cmdddname"], "", "",
+                   row['cmddddeploymentdate'], row['cmdddrecoverydate'], "", "",
+                   "", 'time_deployment_start', "str", row['cmddddateinposition'].strftime(ncTimeFormat))
+        print_line("GLOBAL", "", row["cmdddname"], "", "",
+                   row['cmddddeploymentdate'], row['cmdddrecoverydate'], "", "",
+                   "", 'time_deployment_end', "str", row['cmddddateoutposition'].strftime(ncTimeFormat))
+        # print_line("GLOBAL", "", row["cmdddname"], "", "",
+        #            row['cmddddeploymentdate'], row['cmdddrecoverydate'], "", "",
+        #            "", 'site_nominal_depth', "float64", row['cmdsldepth'])
+    print()
+
+    cur_inst.scroll(0, mode='absolute')  # rewind the cursor
+    for row in cur_inst:
+        print_line("VAR", "NOMINAL_DEPTH", row['cmdddname'], row['cmdidmodel'], row['cmdidserialnumber'],
+                   row['cmddddeploymentdate'], row['cmdddrecoverydate'],
+                   "NOMINAL_DEPTH", "()", "()", "", "float64", row['cmdildepth'])
+
+        # print_line("GLOBAL", "", row["cmdddname"], row['cmdidmodel'], row['cmdidserialnumber'],
+        #            row['cmddddeploymentdate'], row['cmdddrecoverydate'], "", "",
+        #            "", 'instrument_nominal_depth', "float64", row['cmdildepth'])
 
 
 if __name__ == "__main__":

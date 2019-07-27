@@ -20,6 +20,7 @@ from netCDF4 import Dataset, num2date
 import sys
 import numpy as np
 import datetime
+from dateutil import parser
 
 # find the pressure where its half the median pressure
 
@@ -50,6 +51,21 @@ def main(netCDFfile):
 
         print('time deployment ', ts[0].strftime(ncTimeFormat))
         print('time recovery ', ts[-1].strftime(ncTimeFormat))
+
+        t_deploy = None
+        t_recover = None
+        if "time_deployment_start" in ds.ncattrs():
+            t_deploy = ds.time_deployment_start
+        if "time_deployment_end" in ds.ncattrs():
+            t_recovery = ds.time_deployment_end
+
+        if t_deploy:
+            t_diff = parser.parse(t_deploy, ignoretz=True) - ts[0]
+            print("time deploy to estimated   ", t_diff, "should be positive")
+        if t_recovery:
+            t_diff = ts[-1] - parser.parse(t_recovery, ignoretz=True)
+            print("time recovery to estimated ", t_diff, "should be positive")
+
     else:
         print("no pressure variable in file")
 

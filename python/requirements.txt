@@ -1,0 +1,9 @@
+pytz
+geomag
+netCDF4
+gsw
+oceansdb
+psycopg2
+fuzzywuzzy
+python-Levenshtein
+python-dateutil

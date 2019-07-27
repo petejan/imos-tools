@@ -30,3 +30,26 @@ VAR_ATT,PSAL,,,,,,,"","",long_name,str,"sea_water_practical_salinity"
 VAR_ATT,PSAL,,,,,,,"","",standard_name,str,"sea_water_practical_salinity"
 VAR_ATT,PSAL,,,,,,,"","",valid_max,float32,"41.0"
 VAR_ATT,PSAL,,,,,,,"","",valid_min,float32,"2.0"
+
+VAR_ATT,LATITUDE,,,,,,,,,long_name,str,latitude
+VAR_ATT,LATITUDE,,,,,,,,,reference_datum,str,WGS84 geographic coordinate system
+VAR_ATT,LATITUDE,,,,,,,,,standard_name,str,latitude
+VAR_ATT,LATITUDE,,,,,,,,,units,str,degrees_north
+VAR_ATT,LATITUDE,,,,,,,,,valid_max,float64,90
+VAR_ATT,LATITUDE,,,,,,,,,valid_min,float64,-90
+VAR_ATT,LONGITUDE,,,,,,,,,axis,str,X
+VAR_ATT,LONGITUDE,,,,,,,,,long_name,str,longitude
+VAR_ATT,LONGITUDE,,,,,,,,,reference_datum,str,WGS84 geographic coordinate system
+VAR_ATT,LONGITUDE,,,,,,,,,standard_name,str,longitude
+VAR_ATT,LONGITUDE,,,,,,,,,units,str,degrees_east
+VAR_ATT,LONGITUDE,,,,,,,,,valid_max,float64,180
+VAR_ATT,LONGITUDE,,,,,,,,,valid_min,float64,-180
+
+VAR_ATT,NOMINAL_DEPTH,,,,,,,,,axis,str,Z
+VAR_ATT,NOMINAL_DEPTH,,,,,,,,,long_name,str,nominal depth
+VAR_ATT,NOMINAL_DEPTH,,,,,,,,,positive,str,down
+VAR_ATT,NOMINAL_DEPTH,,,,,,,,,reference_datum,str,sea surface
+VAR_ATT,NOMINAL_DEPTH,,,,,,,,,standard_name,str,depth
+VAR_ATT,NOMINAL_DEPTH,,,,,,,,,units,str,m
+VAR_ATT,NOMINAL_DEPTH,,,,,,,,,valid_max,float32,12000
+VAR_ATT,NOMINAL_DEPTH,,,,,,,,,valid_min,float32,-5
