@@ -3,7 +3,7 @@ GLOBAL,*,,,,,,,,,deployment_code,str,SAZ47-20-2018
 GLOBAL,*,,,,,,,,,institution,str,ABOS-SOTS
 GLOBAL,*,,,,,,,,,institution_references,str,http://www.imos.org.au/aodn.html
 GLOBAL,*,,,,,,,,,site_nominal_depth,float64,4500
-GLOBAL,*,,,,,,,,,source,str,SubSurface Mooring
+GLOBAL,*,,,,,,,,,source,str,subsurface mooring
 GLOBAL,*,,,,,,,,,time_deployment_start,str,2018-03-09T00:00:00Z
 GLOBAL,*,,,,,,,,,time_deployment_end,str,2019-03-21T19:15:24Z
 VAR,LATITUDE,,,,,,LATITUDE,(),(),,float64,-46.792048

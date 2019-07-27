@@ -20,6 +20,7 @@ from netCDF4 import Dataset
 import sys
 from datetime import datetime
 import os
+import numpy as np
 
 nameCode = {}
 nameCode['TEMP'] = "T"
@@ -27,6 +28,11 @@ nameCode['PSAL'] = "S"
 nameCode['CNDC'] = "C"
 nameCode['PRES'] = "P"
 nameCode['DOX2'] = "O"
+nameCode['UCUR_MAG'] = "V"
+nameCode['UCUR'] = "V"
+nameCode['BATT'] = "E"
+nameCode['HEADING'] = "E"
+nameCode['ABSIC1'] = "A"
 
 # IMOS_<Facility-Code>_<Data-Code>_<Start-date>_<Platform-Code>_FV<File-Version>_ <Product-Type>_END-<End-date>_C-<Creation_date>_<PARTX>.nc
 
@@ -52,7 +58,7 @@ def main(files):
 
     nominal_depth = ds.variables["NOMINAL_DEPTH"][:]
 
-    product_code = deployment + "-" + instrument + "-" + instrument_sn + "-" + "{0:.0f}".format(nominal_depth) + "m"
+    product_code = deployment + "-" + instrument + "-" + instrument_sn + "-" + "{0:.0f}".format(np.abs(nominal_depth)) + "m"
     product_code = product_code.replace(" ", "-")
 
     codes = []

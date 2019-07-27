@@ -52,14 +52,6 @@ def add_attributes(netCDFfile, metadatafiles):
     ds_variables = ds.variables
 
     #print(ds_variables)
-    # update the history attribute
-    try:
-        hist = ds.history + "\n"
-    except AttributeError:
-        hist = ""
-
-    ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " : attributes added from file(s) [" + format(', '.join(metadatafiles)) + "]")
-
     dict1 = {}
 
     for filepath in metadatafiles:
@@ -140,6 +132,14 @@ def add_attributes(netCDFfile, metadatafiles):
                                 value = parseTypeValue(att_type, dict1['value'])
                                 print("add variable %s attribute %s (%s) = %s" % (var_name, name, att_type, value))
                                 ds_variables[var_name].setncattr(name, value)
+
+    # update the history attribute
+    try:
+        hist = ds.history + "\n"
+    except AttributeError:
+        hist = ""
+
+    ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " : attributes added from file(s) [" + format(', '.join(metadatafiles)) + "]")
 
     ds.close()
 
