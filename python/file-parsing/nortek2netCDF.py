@@ -108,7 +108,7 @@ packet_decoder[6] = {'name': 'Aquadopp Diagnostics Data Header', 'keys': ['recor
 # TODO: how to map the above into netCDF attributes....
 
 packet_decode2netCDF = {}
-packet_decode2netCDF[0] = {'decode': 'head_frequency', 'attrib': 'nortek_head_frequency'}
+packet_decode2netCDF[0] = {'decode': 'head_frequency', 'attrib': 'nortek_head_frequency_kHz'}
 packet_decode2netCDF[1] = {'decode': 'T1', 'attrib': 'nortek_tx_pulse_length'}
 packet_decode2netCDF[2] = {'decode': 'T2', 'attrib': 'nortek_blank_distance'}
 packet_decode2netCDF[3] = {'decode': 'T3', 'attrib': 'nortek_receive_length'}

@@ -24,10 +24,14 @@ from dateutil import parser
 import pytz
 import os
 
-# flag out of water as QC value 7 (not_deployed), with wise leave as 0
+# finalize qc flags, 0 -> 1, add meanings and values
 
+# flag_meanings = "No_QC_performed Good_data Probably_good_data Bad_data_that_are_potentially_correctable Bad_data Value_changed Not_used Not_used Not_used Missing_value"
+# flag_values = 0b, 1b, 2b, 3b, 4b, 5b, 6b, 7b, 8b, 9b ;
 
-def add_qc(netCDFfile):
+flag_meanings = ["no_QC_performed", "good_data", "probably_good_data", "bad_data_that_are_potentially_correctable", "bad_data", "value_changed", "not_used", "not_deployed", "interpolated", "missing_value"]
+
+def final_qc(netCDFfile):
     ds = Dataset(netCDFfile, 'a')
 
     vars = ds.variables
@@ -38,15 +42,6 @@ def add_qc(netCDFfile):
         if v != 'TIME':
             to_add.append(v)
 
-    time_var = vars["TIME"]
-    time = num2date(time_var[:], units=time_var.units, calendar=time_var.calendar)
-
-    time_deploy = parser.parse(ds.time_deployment_start, ignoretz=True)
-    time_recovery = parser.parse(ds.time_deployment_end, ignoretz=True)
-
-    print(time_deploy)
-
-    print(to_add)
     for v in to_add:
         if "TIME" in vars[v].dimensions:
 
@@ -55,11 +50,16 @@ def add_qc(netCDFfile):
                 print("QC time dim ", v)
 
                 ncVarOut = vars[v]
-                mask = (time <= time_deploy) | (time >= time_recovery)
-                ncVarOut[mask] = np.ones(vars[v].shape)[mask] * 7
+                ncVarOut[ncVarOut[:] == 0] = 1
 
+                used_values = sorted(set(ncVarOut[:]))
+                used_meanings = [flag_meanings[s] for s in used_values]
+                meanings = " ".join(used_meanings)
 
-    ds.file_version = "Level 1 - Quality Controlled Data"
+                print(used_values, meanings)
+
+                ncVarOut.flag_values = used_values
+                ncVarOut.flag_meanings = meanings
 
     ds.close()
 
@@ -67,4 +67,4 @@ def add_qc(netCDFfile):
 
 
 if __name__ == "__main__":
-    add_qc(sys.argv[1])
+    final_qc(sys.argv[1])

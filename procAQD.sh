@@ -13,8 +13,11 @@ fn=$(python3 python/file-naming/imosNetCDFfileName.py $file.nc)
 
 python3 python/processing/magnetic_to_true.py $fn
 
+fn=$(python3 python/data-qc/add_qc_flags.py $fn)
 python3 python/data-qc/in_out_water.py $fn
+python3 python/data-qc/finalize_qc.py $fn
+python3 python/attribution/format_attributes.py $fn 
 
 # python3 python/plotting/plotNetCDF.py $fn
 
-echo $fn
+#echo $fn

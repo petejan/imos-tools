@@ -24,7 +24,7 @@ from dateutil import parser
 import pytz
 import os
 
-# flag out of water as QC value 7 (not_deployed), with wise leave as 0
+# add QC variables to file
 
 
 def add_qc(netCDFfile):
@@ -38,32 +38,24 @@ def add_qc(netCDFfile):
         if v != 'TIME':
             to_add.append(v)
 
-    time_var = vars["TIME"]
-    time = num2date(time_var[:], units=time_var.units, calendar=time_var.calendar)
-
-    time_deploy = parser.parse(ds.time_deployment_start, ignoretz=True)
-    time_recovery = parser.parse(ds.time_deployment_end, ignoretz=True)
-
-    print(time_deploy)
-
-    print(to_add)
     for v in to_add:
         if "TIME" in vars[v].dimensions:
+            # print("time dim ", v)
 
-            if v.endswith("_quality_control"):
+            ncVarOut = ds.createVariable(v+"_quality_control", "i1", vars[v].dimensions, fill_value=99, zlib=True)  # fill_value=99 otherwise defaults to max, imos-toolbox uses 99
+            ncVarOut[:] = np.zeros(vars[v].shape)
+            ncVarOut.long_name = "quality_code for " + v
 
-                print("QC time dim ", v)
-
-                ncVarOut = vars[v]
-                mask = (time <= time_deploy) | (time >= time_recovery)
-                ncVarOut[mask] = np.ones(vars[v].shape)[mask] * 7
-
+            vars[v].ancillary_variables = v + "_quality_control"
 
     ds.file_version = "Level 1 - Quality Controlled Data"
 
     ds.close()
 
-    return netCDFfile
+    new_name = netCDFfile.replace("FV00", "FV01")
+    os.rename(netCDFfile, new_name)
+
+    print(new_name)
 
 
 if __name__ == "__main__":

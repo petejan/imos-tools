@@ -38,6 +38,7 @@ def add_spatial_attr(netCDFfile):
         var_depth = ds.variables["NOMINAL_DEPTH"]
         ds.geospatial_vertical_max = var_depth[:]
         ds.geospatial_vertical_min = var_depth[:]
+        ds.instrument_nominal_depth = var_depth[:]
 
     ds.close()
 
