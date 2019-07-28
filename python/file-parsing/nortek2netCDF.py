@@ -119,6 +119,7 @@ packet_decode2netCDF[5] = {'decode': 'T5', 'attrib': 'nortek_time_bewteen_bursts
 packet_decode2netCDF[6] = {'decode': 'NBeam', 'attrib': 'nortek_number_beams'}
 packet_decode2netCDF[7] = {'decode': 'MeasInterval', 'attrib': 'nortek_mesurement_interval'}
 packet_decode2netCDF[8] = {'decode': 'AvgInt', 'attrib': 'nortek_averaging_interval'}
+packet_decode2netCDF[9] = {'decode': 'FWversion', 'attrib': 'nortek_firmware_version'}
 
 attribute_list = []
 
