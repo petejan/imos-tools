@@ -25,6 +25,8 @@ from netCDF4 import Dataset
 import numpy as np
 import struct
 
+from si_prefix import si_format
+
 import ctypes
 c_uint8 = ctypes.c_uint8
 c_uint16 = ctypes.c_uint16
@@ -189,6 +191,9 @@ def main(files):
                         if 'CoordSys' in d:
                             coord_system = d['CoordSys']
 
+                        if 'head_frequency' in d:
+                            system_frequency = d['head_frequency']
+
                         for att in packet_decode2netCDF:
                             #print(packet_decode2netCDF[att])
                             if packet_decode2netCDF[att]['decode'] in d:
@@ -273,7 +278,7 @@ def main(files):
     ncOut = Dataset(outputName, 'w', format='NETCDF4')
 
     # add global attributes
-    instrument_model = 'Aquadopp'
+    instrument_model = 'Aquadopp ' + si_format(system_frequency * 1000, precision=0) + "Hz"
 
     ncOut.instrument = 'Nortek - ' + instrument_model
     ncOut.instrument_model = instrument_model
