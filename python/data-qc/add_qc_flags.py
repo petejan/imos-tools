@@ -53,6 +53,8 @@ def add_qc(netCDFfile):
     ds.close()
 
     new_name = netCDFfile.replace("FV00", "FV01")
+
+    # maybe shoud be copy
     os.rename(netCDFfile, new_name)
 
     print(new_name)

@@ -55,31 +55,45 @@ time_ctrl_reg.asByte = 0x2  # ->0010
 
 # nortek data codes (these are in hex) from 'system integrator manual october 2017'
 #  0 User Configuration
+
 #  1 Aquadopp Velocity Data
 #  2 Vectrino distance data
+
 #  6 Head Configuration
 #  7 Hardware Configuration
+
 # 10 Aquadopp Diagnostics Data Header
+
 # 11 Vector and Vectrino Probe Check data
 # 12 Vector Velocity Data
 # 20 Vector System Data
 # 21 Vector Velocity Data Header
+
 # 24 AWAC Velocity Profile Data
+
 # 21 Aquadopp Profiler Velocity Data
+
 # 24 Continental Data
+
 # 2a High Resolution Aquadopp Profiler Data
+
 # 30 AWAC Wave Data
 # 31 AWAC Wave Data Header
 # 36 AWAC Wave Data SUV
 # 42 AWAC Stage Data
+
 # 50 Vectrino velocity data header
 # 51 Vectrino velocity data
+
 # 60 Wave parameter estimates
 # 61 Wave band estimates
 # 62 Wave energy spectrum
 # 63 Wave Fourier coefficient spectrum Cleaned up AST time series
+
 # 65 Awac Processed Velocity Profile Data
+
 # 71 Vector with IMU
+
 # 80 Aquadopp Diagnostics Data
 
 #packet_decoder[5] = {'keys': , 'unpack': ""}

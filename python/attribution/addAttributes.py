@@ -42,8 +42,8 @@ def add_attributes(netCDFfile, metadatafiles):
 
     ds = Dataset(netCDFfile, 'a')
 
-    time_start = parser.parse(ds.time_coverage_start).replace(tzinfo=None)
-    time_end = parser.parse(ds.time_coverage_end).replace(tzinfo=None)
+    time_start = parser.parse(ds.time_coverage_start, ignoretz=True, dayfirst=True)
+    time_end = parser.parse(ds.time_coverage_end, ignoretz=True, dayfirst=True)
     instrument_model = ds.instrument_model
     instrument_serial_number = ds.instrument_serial_number
 
@@ -80,11 +80,11 @@ def add_attributes(netCDFfile, metadatafiles):
 
                     # match time
                     if len(dict1['time_deployment']) > 0:
-                        if time_end < parser.parse(dict1['time_deployment']).replace(tzinfo=None):
+                        if time_end < parser.parse(dict1['time_deployment'], ignoretz=True, dayfirst=True):
                             match = False
                             print("Time end defore deployment ", dict1['time_recovery'], dict1['time_deployment'])
                     if len(dict1['time_recovery']) > 0:
-                        if time_start > parser.parse(dict1['time_recovery']).replace(tzinfo=None):
+                        if time_start > parser.parse(dict1['time_recovery'], ignoretz=True, dayfirst=True):
                             match = False
                             print("Time start after recovery ", dict1['time_recovery'], dict1['time_deployment'])
 

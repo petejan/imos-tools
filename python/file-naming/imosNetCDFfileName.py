@@ -91,6 +91,8 @@ def main(files):
 
     print(imosName)
 
+    # rename the file, maybe should be copy
+
     os.rename(netCDFfile, imosName)
 
     return imosName

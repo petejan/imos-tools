@@ -6,7 +6,7 @@ import argparse
 import re
 
 # IMOS file format convertion to OceanSITES format
-# Pete Jansen 2019-10-09
+# Pete Jansen 2018-10-09
 
 from dateutil.parser import parse
 
@@ -32,6 +32,12 @@ print("input file %s" % path_file)
 nc = Dataset(path_file, mode="r")
 
 ncTime = nc.get_variables_by_attributes(standard_name='time')
+
+if not ncTime:
+    print("time variable not found")
+    # exit(-1)
+    ncTime = {}
+    ncTime[0] = nc.variables["TIME"]
 
 time_deployment_start = nc.time_deployment_start
 time_deployment_end = nc.time_deployment_end
@@ -109,7 +115,6 @@ globalAttributeBlackList = ['time_coverage_end', 'time_coverage_start',
                             'quality_control_log',
                             'history', 'netcdf_version']
 
-
 # global attributes
 
 dsIn = Dataset(path_file, mode='r')
@@ -139,7 +144,7 @@ ncOut.setncattr("network", "IMOS")
 ncOut.setncattr("institution_references", "http://www.oceansites.org, http://imos.org.au")
 ncOut.setncattr("id", outputName)
 ncOut.setncattr("area", "Pacific Ocean")
-ncOut.setncattr("array", "IMOS-EAC")
+ncOut.setncattr("array", "SOTS")
 ncOut.setncattr("update_interval", "void")
 ncOut.setncattr("institution", "Commonwealth Scientific and Industrial Research Organisation (CSIRO)")
 ncOut.setncattr("source", "subsurface mooring")
@@ -183,11 +188,19 @@ for v in varList:
         attValue = varList[v].getncattr(a)
 
         # Could restrict this just to the ancillary_variables attribute
-        if isinstance(attValue, unicode):
+        if isinstance(attValue, str):
             attValue = re.sub("_quality_control", "_QC", varList[v].getncattr(a))
         ncVariableOut.setncattr(a, attValue)
 
     ncVariableOut[:] = maVariable
+
+    # update the history attribute
+    try:
+        hist = nc1.history + "\n"
+    except AttributeError:
+        hist = ""
+
+    ncOut.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " : converted to oceanSITES format")
 
 nc1.close()
 
