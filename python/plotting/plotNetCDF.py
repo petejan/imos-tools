@@ -42,7 +42,6 @@ for path_file in sys.argv[1:len(sys.argv)]:
 
     try:
         t_cal = nc.variables['TIME'].calendar
-
     except AttributeError:  # Attribute doesn't exist
         t_cal = u"gregorian"  # or standard
 

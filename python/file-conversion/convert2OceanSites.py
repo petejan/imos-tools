@@ -4,6 +4,7 @@ import numpy.ma as ma
 from netCDF4 import Dataset
 import argparse
 import re
+import numpy
 
 # IMOS file format convertion to OceanSITES format
 # Pete Jansen 2018-10-09
@@ -42,17 +43,17 @@ if not ncTime:
 time_deployment_start = nc.time_deployment_start
 time_deployment_end = nc.time_deployment_end
 
-tStart = parse(time_deployment_start)
-tEnd = parse(time_deployment_end)
+tStart = parse(time_deployment_start, ignoretz=True)
+tEnd = parse(time_deployment_end, ignoretz=True)
 
-tStartnum = date2num(tStart.replace(tzinfo=None), units=ncTime[0].units, calendar=ncTime[0].calendar)
-tEndnum = date2num(tEnd.replace(tzinfo=None), units=ncTime[0].units, calendar=ncTime[0].calendar)
+tStartnum = date2num(tStart, units=ncTime[0].units, calendar=ncTime[0].calendar)
+tEndnum = date2num(tEnd, units=ncTime[0].units, calendar=ncTime[0].calendar)
 
 maTime = ma.array(ncTime[0][:])
 msk = (maTime < tStartnum) | (maTime > tEndnum)
 maTime.mask = msk
 
-dates = num2date(maTime, units=ncTime[0].units, calendar=ncTime[0].calendar)
+dates = num2date(maTime.compressed(), units=ncTime[0].units, calendar=ncTime[0].calendar)
 
 nc.close()
 
@@ -82,10 +83,10 @@ ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
 sensor = fileProductTypeSplit[2]
 
 outputName = "OS" \
-             + "_" + "IMOS-EAC" \
+             + "_" + "SOTS" \
              + "_" + fileProductType + "-" + fileProductTypeSplit[1] \
              + "_D" \
-             + "_" + sensor + "-" + fileProductTypeSplit[3] + "m" \
+             + "_" + sensor + "-" + fileProductTypeSplit[3] \
              + ".nc"
 
 print("output file : %s" % outputName)
@@ -126,7 +127,11 @@ for a in dsIn.ncattrs():
 # copy dimensions
 
 for d in dsIn.dimensions:
-    ncOut.createDimension(d, dsIn.dimensions[d].size)
+    size = dsIn.dimensions[d].size
+    if d == 'TIME':
+        size = dates.shape[0]
+    print("dimension", d, " shape ", size)
+    ncOut.createDimension(d, size)
 
 history = dsIn.getncattr("history")
 serialNumber = dsIn.getncattr("instrument_serial_number")
@@ -173,14 +178,30 @@ for v in varList:
     print("%s file %s" % (v, path_file))
 
     maVariable = nc1.variables[v][:]  # get the data
-    maVariable.mask = msk  # mask off data outside deployment time, not sure what this will do for a ADCP with TIME,DEPTH dimension
-
     varDims = varList[v].dimensions
+    var_out = maVariable
+    if 'TIME' in varDims:
+        print("its a time variable shape ", var_out.shape, "dims", varDims, "len shape", len(var_out.shape))
+        if varDims[0] != 'TIME':
+            var_out = maVariable[:, ~msk]
+            print("mask time dimension")
+        elif len(var_out.shape) > 2:
+            var_out = maVariable[~msk, :]
+        else:
+            var_out = maVariable[~msk]
+    else:
+        var_out = maVariable
+
+    print("var out shape ", var_out.shape)
+
+    #print(varDims)
+    #print(maVariable.compressed().shape)
 
     # rename the _quality_control variables _QC
     varnameOut = re.sub("_quality_control", "_QC", v)
 
     ncVariableOut = ncOut.createVariable(varnameOut, varList[v].dtype, varDims)
+    print("netCDF variable out shape", ncVariableOut.shape, "dims", varDims)
     # copy the variable attributes
     # this is ends up as the super set of all files
     for a in varList[v].ncattrs():
@@ -192,7 +213,7 @@ for v in varList:
             attValue = re.sub("_quality_control", "_QC", varList[v].getncattr(a))
         ncVariableOut.setncattr(a, attValue)
 
-    ncVariableOut[:] = maVariable
+    ncVariableOut[:] = var_out
 
     # update the history attribute
     try:
@@ -200,7 +221,7 @@ for v in varList:
     except AttributeError:
         hist = ""
 
-    ncOut.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " : converted to oceanSITES format")
+    ncOut.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " : converted to oceanSITES format from file " + path_file)
 
 nc1.close()
 
