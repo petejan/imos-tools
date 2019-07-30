@@ -20,6 +20,7 @@ import sys
 import re
 
 import datetime
+from datetime import timedelta
 from netCDF4 import num2date, date2num
 from netCDF4 import Dataset
 import numpy as np
@@ -124,7 +125,7 @@ packet_decoder[6] = {'name': 'Aquadopp Diagnostics Data Header', 'keys': ['recor
 packet_decoder[18] = {'name': 'Vector Velocity Data Header', 'keys': ['time_bcd', 'NRecords', 'noise1', 'noise2', 'noise3', 'spare', 'corr1', 'corr2', 'corr3', 'spare1', 'spare3', 'checksum'], 'unpack': "<6sH3BB3B1B20BH"}
 packet_decoder[17] = {'name': 'Vector System Data', 'keys': ['time_bcd', 'battery', 'soundSpeed', 'heading', 'pitch', 'roll', 'temp', 'error', 'status', 'anain', 'checksum'], 'unpack': "<6s6HBBHH"}
 packet_decoder[16] = {'name': 'Vector Velocity Data', 'keys': ['anaIn2LSB', 'count', 'presMSB', 'anaIn2MSB', 'presLSW', 'anaIn1', 'vel1', 'vel2', 'vel3', 'amp1', 'amp2', 'amp3', 'corr1', 'corr2', 'corr3', 'checksum'], 'unpack': "<BBBB5H3B3BH"}
-packet_decoder[113] = {'name': 'Vector With IMU', 'keys': ['EnsCnt', 'AHRSid', 'accelX', 'accelY', 'accelZ', 'angRateX', 'angRateX', 'angRateX', 'MagX', 'MagY', 'MagZ', 'M11', 'M12', 'M13', 'M21', 'M22', 'M23', 'M31', 'M32', 'M33', 'timer', 'IMUchSum', 'checksum'], 'unpack': "<BB18fIHH"}
+packet_decoder[113] = {'name': 'Vector With IMU', 'keys': ['EnsCnt', 'AHRSid', 'accelX', 'accelY', 'accelZ', 'angRateX', 'angRateY', 'angRateZ', 'MagX', 'MagY', 'MagZ', 'M11', 'M12', 'M13', 'M21', 'M22', 'M23', 'M31', 'M32', 'M33', 'timer', 'IMUchSum', 'checksum'], 'unpack': "<BB18fIHH"}
 
 
 # TODO: how to map the above into netCDF attributes....
@@ -144,16 +145,21 @@ packet_decode2netCDF[9] = {'decode': 'FWversion', 'attrib': 'nortek_firmware_ver
 attribute_list = []
 
 velocity_data = []
+vector_velocity_data = []
+vector_imu_data = []
+
 coord_system = None
 
 coord_systems = ['ENU', 'XYZ', 'BEAM']
 
 
-def main(files):
+def nortek2netCDF(files):
 
     filepath = files[1]
     checksum_errors = 0
     no_sync = 0
+    sample_count = 0
+    last_time = datetime.datetime(1950,1,1)
 
     with open(filepath, "rb") as binary_file:
         data = binary_file.read(1)
@@ -180,6 +186,9 @@ def main(files):
 
                 packet = binary_file.read(l*2 - 4)  # size in words, less the 4 we already read
                 #print("len = ", l, len(packet))
+                if len(packet) != l*2 - 4:  # did not read enough
+                    break
+
                 for i in range(0, (l-3)):
                     checksum += (struct.unpack("<H", packet[i*2:i*2+2]))[0]
                 if checksum & 0xffff != (struct.unpack("<H", packet[-2:]))[0]:
@@ -194,7 +203,7 @@ def main(files):
                         #print(packet_decoder[id]['unpack'])
                         packetDecode = struct.unpack(packet_decoder[id]['unpack'], packet)
                         d = dict(zip(packet_decoder[id]['keys'], packetDecode))
-                        print(packet_decoder[id]['name'], d)
+                        #print(packet_decoder[id]['name'], d)
 
                         # decode and capture any datacodes
                         if 'time_bcd' in d:
@@ -203,14 +212,14 @@ def main(files):
                             for x in ts_bcd:
                                 y.append(int((((x & 0xf0)/16) * 10) + (x & 0xf)))
                             dt = datetime.datetime(y[4]+2000, y[5], y[2], y[3], y[0], y[1])
-                            print(dt)
+                            #print(dt)
 
                         if 'serial' in d:
                             sn = d['serial']
                             snx = bytearray(sn)
                             for x in range(0,len(sn)):
                                 #print("byte ", x , sn[x])
-                                if snx[x] == 0xc0:
+                                if snx[x] in [0xc0, 0x07]:
                                     snx[x] = 32
 
                             instrument_serialnumber = snx.decode("utf-8", errors='ignore').strip()
@@ -237,6 +246,34 @@ def main(files):
                             velocity_data.append((dt, d))
                             #print(dt, d)
 
+                        if 'Vector Velocity Data' == packet_decoder[id]['name']:
+                            sample_count += 1
+                            if sample_count >= 16:
+                                sample_count = 0
+                            if last_time != dt:
+                                sample_count = 0
+                                last_time = dt
+
+                            last_time = dt
+                            ts = dt + timedelta(microseconds=int(sample_count/16 * 1000 * 1000))
+
+                            # print(sample_count, ts)
+
+                            #print('velocity data', ts)
+                            vector_velocity_data.append((ts, d))
+
+                            #print(dt, d)
+                        if 'Vector With IMU' == packet_decoder[id]['name']:
+                            #print('velocity data')
+                            ts = dt
+                            ts.replace(microsecond=int(sample_count/16 * 1000 * 1000))
+                            vector_imu_data.append((ts, d))
+
+                            if len(vector_imu_data) % 1000 == 0:
+                                print("samples read ", len(vector_imu_data))
+
+                            #print(dt, d)
+
                     except KeyError:
                         print('packet_decode not found ', id)
             else:
@@ -249,58 +286,19 @@ def main(files):
             bad_ck_pos = binary_file.tell()
             #print('tell', bad_ck_pos)
 
-    number_samples_read = len(velocity_data)
-    print('data samples ', number_samples_read)
+    print('aquadopp velocity data samples ', len(velocity_data))
+    print('vector velocity data samples ', len(vector_velocity_data))
+    print('vector IMU data samples ', len(vector_imu_data))
+
+    number_samples_read = len(velocity_data) + len(vector_imu_data)
+
+    aquadopp = len(velocity_data) > 0
+    vector = len(vector_velocity_data) > 0
+    vectImu = len(vector_imu_data) > 0
 
     if number_samples_read == 0:
-        print("no samples, probably not a nortek aquadopp file")
+        print("no samples, probably not a nortek aquadopp or vector file")
         return None
-
-    # create an array to store data in (creates another memory copy)
-    data_array = np.zeros((11, number_samples_read))
-    data_array.fill(np.nan)
-    byte_array = np.zeros((3, number_samples_read), 'byte')
-    i = 0
-    for d in velocity_data:
-        data_array[0][i] = date2num(d[0], calendar='gregorian', units="days since 1950-01-01 00:00:00 UTC")
-        data_array[1][i] = d[1]['vel_b1']/1000
-        data_array[2][i] = d[1]['vel_b2']/1000
-        data_array[3][i] = d[1]['vel_b3']/1000
-
-        data_array[4][i] = d[1]['head']/10
-        data_array[5][i] = d[1]['pitch']/10
-        data_array[6][i] = d[1]['roll']/10
-
-        data_array[7][i] = ((d[1]['presMSB'] * 65563) + d[1]['presLSW']) * 0.001
-
-        data_array[8][i] = d[1]['battery']/10
-
-        data_array[9][i] = d[1]['temp'] * 0.01
-
-        data_array[10][i] = d[1]['soundSpd_Anain2'] * 0.1
-
-        byte_array[0][i] = d[1]['amp1']
-        byte_array[1][i] = d[1]['amp2']
-        byte_array[2][i] = d[1]['amp3']
-
-        i = i + 1
-
-    # output variable structures
-    var_names = []
-    var_names.append({'data_n':  1, 'name': 'UCUR_MAG', 'comment': "current east", 'unit': 'm/s'})
-    var_names.append({'data_n':  2, 'name': 'VCUR_MAG', 'comment': "current north", 'unit': 'm/s'})
-    var_names.append({'data_n':  3, 'name': 'WCUR', 'comment': "current up", 'unit': 'm/s'})
-    var_names.append({'data_n':  4, 'name': 'HEADING_MAG', 'comment': "heading", 'unit': 'degrees'})
-    var_names.append({'data_n':  5, 'name': 'PITCH', 'comment': "pitch", 'unit': 'degrees'})
-    var_names.append({'data_n':  6, 'name': 'ROLL', 'comment': "roll", 'unit': 'degrees'})
-    var_names.append({'data_n':  7, 'name': 'PRES', 'comment': "pressure", 'unit': 'dbar'})
-    var_names.append({'data_n':  8, 'name': 'BATT', 'comment': "battery voltage", 'unit': 'V'})
-    var_names.append({'data_n':  9, 'name': 'TEMP', 'comment': "temperature", 'unit': 'degrees_Celsius'})
-    var_names.append({'data_n': 10, 'name': 'SSPEED', 'comment': "sound speed", 'unit': 'm/s'})
-
-    var_names.append({'byte_n':  0, 'name': 'ABSIC1', 'comment': "amplitude beam 1", 'unit': 'counts'})
-    var_names.append({'byte_n':  1, 'name': 'ABSIC2', 'comment': "amplitude beam 2", 'unit': 'counts'})
-    var_names.append({'byte_n':  2, 'name': 'ABSIC3', 'comment': "amplitude beam 3", 'unit': 'counts'})
 
     # create the netCDF file
     outputName = filepath + ".nc"
@@ -309,8 +307,108 @@ def main(files):
 
     ncOut = Dataset(outputName, 'w', format='NETCDF4')
 
-    # add global attributes
-    instrument_model = 'Aquadopp ' + si_format(system_frequency * 1000, precision=0) + "Hz"
+    if aquadopp:
+        # add global attributes
+        instrument_model = 'Aquadopp ' + si_format(system_frequency * 1000, precision=0) + 'Hz'
+
+        # create an array to store data in (creates another memory copy)
+        data_array = np.zeros((11, number_samples_read))
+        data_array.fill(np.nan)
+        byte_array = np.zeros((3, number_samples_read), 'byte')
+        i = 0
+        for d in velocity_data:
+            data_array[0][i] = date2num(d[0], calendar='gregorian', units="days since 1950-01-01 00:00:00 UTC")
+            data_array[1][i] = d[1]['vel_b1']/1000
+            data_array[2][i] = d[1]['vel_b2']/1000
+            data_array[3][i] = d[1]['vel_b3']/1000
+
+            data_array[4][i] = d[1]['head']/10
+            data_array[5][i] = d[1]['pitch']/10
+            data_array[6][i] = d[1]['roll']/10
+
+            data_array[7][i] = ((d[1]['presMSB'] * 65536) + d[1]['presLSW']) * 0.001
+
+            data_array[8][i] = d[1]['battery']/10
+
+            data_array[9][i] = d[1]['temp'] * 0.01
+
+            data_array[10][i] = d[1]['soundSpd_Anain2'] * 0.1
+
+            byte_array[0][i] = d[1]['amp1']
+            byte_array[1][i] = d[1]['amp2']
+            byte_array[2][i] = d[1]['amp3']
+
+            i = i + 1
+
+        # output variable structures
+        var_names = []
+        var_names.append({'data_n':  1, 'name': 'UCUR_MAG', 'comment': "current east", 'unit': 'm/s'})
+        var_names.append({'data_n':  2, 'name': 'VCUR_MAG', 'comment': "current north", 'unit': 'm/s'})
+        var_names.append({'data_n':  3, 'name': 'WCUR', 'comment': "current up", 'unit': 'm/s'})
+        var_names.append({'data_n':  4, 'name': 'HEADING_MAG', 'comment': "heading", 'unit': 'degrees'})
+        var_names.append({'data_n':  5, 'name': 'PITCH', 'comment': "pitch", 'unit': 'degrees'})
+        var_names.append({'data_n':  6, 'name': 'ROLL', 'comment': "roll", 'unit': 'degrees'})
+        var_names.append({'data_n':  7, 'name': 'PRES', 'comment': "pressure", 'unit': 'dbar'})
+        var_names.append({'data_n':  8, 'name': 'BATT', 'comment': "battery voltage", 'unit': 'V'})
+        var_names.append({'data_n':  9, 'name': 'TEMP', 'comment': "temperature", 'unit': 'degrees_Celsius'})
+        var_names.append({'data_n': 10, 'name': 'SSPEED', 'comment': "sound speed", 'unit': 'm/s'})
+
+        var_names.append({'byte_n':  0, 'name': 'ABSIC1', 'comment': "amplitude beam 1", 'unit': 'counts'})
+        var_names.append({'byte_n':  1, 'name': 'ABSIC2', 'comment': "amplitude beam 2", 'unit': 'counts'})
+        var_names.append({'byte_n':  2, 'name': 'ABSIC3', 'comment': "amplitude beam 3", 'unit': 'counts'})
+
+    if vector:
+        # add global attributes
+        instrument_model = 'Vector'
+
+        # create an array to store data in (creates another memory copy)
+        data_array = np.zeros((3, number_samples_read))
+        data_array.fill(np.nan)
+        vector_array = np.zeros((3, number_samples_read, 3))
+        vector_array.fill(np.nan)
+        mat_array = np.zeros((1, number_samples_read, 9))
+        mat_array.fill(np.nan)
+
+        for i in range(0, number_samples_read):
+            #print(vector_velocity_data[i])
+            data_array[0][i] = date2num(vector_velocity_data[i][0], calendar='gregorian', units="days since 1950-01-01 00:00:00 UTC")
+            data_array[1][i] = ((vector_velocity_data[i][1]['presMSB'] * 65536) + vector_velocity_data[i][1]['presLSW']) * 0.001
+            data_array[2][i] = vector_velocity_data[i][1]['anaIn1']
+
+            vector_array[0][i][0] = vector_imu_data[i][1]['accelX']
+            vector_array[0][i][1] = vector_imu_data[i][1]['accelY']
+            vector_array[0][i][2] = vector_imu_data[i][1]['accelZ']
+
+            vector_array[1][i][0] = vector_imu_data[i][1]['angRateX']
+            vector_array[1][i][1] = vector_imu_data[i][1]['angRateY']
+            vector_array[1][i][2] = vector_imu_data[i][1]['angRateZ']
+
+            vector_array[2][i][0] = vector_imu_data[i][1]['MagX']
+            vector_array[2][i][1] = vector_imu_data[i][1]['MagY']
+            vector_array[2][i][2] = vector_imu_data[i][1]['MagZ']
+
+            mat_array[0][i][0] = vector_imu_data[i][1]['M11']
+            mat_array[0][i][1] = vector_imu_data[i][1]['M12']
+            mat_array[0][i][2] = vector_imu_data[i][1]['M13']
+            mat_array[0][i][3] = vector_imu_data[i][1]['M21']
+            mat_array[0][i][4] = vector_imu_data[i][1]['M22']
+            mat_array[0][i][5] = vector_imu_data[i][1]['M23']
+            mat_array[0][i][6] = vector_imu_data[i][1]['M31']
+            mat_array[0][i][7] = vector_imu_data[i][1]['M32']
+            mat_array[0][i][8] = vector_imu_data[i][1]['M33']
+
+        var_names = []
+        var_names.append({'data_n':  1, 'name': 'PRES', 'comment': "pressure", 'unit': 'dbar'})
+        var_names.append({'data_n':  2, 'name': 'ANALOG1', 'comment': "voltage", 'unit': 'V'})
+
+        var_names.append({'vector_n':  0, 'name': 'ACCEL', 'comment': "acceleration", 'unit': 'm/s'})
+        var_names.append({'vector_n':  1, 'name': 'ANG_RATE', 'comment': "angular rate", 'unit': 'deg/s'})
+        var_names.append({'vector_n':  2, 'name': 'MAG', 'comment': "magnetic", 'unit': 'gauss'})
+
+        var_names.append({'mat_n':  0, 'name': 'ORIENTATION', 'comment': "matrix", 'unit': '1'})
+
+        ncOut.createDimension("VECTOR", 3)
+        ncOut.createDimension("MATRIX", 9)
 
     ncOut.instrument = 'Nortek - ' + instrument_model
     ncOut.instrument_model = instrument_model
@@ -334,7 +432,7 @@ def main(files):
     ncTimesOut.units = "days since 1950-01-01 00:00:00 UTC"
     ncTimesOut.calendar = "gregorian"
     ncTimesOut.axis = "T"
-    ncTimesOut[:] = data_array[0] + 0.001/3600/24   # WTF
+    ncTimesOut[:] = data_array[0]
 
     # add data variables
     for v in var_names:
@@ -348,6 +446,16 @@ def main(files):
             ncVarOut.comment = v['comment']
             ncVarOut.units = v['unit']
             ncVarOut[:] = byte_array[v['byte_n']]
+        elif 'vector_n' in v:
+            ncVarOut = ncOut.createVariable(v['name'], "f4", ("TIME", "VECTOR"), fill_value=0, zlib=True)  # fill_value=0 otherwise defaults to max
+            ncVarOut.comment = v['comment']
+            ncVarOut.units = v['unit']
+            ncVarOut[:] = vector_array[v['vector_n']]
+        elif 'mat_v' in v:
+            ncVarOut = ncOut.createVariable(v['name'], "f4", ("TIME", "MATRIX"), fill_value=0, zlib=True)  # fill_value=0 otherwise defaults to max
+            ncVarOut.comment = v['comment']
+            ncVarOut.units = v['unit']
+            ncVarOut[:] = mat_array[v['mat_v']]
 
     ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
 
@@ -358,9 +466,11 @@ def main(files):
     ncOut.setncattr("date_created", datetime.datetime.utcnow().strftime(ncTimeFormat))
     ncOut.setncattr("history", datetime.datetime.utcnow().strftime("%Y-%m-%d") + " created from file " + filepath)
 
+    ncOut.close()
+
     return outputName
 
 
 if __name__ == "__main__":
-    main(sys.argv)
+    nortek2netCDF(sys.argv)
 
