@@ -121,6 +121,12 @@ packet_decoder[128] = {'name': 'Aquadopp Diagnostics Data', 'keys': ['time_bcd',
 packet_decoder[6] = {'name': 'Aquadopp Diagnostics Data Header', 'keys': ['records', 'cell', 'noise1', 'noise2', 'noise3', 'noise4', 'proc1', 'proc2',
                             'proc3', 'proc4', 'dis1', 'dis2', 'dist3', 'dist4', 'spare', 'checksum'], 'unpack': "<2H4B8H6sH"}
 
+packet_decoder[18] = {'name': 'Vector Velocity Data Header', 'keys': ['time_bcd', 'NRecords', 'noise1', 'noise2', 'noise3', 'spare', 'corr1', 'corr2', 'corr3', 'spare1', 'spare3', 'checksum'], 'unpack': "<6sH3BB3B1B20BH"}
+packet_decoder[17] = {'name': 'Vector System Data', 'keys': ['time_bcd', 'battery', 'soundSpeed', 'heading', 'pitch', 'roll', 'temp', 'error', 'status', 'anain', 'checksum'], 'unpack': "<6s6HBBHH"}
+packet_decoder[16] = {'name': 'Vector Velocity Data', 'keys': ['anaIn2LSB', 'count', 'presMSB', 'anaIn2MSB', 'presLSW', 'anaIn1', 'vel1', 'vel2', 'vel3', 'amp1', 'amp2', 'amp3', 'corr1', 'corr2', 'corr3', 'checksum'], 'unpack': "<BBBB5H3B3BH"}
+packet_decoder[113] = {'name': 'Vector With IMU', 'keys': ['EnsCnt', 'AHRSid', 'accelX', 'accelY', 'accelZ', 'angRateX', 'angRateX', 'angRateX', 'MagX', 'MagY', 'MagZ', 'M11', 'M12', 'M13', 'M21', 'M22', 'M23', 'M31', 'M32', 'M33', 'timer', 'IMUchSum', 'checksum'], 'unpack': "<BB18fIHH"}
+
+
 # TODO: how to map the above into netCDF attributes....
 
 packet_decode2netCDF = {}
@@ -164,10 +170,13 @@ def main(files):
                 id = id[0]
                 checksum += 0xa5 + (id << 8)
                 #print("id = ", id)
-                size = binary_file.read(2)
-                l = struct.unpack("<H", size)
-                l = l[0]
-                checksum += l
+                if id == 16:
+                    l = 13
+                else:
+                    size = binary_file.read(2)
+                    l = struct.unpack("<H", size)
+                    l = l[0]
+                    checksum += l
 
                 packet = binary_file.read(l*2 - 4)  # size in words, less the 4 we already read
                 #print("len = ", l, len(packet))
@@ -185,7 +194,7 @@ def main(files):
                         #print(packet_decoder[id]['unpack'])
                         packetDecode = struct.unpack(packet_decoder[id]['unpack'], packet)
                         d = dict(zip(packet_decoder[id]['keys'], packetDecode))
-                        #print(packet_decoder[id]['name'], d)
+                        print(packet_decoder[id]['name'], d)
 
                         # decode and capture any datacodes
                         if 'time_bcd' in d:
@@ -194,9 +203,17 @@ def main(files):
                             for x in ts_bcd:
                                 y.append(int((((x & 0xf0)/16) * 10) + (x & 0xf)))
                             dt = datetime.datetime(y[4]+2000, y[5], y[2], y[3], y[0], y[1])
+                            print(dt)
 
                         if 'serial' in d:
-                            instrument_serialnumber = d['serial'].decode("utf-8").strip()
+                            sn = d['serial']
+                            snx = bytearray(sn)
+                            for x in range(0,len(sn)):
+                                #print("byte ", x , sn[x])
+                                if snx[x] == 0xc0:
+                                    snx[x] = 32
+
+                            instrument_serialnumber = snx.decode("utf-8", errors='ignore').strip()
                             print('instrument serial number ', instrument_serialnumber)
 
                         if 'head_serial' in d:
