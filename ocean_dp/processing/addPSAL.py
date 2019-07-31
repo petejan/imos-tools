@@ -38,7 +38,7 @@ def add_psal(netCDFfile):
     ncVarOut = ds.createVariable("PSAL", "f4", ("TIME",), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
     ncVarOut[:] = psal
     ncVarOut.units = "1"
-    ncVarOut.comment = "calculated using gsw-ocean_dp https://teos-10.github.io/GSW-Python/index.html"
+    ncVarOut.comment = "calculated using gsw-python https://teos-10.github.io/GSW-Python/index.html"
 
     ds.close()
 
