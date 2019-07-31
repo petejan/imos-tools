@@ -1,2 +1,4 @@
 *.nc
 data
+*__pycache__
+*.pyc
