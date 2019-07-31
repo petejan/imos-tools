@@ -2,19 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="898044e3-c90f-4b8d-8fdd-3e146b5b94b7" name="Default Changelist" comment="add oceanSites data manual">
-      <change beforePath="$PROJECT_DIR$/metadata/SAZ47-20-2018-instrument.metadata.csv" beforeDir="false" afterPath="$PROJECT_DIR$/metadata/SAZ47-20-2018-instrument.metadata.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/metadata/SAZ47-20-2018.metadata.csv" beforeDir="false" afterPath="$PROJECT_DIR$/metadata/SAZ47-20-2018.metadata.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/metadata/imos.metadata.csv" beforeDir="false" afterPath="$PROJECT_DIR$/metadata/imos.metadata.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/metadata/sofs-7.5-2018-instrument-metadata.csv" beforeDir="false" afterPath="$PROJECT_DIR$/metadata/sofs-7.5-2018-instrument-metadata.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/metadata/sofs-7.5-2018.metadata.csv" beforeDir="false" afterPath="$PROJECT_DIR$/metadata/sofs-7.5-2018.metadata.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/metadata/sots.metadata.csv" beforeDir="false" afterPath="$PROJECT_DIR$/metadata/sots.metadata.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/python/attribution/addAttributes.py" beforeDir="false" afterPath="$PROJECT_DIR$/python/attribution/addAttributes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/python/attribution/extractNetCDFmetadata.py" beforeDir="false" afterPath="$PROJECT_DIR$/python/attribution/extractNetCDFmetadata.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/python/attribution/getDBmetadata.py" beforeDir="false" afterPath="$PROJECT_DIR$/python/attribution/getDBmetadata.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/python/file-parsing/nortek2netCDF.py" beforeDir="false" afterPath="$PROJECT_DIR$/python/file-parsing/nortek2netCDF.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/python/file-parsing/sbeASC2netCDF.py" beforeDir="false" afterPath="$PROJECT_DIR$/python/file-parsing/sbeASC2netCDF.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/python/file-parsing/sbeCNV2netCDF.py" beforeDir="false" afterPath="$PROJECT_DIR$/python/file-parsing/sbeCNV2netCDF.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/python/file-parsing/starmon2netCDF.py" beforeDir="false" afterPath="$PROJECT_DIR$/python/file-parsing/starmon2netCDF.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/imos-tools.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/imos-tools.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/proc-SBE.sh" beforeDir="false" afterPath="$PROJECT_DIR$/proc-SBE.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/procAQD.sh" beforeDir="false" afterPath="$PROJECT_DIR$/procAQD.sh" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -23,83 +13,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/python/file-parsing/sbeCNV2netCDF.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="612">
-              <caret line="115" selection-start-line="115" selection-end-line="115" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/python/file-parsing/rdi2netCDF.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2168">
-              <caret line="168" column="12" selection-start-line="168" selection-start-column="8" selection-end-line="168" selection-end-column="12" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/python/file-parsing/sbeASC2netCDF.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="404">
-              <caret line="163" column="23" selection-start-line="163" selection-start-column="23" selection-end-line="163" selection-end-column="23" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/python/file-parsing/starmon2netCDF.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="437">
-              <caret line="79" column="23" selection-start-line="79" selection-start-column="23" selection-end-line="79" selection-end-column="23" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/python/file-parsing/nortek2netCDF.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-972">
-              <caret line="219" column="19" selection-start-line="219" selection-start-column="19" selection-end-line="219" selection-end-column="19" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/python/attribution/addAttributes.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1305">
-              <caret line="130" column="57" selection-start-line="130" selection-start-column="57" selection-end-line="130" selection-end-column="57" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/python/attribution/extractNetCDFmetadata.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="542">
-              <caret line="38" selection-start-line="34" selection-end-line="38" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/python/attribution/getDBmetadata.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1305">
-              <caret line="87" column="80" selection-start-line="87" selection-start-column="80" selection-end-line="87" selection-end-column="80" />
-              <folding>
-                <element signature="e#703#713#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300" />
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
@@ -148,6 +62,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -163,31 +78,12 @@
             <path>
               <item name="imos-tools" type="b2602c69:ProjectViewProjectNode" />
               <item name="imos-tools" type="462c0819:PsiDirectoryNode" />
-              <item name="python" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="imos-tools" type="b2602c69:ProjectViewProjectNode" />
-              <item name="imos-tools" type="462c0819:PsiDirectoryNode" />
-              <item name="python" type="462c0819:PsiDirectoryNode" />
-              <item name="attribution" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="imos-tools" type="b2602c69:ProjectViewProjectNode" />
-              <item name="imos-tools" type="462c0819:PsiDirectoryNode" />
-              <item name="python" type="462c0819:PsiDirectoryNode" />
-              <item name="file-naming" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="imos-tools" type="b2602c69:ProjectViewProjectNode" />
-              <item name="imos-tools" type="462c0819:PsiDirectoryNode" />
-              <item name="python" type="462c0819:PsiDirectoryNode" />
-              <item name="file-parsing" type="462c0819:PsiDirectoryNode" />
+              <item name="ocean_dp" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -264,7 +160,7 @@
       <window_info id="Structure" order="1" side_tool="true" weight="0.24983256" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.3292683" />
       <window_info anchor="bottom" id="Run" order="2" weight="0.3298647" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.39854318" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
@@ -326,88 +222,17 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/python/file-naming/imosNetCDFfileName.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1122">
-          <caret line="69" selection-start-line="69" selection-end-line="69" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/python/processing/calcOceanDBparam.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="697">
-          <caret line="45" selection-start-line="45" selection-end-line="45" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/python/plotting/plotNetCDF.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="765">
-          <caret line="235" lean-forward="true" selection-start-line="235" selection-end-line="235" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/python/file-parsing/sbeCNV2netCDF.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="612">
-          <caret line="115" selection-start-line="115" selection-end-line="115" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/python/file-parsing/rdi2netCDF.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2168">
-          <caret line="168" column="12" selection-start-line="168" selection-start-column="8" selection-end-line="168" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/python/file-parsing/sbeASC2netCDF.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="404">
-          <caret line="163" column="23" selection-start-line="163" selection-start-column="23" selection-end-line="163" selection-end-column="23" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/python/file-parsing/starmon2netCDF.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="437">
-          <caret line="79" column="23" selection-start-line="79" selection-start-column="23" selection-end-line="79" selection-end-column="23" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/python/file-parsing/nortek2netCDF.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-972">
-          <caret line="219" column="19" selection-start-line="219" selection-start-column="19" selection-end-line="219" selection-end-column="19" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/python/attribution/add_geospatial_attributes.py">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/python/attribution/addAttributes.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1305">
-          <caret line="130" column="57" selection-start-line="130" selection-start-column="57" selection-end-line="130" selection-end-column="57" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/python/attribution/extractNetCDFmetadata.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="542">
-          <caret line="38" selection-start-line="34" selection-end-line="38" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/python/attribution/getDBmetadata.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1305">
-          <caret line="87" column="80" selection-start-line="87" selection-start-column="80" selection-end-line="87" selection-end-column="80" />
-          <folding>
-            <element signature="e#703#713#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/ocean_dp/file_name/imosNetCDFfileName.py" />
+    <entry file="file://$PROJECT_DIR$/ocean_dp/processing/calcOceanDBparam.py" />
+    <entry file="file://$PROJECT_DIR$/ocean_dp/plotting/plotNetCDF.py" />
+    <entry file="file://$PROJECT_DIR$/python/file-parsing/sbeCNV2netCDF.py" />
+    <entry file="file://$PROJECT_DIR$/python/file-parsing/rdi2netCDF.py" />
+    <entry file="file://$PROJECT_DIR$/python/file-parsing/sbeASC2netCDF.py" />
+    <entry file="file://$PROJECT_DIR$/python/file-parsing/starmon2netCDF.py" />
+    <entry file="file://$PROJECT_DIR$/python/file-parsing/nortek2netCDF.py" />
+    <entry file="file://$PROJECT_DIR$/ocean_dp/attribution/add_geospatial_attributes.py" />
+    <entry file="file://$PROJECT_DIR$/ocean_dp/attribution/addAttributes.py" />
+    <entry file="file://$PROJECT_DIR$/ocean_dp/attribution/extractNetCDFmetadata.py" />
+    <entry file="file://$PROJECT_DIR$/ocean_dp/attribution/getDBmetadata.py" />
   </component>
 </project>
