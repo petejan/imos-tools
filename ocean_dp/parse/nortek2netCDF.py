@@ -153,9 +153,8 @@ coord_system = None
 coord_systems = ['ENU', 'XYZ', 'BEAM']
 
 
-def nortek2netCDF(files):
+def nortek2netCDF(filepath):
 
-    filepath = files[1]
     checksum_errors = 0
     no_sync = 0
     sample_count = 0
@@ -472,5 +471,5 @@ def nortek2netCDF(files):
 
 
 if __name__ == "__main__":
-    nortek2netCDF(sys.argv)
+    nortek2netCDF(sys.argv[1])
 
