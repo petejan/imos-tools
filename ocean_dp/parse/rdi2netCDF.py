@@ -333,7 +333,9 @@ def rdi_parse(files):
     # add fixed header data as attributes
     for x in fixed_decoded:
         #print("fixed value ", x)
-        ncOut.setncattr("fixed_" + x, np.int32(fixed_decoded[x]))
+        print(x, " type ", type(fixed_decoded[x]))
+        if fixed_decoded[x] < np.iinfo(np.int32).max:
+            ncOut.setncattr("fixed_" + x, np.int32(fixed_decoded[x]))
 
     #for x in variable_decoded:
     #    print("variable value ", x)

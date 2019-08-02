@@ -127,6 +127,9 @@ packet_decoder[17] = {'name': 'Vector System Data', 'keys': ['time_bcd', 'batter
 packet_decoder[16] = {'name': 'Vector Velocity Data', 'keys': ['anaIn2LSB', 'count', 'presMSB', 'anaIn2MSB', 'presLSW', 'anaIn1', 'vel1', 'vel2', 'vel3', 'amp1', 'amp2', 'amp3', 'corr1', 'corr2', 'corr3', 'checksum'], 'unpack': "<BBBB5H3B3BH"}
 packet_decoder[113] = {'name': 'Vector With IMU', 'keys': ['EnsCnt', 'AHRSid', 'accelX', 'accelY', 'accelZ', 'angRateX', 'angRateY', 'angRateZ', 'MagX', 'MagY', 'MagZ', 'M11', 'M12', 'M13', 'M21', 'M22', 'M23', 'M31', 'M32', 'M33', 'timer', 'IMUchSum', 'checksum'], 'unpack': "<BB18fIHH"}
 
+packet_decoder[33] = {'name': 'Aquadopp Profiler Velocity Data', 'keys': ['time_bcd', 'error', 'AnaIn1', 'battery', 'soundSpd_Anain2', 'head', 'pitch', 'roll',
+                            'presMSB', 'status', 'presLSW', 'temp', 'vel_b1...', 'vel_b2...', 'vel_b3...', 'amp1...', 'amp2...', 'amp3...', 'checksum' ], 'unpack': '<6s7hBBHH{0}h{0}BH'}
+
 
 # TODO: how to map the above into netCDF attributes....
 
@@ -147,6 +150,7 @@ attribute_list = []
 velocity_data = []
 vector_velocity_data = []
 vector_imu_data = []
+aquapro_data = []
 
 coord_system = None
 
@@ -200,9 +204,31 @@ def nortek2netCDF(filepath):
                 else:
                     try:
                         #print(packet_decoder[id]['unpack'])
-                        packetDecode = struct.unpack(packet_decoder[id]['unpack'], packet)
-                        d = dict(zip(packet_decoder[id]['keys'], packetDecode))
+                        unpack = packet_decoder[id]['unpack']
+
+                        # deal with the variable length packets
+                        if 'Aquadopp Profiler Velocity Data' == packet_decoder[id]['name']:
+                            #print(unpack.format(number_bins * number_beams))
+                            unpack = unpack.format(number_bins * number_beams)
+
+                        keys = packet_decoder[id]['keys']
+                        #print(type(keys))
+                        keys_out = []
+                        for k in keys:
+                            if k.endswith("..."):
+                                kn = k.replace("...", "")
+                                for i in range(0, number_bins):
+                                    keys_out.append(kn + "[" + str(i) + "]")
+                            else:
+                                keys_out.append(k)
+                        #print(keys_out)
+
+                        # decode the packet
+                        packetDecode = struct.unpack(unpack, packet)
+                        d = dict(zip(keys_out, packetDecode))
                         #print(packet_decoder[id]['name'], d)
+                        # for k in d:
+                        #     print("dict ", k, " = " , d[k])
 
                         # decode and capture any datacodes
                         if 'time_bcd' in d:
@@ -231,6 +257,12 @@ def nortek2netCDF(filepath):
                         if 'CoordSys' in d:
                             coord_system = d['CoordSys']
 
+                        if 'NBins' in d:
+                            number_bins = d['NBins']
+
+                        if 'NBeam' in d:
+                            number_beams = d['NBeam']
+
                         if 'head_frequency' in d:
                             system_frequency = d['head_frequency']
 
@@ -243,6 +275,12 @@ def nortek2netCDF(filepath):
                         if 'Aquadopp Velocity Data' == packet_decoder[id]['name']:
                             #print('velocity data')
                             velocity_data.append((dt, d))
+                            #print(dt, d)
+
+                        # create an array of all the data packets (this does copy them into memory)
+                        if 'Aquadopp Profiler Velocity Data' == packet_decoder[id]['name']:
+                            #print('velocity data')
+                            aquapro_data.append((dt, d))
                             #print(dt, d)
 
                         if 'Vector Velocity Data' == packet_decoder[id]['name']:
@@ -286,13 +324,15 @@ def nortek2netCDF(filepath):
             #print('tell', bad_ck_pos)
 
     print('aquadopp velocity data samples ', len(velocity_data))
+    print('aquapro velocity data samples ', len(aquapro_data))
     print('vector velocity data samples ', len(vector_velocity_data))
     print('vector IMU data samples ', len(vector_imu_data))
 
-    number_samples_read = len(velocity_data) + len(vector_imu_data)
+    number_samples_read = len(velocity_data) + len(vector_imu_data) + len(aquapro_data)
 
     aquadopp = len(velocity_data) > 0
     vector = len(vector_velocity_data) > 0
+    aquapro = len(aquapro_data) > 0
     vectImu = len(vector_imu_data) > 0
 
     if number_samples_read == 0:
@@ -355,6 +395,45 @@ def nortek2netCDF(filepath):
         var_names.append({'byte_n':  0, 'name': 'ABSIC1', 'comment': "amplitude beam 1", 'unit': 'counts'})
         var_names.append({'byte_n':  1, 'name': 'ABSIC2', 'comment': "amplitude beam 2", 'unit': 'counts'})
         var_names.append({'byte_n':  2, 'name': 'ABSIC3', 'comment': "amplitude beam 3", 'unit': 'counts'})
+
+    if aquapro:
+        # add global attributes
+        instrument_model = 'AquaPro ' + si_format(system_frequency * 1000, precision=0) + 'Hz'
+
+        # create an array to store data in (creates another memory copy)
+        data_array = np.zeros((8, number_samples_read))
+        data_array.fill(np.nan)
+        profile_array = np.zeros((number_beams, number_samples_read, number_bins))
+        profile_array.fill(np.nan)
+
+        i = 0
+        for d in aquapro_data:
+            data_array[0][i] = date2num(d[0], calendar='gregorian', units="days since 1950-01-01 00:00:00 UTC")
+            data_array[1][i] = d[1]['head']/10
+            data_array[2][i] = d[1]['pitch']/10
+            data_array[3][i] = d[1]['roll']/10
+
+            data_array[4][i] = ((d[1]['presMSB'] * 65536) + d[1]['presLSW']) * 0.001
+
+            data_array[5][i] = d[1]['battery']/10
+
+            data_array[6][i] = d[1]['temp'] * 0.01
+
+            data_array[7][i] = d[1]['soundSpd_Anain2'] * 0.1
+
+            i = i + 1
+
+        # output variable structures
+        var_names = []
+        var_names.append({'data_n':  1, 'name': 'HEADING_MAG', 'comment': "heading", 'unit': 'degrees'})
+        var_names.append({'data_n':  2, 'name': 'PITCH', 'comment': "pitch", 'unit': 'degrees'})
+        var_names.append({'data_n':  3, 'name': 'ROLL', 'comment': "roll", 'unit': 'degrees'})
+        var_names.append({'data_n':  4, 'name': 'PRES', 'comment': "pressure", 'unit': 'dbar'})
+        var_names.append({'data_n':  5, 'name': 'BATT', 'comment': "battery voltage", 'unit': 'V'})
+        var_names.append({'data_n':  6, 'name': 'TEMP', 'comment': "temperature", 'unit': 'degrees_Celsius'})
+        var_names.append({'data_n':  7, 'name': 'SSPEED', 'comment': "sound speed", 'unit': 'm/s'})
+
+        ncOut.createDimension("CELL", number_bins)
 
     if vector:
         # add global attributes
