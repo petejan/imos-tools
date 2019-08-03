@@ -37,7 +37,8 @@ def mpess(filepath):
     checksum_errors = 0
     no_sync = 0
     total_samples = 0
-    time_array = []
+    data_array = []
+    burst_number = 0
 
     with open(filepath, "rb") as binary_file:
         data = binary_file.read(4)
@@ -47,7 +48,8 @@ def mpess(filepath):
             #print("0x%08x" % sample_type, type(sample_type))
 
             if sample_type == 0x5a5a5a5a:
-                print("info sample")
+
+                print("info block")
                 packet = binary_file.read(100)
                 info = struct.unpack(">LLBBH6LlLbBB3BHLLL3f8s3fL", packet)
                 keys = ['Sys_OppMode', 'Sys_SerialNumber', 'Sys_Platform', 'Sys_UnitNumber', 'Dep_Number', 'Dep_Int_NrOfSamples', 'Dep_Norm_SampleInterval',
@@ -58,51 +60,95 @@ def mpess(filepath):
                 info_dict = dict(zip(keys, info))
                 print("seiral number 0x%08x" % info_dict["Sys_SerialNumber"])
                 #print(info_dict)
+
                 ds = datetime.datetime.fromtimestamp(info_dict["Dep_StartTime"], tz=pytz.UTC).replace(tzinfo=None)
                 print("start time", ds)
+                info_dict.update({'start_time': ds})
+
             elif (sample_type & 0xffff0000) == 0x55AA0000:
+
                 sensors = sample_type & 0xffff
-                print("intensive sample", sensors)
+                print("intensive sample, sensors", sensors)
+
                 packet = binary_file.read(8)
-                (ts, bat) = struct.unpack('>LL', packet)
+                (ts, bat) = struct.unpack('>Lf', packet)
                 ds  = datetime.datetime.fromtimestamp(ts, tz=pytz.UTC).replace(tzinfo=None)
-                print(ds)
+                print('intensive sample timestamp', ds, 'bat', bat)
+
                 samples = 1
+                intensive_keys = ['samples', 'line_force', 'imu_ts', 'accelX', 'accelY', 'accelZ', 'gyroX', 'gyroY', 'gyroZ', 'magX', 'magY', 'magZ',
+                                  'orient-M11', 'orient-M12', 'orient-M13', 'orient-M21', 'orient-M22', 'orient-M23', 'orient-M31', 'orient-M32', 'orient-M33', 'pres']
+
+                # read all remaining samples
                 while samples > 0:
                     packet1 = binary_file.read(22*4)
                     d = struct.unpack(">LfL3f3f3f9f1f", packet1)
                     samples = d[0]
+                    ds = ds + timedelta(milliseconds=100)
                     #print("samples to follow", samples)
-                    time_array.append(ds)
-                    ds = ds + timedelta(milliseconds=10)
+
+                    intensive_dict = dict(zip(intensive_keys, d))
+                    intensive_dict.update({'ts': ds})
+                    intensive_dict.update({'burst': burst_number})
+
+                    data_array.append(intensive_dict)
+                    #print("intensive sample", intensive_dict)
                     total_samples += 1
                 #print(samples)
+
+                #packet = binary_file.read(12)
+                #(ts, bat, checksum) = struct.unpack('>LLL', packet)
+
                 packet = binary_file.read(8)
                 (ts, bat) = struct.unpack('>LL', packet)
+
+                burst_number += 1
+
             elif (sample_type & 0xffff0000)  == 0xAA550000:
+
                 sensors = sample_type & 0xffff
-                print("normal sample", sensors)
-                packet = binary_file.read(4)
-                (ts, ) = struct.unpack('>L', packet)
+                print("normal sample, sensors", sensors)
+
+                packet = binary_file.read(12)
+                (ts, bat, pres) = struct.unpack('>Lff', packet)
                 ds  = datetime.datetime.fromtimestamp(ts, tz=pytz.UTC).replace(tzinfo=None)
-                print(ds)
-                packet = binary_file.read(8)
-                (bat, pres) = struct.unpack('>ff', packet)
-                print("bat", bat, "press", pres)
+                print('normal sample timestamp', ds, 'bat', bat, 'pres', pres)
+
+                normal_keys = ['line_force', 'imu_ts', 'accelX', 'accelY', 'accelZ', 'gyroX', 'gyroY', 'gyroZ', 'magX', 'magY', 'magZ',
+                               'orient-M11', 'orient-M12', 'orient-M13', 'orient-M21', 'orient-M22', 'orient-M23', 'orient-M31', 'orient-M32', 'orient-M33']
+
                 samples = info_dict["Dep_Norm_NrOfSamples"]
+
+                # read all samples
                 while samples > 0:
                     packet1 = binary_file.read(20*4)
                     d = struct.unpack(">fL3f3f3f9f", packet1)
                     samples -= 1
-                    time_array.append(ds)
                     ds = ds + timedelta(milliseconds=100)
+
+                    normal_dict = dict(zip(normal_keys, d))
+                    normal_dict.update({'ts': ds})
+                    normal_dict.update({'pres': pres})
+                    normal_dict.update({'burst': burst_number})
+
+                    data_array.append(normal_dict)
+
+                    #print("normal sample ", normal_dict)
                     total_samples += 1
                     #print("samples to follow", samples)
                 #print(samples)
+
                 packet = binary_file.read(12)
                 (ts, bat, checksum) = struct.unpack('>LLL', packet)
+                burst_number += 1
+
             else:
                 print("unknown data 0x%08x" % sample_type)
+                no_sync += 1
+                if no_sync >= 10:
+                    print("sync not found")
+
+                    return None
 
             data = binary_file.read(4)
 
@@ -122,21 +168,55 @@ def mpess(filepath):
     ncOut.instrument_serial_number = instrument_serialnumber
 
     ncOut.deployment_number = np.int32(info_dict["Dep_Number"])
+    ncOut.intensive_samples = np.int32(info_dict["Dep_Int_NrOfSamples"])
+    ncOut.normal_samples_per_burst = np.int32(info_dict["Dep_Norm_NrOfSamples"])
 
-    print(len(time_array))
 
+    print(len(data_array))
+
+    ncOut.createDimension("VECTOR", 3)
+    ncOut.createDimension("MATRIX", 9)
+
+    # add time
     tDim = ncOut.createDimension("TIME", number_samples_read)
     ncTimesOut = ncOut.createVariable("TIME", "d", ("TIME",), zlib=True)
     ncTimesOut.long_name = "time"
     ncTimesOut.units = "days since 1950-01-01 00:00:00 UTC"
     ncTimesOut.calendar = "gregorian"
     ncTimesOut.axis = "T"
-    ncTimesOut[:] = date2num(time_array, calendar='gregorian', units="days since 1950-01-01 00:00:00 UTC")
+    ncTimesOut[:] = date2num(np.array([ data['ts'] for data in data_array]) , calendar='gregorian', units="days since 1950-01-01 00:00:00 UTC")
 
+    # add variables
+
+    nc_var_out = ncOut.createVariable("BURST", "u2", ("TIME",), zlib=True)
+    nc_var_out[:] = np.array([ data['burst'] for data in data_array])
+
+    nc_var_out = ncOut.createVariable("ACCEL", "f4", ("TIME", "VECTOR"), fill_value=np.nan, zlib=True)
+    nc_var_out[:] = np.array([ [data['accelX'], data['accelY'], data['accelZ']] for data in data_array])
+
+    nc_var_out = ncOut.createVariable("GYRO", "f4", ("TIME", "VECTOR"), fill_value=np.nan, zlib=True)
+    nc_var_out[:] = np.array([ [data['gyroX'], data['gyroY'], data['gyroZ']] for data in data_array])
+
+    nc_var_out = ncOut.createVariable("MAG", "f4", ("TIME", "VECTOR"), fill_value=np.nan, zlib=True)
+    nc_var_out[:] = np.array([ [data['magX'], data['magY'], data['magZ']] for data in data_array])
+
+    nc_var_out = ncOut.createVariable("ORIENT", "f4", ("TIME", "MATRIX"), fill_value=np.nan, zlib=True)
+    nc_var_out[:] = np.array([ [data['orient-M11'], data['orient-M12'], data['orient-M13'],
+                                data['orient-M21'], data['orient-M22'], data['orient-M23'],
+                                data['orient-M31'], data['orient-M32'], data['orient-M33']] for data in data_array])
+
+    nc_var_out = ncOut.createVariable("PRES", "f4", ("TIME",), fill_value=np.nan, zlib=True)
+    nc_var_out[:] = np.array([ data['pres'] for data in data_array])
+    nc_var_out.units = 'dbarA'  # info_dict["PT_CalUnits"].decode("utf-8").strip()
+
+    nc_var_out = ncOut.createVariable("LOAD", "f4", ("TIME",), fill_value=np.nan, zlib=True)
+    nc_var_out[:] = np.array([ data['line_force'] for data in data_array])
+
+    # add some summary metadata
     ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
 
-    #ncOut.setncattr("time_coverage_start", num2date(ncTimesOut[0], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
-    #ncOut.setncattr("time_coverage_end", num2date(ncTimesOut[-1], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
+    ncOut.setncattr("time_coverage_start", num2date(ncTimesOut[0], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
+    ncOut.setncattr("time_coverage_end", num2date(ncTimesOut[-1], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
 
     # add creating and history entry
     ncOut.setncattr("date_created", datetime.datetime.utcnow().strftime(ncTimeFormat))
