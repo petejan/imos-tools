@@ -17,7 +17,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 import sys
-import re
 import pytz
 
 import datetime
@@ -27,128 +26,242 @@ from netCDF4 import Dataset
 import numpy as np
 import struct
 
-from si_prefix import si_format
+import zlib
 
-import ctypes
+sensor_tension_msk = 0b010
+sensor_imu_msk = 0b100
+sensor_pres_msk = 0b001
 
+imu_keys = ['imu_ts', 'accelX', 'accelY', 'accelZ', 'gyroX', 'gyroY', 'gyroZ',
+                      'magX', 'magY', 'magZ',
+                      'orient-M11', 'orient-M12', 'orient-M13', 'orient-M21', 'orient-M22', 'orient-M23', 'orient-M31', 'orient-M32', 'orient-M33']
+
+info_keys = ['Sys_OppMode', 'Sys_SerialNumber', 'Sys_Platform', 'Sys_UnitNumber',
+             'Dep_Number', 'Dep_Int_NrOfSamples', 'Dep_Norm_SampleInterval', 'Dep_Norm_NrOfSamples', 'Dep_StartTime', 'Dep_StopTime',
+             'RTC_LastTimeSync', 'RTC_DriftSec', 'RTC_DriftInterval', 'RTC_Calibration',
+             'Sns_SensorsPresent', 'Sns_IMU_Model', 'Unused1', 'Unused2', 'Unused3', 'Sns_LC_Serial', 'Sns_IMU_Serial',
+             'Batt_ReplaceTime', 'Batt_TotalSampleCnt', 'Batt_VoltCal1', 'Batt_VoltCal2', 'Batt_VoltCal3',
+             'PT_CalUnits', 'PT_Cal1', 'PT_Cal2', 'PT_Cal3', 'crc']
+
+# create a default info dict incase the one in the file is corrupt
+info_dict = {'Sys_OppMode': 1, 'Sys_SerialNumber': 617007514, 'Sys_Platform': 0, 'Sys_UnitNumber': 1, 'Dep_Number': 13, 'Dep_Int_NrOfSamples': 72000, 'Dep_Norm_SampleInterval': 3600, 'Dep_Norm_NrOfSamples': 6000, 'Dep_StartTime': 1564458114, 'Dep_StopTime': 1564537424, 'RTC_LastTimeSync': 1563773715, 'RTC_DriftSec': 0, 'RTC_DriftInterval': 1, 'RTC_Calibration': 33, 'Sns_SensorsPresent': 7, 'Sns_IMU_Model': 3, 'Unused1': 0, 'Unused2': 0, 'Unused3': 0, 'Sns_LC_Serial': 33880, 'Sns_IMU_Serial': 422008332, 'Batt_ReplaceTime': 1563767694, 'Batt_TotalSampleCnt': 0, 'Batt_VoltCal1': 0.01600000075995922, 'Batt_VoltCal2': 0.015699999406933784, 'Batt_VoltCal3': 2.999999892949745e-08, 'PT_CalUnits': b'dbarA\x00\n\x00', 'PT_Cal1': -0.8107323050498962, 'PT_Cal2': 0.0007274383096955717, 'PT_Cal3': -1.574942324993056e-12}
 
 def mpess(filepath):
 
-    checksum_errors = 0
+    crc_errors = 0
     no_sync = 0
     total_samples = 0
     data_array = []
     burst_number = 0
 
     with open(filepath, "rb") as binary_file:
+
         data = binary_file.read(4)
 
         while len(data) == 4:
+            pos = binary_file.tell()  # save the position incase we get a CRC or sync error
+            crc_error = False
+            sync_error = False
+
             (sample_type,) = struct.unpack('>L', data)
             #print("0x%08x" % sample_type, type(sample_type))
 
-            if sample_type == 0x5a5a5a5a:
+            if sample_type == 0x5a5a5a5a:  # info sample
 
                 print("info block")
                 packet = binary_file.read(100)
                 info = struct.unpack(">LLBBH6LlLbBB3BHLLL3f8s3fL", packet)
-                keys = ['Sys_OppMode', 'Sys_SerialNumber', 'Sys_Platform', 'Sys_UnitNumber', 'Dep_Number', 'Dep_Int_NrOfSamples', 'Dep_Norm_SampleInterval',
-                        'Dep_Norm_NrOfSamples', 'Dep_StartTime', 'Dep_StopTime', 'RTC_LastTimeSync', 'RTC_DriftSec', 'RTC_DriftInterval', 'RTC_Calibration',
-                        'Sns_SensorsPresent', 'Sns_IMU_Model', 'Unused1', 'Unused2', 'Unused3', 'Sns_LC_Serial', 'Sns_IMU_Serial', 'Batt_ReplaceTime', 'Batt_TotalSampleCnt',
-                        'Batt_VoltCal1', 'Batt_VoltCal2', 'Batt_VoltCal3',
-                        'PT_CalUnits', 'PT_Cal1', 'PT_Cal2', 'PT_Cal3', 'Checksum']
-                info_dict = dict(zip(keys, info))
+                info_dict = dict(zip(info_keys, info))
                 print("seiral number 0x%08x" % info_dict["Sys_SerialNumber"])
-                #print(info_dict)
+                print(info_dict)
 
                 ds = datetime.datetime.fromtimestamp(info_dict["Dep_StartTime"], tz=pytz.UTC).replace(tzinfo=None)
                 print("start time", ds)
                 info_dict.update({'start_time': ds})
 
+                crc = zlib.crc32(packet[0:-4])
+                #print("crc", crc, info_dict['crc'])
+
+                # check the CRC
+                if crc != info_dict['crc']:
+                    crc_errors += 1
+
             elif (sample_type & 0xffff0000) == 0x55AA0000:
 
                 sensors = sample_type & 0xffff
                 print("intensive sample, sensors", sensors)
+                crc = zlib.crc32(data)
+
+                # create the sample decoders
+                intensive_keys = ['samples']
+                unpack = ">L"
+                read_len = 4
+                if sensors & sensor_tension_msk != 0:
+                    intensive_keys.append('line_tension')
+                    unpack += "f"
+                    read_len += 4
+                if sensors & sensor_imu_msk != 0:
+                    intensive_keys.extend(imu_keys)
+                    unpack += "L3f3f3f9f"
+                    read_len += 19*4
+                if sensors & sensor_pres_msk != 0:
+                    intensive_keys.append('pres')
+                    unpack += "f"
+                    read_len += 4
 
                 packet = binary_file.read(8)
+                crc = zlib.crc32(packet, crc)
                 (ts, bat) = struct.unpack('>Lf', packet)
-                ds  = datetime.datetime.fromtimestamp(ts, tz=pytz.UTC).replace(tzinfo=None)
+                ds = datetime.datetime.fromtimestamp(ts, tz=pytz.UTC).replace(tzinfo=None)
                 print('intensive sample timestamp', ds, 'bat', bat)
 
-                samples = 1
-                intensive_keys = ['samples', 'line_force', 'imu_ts', 'accelX', 'accelY', 'accelZ', 'gyroX', 'gyroY', 'gyroZ', 'magX', 'magY', 'magZ',
-                                  'orient-M11', 'orient-M12', 'orient-M13', 'orient-M21', 'orient-M22', 'orient-M23', 'orient-M31', 'orient-M32', 'orient-M33', 'pres']
+                #print('intensive samples keys', intensive_keys)
 
+                samples = info_dict["Dep_Int_NrOfSamples"]
                 # read all remaining samples
                 while samples > 0:
-                    packet1 = binary_file.read(22*4)
-                    d = struct.unpack(">LfL3f3f3f9f1f", packet1)
+                    packet1 = binary_file.read(read_len)
+                    crc = zlib.crc32(packet1, crc)
+
+                    # unpack the binary data based on the sensor packing
+                    d = struct.unpack(unpack, packet1)
                     samples = d[0]
-                    ds = ds + timedelta(milliseconds=100)
+                    ds = ds + timedelta(milliseconds=100)  # re-create the sample timestamp
                     #print("samples to follow", samples)
 
-                    intensive_dict = dict(zip(intensive_keys, d))
-                    intensive_dict.update({'ts': ds})
+                    # add data to dictionary
+                    intensive_dict = {'ts': ds}
                     intensive_dict.update({'burst': burst_number})
-
-                    data_array.append(intensive_dict)
+                    intensive_dict.update(dict(zip(intensive_keys, d)))
                     #print("intensive sample", intensive_dict)
+
+                    # add data dictionary to the data array
+                    data_array.append(intensive_dict)
+
                     total_samples += 1
+
                 #print(samples)
 
-                #packet = binary_file.read(12)
-                #(ts, bat, checksum) = struct.unpack('>LLL', packet)
+                packet_end = binary_file.read(8)
+                crc = zlib.crc32(packet_end[0:4], crc)
+                (bat, crc_packet) = struct.unpack('>LL', packet_end)
+                #print("crc", crc, crc_packet)
 
-                packet = binary_file.read(8)
-                (ts, bat) = struct.unpack('>LL', packet)
+                # check the CRC
+                if crc != crc_packet:
+                    crc_errors += 1
+                    crc_error = True
+                    # probably should remove the last sample also
 
                 burst_number += 1
 
-            elif (sample_type & 0xffff0000)  == 0xAA550000:
+            elif (sample_type & 0xffff0000) == 0xAA550000:
 
                 sensors = sample_type & 0xffff
                 print("normal sample, sensors", sensors)
+                crc = zlib.crc32(data)
 
-                packet = binary_file.read(12)
-                (ts, bat, pres) = struct.unpack('>Lff', packet)
-                ds  = datetime.datetime.fromtimestamp(ts, tz=pytz.UTC).replace(tzinfo=None)
-                print('normal sample timestamp', ds, 'bat', bat, 'pres', pres)
+                # create the sample decoders
+                single_sample_keys = ['ts', 'bat']
+                single_sample_unpack = ">Lf"
+                single_sample_len = 8
+                end_single_sample_keys = ['bat']
+                end_single_sample_unpack = ">f"
+                end_single_sample_len = 4
 
-                normal_keys = ['line_force', 'imu_ts', 'accelX', 'accelY', 'accelZ', 'gyroX', 'gyroY', 'gyroZ', 'magX', 'magY', 'magZ',
-                               'orient-M11', 'orient-M12', 'orient-M13', 'orient-M21', 'orient-M22', 'orient-M23', 'orient-M31', 'orient-M32', 'orient-M33']
+                normal_keys = []
+                unpack = ">"
+                read_len = 0
+                if sensors & sensor_tension_msk != 0:
+                    normal_keys.append('line_tension')
+                    unpack += "f"
+                    read_len += 4
+                if sensors & sensor_imu_msk != 0:
+                    normal_keys.extend(imu_keys)
+                    unpack += "L3f3f3f9f"
+                    read_len += 19*4
+                if sensors & sensor_pres_msk != 0:
+                    single_sample_keys.append('pres')
+                    single_sample_unpack += "f"
+                    single_sample_len += 4
+                    end_single_sample_keys.append('pres')
+                    end_single_sample_unpack += 'f'
+                    end_single_sample_len += 4
 
+                end_single_sample_keys.append('crc')
+                end_single_sample_unpack += 'L'
+                end_single_sample_len += 4
+
+                packet = binary_file.read(single_sample_len)
+                crc = zlib.crc32(packet, crc)
+
+                single_sample = struct.unpack(single_sample_unpack, packet)
+                single_sample_dict = dict(zip(single_sample_keys, single_sample))
+                ds = datetime.datetime.fromtimestamp(single_sample_dict['ts'], tz=pytz.UTC).replace(tzinfo=None)
+                print('normal sample timestamp', ds, single_sample_dict)
+
+                #print("normal kays", normal_keys, "unpck", unpack)
                 samples = info_dict["Dep_Norm_NrOfSamples"]
 
+                pres = single_sample_dict['pres']
                 # read all samples
                 while samples > 0:
-                    packet1 = binary_file.read(20*4)
-                    d = struct.unpack(">fL3f3f3f9f", packet1)
+                    packet1 = binary_file.read(read_len)
+                    crc = zlib.crc32(packet1, crc)
+
+                    # unpack the binary data based on the sensor packing
+                    d = struct.unpack(unpack, packet1)
                     samples -= 1
-                    ds = ds + timedelta(milliseconds=100)
+                    ds = ds + timedelta(milliseconds=100) # re-create the sample timestamp
 
-                    normal_dict = dict(zip(normal_keys, d))
-                    normal_dict.update({'ts': ds})
-                    normal_dict.update({'pres': pres})
+                    # add all the data to a dictionary
+                    normal_dict = {'ts': ds}
                     normal_dict.update({'burst': burst_number})
-
-                    data_array.append(normal_dict)
+                    normal_dict.update({'pres': pres})
+                    normal_dict.update(dict(zip(normal_keys, d)))
 
                     #print("normal sample ", normal_dict)
+
+                    # add all the data to a data array
+                    data_array.append(normal_dict)
+
+                    pres = np.nan  # clear it for writing to next sample
+
                     total_samples += 1
                     #print("samples to follow", samples)
                 #print(samples)
 
-                packet = binary_file.read(12)
-                (ts, bat, checksum) = struct.unpack('>LLL', packet)
+                packet_end = binary_file.read(end_single_sample_len)
+                crc = zlib.crc32(packet_end[0:-4], crc)
+
+                end_single_sample = struct.unpack(end_single_sample_unpack, packet_end)
+                end_single_sample_dict = dict(zip(end_single_sample_keys, end_single_sample))
+                print(end_single_sample_dict)
+
+                # check the CRC
+                print("crc", crc, end_single_sample_dict['crc'])
+                if crc != end_single_sample_dict['crc']:
+                    crc_errors += 1
+                    crc_error = True
+                    # probably should remove the last sample also
+
+                # update the last pressure entry
+                pres = end_single_sample_dict['pres']
+                normal_dict.update({'pres': pres})
+                data_array[len(data_array)-1] = normal_dict
+
                 burst_number += 1
 
             else:
                 print("unknown data 0x%08x" % sample_type)
                 no_sync += 1
+                sync_error = True
                 if no_sync >= 10:
                     print("sync not found")
-
                     return None
+
+            if crc_error or sync_error:
+                binary_file.seek(pos - 3)  # move to the next byte after sync read, as the packet had a CRC error
 
             data = binary_file.read(4)
 
@@ -171,11 +284,24 @@ def mpess(filepath):
     ncOut.intensive_samples = np.int32(info_dict["Dep_Int_NrOfSamples"])
     ncOut.normal_samples_per_burst = np.int32(info_dict["Dep_Norm_NrOfSamples"])
 
+    # create a sensor string to document the sensors attached
+    sensor_str = ""
+    if sensors & sensor_imu_msk != 0:
+        sensor_str += "IMU ({Sns_IMU_Model}-{Sns_IMU_Serial})".format_map(info_dict)
+    if sensors & sensor_tension_msk != 0:
+        if len(sensor_str) > 0:
+            sensor_str += "; "
+        sensor_str += "TENSION (PTv%x)" % (info_dict["Sns_LC_Serial"])
+    if sensors & sensor_pres_msk != 0:
+        if len(sensor_str) > 0:
+            sensor_str += "; "
+        sensor_str += "PRES"
 
-    print(len(data_array))
+    ncOut.sensors = sensor_str
 
-    ncOut.createDimension("VECTOR", 3)
-    ncOut.createDimension("MATRIX", 9)
+    print("total data records ", len(data_array))
+
+    # create the netCDF variables
 
     # add time
     tDim = ncOut.createDimension("TIME", number_samples_read)
@@ -186,31 +312,38 @@ def mpess(filepath):
     ncTimesOut.axis = "T"
     ncTimesOut[:] = date2num(np.array([ data['ts'] for data in data_array]) , calendar='gregorian', units="days since 1950-01-01 00:00:00 UTC")
 
+    if sensors & sensor_imu_msk != 0:
+        ncOut.createDimension("VECTOR", 3)
+        ncOut.createDimension("MATRIX", 9)
+
     # add variables
 
     nc_var_out = ncOut.createVariable("BURST", "u2", ("TIME",), zlib=True)
     nc_var_out[:] = np.array([ data['burst'] for data in data_array])
 
-    nc_var_out = ncOut.createVariable("ACCEL", "f4", ("TIME", "VECTOR"), fill_value=np.nan, zlib=True)
-    nc_var_out[:] = np.array([ [data['accelX'], data['accelY'], data['accelZ']] for data in data_array])
+    if sensors & sensor_imu_msk != 0:
+        nc_var_out = ncOut.createVariable("ACCEL", "f4", ("TIME", "VECTOR"), fill_value=np.nan, zlib=True)
+        nc_var_out[:] = np.array([ [data['accelX'], data['accelY'], data['accelZ']] for data in data_array])
 
-    nc_var_out = ncOut.createVariable("GYRO", "f4", ("TIME", "VECTOR"), fill_value=np.nan, zlib=True)
-    nc_var_out[:] = np.array([ [data['gyroX'], data['gyroY'], data['gyroZ']] for data in data_array])
+        nc_var_out = ncOut.createVariable("GYRO", "f4", ("TIME", "VECTOR"), fill_value=np.nan, zlib=True)
+        nc_var_out[:] = np.array([ [data['gyroX'], data['gyroY'], data['gyroZ']] for data in data_array])
 
-    nc_var_out = ncOut.createVariable("MAG", "f4", ("TIME", "VECTOR"), fill_value=np.nan, zlib=True)
-    nc_var_out[:] = np.array([ [data['magX'], data['magY'], data['magZ']] for data in data_array])
+        nc_var_out = ncOut.createVariable("MAG", "f4", ("TIME", "VECTOR"), fill_value=np.nan, zlib=True)
+        nc_var_out[:] = np.array([ [data['magX'], data['magY'], data['magZ']] for data in data_array])
 
-    nc_var_out = ncOut.createVariable("ORIENT", "f4", ("TIME", "MATRIX"), fill_value=np.nan, zlib=True)
-    nc_var_out[:] = np.array([ [data['orient-M11'], data['orient-M12'], data['orient-M13'],
-                                data['orient-M21'], data['orient-M22'], data['orient-M23'],
-                                data['orient-M31'], data['orient-M32'], data['orient-M33']] for data in data_array])
+        nc_var_out = ncOut.createVariable("ORIENT", "f4", ("TIME", "MATRIX"), fill_value=np.nan, zlib=True)
+        nc_var_out[:] = np.array([ [data['orient-M11'], data['orient-M12'], data['orient-M13'],
+                                    data['orient-M21'], data['orient-M22'], data['orient-M23'],
+                                    data['orient-M31'], data['orient-M32'], data['orient-M33']] for data in data_array])
 
-    nc_var_out = ncOut.createVariable("PRES", "f4", ("TIME",), fill_value=np.nan, zlib=True)
-    nc_var_out[:] = np.array([ data['pres'] for data in data_array])
-    nc_var_out.units = 'dbarA'  # info_dict["PT_CalUnits"].decode("utf-8").strip()
+    if sensors & sensor_pres_msk != 0:
+        nc_var_out = ncOut.createVariable("PRES", "f4", ("TIME",), fill_value=np.nan, zlib=True)
+        nc_var_out[:] = np.array([ data['pres'] for data in data_array])
+        nc_var_out.units = 'dbarA'  # info_dict["PT_CalUnits"].decode("utf-8").strip()
 
-    nc_var_out = ncOut.createVariable("LOAD", "f4", ("TIME",), fill_value=np.nan, zlib=True)
-    nc_var_out[:] = np.array([ data['line_force'] for data in data_array])
+    if sensors & sensor_tension_msk != 0:
+        nc_var_out = ncOut.createVariable("TENSION", "f4", ("TIME",), fill_value=np.nan, zlib=True)
+        nc_var_out[:] = np.array([ data['line_tension'] for data in data_array])
 
     # add some summary metadata
     ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
