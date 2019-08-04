@@ -192,18 +192,21 @@ def mpess(filepath):
                 end_single_sample_unpack += 'L'
                 end_single_sample_len += 4
 
+                # read the data from the file
                 packet = binary_file.read(single_sample_len)
                 crc = zlib.crc32(packet, crc)
 
+                # unpack the data, and create a sample dictionary
                 single_sample = struct.unpack(single_sample_unpack, packet)
                 single_sample_dict = dict(zip(single_sample_keys, single_sample))
                 ds = datetime.datetime.fromtimestamp(single_sample_dict['ts'], tz=pytz.UTC).replace(tzinfo=None)
                 print('normal sample timestamp', ds, single_sample_dict)
 
-                #print("normal kays", normal_keys, "unpck", unpack)
+                #print("normal keys", normal_keys, "unpck", unpack)
                 samples = info_dict["Dep_Norm_NrOfSamples"]
 
                 pres = single_sample_dict['pres']
+
                 # read all samples
                 while samples > 0:
                     packet1 = binary_file.read(read_len)
