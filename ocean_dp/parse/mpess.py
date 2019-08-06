@@ -44,7 +44,15 @@ info_keys = ['Sys_OppMode', 'Sys_SerialNumber', 'Sys_Platform', 'Sys_UnitNumber'
              'PT_CalUnits', 'PT_Cal1', 'PT_Cal2', 'PT_Cal3', 'crc']
 
 # create a default info dict incase the one in the file is corrupt
-info_dict = {'Sys_OppMode': 1, 'Sys_SerialNumber': 617007514, 'Sys_Platform': 0, 'Sys_UnitNumber': 1, 'Dep_Number': 13, 'Dep_Int_NrOfSamples': 72000, 'Dep_Norm_SampleInterval': 3600, 'Dep_Norm_NrOfSamples': 6000, 'Dep_StartTime': 1564458114, 'Dep_StopTime': 1564537424, 'RTC_LastTimeSync': 1563773715, 'RTC_DriftSec': 0, 'RTC_DriftInterval': 1, 'RTC_Calibration': 33, 'Sns_SensorsPresent': 7, 'Sns_IMU_Model': 3, 'Unused1': 0, 'Unused2': 0, 'Unused3': 0, 'Sns_LC_Serial': 33880, 'Sns_IMU_Serial': 422008332, 'Batt_ReplaceTime': 1563767694, 'Batt_TotalSampleCnt': 0, 'Batt_VoltCal1': 0.01600000075995922, 'Batt_VoltCal2': 0.015699999406933784, 'Batt_VoltCal3': 2.999999892949745e-08, 'PT_CalUnits': b'dbarA\x00\n\x00', 'PT_Cal1': -0.8107323050498962, 'PT_Cal2': 0.0007274383096955717, 'PT_Cal3': -1.574942324993056e-12}
+info_dict = {'Sys_OppMode': 1, 'Sys_SerialNumber': 617007514, 'Sys_Platform': 0, 'Sys_UnitNumber': 1,
+             'Dep_Number': 13, 'Dep_Int_NrOfSamples': 72000, 'Dep_Norm_SampleInterval': 3600, 'Dep_Norm_NrOfSamples': 6000, 'Dep_StartTime': 1564458114, 'Dep_StopTime': 1564537424,
+             'RTC_LastTimeSync': 1563773715, 'RTC_DriftSec': 0, 'RTC_DriftInterval': 1, 'RTC_Calibration': 33,
+             'Sns_SensorsPresent': 7, 'Sns_IMU_Model': 3,
+             'Unused1': 0, 'Unused2': 0, 'Unused3': 0,
+             'Sns_LC_Serial': 33880, 'Sns_IMU_Serial': 422008332, 'Batt_ReplaceTime': 1563767694,
+             'Batt_TotalSampleCnt': 0, 'Batt_VoltCal1': 0.01600000075995922, 'Batt_VoltCal2': 0.015699999406933784, 'Batt_VoltCal3': 2.999999892949745e-08,
+             'PT_CalUnits': b'dbarA\x00\n\x00', 'PT_Cal1': -0.8107323050498962, 'PT_Cal2': 0.0007274383096955717, 'PT_Cal3': -1.574942324993056e-12}
+
 
 def mpess(filepath):
 
