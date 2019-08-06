@@ -1,10 +1,10 @@
 import sys
-import os
-import shutil
 
 print('Python %s on %s' % (sys.version, sys.platform))
 
 sys.path.extend(['/Users/pete/ABOS/git/imos-tools', '/Users/pete/ABOS/git/imos-tools/ocean_dp'])
+
+import shutil
 
 import ocean_dp.parse.nortek2netCDF
 import ocean_dp.attribution.addAttributes
@@ -17,6 +17,11 @@ import ocean_dp.qc.in_out_water
 import ocean_dp.attribution.format_attributes
 import ocean_dp.qc.finalize_qc
 import ocean_dp.file_name.imosNetCDFfileName
+
+import psutil
+import os
+process = psutil.Process(os.getpid())
+print(process.memory_info().rss)  # in bytes
 
 filename = ocean_dp.parse.nortek2netCDF.parse_file('data/SAZ20-2018.aqd')
 
@@ -56,3 +61,6 @@ print(filename)
 filename = ocean_dp.file_name.imosNetCDFfileName.rename(filename)
 
 print('step 6 imos name : ', filename)
+
+print(process.memory_info().rss)  # in bytes
+
