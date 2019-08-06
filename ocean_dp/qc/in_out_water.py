@@ -27,7 +27,7 @@ import os
 # flag out of water as QC value 7 (not_deployed), with wise leave as 0
 
 
-def add_qc(netCDFfile):
+def in_out_water(netCDFfile):
     ds = Dataset(netCDFfile, 'a')
 
     vars = ds.variables
@@ -67,4 +67,4 @@ def add_qc(netCDFfile):
 
 
 if __name__ == "__main__":
-    add_qc(sys.argv[1])
+    in_out_water(sys.argv[1])

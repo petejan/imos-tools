@@ -38,9 +38,7 @@ nameCode['ABSIC1'] = "A"
 
 ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
 
-def main(files):
-
-    netCDFfile = files[1]
+def rename(netCDFfile):
 
     ds = Dataset(netCDFfile, 'a')
 
@@ -99,6 +97,6 @@ def main(files):
 
 
 if __name__ == "__main__":
-    main(sys.argv)
+    rename(sys.argv[1])
 
 

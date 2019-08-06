@@ -157,7 +157,7 @@ coord_system = None
 coord_systems = ['ENU', 'XYZ', 'BEAM']
 
 
-def nortek2netCDF(filepath):
+def parse_file(filepath):
 
     checksum_errors = 0
     no_sync = 0
@@ -550,5 +550,5 @@ def nortek2netCDF(filepath):
 
 
 if __name__ == "__main__":
-    nortek2netCDF(sys.argv[1])
+    parse_file(sys.argv[1])
 

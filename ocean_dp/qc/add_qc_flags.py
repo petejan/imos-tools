@@ -59,6 +59,8 @@ def add_qc(netCDFfile):
 
     print(new_name)
 
+    return new_name
+
 
 if __name__ == "__main__":
     add_qc(sys.argv[1])

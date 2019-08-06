@@ -22,7 +22,7 @@ import geomag
 
 import datetime
 
-def main(netCDFfile):
+def mag_var(netCDFfile):
 
     print(netCDFfile)
 
@@ -48,6 +48,7 @@ def main(netCDFfile):
 
     ds.close()
 
+    return netCDFfile
 
 if __name__ == "__main__":
-    main(sys.argv[1])
+    mag_var(sys.argv[1])

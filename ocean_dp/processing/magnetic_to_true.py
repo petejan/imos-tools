@@ -81,6 +81,8 @@ def magnetic_to_true(netCDFfile):
 
     ds.close()
 
+    return netCDFfile
+
 
 if __name__ == "__main__":
     magnetic_to_true(sys.argv[1])

@@ -18,32 +18,37 @@
 
 from netCDF4 import Dataset
 import sys
-import gsw
+from datetime import datetime
+import os
 import numpy as np
 
-# add geospatial attributes
+def rename(netCDFfile):
 
-def add_spatial_attr(netCDFfile):
     ds = Dataset(netCDFfile, 'a')
 
-    var_lat = ds.variables["LATITUDE"]
-    var_lon = ds.variables["LONGITUDE"]
+    ds_variables = ds.variables
 
-    ds.geospatial_lat_max = var_lat[:]
-    ds.geospatial_lat_min = var_lat[:]
-    ds.geospatial_lon_max = var_lon[:]
-    ds.geospatial_lon_min = var_lon[:]
+    deployment = ds.deployment_code
+    instrument = ds.instrument_model
+    instrument_sn = ds.instrument_serial_number
 
-    if "NOMINAL_DEPTH" in ds.variables:
-        var_depth = ds.variables["NOMINAL_DEPTH"]
-        ds.geospatial_vertical_max = var_depth[:]
-        ds.geospatial_vertical_min = var_depth[:]
-        ds.instrument_nominal_depth = var_depth[:]
+    nominal_depth = ds.variables["NOMINAL_DEPTH"][:]
 
     ds.close()
 
-    return netCDFfile
+    new_name = deployment+'-'+instrument+'-'+instrument_sn + ".nc"
+
+    new_name = new_name.replace(" ", "-")
+    print(new_name)
+
+    # rename the file, maybe should be copy
+
+    os.rename(netCDFfile, new_name)
+
+    return new_name
 
 
 if __name__ == "__main__":
-    add_spatial_attr(sys.argv[1])
+    rename(sys.argv[1])
+
+

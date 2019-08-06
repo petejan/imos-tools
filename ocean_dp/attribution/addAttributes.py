@@ -38,7 +38,7 @@ def parseTypeValue(att_type, v):
     return value
 
 
-def add_attributes(netCDFfile, metadatafiles):
+def add(netCDFfile, metadatafiles):
 
     ds = Dataset(netCDFfile, 'a')
 
@@ -47,7 +47,7 @@ def add_attributes(netCDFfile, metadatafiles):
     instrument_model = ds.instrument_model
     instrument_serial_number = ds.instrument_serial_number
 
-    print(time_start)
+    #print(time_start)
 
     ds_variables = ds.variables
 
@@ -67,7 +67,7 @@ def add_attributes(netCDFfile, metadatafiles):
                 except AttributeError:
                     deployment_code = None
 
-                print("deployment_code ", deployment_code)
+                #print("deployment_code ", deployment_code)
 
                 if len(dict1) >= 5:
                     # match deployment_code, time_in, time_end
@@ -82,29 +82,29 @@ def add_attributes(netCDFfile, metadatafiles):
                     if len(dict1['time_deployment']) > 0:
                         if time_end < parser.parse(dict1['time_deployment'], ignoretz=True, dayfirst=True):
                             match = False
-                            print("Time end defore deployment ", dict1['time_recovery'], dict1['time_deployment'])
+                            #print("Time end defore deployment ", dict1['time_recovery'], dict1['time_deployment'])
                     if len(dict1['time_recovery']) > 0:
                         if time_start > parser.parse(dict1['time_recovery'], ignoretz=True, dayfirst=True):
                             match = False
-                            print("Time start after recovery ", dict1['time_recovery'], dict1['time_deployment'])
+                            #print("Time start after recovery ", dict1['time_recovery'], dict1['time_deployment'])
 
                     # match instrument
                     # fuzzie matching : https://medium.com/@categitau/fuzzy-string-matching-in-python-68f240d910fe
                     if len(dict1['model']) > 0:
                         fuz = fuzz.ratio(instrument_model.lower(), dict1['model'].lower())
-                        print("fuzz ", fuz, instrument_model, dict1['model'])
+                        #print("fuzz ", fuz, instrument_model, dict1['model'])
                         if fuz < 70:
                             match = False
                             #print("instrument_model not match : ", dict1['model'])
                     if len(dict1['serial_number']) > 0:
                         fuz = fuzz.ratio(instrument_serial_number.lower(), dict1['serial_number'].lower())
-                        print("fuzz ", fuz, instrument_serial_number, dict1['serial_number'])
+                        #print("fuzz ", fuz, instrument_serial_number, dict1['serial_number'])
                         if fuz < 70:
                             match = False
                             #print("serial_number not match : ", dict1['serial_number'])
 
                     if match:
-                        print("match ", dict1)
+                        #print("match ", dict1)
 
                         # global attributes
                         if dict1['rec_type'] == 'GLOBAL':
@@ -143,10 +143,10 @@ def add_attributes(netCDFfile, metadatafiles):
 
     ds.close()
 
-    return filepath
+    return netCDFfile
 
 
 if __name__ == "__main__":
-    add_attributes(sys.argv[1], sys.argv[2:])
+    add(sys.argv[1], sys.argv[2:])
 
 
