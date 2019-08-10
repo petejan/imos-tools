@@ -2,7 +2,7 @@ import sys
 
 print('Python %s on %s' % (sys.version, sys.platform))
 
-sys.path.extend(['/Users/pete/ABOS/git/imos-tools', '/Users/pete/ABOS/git/imos-tools/ocean_dp'])
+sys.path.extend(['/Users/pete/ABOS/git/imos-tools'])
 
 import shutil
 
