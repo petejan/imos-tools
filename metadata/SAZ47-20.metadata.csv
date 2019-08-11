@@ -24,6 +24,8 @@ VAR,LONGITUDE,SAZ47-20-2018,,,2018-03-10,2019-03-20,LONGITUDE,"()","()",,float64
 GLOBAL,,SAZ47-20-2018,,,2018-03-10,2019-03-20,,"","",site_nominal_depth,float64,"4500.00"
 GLOBAL,,SAZ47-20-2018,,,2018-03-10,2019-03-20,,"","",time_deployment_start,str,"2018-03-09T00:00:00Z"
 GLOBAL,,SAZ47-20-2018,,,2018-03-10,2019-03-20,,"","",time_deployment_end,str,"2019-03-21T19:15:24Z"
+GLOBAL,,SAZ47-20-2018,,,,,,,,voyage_deployment,str,https://www.cmar.csiro.au/data/trawler/survey_details.cfm?survey=IN2018_V02
+GLOBAL,,SAZ47-20-2018,,,,,,,,voyage_recovery,str,https://www.cmar.csiro.au/data/trawler/survey_details.cfm?survey=IN2019_V02
 
 VAR,NOMINAL_DEPTH,SAZ47-20-2018,ACR8242XS,34623,2018-03-10,2019-03-20,NOMINAL_DEPTH,"()","()",,float64,"4550.00"
 VAR,NOMINAL_DEPTH,SAZ47-20-2018,ACR8242XS,35504,2018-03-10,2019-03-20,NOMINAL_DEPTH,"()","()",,float64,"4550.00"

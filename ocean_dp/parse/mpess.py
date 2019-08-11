@@ -43,15 +43,31 @@ info_keys = ['Sys_OppMode', 'Sys_SerialNumber', 'Sys_Platform', 'Sys_UnitNumber'
              'Batt_ReplaceTime', 'Batt_TotalSampleCnt', 'Batt_VoltCal1', 'Batt_VoltCal2', 'Batt_VoltCal3',
              'PT_CalUnits', 'PT_Cal1', 'PT_Cal2', 'PT_Cal3', 'crc']
 
+info_keys_21 = ['Sys_OppMode', 'Sys_SerialNumber', 'Sys_UnitNumber',
+             'Dep_Number', 'Dep_Int_NrOfSamples', 'Dep_Norm_SampleInterval', 'Dep_Norm_NrOfSamples', 'Dep_StartTime', 'Dep_StopTime',
+             'RTC_LastTimeSync', 'RTC_DriftSec', 'RTC_DriftInterval', 'RTC_Calibration',
+             'Sns_SensorsPresent', 'Sns_IMU_Model', 'Unused',
+             'Batt_ReplaceTime', 'Batt_TotalSampleCnt',
+             'Batt_VoltCal1', 'Batt_VoltCal2', 'Batt_VoltCal3',
+             'PTi_CalUnits', 'PTi_Cal1', 'PTi_Cal2', 'PTi_Cal3', 'PTx_CalUnits', 'PTx_Cal1', 'PTx_Cal2', 'crc']
+
 # create a default info dict incase the one in the file is corrupt
-info_dict = {'Sys_OppMode': 1, 'Sys_SerialNumber': 617007514, 'Sys_Platform': 0, 'Sys_UnitNumber': 1,
-             'Dep_Number': 13, 'Dep_Int_NrOfSamples': 72000, 'Dep_Norm_SampleInterval': 3600, 'Dep_Norm_NrOfSamples': 6000, 'Dep_StartTime': 1564458114, 'Dep_StopTime': 1564537424,
-             'RTC_LastTimeSync': 1563773715, 'RTC_DriftSec': 0, 'RTC_DriftInterval': 1, 'RTC_Calibration': 33,
+info_dictx = {'Sys_OppMode': 1, 'Sys_SerialNumber': 0, 'Sys_Platform': 0, 'Sys_UnitNumber': 1,
+             'Dep_Number': 0, 'Dep_Int_NrOfSamples': 72000, 'Dep_Norm_SampleInterval': 3600, 'Dep_Norm_NrOfSamples': 6000, 'Dep_StartTime': 0, 'Dep_StopTime': 0,
+             'RTC_LastTimeSync': 0, 'RTC_DriftSec': 0, 'RTC_DriftInterval': 1, 'RTC_Calibration': 0,
              'Sns_SensorsPresent': 7, 'Sns_IMU_Model': 3,
              'Unused1': 0, 'Unused2': 0, 'Unused3': 0,
-             'Sns_LC_Serial': 33880, 'Sns_IMU_Serial': 422008332, 'Batt_ReplaceTime': 1563767694,
-             'Batt_TotalSampleCnt': 0, 'Batt_VoltCal1': 0.01600000075995922, 'Batt_VoltCal2': 0.015699999406933784, 'Batt_VoltCal3': 2.999999892949745e-08,
-             'PT_CalUnits': b'dbarA\x00\n\x00', 'PT_Cal1': -0.8107323050498962, 'PT_Cal2': 0.0007274383096955717, 'PT_Cal3': -1.574942324993056e-12}
+             'Sns_LC_Serial': 0, 'Sns_IMU_Serial': 0, 'Batt_ReplaceTime': 0,
+             'Batt_TotalSampleCnt': 0, 'Batt_VoltCal1': 0, 'Batt_VoltCal2': 0, 'Batt_VoltCal3': 0,
+             'PT_CalUnits': b'dbarA', 'PT_Cal1': 0, 'PT_Cal2': 0, 'PT_Cal3': 0}
+
+info_dict = {'Sys_OppMode': 1, 'Sys_SerialNumber': 0, 'Sys_UnitNumber': 1,
+             'Dep_Number': 0, 'Dep_Int_NrOfSamples': 72000, 'Dep_Norm_SampleInterval': 3600, 'Dep_Norm_NrOfSamples': 6000, 'Dep_StartTime': 0, 'Dep_StopTime': 0,
+             'RTC_LastTimeSync': 0, 'RTC_DriftSec': 0, 'RTC_DriftInterval': 1, 'RTC_Calibration': 0,
+             'Sns_SensorsPresent': 7, 'Sns_IMU_Model': 3,
+             'Unused': 0,
+             'Batt_ReplaceTime': 0, 'Batt_TotalSampleCnt': 0, 'Batt_VoltCal': 0,
+             'PTi_CalUnits': b'dbarA', 'PTi_Cal': 0, 'PTx_CalUnits': b'kg', 'PTx_Cal': 0}
 
 
 def mpess(filepath):
@@ -77,10 +93,17 @@ def mpess(filepath):
             if sample_type == 0x5a5a5a5a:  # info sample
 
                 print("info block")
-                packet = binary_file.read(100)
-                info = struct.unpack(">LLBBH6LlLbBB3BHLLL3f8s3fL", packet)
-                info_dict = dict(zip(info_keys, info))
-                print("seiral number 0x%08x" % info_dict["Sys_SerialNumber"])
+
+                #packet = binary_file.read(100)
+                #info = struct.unpack(">LLBBH6LlLbBB3BHLLL3f8s3fL", packet)
+
+                packet = binary_file.read(104)
+                info = struct.unpack(">LLHH6LlLbBBBLL3f8s3f4s2fL", packet)
+
+                #info_dict = dict(zip(info_keys, info))
+                info_dict = dict(zip(info_keys_21, info))
+
+                print("serial number 0x%08x" % info_dict["Sys_SerialNumber"])
                 print(info_dict)
 
                 ds = datetime.datetime.fromtimestamp(info_dict["Dep_StartTime"], tz=pytz.UTC).replace(tzinfo=None)
@@ -151,14 +174,19 @@ def mpess(filepath):
                 #print(samples)
 
                 packet_end = binary_file.read(8)
+                if len(packet_end) != 8:
+                    break
+
                 crc = zlib.crc32(packet_end[0:4], crc)
                 (bat, crc_packet) = struct.unpack('>LL', packet_end)
-                #print("crc", crc, crc_packet)
+                print("bat, crc", bat, crc, crc_packet)
 
                 # check the CRC
                 if crc != crc_packet:
                     crc_errors += 1
                     crc_error = True
+                    print('bad crc')
+                    break
                     # probably should remove the last sample also
 
                 burst_number += 1
@@ -264,7 +292,7 @@ def mpess(filepath):
                 burst_number += 1
 
             else:
-                print("unknown data 0x%08x" % sample_type)
+                print("unknown data 0x%08x pos %d" % (sample_type, binary_file.tell()))
                 no_sync += 1
                 sync_error = True
                 if no_sync >= 10:
@@ -298,11 +326,15 @@ def mpess(filepath):
     # create a sensor string to document the sensors attached
     sensor_str = ""
     if sensors & sensor_imu_msk != 0:
-        sensor_str += "IMU ({Sns_IMU_Model}-{Sns_IMU_Serial})".format_map(info_dict)
+        sensor_str += "IMU ({Sns_IMU_Model})".format_map(info_dict)
+        if 'Sns_IMU_Serial' in info_dict:
+            sensor_str += "-{Sns_IMU_Serial}".format_map(info_dict)
     if sensors & sensor_tension_msk != 0:
         if len(sensor_str) > 0:
             sensor_str += "; "
-        sensor_str += "TENSION (PTv%x)" % (info_dict["Sns_LC_Serial"])
+        sensor_str += "TENSION"
+        if 'Sns_LC_Serial' in info_dict:
+            sensor_str += "(PTv%x)" % (info_dict["Sns_LC_Serial"])
     if sensors & sensor_pres_msk != 0:
         if len(sensor_str) > 0:
             sensor_str += "; "

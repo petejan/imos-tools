@@ -24,9 +24,6 @@ from netCDF4 import date2num, num2date
 from netCDF4 import Dataset
 import numpy as np
 
-# source file must have 'timek' column for time
-#  flag column is excluded
-#
 # parsers need to output
 #  instrument
 #  instrument_serial_number
@@ -38,7 +35,7 @@ import numpy as np
 #
 # convert time to netCDF cf-timeformat (double days since 1950-01-01 00:00:00 UTC)
 
-# map sea bird name to netCDF variable name
+# map starODDI name to netCDF variable name
 nameMap = {}
 nameMap["Temp"] = "TEMP"
 
@@ -135,8 +132,8 @@ def main(file):
                 for v in name:
                     #print("{} : {}".format(splitVarNo, v))
                     d[splitVarNo] = float(lineSplit[v['col']+2])
-                    data.append(d)
                     splitVarNo = splitVarNo + 1
+                data.append(d)
                 #print(t, d)
                 number_samples_read = number_samples_read + 1
 
@@ -183,10 +180,10 @@ def main(file):
         varName = v['var_name']
         ncVarOut = ncOut.createVariable(varName, "f4", ("TIME",), fill_value=np.nan, zlib=True) # fill_value=nan otherwise defaults to max
         if v['unit']:
-            ncVarOut.units = unit
-        ncVarOut[:] = data
+            ncVarOut.units = v['unit']
+        ncVarOut[:] = np.array([d[i] for d in data])
 
-        i = i + 1
+        i += 1
 
     ncOut.setncattr("time_coverage_start", num2date(ncTimesOut[0], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
     ncOut.setncattr("time_coverage_end", num2date(ncTimesOut[-1], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))

@@ -23,88 +23,233 @@ from netCDF4 import num2date, date2num
 from netCDF4 import Dataset
 import numpy as np
 import struct
+from datetime import timedelta
 
-gps_dict = ['type', 'date', 'time', 'latdm', 'latNS', 'lonDM', 'lonEW', 'lock', 'error']
+gps_dict = ['type', 'date', 'time', 'latDM', 'latNS', 'lonDM', 'lonEW', 'lock', 'error']
 ctd_dict = ['type', 'date', 'time', 'srate', 'sam', 'crc']
 imm_dict = ['type', 'date', 'time', 'depth', 'dir', 'np', 'pre', 'ul', 'll', 'ip', 'err_to', 'trip', 'err_c', 'vacume', 'slow_d', 'water', 'storm', 'mode']
 aadi_dict = ['type', 'date', 'time', 'srate', 'sam', 'crc']
 
+times = []
+data = []
 
-def parse(filepath):
 
-    nv = -1
-    f = open(filepath)
-    line = f.readline()
-    while line:
-        #print(line)
+def dm(x):
+    degrees = int(x) // 100
+    minutes = x - 100*degrees
 
-        if len(line) > 1:
-            line_split = line.split()
+    return degrees, minutes
 
-            if nv == -1:
-                samples_read = 0
-                line_type = line_split[0]
-                if line_type == 'GPS':
-                    values = dict(zip(gps_dict, line_split))
-                    nv = -1
-                elif line_type == 'IMM':
-                    values = dict(zip(imm_dict, line_split))
-                    nv = -1
-                elif line_type == 'CTD':
-                    values = dict(zip(ctd_dict, line_split))
-                    nv = 3
-                elif line_type == 'AADI':
-                    values = dict(zip(aadi_dict, line_split))
-                    nv = 2
 
-                dt = datetime.datetime.strptime(values['date'] + " " + values['time'], '%m/%d/%Y %H:%M:%S')
-                print(dt)
-            else:
-                samples_read += len(line_split)
-                samples_to_read = int(values['sam'])
-                print(values['type'], 'samples to read ', samples_to_read, values['sam'], samples_read/nv)
-                if samples_to_read <= samples_read/nv:
-                    nv = -1
-                    print('finished reading')
+def decimal_degrees(degrees, minutes):
+    return degrees + minutes/60
 
-            print(values)
 
+def parse(files):
+
+    last_gps = None
+    for filepath in files:
+        nv = -1
+        print('file name', filepath)
+
+        f = open(filepath)
         line = f.readline()
-    f.close()
+        while line:
+            #print(line)
 
-    # # create the netCDF file
-    # outputName = filepath + ".nc"
-    #
-    # print("output file : %s" % outputName)
-    #
-    # ncOut = Dataset(outputName, 'w', format='NETCDF4')
-    #
-    # # add time variable
-    #
-    # #     TIME:axis = "T";
-    # #     TIME:calendar = "gregorian";
-    # #     TIME:long_name = "time";
-    # #     TIME:units = "days since 1950-01-01 00:00:00 UTC";
-    #
-    # tDim = ncOut.createDimension("TIME")
-    # ncTimesOut = ncOut.createVariable("TIME", "d", ("TIME",), zlib=True)
-    # ncTimesOut.long_name = "time"
-    # ncTimesOut.units = "days since 1950-01-01 00:00:00 UTC"
-    # ncTimesOut.calendar = "gregorian"
-    # ncTimesOut.axis = "T"
-    #
-    # ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
-    #
-    # ncOut.setncattr("time_coverage_start", ts_start.strftime(ncTimeFormat))
-    # ncOut.setncattr("time_coverage_end", ts.strftime(ncTimeFormat))
-    #
-    # # add creating and history entry
-    # ncOut.setncattr("date_created", datetime.datetime.utcnow().strftime(ncTimeFormat))
-    # ncOut.setncattr("history", datetime.datetime.utcnow().strftime("%Y-%m-%d") + " created from file " + filepath)
-    #
-    # return outputName
+            if len(line) > 1:
+                line_split = line.split()
+                if len(line_split) > 1:
+                    line_type = line_split[0]
+                    if line_type in ['GPS', 'IMM', 'CTD', 'AADI']:
+                        samples_read = 0
+                        if line_type == 'GPS':
+                            values = dict(zip(gps_dict, line_split))
+                            last_gps = values
+                            nv = -1
+                        elif line_type == 'IMM':
+                            values = dict(zip(imm_dict, line_split))
+                            nv = -1
+                        elif line_type == 'CTD':
+                            values = dict(zip(ctd_dict, line_split))
+                            nv = 3
+                        elif line_type == 'AADI':
+                            values = dict(zip(aadi_dict, line_split))
+                            nv = 2
+
+                        print(values)
+
+                        dt = datetime.datetime.strptime(values['date'] + " " + values['time'], '%m/%d/%Y %H:%M:%S')
+                        #print(dt)
+                        if dt not in times:
+                            times.append(dt)
+                            data.append([])
+                        data_block = {'dt': dt, 'hdr': values, line_type: []}
+                        idx = times.index(dt)
+                        #print ('times idx', idx, times[idx])
+                    else:
+                        samples_read += len(line_split)
+                        data_block[values['type']].extend(line_split)
+                        samples_to_read = int(values['sam'])
+                        print(values['type'], 'samples to read ', samples_to_read, values['sam'], samples_read/nv)
+                        if samples_to_read <= samples_read/nv:
+                            nv = -1
+                            print('finished reading')
+                            data[idx].append(data_block)
+                            #print(data)
+
+            line = f.readline()
+        f.close()
+
+        print('finished reading, processing')
+
+        times_out = []
+        depth_out = []
+        temp_out = []
+        cndc_out = []
+        dox2_out = []
+        dox2_temp_out = []
+        profile_n_out = []
+
+        print('data length', len(data))
+        n_profile = 0
+        for d in data:
+            #print('data loop', d)
+            if len(d) > 0:
+                x = d[0]
+                #print(x['hdr'])
+                hdr = x['hdr']
+                dt = int(hdr['srate'])
+                samples = int(hdr['sam'])
+                depth = np.zeros(samples)
+                depth.fill(np.nan)
+                temp = np.zeros(samples)
+                temp.fill(np.nan)
+                cndc = np.zeros(samples)
+                cndc.fill(np.nan)
+
+                dox_temp = np.zeros(samples)
+                dox_temp.fill(np.nan)
+                dox2 = np.zeros(samples)
+                dox2.fill(np.nan)
+
+                profile_n = np.ones(samples, dtype=int) * n_profile
+
+                for n in range(0, samples):
+                    times_out.append(x['dt'] + timedelta(seconds = (dt * n)))
+
+                for x in d:
+                    print (x['dt'], x['hdr'])
+                    if 'CTD' in x:
+                        n = 0
+                        raw_data = x['CTD']
+                        for vals in range(0, len(raw_data), 3):
+                            depth_val = float(raw_data[vals])/100
+                            temp_val = float(raw_data[vals+1])/1000
+                            cndc_val = float(raw_data[vals+2])/10000
+
+                            #print(n, depth_val, temp_val, cndc_val)
+
+                            depth[n] = depth_val
+                            temp[n] = temp_val
+                            cndc[n] = cndc_val
+
+                            n += 1
+
+                        depth_out.extend(depth)
+                        temp_out.extend(temp)
+                        cndc_out.extend(cndc)
+
+                    if 'AADI' in x:
+                        n = 0
+                        raw_data = x['AADI']
+                        for vals in range(0, len(raw_data), 2):
+                            dox_temp_val = float(raw_data[vals])/1000
+                            dox2_val = float(raw_data[vals+1])/100
+
+                            #print(n, dox_temp_val, dox2_val)
+
+                            dox_temp[n] = dox_temp_val
+                            dox2[n] = dox2_val
+
+                            n += 1
+
+                        dox2_out.extend(dox2)
+                        dox2_temp_out.extend(dox_temp)
+
+                profile_n_out.extend(profile_n)
+
+                n_profile += 1
+
+    if n_profile == 0:
+        print('no profiles found, returning')
+        return None
+
+    # create the netCDF file
+    outputName = 'prawler' + ".nc"
+
+    print("output file : %s" % outputName)
+
+    ncOut = Dataset(outputName, 'w', format='NETCDF4')
+
+    ncOut.instrument = 'NOAA - Prawler'
+    ncOut.instrument_model = 'Prawler'
+    ncOut.instrument_serial_number = '4'
+    ncOut.number_of_profiles = np.int32(n_profile)
+
+    if last_gps:
+        latitude = decimal_degrees(*dm(float(last_gps['latDM'])))
+        if last_gps['latNS'] == 'S':
+            latitude = -latitude
+        print('latitude ', latitude)
+        longitude = decimal_degrees(*dm(float(last_gps['lonDM'])))
+        if last_gps['lonEW'] == 'W':
+            longitude = -longitude
+        print('longitude ', longitude)
+        ncOut.latitude = latitude
+        ncOut.longitude = longitude
+
+    # add time variable
+
+    #     TIME:axis = "T";
+    #     TIME:calendar = "gregorian";
+    #     TIME:long_name = "time";
+    #     TIME:units = "days since 1950-01-01 00:00:00 UTC";
+
+    tDim = ncOut.createDimension("TIME")
+    ncTimesOut = ncOut.createVariable("TIME", "d", ("TIME",), zlib=True)
+    ncTimesOut.long_name = "time"
+    ncTimesOut.units = "days since 1950-01-01 00:00:00 UTC"
+    ncTimesOut.calendar = "gregorian"
+    ncTimesOut.axis = "T"
+    ncTimesOut[:] = date2num(times_out , calendar='gregorian', units="days since 1950-01-01 00:00:00 UTC")
+
+    ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
+
+    nc_var_out = ncOut.createVariable("PRES", "f4", ("TIME"), fill_value=np.nan, zlib=True)
+    nc_var_out[:] = depth_out
+    nc_var_out = ncOut.createVariable("TEMP", "f4", ("TIME"), fill_value=np.nan, zlib=True)
+    nc_var_out[:] = temp_out
+    nc_var_out = ncOut.createVariable("CNDC", "f4", ("TIME"), fill_value=np.nan, zlib=True)
+    nc_var_out[:] = cndc_out
+    nc_var_out = ncOut.createVariable("DOX2", "f4", ("TIME"), fill_value=np.nan, zlib=True)
+    nc_var_out[:] = dox2_out
+    nc_var_out = ncOut.createVariable("DOX2_TEMP", "f4", ("TIME"), fill_value=np.nan, zlib=True)
+    nc_var_out[:] = dox2_temp_out
+    nc_var_out = ncOut.createVariable("PROFILE", "i4", ("TIME"), fill_value=-1, zlib=True)
+    nc_var_out[:] = profile_n_out
+
+    ncOut.setncattr("time_coverage_start", times_out[0].strftime(ncTimeFormat))
+    ncOut.setncattr("time_coverage_end", times_out[-1].strftime(ncTimeFormat))
+
+    # add creating and history entry
+    ncOut.setncattr("date_created", datetime.datetime.utcnow().strftime(ncTimeFormat))
+    ncOut.setncattr("history", datetime.datetime.utcnow().strftime("%Y-%m-%d") + " created from file " + filepath)
+
+    ncOut.close()
+
+    return outputName
 
 
 if __name__ == "__main__":
-    for s in sys.argv[1:]:
-        parse(s)
+    parse(sys.argv[1:])
