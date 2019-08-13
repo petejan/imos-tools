@@ -86,11 +86,16 @@ for path_file in sys.argv[1:len(sys.argv)]:
 
     pp = PdfPages(pdffile)
 
+    txt = ""
+    lines = 0
+    plt.figure(figsize=(11.69, 8.27))
+
     txt = 'file name : ' + os.path.basename(path_file) + '\n\n'
 
     txt += 'Dimensions:\n'
     for x in nc.dimensions:
         txt += '    ' + x + ' (' + str(nc.dimensions[x].size) + ')\n'
+
     txt += '\nVariables:\n'
     for x in nc.variables:
         v_atts = nc.variables[x]
@@ -107,6 +112,21 @@ for path_file in sys.argv[1:len(sys.argv)]:
         var_line += ' : type ' + str(v_atts.datatype)
 
         print(var_line)
+
+        lines = txt.count('\n') + var_line.count('\n')
+        # print("lines ", lines)
+        if lines > 57:
+            #print(txt)
+            print('new page')
+            plt.text(-0.1, -0.1, txt, fontsize=8, family='monospace')
+            plt.axis('off')
+            pp.savefig()
+            plt.close()
+            plt.figure(figsize=(11.69, 8.27))
+
+            txt = ""
+
+            lines = 0
 
         txt += var_line + '\n'
 
@@ -127,7 +147,7 @@ for path_file in sys.argv[1:len(sys.argv)]:
         attrib_txt = nc_attr + ' : ' + str(nc.getncattr(nc_attr)).replace('\n', '\n   ') + '\n'
         lines = txt.count('\n') + attrib_txt.count('\n')
         # print("lines ", lines)
-        if lines > 55:
+        if lines > 57:
             #print(txt)
             print('new page')
             plt.text(-0.1, -0.1, txt, fontsize=8, family='monospace')
