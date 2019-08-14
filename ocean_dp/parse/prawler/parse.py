@@ -228,16 +228,22 @@ def parse(files):
 
     nc_var_out = ncOut.createVariable("PRES", "f4", ("TIME"), fill_value=np.nan, zlib=True)
     nc_var_out[:] = depth_out
+    nc_var_out.units = 'dbar'
     nc_var_out = ncOut.createVariable("TEMP", "f4", ("TIME"), fill_value=np.nan, zlib=True)
     nc_var_out[:] = temp_out
+    nc_var_out.units = 'degrees_Celsius'
     nc_var_out = ncOut.createVariable("CNDC", "f4", ("TIME"), fill_value=np.nan, zlib=True)
     nc_var_out[:] = cndc_out
+    nc_var_out.units = 'S/m'
     nc_var_out = ncOut.createVariable("DOX2", "f4", ("TIME"), fill_value=np.nan, zlib=True)
     nc_var_out[:] = dox2_out
+    #nc_var_out.units = 'umol/kg'
     nc_var_out = ncOut.createVariable("DOX2_TEMP", "f4", ("TIME"), fill_value=np.nan, zlib=True)
     nc_var_out[:] = dox2_temp_out
+    nc_var_out.units = 'degrees_Celsius'
     nc_var_out = ncOut.createVariable("PROFILE", "i4", ("TIME"), fill_value=-1, zlib=True)
     nc_var_out[:] = profile_n_out
+    nc_var_out.units = 'count'
 
     ncOut.setncattr("time_coverage_start", times_out[0].strftime(ncTimeFormat))
     ncOut.setncattr("time_coverage_end", times_out[-1].strftime(ncTimeFormat))
