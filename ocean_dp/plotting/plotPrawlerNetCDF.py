@@ -45,6 +45,7 @@ def plot(file):
 
     temp_var = nc.variables['TEMP']
     psal_var = nc.variables['PSAL']
+    doxs_var = nc.variables['DOXS']
     pres_var = nc.variables['PRES']
 
     profile_var = nc.variables['PROFILE']
@@ -100,6 +101,20 @@ def plot(file):
     plt.xlabel('date-time')
     plt.ylabel('pressure (dbar)')
     plt.title('prawler practical salinity profile')
+
+    #plt.show()
+    pp.savefig(fig1, papertype='a4', orientation='portrait')
+    plt.close()
+
+    fig1, ax1 = plt.subplots()
+    tcf = ax1.tricontourf(time_var[:]*1000, pres_var[:], doxs_var[:], 20)
+    plt.plot(time_var[:]*1000, pres_var[:], 'ko ', markersize=0.1)
+    fig1.colorbar(tcf)
+    plt.ylim(100, 0)
+
+    plt.xlabel('date-time')
+    plt.ylabel('pressure (dbar)')
+    plt.title('prawler oxygen saturation profile')
 
     #plt.show()
     pp.savefig(fig1, papertype='a4', orientation='portrait')

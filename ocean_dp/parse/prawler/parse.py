@@ -235,9 +235,10 @@ def parse(files):
     nc_var_out = ncOut.createVariable("CNDC", "f4", ("TIME"), fill_value=np.nan, zlib=True)
     nc_var_out[:] = cndc_out
     nc_var_out.units = 'S/m'
-    nc_var_out = ncOut.createVariable("DOX2", "f4", ("TIME"), fill_value=np.nan, zlib=True)
+    nc_var_out = ncOut.createVariable("DOX2_RAW", "f4", ("TIME"), fill_value=np.nan, zlib=True)
     nc_var_out[:] = dox2_out
     #nc_var_out.units = 'umol/kg'
+    nc_var_out.comment = 'RAW DOX2, referenced to PSAL=0'
     nc_var_out = ncOut.createVariable("DOX2_TEMP", "f4", ("TIME"), fill_value=np.nan, zlib=True)
     nc_var_out[:] = dox2_temp_out
     nc_var_out.units = 'degrees_Celsius'

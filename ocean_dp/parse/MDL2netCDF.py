@@ -57,8 +57,10 @@ hdr_len = 20  # header + dirty flag
 def readpacket(f):
 
     b = f.read(4)  # read rest of header
+    if len(b) != 4:
+        return (f.tell()+1, 'end of file')
 
-    (l, t) = struct.unpack('<HH', b)
+    (packet_len, packet_type) = struct.unpack('<HH', b)
 
     # print("type %d len %d" % (t, l))
 
@@ -66,19 +68,25 @@ def readpacket(f):
     # print("file pos %d" % f.tell())
     pos = f.tell()
 
-    b = f.read(l)
+    b = f.read(packet_len)
+    if len(b) != packet_len:
+        return (f.tell(), 'end of file')
+
     # print("file pos %d" % f.tell())
 
     ccrc = binascii.crc32(b)
     acrc = eeprom_crc(b)
 
     # print("packet len %d" % len(b))
+    crc_bytes = f.read(4) # read CRC
+    if len(crc_bytes) != 4:
+        return (pos+1, 'end of file')
 
-    crc = struct.unpack('<I', f.read(4))  # read CRC
+    crc = struct.unpack('<I', crc_bytes)
 
     if crc[0] != acrc:
         print("************* CRC error **************")
-        return (pos + 1, )
+        return (pos + 1, 'crc error')
 
     # print("crc %s" % hex(crc[0]))
     # print(hex(ccrc))
@@ -86,7 +94,7 @@ def readpacket(f):
 
     packet = None
 
-    if t == 0:
+    if packet_type == 0:
         # typedef struct
         # {
         #     char     name[12];                        /**< sensor name */
@@ -108,7 +116,7 @@ def readpacket(f):
 
         packet = (f.tell(), 'sensor', sensor_dict)
 
-    elif t == 1:
+    elif packet_type == 1:
         # struct gyro
         # {
         #       hdr_ts_t hdr;
@@ -139,7 +147,7 @@ def readpacket(f):
 
         packet = (f.tell(), 'gyro', ts, samples, hdr_dict, dataMat)
 
-    elif t == 2:
+    elif packet_type == 2:
         # struct Acceleration
         # {
         #       hdr_ts_t hdr;
@@ -169,7 +177,7 @@ def readpacket(f):
 
         packet = (f.tell(), 'accel', ts, samples, hdr_dict, dataMat[0:nSample, :], dataMat[nSample:nSample*2, :])
 
-    elif t == 3:
+    elif packet_type == 3:
         # struct AdcBuf
         # {
         #       hdr_ts_t hdr;
@@ -233,10 +241,10 @@ def readpacket(f):
         # ts = datetime.utcfromtimestamp(packetS[0])
         #
         # print("type %d %-10s : time %s : samples %d " % (dataType, types[dataType], ts, samples))
-    elif t == 4:
+    elif packet_type == 4:
         # time data, now used
         print("Unused type 4")
-    elif t == 5:
+    elif packet_type == 5:
         # struct serial
         # {
         #       hdr_ts_t hdr;
@@ -352,43 +360,49 @@ def parse(files):
                     next_byte = 1
 
                 # print(p)
-                if p[1] == 'sensor':
-                    dataset.setncattr('sensor_' + str(sensor_n), p[2]['name'])
-                    dataset.setncattr('sensor_' + str(sensor_n) + '_max_v', p[2]['max_v'])
-                    sensor_n += 1
-                else:
-                    if p[2] > datetime.datetime(2010,1,1):
-                        ts_num = date2num(p[2], units=times.units, calendar=times.calendar)
-                        n_times += 1
-                        if n_times % 500 == 0:
-                            print("time ", file_name, p[2])
-                        #print('data shape', p[5].shape)
-                        if ts_num not in times[:]:
+                #print(type(p))
+                if p[1] == 'crc error':
+                    break
 
-                            time_samples = [p[2] + datetime.timedelta(milliseconds=d * 15/100 * 1000) for d in np.arange(0,100,1)]
-                            #print(time_samples)
+                if isinstance(p, tuple) and len(p) > 2:
 
-                            tidx += 100
-                            #print('new time', p[2])
-                            times[tidx:tidx+100] = date2num(time_samples, units=times.units, calendar=times.calendar)
+                    if p[1] == 'sensor':
+                        dataset.setncattr('sensor_' + str(sensor_n), p[2]['name'])
+                        dataset.setncattr('sensor_' + str(sensor_n) + '_max_v', p[2]['max_v'])
+                        sensor_n += 1
+                    else:
+                        if p[2] > datetime.datetime(2010,1,1):
+                            ts_num = date2num(p[2], units=times.units, calendar=times.calendar)
+                            n_times += 1
+                            if n_times % 500 == 0:
+                                print("time ", file_name, p[2])
+                            #print('data shape', p[5].shape)
+                            if ts_num not in times[:]:
 
-                        if p[1] == 'accel':
-                            #print(p[5].shape, acc[tidx:tidx+100].shape)
-                            acc[tidx:tidx+100] = p[5]
-                            mag[tidx:tidx+100] = p[6]
-                        if p[1] == 'gyro':
-                            #print(p[5].shape, gryo[tidx:tidx+100].shape)
-                            gryo[tidx:tidx+100] = p[5]
-                        if p[1] == 'adc':
-                            #print(p[5].shape)
-                            adc1[tidx:tidx+100] = p[5][:,0]
-                            adc2[tidx:tidx+100] = p[5][:,1]
+                                time_samples = [p[2] + datetime.timedelta(milliseconds=d * 5/100 * 1000) for d in np.arange(0, 100, 1)]  # sampling is at 20 Hz -> 5 seconds for 100 samples
+                                #print(time_samples)
+
+                                tidx += 100
+                                #print('new time', p[2])
+                                times[tidx:tidx+100] = date2num(time_samples, units=times.units, calendar=times.calendar)
+
+                            if p[1] == 'accel':
+                                #print(p[5].shape, acc[tidx:tidx+100].shape)
+                                acc[tidx:tidx+100] = p[5]
+                                mag[tidx:tidx+100] = p[6]
+                            if p[1] == 'gyro':
+                                #print(p[5].shape, gryo[tidx:tidx+100].shape)
+                                gryo[tidx:tidx+100] = p[5]
+                            if p[1] == 'adc':
+                                #print(p[5].shape)
+                                adc1[tidx:tidx+100] = p[5][:,0]
+                                adc2[tidx:tidx+100] = p[5][:,1]
 
                 if next_byte:
                     n = n + 1
                     f.seek(p[0])
                     b = f.read(1)
-                    p = f.tell()
+                    p = (f.tell(), 'next byte')
 
         ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
 
