@@ -54,7 +54,6 @@ def add_psal(netCDFfile):
 
     ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " : added oxygen solubility")
 
-
     ds.close()
 
 

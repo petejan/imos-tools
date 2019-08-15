@@ -69,13 +69,13 @@ def add_psal(netCDFfile):
 
     # calculate, and write the oxygen mass/seawater mass
     if 'DOX_MG' not in ds.variables:
-        ncVarOut = ds.createVariable("DOX_MG", "f4", ("TIME",), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
+        ncVarOut = ds.createVariable("DOXY", "f4", ("TIME",), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
     else:
-        ncVarOut = ds.variables['DOX_MG']
+        ncVarOut = ds.variables['DOXY']
 
-    ncVarOut[:] = dox2 * 44.661/1000
-    ncVarOut.units = "mg/kg"
-    ncVarOut.comment = "calculated using DOX2 = 44.661/1000 * DOX2_RAW * PSAL_CORRECTION / ((sigma_theta(P=0,Theta,S) + 1000).. Sea Bird AN 64, Aanderaa TD210 Optode Manual "
+    ncVarOut[:] = ds.variables['DOX2_RAW'] * psal_correction / 31.24872
+    ncVarOut.units = "mg/l"
+    ncVarOut.comment = "calculated using DOXY =  * DOX2_RAW * PSAL_CORRECTION / 31.24872... Aanderaa TD210 Optode Manual"
 
     # calculate and write oxygen solubility, ratio of disolved oxgen / oxygen solubility
     if 'DOXS' not in ds.variables:

@@ -23,10 +23,47 @@ import matplotlib
 import matplotlib.pyplot as plt
 import sys
 
+import matplotlib.units as units
+import matplotlib.dates as dates
+import matplotlib.ticker as ticker
+import datetime
+
 matplotlib.use('Agg')
+matplotlib.rcParams.update({'font.size': 6})
 
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
+
+
+def plot_var(pp, time, pres, v, label, cmap):
+
+    # t = [t.timestamp() for t in time]
+    #
+    # fig1, ax1 = plt.subplots()
+    # tcf = ax1.tricontourf(t, pres, v, levels=20, cmap=cmap)
+    # plt.plot(t, pres, 'ko ', markersize=0.1)
+    # fig1.colorbar(tcf)
+    # plt.ylim(100, 0)
+
+    fig1, ax1 = plt.subplots()
+
+    locator = dates.AutoDateLocator(minticks=3, maxticks=7)
+    formatter = dates.ConciseDateFormatter(locator)
+    ax1.xaxis.set_major_locator(locator)
+    ax1.xaxis.set_major_formatter(formatter)
+
+    sc = plt.scatter(time, pres, c=v, cmap=cmap)
+    plt.ylim(100, 0)
+    plt.xlim(time[0], time[-1])
+    fig1.colorbar(sc)
+
+    plt.xlabel('date-time')
+    plt.ylabel('pressure (dbar)')
+    plt.title('prawler ' + label + ' profile')
+
+    #plt.show()
+    pp.savefig(fig1, papertype='a4')
+    plt.close()
 
 
 def plot(file):
@@ -45,6 +82,7 @@ def plot(file):
 
     temp_var = nc.variables['TEMP']
     psal_var = nc.variables['PSAL']
+    doxy_var = nc.variables['DOXY']
     doxs_var = nc.variables['DOXS']
     pres_var = nc.variables['PRES']
 
@@ -77,49 +115,10 @@ def plot(file):
 
     pp = PdfPages(pdffile)
 
-    # Plot Data
-    fig1, ax1 = plt.subplots()
-    tcf = ax1.tricontourf(time_var[:]*1000, pres_var[:], temp_var[:], 20)
-    plt.plot(time_var[:]*1000, pres_var[:], 'ko ', markersize=0.1)
-    fig1.colorbar(tcf)
-    plt.ylim(100, 0)
-
-    plt.xlabel('date-time')
-    plt.ylabel('pressure (dbar)')
-    plt.title('prawler temperature profile')
-
-    #plt.show()
-    pp.savefig(fig1, papertype='a4')
-    plt.close()
-
-    fig1, ax1 = plt.subplots()
-    tcf = ax1.tricontourf(time_var[:]*1000, pres_var[:], psal_var[:], 20)
-    plt.plot(time_var[:]*1000, pres_var[:], 'ko ', markersize=0.1)
-    fig1.colorbar(tcf)
-    plt.ylim(100, 0)
-
-    plt.xlabel('date-time')
-    plt.ylabel('pressure (dbar)')
-    plt.title('prawler practical salinity profile')
-
-    #plt.show()
-    pp.savefig(fig1, papertype='a4', orientation='portrait')
-    plt.close()
-
-    fig1, ax1 = plt.subplots()
-    tcf = ax1.tricontourf(time_var[:]*1000, pres_var[:], doxs_var[:], 20)
-    plt.plot(time_var[:]*1000, pres_var[:], 'ko ', markersize=0.1)
-    fig1.colorbar(tcf)
-    plt.ylim(100, 0)
-
-    plt.xlabel('date-time')
-    plt.ylabel('pressure (dbar)')
-    plt.title('prawler oxygen saturation profile')
-
-    #plt.show()
-    pp.savefig(fig1, papertype='a4', orientation='portrait')
-    plt.close()
-
+    plot_var(pp, dt_time, pres_var[:], temp_var[:], 'temperature', plt.get_cmap('jet'))
+    plot_var(pp, dt_time, pres_var[:], psal_var[:], 'salinity', plt.get_cmap('gnuplot'))
+    plot_var(pp, dt_time, pres_var[:], doxy_var[:], 'oxygen concentration (mg/l)', plt.get_cmap('ocean'))
+    plot_var(pp, dt_time, pres_var[:], doxs_var[:], 'oxygen saturation', plt.get_cmap('ocean'))
 
     pp.close()
 
