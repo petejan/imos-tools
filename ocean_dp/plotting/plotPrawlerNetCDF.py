@@ -88,29 +88,6 @@ def plot(file):
 
     profile_var = nc.variables['PROFILE']
 
-    # colors = matplotlib.cm.rainbow(profile_var[:]/np.max(profile_var[:]))
-    # print(colors)
-    #
-    # plt.plot(temp_var[:], pres_var[:], '.', color=colors)
-    #
-    # plt.xlabel('temperature (deg C)')
-    # plt.ylabel('pressure (dbar)')
-    # plt.title('prawler temperature profile')
-    #
-    # plt.grid(True)
-    # plt.ylim(100, 0)
-    # plt.show()
-    #
-    # plt.plot(psal_var[:], pres_var[:], '.')
-    #
-    # plt.xlabel('practical salinity')
-    # plt.ylabel('pressure (dbar)')
-    # plt.title('prawler temperature profile')
-    #
-    # plt.grid(True)
-    # plt.ylim(100, 0)
-    # plt.show()
-
     pdffile = file + '.pdf'
 
     pp = PdfPages(pdffile)
