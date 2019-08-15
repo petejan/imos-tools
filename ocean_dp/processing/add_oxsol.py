@@ -20,6 +20,7 @@ from netCDF4 import Dataset
 import sys
 import gsw
 import numpy as np
+from datetime import datetime
 
 # add OXSOL to a data file with TEMP, PSAL, PRES variables, many assumptions are made about the input file
 
@@ -44,6 +45,15 @@ def add_psal(netCDFfile):
     ncVarOut[:] = oxsol
     ncVarOut.units = "umol/kg"
     ncVarOut.comment = "calculated using gsw-python https://teos-10.github.io/GSW-Python/index.html function gsw.O2sol_SP_pt"
+
+    # update the history attribute
+    try:
+        hist = ds.history + "\n"
+    except AttributeError:
+        hist = ""
+
+    ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " : added oxygen solubility")
+
 
     ds.close()
 

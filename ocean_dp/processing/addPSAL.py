@@ -20,6 +20,7 @@ from netCDF4 import Dataset
 import sys
 import gsw
 import numpy as np
+from datetime import datetime
 
 # add PSAL to a data file with TEMP, CNDC, PRES variables, many assumptions are made about the input file
 
@@ -39,6 +40,14 @@ def add_psal(netCDFfile):
     ncVarOut[:] = psal
     ncVarOut.units = "1"
     ncVarOut.comment = "calculated using gsw-python https://teos-10.github.io/GSW-Python/index.html"
+
+    # update the history attribute
+    try:
+        hist = ds.history + "\n"
+    except AttributeError:
+        hist = ""
+
+    ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " : added PSAL from TEMP, CNDC, PRES")
 
     ds.close()
 
