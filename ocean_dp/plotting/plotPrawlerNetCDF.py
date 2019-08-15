@@ -22,6 +22,10 @@ import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 import sys
+from scipy.interpolate import interp1d
+import datetime
+
+import matplotlib.dates as mdates
 
 import matplotlib.units as units
 import matplotlib.dates as dates
@@ -78,18 +82,55 @@ def plot(file):
     except AttributeError:  # Attribute doesn't exist
         t_cal = u"gregorian"  # or standard
 
-    dt_time = [num2date(t, units=t_unit, calendar=t_cal) for t in time_var[:]]
+    time = time_var[:]
+    dt_time = [num2date(t, units=t_unit, calendar=t_cal) for t in time]
 
     temp_var = nc.variables['TEMP']
+    temp = temp_var[:]
     psal_var = nc.variables['PSAL']
     doxy_var = nc.variables['DOXY']
     doxs_var = nc.variables['DOXS']
     pres_var = nc.variables['PRES']
+    pres = pres_var[:]
 
     profile_var = nc.variables['PROFILE']
+    profile = profile_var[:]
+
+    # resample the profile to common depths
+
+    # pres_resample = np.linspace(2, 100, num=100, endpoint=True)
+    # profile_range = range(min(profile), max(profile))
+    # print(len(profile_range), len(pres_resample))
+    # profile_temp_resampled = np.zeros([len(profile_range), len(pres_resample)])
+    # profile_time = {}
+    #
+    # for profile_n in profile_range:
+    #     #print (profile_n)
+    #     time_n = time[profile == profile_n]
+    #     profile_time[profile_n] = num2date(time_n[0], units=t_unit, calendar=t_cal)
+    #     pres_n = pres[profile == profile_n]
+    #     pres_n_sorted, pres_n_sort_idx = np.unique(pres_n, return_index=True)
+    #     temp_n_sorted = temp[profile == profile_n][pres_n_sort_idx]
+    #     #print(pres_n_sorted)
+    #     temp_resample = interp1d(pres_n_sorted, temp_n_sorted, kind='cubic', fill_value=np.nan, bounds_error=False)
+    #     #print(temp_resample(pres_resample))
+    #     profile_temp_resampled[profile_n] = temp_resample(pres_resample)
+    #
+    # print(profile_temp_resampled)
+    # print(profile_time)
+    #
+    # fig, ax = plt.subplots()
+    #
+    # ax.set_xlim(profile_time[0], profile_time[len(profile_time)-1])
+    #
+    # plt.imshow(np.transpose(profile_temp_resampled), aspect='auto')
+    # ax.format_xdata = mdates.DateFormatter('%Y-%m-%d')
+    #
+    # plt.show()
 
     pdffile = file + '.pdf'
 
+    #pp = None
     pp = PdfPages(pdffile)
 
     plot_var(pp, dt_time, pres_var[:], temp_var[:], 'temperature', plt.get_cmap('jet'))
