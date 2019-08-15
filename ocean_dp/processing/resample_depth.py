@@ -50,14 +50,19 @@ def resample(file):
     # resample the profile to common depths
 
     pres_resample = np.linspace(2, 100, num=100, endpoint=True)
-    profile_range = range(min(profile), max(profile))
+    profile_range = range(min(profile), max(profile)+1)
     print("new shape, n_profile, n_pres", len(profile_range), len(pres_resample))
     profile_temp_resampled = np.zeros([len(profile_range), len(pres_resample)])
     profile_time = np.zeros([len(profile_range)])
 
+    print("profile range", profile_range, len(profile_range))
+
     for profile_n in profile_range:
-        #print (profile_n)
+
         time_n = time[profile == profile_n]
+
+        #print (profile_n, num2date(time_n[0], units=t_unit, calendar=t_cal))
+
         profile_time[profile_n] = time_n[0]
         pres_n = pres[profile == profile_n]
         pres_n_sorted, pres_n_sort_idx = np.unique(pres_n, return_index=True)
