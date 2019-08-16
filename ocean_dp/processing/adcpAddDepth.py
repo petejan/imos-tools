@@ -2,76 +2,81 @@ from netCDF4 import Dataset
 import numpy as np
 import sys
 
-path_file = sys.argv[1]
-# path_file = '/Users/pete/Downloads/IMOS_ABOS-DA_AETVZ_20150515T000000Z_EAC4200_FV01_EAC4200-2016-WORKHORSE-ADCP-726_END-20161104T205740Z_C-20170703T055611Z.nc'
 
-outputName = path_file + ".new.nc"
+def add_depth(path_file):
 
-ncOut = Dataset(outputName, 'w', format='NETCDF4')
+    outputName = path_file.replace(".nc", "-depth.nc")
 
-dsIn = Dataset(path_file, mode='r')
+    ncOut = Dataset(outputName, 'w', format='NETCDF4')
 
-# copy global attributes
-for a in dsIn.ncattrs():
-    print("Attribute %s value %s" % (a, dsIn.getncattr(a)))
-    ncOut.setncattr(a, dsIn.getncattr(a))
+    dsIn = Dataset(path_file, mode='r')
 
-# copy dimensions
-for d in dsIn.dimensions:
-    ncOut.createDimension(d, dsIn.dimensions[d].size)
+    # copy global attributes
+    for a in dsIn.ncattrs():
+        print("Attribute %s value %s" % (a, dsIn.getncattr(a)))
+        ncOut.setncattr(a, dsIn.getncattr(a))
 
-# copy variables
-varList = dsIn.variables
+    # copy dimensions
+    for d in dsIn.dimensions:
+        ncOut.createDimension(d, dsIn.dimensions[d].size)
 
-for v in varList:
-    print("%s file %s" % (v, path_file))
+    # copy variables
+    varList = dsIn.variables
 
-    maVariable = dsIn.variables[v][:]  # get the data
-    varDims = varList[v].dimensions
+    for v in varList:
+        print("%s file %s" % (v, path_file))
 
-    ncVariableOut = ncOut.createVariable(v, varList[v].dtype, varDims, zlib=True)
+        maVariable = dsIn.variables[v][:]  # get the data
+        varDims = varList[v].dimensions
 
-    for a in varList[v].ncattrs():
-        print("%s Attribute %s = %s" % (v, a, varList[v].getncattr(a)))
-        attValue = varList[v].getncattr(a)
+        ncVariableOut = ncOut.createVariable(v, varList[v].dtype, varDims, zlib=True)
 
-        ncVariableOut.setncattr(a, attValue)
+        for a in varList[v].ncattrs():
+            print("%s Attribute %s = %s" % (v, a, varList[v].getncattr(a)))
+            attValue = varList[v].getncattr(a)
 
-    ncVariableOut[:] = maVariable
+            ncVariableOut.setncattr(a, attValue)
 
-# create the new depth
+        ncVariableOut[:] = maVariable
 
-ht = dsIn.variables['HEIGHT_ABOVE_SENSOR']
-depth = dsIn.variables['DEPTH']
+    # create the new depth
 
-invert = 1
-if depth.positive != ht.positive:
-    invert = -1
+    ht = dsIn.variables['HEIGHT_ABOVE_SENSOR']
+    depth = dsIn.variables['DEPTH']
 
-# TODO: deal with positive up/down attributes
+    # deal with opposite positive up/down attributes
 
-h = invert * ht[:]
-d = depth[:]
+    invert = 1
+    if depth.positive != ht.positive:
+        invert = -1
 
-h1 = h.reshape(1, len(h))
-d1 = d.reshape(len(d), 1)
+    h = invert * ht[:]
+    d = depth[:]
 
-hd = d1 + h1
+    h1 = h.reshape(1, len(h))
+    d1 = d.reshape(len(d), 1)
 
-hd_var = ncOut.createVariable('DEPTH_HEIGHT', np.float32, ('TIME', 'HEIGHT_ABOVE_SENSOR'), zlib=True)
+    hd = d1 + h1
 
-# copy depth attributes to new variable
-for a in depth.ncattrs():
-    print("Attribute %s = %s" % (a, depth.getncattr(a)))
-    attValue = depth.getncattr(a)
+    hd_var = ncOut.createVariable('DEPTH_HEIGHT', np.float32, ('TIME', 'HEIGHT_ABOVE_SENSOR'), zlib=True)
 
-    hd_var.setncattr(a, attValue)
+    # copy depth attributes to new variable
+    for a in depth.ncattrs():
+        print("Attribute %s = %s" % (a, depth.getncattr(a)))
+        attValue = depth.getncattr(a)
 
-hd_var[:] = hd
+        hd_var.setncattr(a, attValue)
 
-# close files
+    hd_var[:] = hd
 
-dsIn.close()
+    # close files
 
-ncOut.close()
+    dsIn.close()
 
+    ncOut.close()
+
+    return outputName
+
+
+if __name__ == "__main__":
+    add_depth(sys.argv[1])

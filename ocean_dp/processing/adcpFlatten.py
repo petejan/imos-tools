@@ -8,7 +8,6 @@ import sys
 # double TIME(TIME);
 #     TIME:axis = "T";
 #     TIME:calendar = "gregorian";
-#     TIME:comment = "csiroManualQC adjusted time for a linear drift of 618 seconds.";
 #     TIME:long_name = "time";
 #     TIME:standard_name = "time";
 #     TIME:units = "days since 1950-01-01 00:00:00 UTC";
@@ -30,7 +29,6 @@ import sys
 # double TIME(OBS);
 #     TIME:axis = "T";
 #     TIME:calendar = "gregorian";
-#     TIME:comment = "csiroManualQC adjusted time for a linear drift of 618 seconds.";
 #     TIME:long_name = "time";
 #     TIME:standard_name = "time";
 #     TIME:units = "days since 1950-01-01 00:00:00 UTC";
@@ -52,126 +50,134 @@ import sys
 #     DEPTH:valid_max = 12000.f;
 #     DEPTH:valid_min = -5.f;
 # float UCUR(OBS);
+#     ......
 
 # example
 # 12/11/2018  03:07 PM       468,765,047 IMOS_ABOS-DA_AETVZ_20160825T000059Z_EAC4200_FV01_EAC4200-2018-WORKHORSE-ADCP-119_END-20180426T055529Z_C-20181024T032202Z.nc
 # 14/06/2019  10:15 AM       199,585,003 IMOS_ABOS-DA_AETVZ_20160825T000059Z_EAC4200_FV01_EAC4200-2018-WORKHORSE-ADCP-119_END-20180426T055529Z_C-20181024T032202Z.nc.flat.nc
 
-path_file = sys.argv[1]
-#path_file = 'data/IMOS_ABOS-DA_AETVZ_20160825T000059Z_EAC4200_FV01_EAC4200-2018-WORKHORSE-ADCP-119_END-20180426T055529Z_C-20181024T032202Z.nc'
 
-dsIn = Dataset(path_file, mode='r')
+def flatten(path_file):
 
-outputName = path_file + ".flat.nc"
-ncOut = Dataset(outputName, 'w', format='NETCDF4')
+    dsIn = Dataset(path_file, mode='r')
 
-# copy global attributes
-for a in dsIn.ncattrs():
-    print("Attribute %s value %s" % (a, dsIn.getncattr(a)))
-    ncOut.setncattr(a, dsIn.getncattr(a))
+    outputName = path_file.replace('.nc', '-flat.nc')
 
-# create new dimensions
-ht = dsIn.variables['HEIGHT_ABOVE_SENSOR']
-depth = dsIn.variables['DEPTH']
-time = dsIn.variables['TIME']
+    ncOut = Dataset(outputName, 'w', format='NETCDF4')
 
-# keep this dimension,so we can keep the HEIGHT_ABOVE_SENSOR variable
-ncOut.createDimension('HEIGHT_ABOVE_SENSOR', dsIn.dimensions['HEIGHT_ABOVE_SENSOR'].size)
+    # copy global attributes
+    for a in dsIn.ncattrs():
+        print("Attribute %s value %s" % (a, dsIn.getncattr(a)))
+        ncOut.setncattr(a, dsIn.getncattr(a))
 
-# create the time
-tDim = ncOut.createDimension("OBS", len(ht) * len(depth))
-timeOutVar = ncOut.createVariable('TIME', time.dtype, ('OBS',), zlib=True)
-for a in time.ncattrs():
-    print("Attribute %s = %s" % (a, time.getncattr(a)))
-    attValue = time.getncattr(a)
+    # create new dimensions
+    ht = dsIn.variables['HEIGHT_ABOVE_SENSOR']
+    depth = dsIn.variables['DEPTH']
+    time = dsIn.variables['TIME']
 
-    timeOutVar.setncattr(a, attValue)
+    # keep this dimension,so we can keep the HEIGHT_ABOVE_SENSOR variable
+    ncOut.createDimension('HEIGHT_ABOVE_SENSOR', dsIn.dimensions['HEIGHT_ABOVE_SENSOR'].size)
 
-timeOutVar[:] = np.repeat(time[:], len(ht[:]))
+    # create the time
+    tDim = ncOut.createDimension("OBS", len(ht) * len(depth))
+    timeOutVar = ncOut.createVariable('TIME', time.dtype, ('OBS',), zlib=True)
+    for a in time.ncattrs():
+        print("Attribute %s = %s" % (a, time.getncattr(a)))
+        attValue = time.getncattr(a)
 
-# create a 'cell' variable, the ADCP cell which the data is from
-cell_var = ncOut.createVariable('CELL', np.byte, ('OBS', ), zlib=True)
-cell_var.setncattr("long_name", "which cell this OBS is from")
-cell_var.setncattr("instance_dimension", "HEIGHT_ABOVE_SENSOR")
+        timeOutVar.setncattr(a, attValue)
 
-# get the same of variables
-invert = 1
-if depth.positive != ht.positive:
-    invert = -1
+    timeOutVar[:] = np.repeat(time[:], len(ht[:]))
 
-h = invert * ht[:]
-d = depth[:]
+    # create a 'cell' variable, the ADCP cell which the data is from
+    cell_var = ncOut.createVariable('CELL', np.byte, ('OBS', ), zlib=True)
+    cell_var.setncattr("long_name", "which cell this OBS is from")
+    cell_var.setncattr("instance_dimension", "HEIGHT_ABOVE_SENSOR")
 
-# write the cell
-cell = np.arange(len(h)).reshape(1, len(h))
-cell_zero = np.zeros([len(time[:]), 1])
+    # get the same of variables
+    invert = 1
+    if depth.positive != ht.positive:
+        invert = -1
 
-cd = cell_zero + cell
-cell_var[:] = cd.reshape(len(h) * len(d), 1)
+    h = invert * ht[:]
+    d = depth[:]
 
-# generate the new depth
-h1 = h.reshape(1, len(h))
-d1 = d.reshape(len(d), 1)
+    # write the cell
+    cell = np.arange(len(h)).reshape(1, len(h))
+    cell_zero = np.zeros([len(time[:]), 1])
 
-hd = d1 + h1
+    cd = cell_zero + cell
+    cell_var[:] = cd.reshape(len(h) * len(d), 1)
 
-ht = hd.reshape(len(h) * len(d), 1)
+    # generate the new depth
+    h1 = h.reshape(1, len(h))
+    d1 = d.reshape(len(d), 1)
 
-hd_var = ncOut.createVariable('DEPTH', depth.dtype, ('OBS', ), zlib=True)
+    hd = d1 + h1
 
-# copy depth attributes to new variable
-for a in depth.ncattrs():
-    print("Attribute %s = %s" % (a, depth.getncattr(a)))
-    attValue = depth.getncattr(a)
+    ht = hd.reshape(len(h) * len(d), 1)
 
-    hd_var.setncattr(a, attValue)
+    hd_var = ncOut.createVariable('DEPTH', depth.dtype, ('OBS', ), zlib=True)
 
-hd_var[:] = ht
+    # copy depth attributes to new variable
+    for a in depth.ncattrs():
+        print("Attribute %s = %s" % (a, depth.getncattr(a)))
+        attValue = depth.getncattr(a)
 
-# Variables to include
-varInclude = ['LATITUDE', 'LONGITUDE', 'NOMINAL_DEPTH', 'HEIGHT_ABOVE_SENSOR']
+        hd_var.setncattr(a, attValue)
 
-# copy the currents to the new file, flattening the variable
-for v in ('UCUR', 'VCUR', 'WCUR'):
+    hd_var[:] = ht
 
-    cur = dsIn.variables[v]
-    cur_out = ncOut.createVariable(v, cur.dtype, ('OBS', ), zlib=True)
-    for a in cur.ncattrs():
-        print("%s Attribute %s = %s" % (v, a, cur.getncattr(a)))
-        attValue = cur.getncattr(a)
+    # Variables to include
+    varInclude = ['LATITUDE', 'LONGITUDE', 'NOMINAL_DEPTH', 'HEIGHT_ABOVE_SENSOR']
 
-        cur_out.setncattr(a, attValue)
+    # copy the currents to the new file, flattening the variable
+    for v in ('UCUR', 'VCUR', 'WCUR'):
 
-    # keep a list of 'ancillary_variables' to copy also
-    if hasattr(cur, 'ancillary_variables'):
-        varInclude += [cur.ancillary_variables]
-
-    cur_out[:] = cur[:].flatten()
-
-# copy other variables
-for v in varInclude:
-    print("adding %s" % v)
-
-    cur = dsIn.variables[v]
-    print("%s dimensions %d %s" % (v, len(cur.dimensions), cur.shape))
-
-    if len(cur.dimensions) <= 1:
-        cur_out = ncOut.createVariable(v, cur.dtype, cur.dimensions, zlib=True)
-    else:
+        cur = dsIn.variables[v]
         cur_out = ncOut.createVariable(v, cur.dtype, ('OBS', ), zlib=True)
+        for a in cur.ncattrs():
+            print("%s Attribute %s = %s" % (v, a, cur.getncattr(a)))
+            attValue = cur.getncattr(a)
 
-    # copy attributes
-    for a in cur.ncattrs():
-        print("%s : Attribute %s = %s" % (v, a, cur.getncattr(a)))
-        attValue = cur.getncattr(a)
+            cur_out.setncattr(a, attValue)
 
-        cur_out.setncattr(a, attValue)
+        # keep a list of 'ancillary_variables' to copy also
+        if hasattr(cur, 'ancillary_variables'):
+            varInclude += [cur.ancillary_variables]
 
-    cur_out[:] = cur[:].flatten()
+        cur_out[:] = cur[:].flatten()
 
-# close files
+    # copy other variables, this picks up the QC variables as ancillary variables
+    for v in varInclude:
+        print("adding %s" % v)
 
-dsIn.close()
+        cur = dsIn.variables[v]
+        print("%s dimensions %d %s" % (v, len(cur.dimensions), cur.shape))
 
-ncOut.close()
+        if len(cur.dimensions) <= 1:
+            cur_out = ncOut.createVariable(v, cur.dtype, cur.dimensions, zlib=True)
+        else:
+            cur_out = ncOut.createVariable(v, cur.dtype, ('OBS', ), zlib=True)
+
+        # copy attributes
+        for a in cur.ncattrs():
+            print("%s : Attribute %s = %s" % (v, a, cur.getncattr(a)))
+            attValue = cur.getncattr(a)
+
+            cur_out.setncattr(a, attValue)
+
+        cur_out[:] = cur[:].flatten()
+
+    # close files
+
+    dsIn.close()
+
+    ncOut.close()
+
+    return outputName
+
+
+if __name__ == "__main__":
+    flatten(sys.argv[1])
 
