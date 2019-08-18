@@ -22,6 +22,10 @@ import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 import sys
+from scipy.interpolate import interp1d
+import datetime
+
+import matplotlib.dates as mdates
 
 import matplotlib.units as units
 import matplotlib.dates as dates
@@ -78,41 +82,23 @@ def plot(file):
     except AttributeError:  # Attribute doesn't exist
         t_cal = u"gregorian"  # or standard
 
-    dt_time = [num2date(t, units=t_unit, calendar=t_cal) for t in time_var[:]]
+    time = time_var[:]
+    dt_time = [num2date(t, units=t_unit, calendar=t_cal) for t in time]
 
     temp_var = nc.variables['TEMP']
+    temp = temp_var[:]
     psal_var = nc.variables['PSAL']
     doxy_var = nc.variables['DOXY']
     doxs_var = nc.variables['DOXS']
     pres_var = nc.variables['PRES']
+    pres = pres_var[:]
 
     profile_var = nc.variables['PROFILE']
-
-    # colors = matplotlib.cm.rainbow(profile_var[:]/np.max(profile_var[:]))
-    # print(colors)
-    #
-    # plt.plot(temp_var[:], pres_var[:], '.', color=colors)
-    #
-    # plt.xlabel('temperature (deg C)')
-    # plt.ylabel('pressure (dbar)')
-    # plt.title('prawler temperature profile')
-    #
-    # plt.grid(True)
-    # plt.ylim(100, 0)
-    # plt.show()
-    #
-    # plt.plot(psal_var[:], pres_var[:], '.')
-    #
-    # plt.xlabel('practical salinity')
-    # plt.ylabel('pressure (dbar)')
-    # plt.title('prawler temperature profile')
-    #
-    # plt.grid(True)
-    # plt.ylim(100, 0)
-    # plt.show()
+    profile = profile_var[:]
 
     pdffile = file + '.pdf'
 
+    #pp = None
     pp = PdfPages(pdffile)
 
     plot_var(pp, dt_time, pres_var[:], temp_var[:], 'temperature', plt.get_cmap('jet'))
