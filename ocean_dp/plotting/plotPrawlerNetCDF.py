@@ -22,7 +22,6 @@ import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 import sys
-from scipy.interpolate import interp1d
 import datetime
 
 import matplotlib.dates as mdates

@@ -25,7 +25,7 @@ from datetime import datetime
 # add OXSOL to a data file with TEMP, PSAL, PRES variables, many assumptions are made about the input file
 
 
-def add_psal(netCDFfile):
+def oxygen(netCDFfile):
     ds = Dataset(netCDFfile, 'a')
 
     var_temp = ds.variables["TEMP"]
@@ -54,9 +54,18 @@ def add_psal(netCDFfile):
 
     psal_correction =  np.exp(SP *(B0 + B1 * ts + B2 * np.power(ts, 2) + B3 * np.power(ts, 3)) + np.power(SP, 2) * C0)
 
+    # get correction slope, offset
+    slope = 1.0
+    offset = 0.0
+    try:
+        slope = ds.variables['DOX2_RAW'].calibration_slope
+        offset = ds.variables['DOX2_RAW'].calibration_offset
+    except KeyError:
+        pass
+
     # calculate disolved oxygen, umol/kg
-    dox2 = ds.variables['DOX2_RAW'] * psal_correction
-    dox2 = 1000 * dox2 / (sigma_theta0 + 1000)
+    dox2_raw = ds.variables['DOX2_RAW'] * psal_correction * slope + offset
+    dox2 = 1000 * dox2_raw / (sigma_theta0 + 1000)
 
     if 'DOX2' not in ds.variables:
         ncVarOut = ds.createVariable("DOX2", "f4", ("TIME",), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
@@ -65,7 +74,8 @@ def add_psal(netCDFfile):
 
     ncVarOut[:] = dox2
     ncVarOut.units = "umol/kg"
-    ncVarOut.comment = "calculated using DOX2 = DOX2_RAW * PSAL_CORRECTION / ((sigma_theta(P=0,Theta,S) + 1000).. Sea Bird AN 64, Aanderaa TD210 Optode Manual "
+    ncVarOut.comment = "calculated using DOX2 = DOX2_RAW * PSAL_CORRECTION / ((sigma_theta(P=0,Theta,S) + 1000).. Sea Bird AN 64, Aanderaa TD210 Optode Manual"
+    ncVarOut.comment_calibration = "calibration slope " + str(slope) + " offset " + str(offset) + " umol/l"
 
     # calculate, and write the oxygen mass/seawater mass
     if 'DOX_MG' not in ds.variables:
@@ -73,9 +83,10 @@ def add_psal(netCDFfile):
     else:
         ncVarOut = ds.variables['DOXY']
 
-    ncVarOut[:] = ds.variables['DOX2_RAW'] * psal_correction / 31.24872
+    ncVarOut[:] = dox2_raw / 31.24872
     ncVarOut.units = "mg/l"
     ncVarOut.comment = "calculated using DOXY =  * DOX2_RAW * PSAL_CORRECTION / 31.24872... Aanderaa TD210 Optode Manual"
+    ncVarOut.comment_calibration = "calibration slope " + str(slope) + " offset " + str(offset) + " umol/l"
 
     # calculate and write oxygen solubility, ratio of disolved oxgen / oxygen solubility
     if 'DOXS' not in ds.variables:
@@ -101,4 +112,4 @@ def add_psal(netCDFfile):
 
 
 if __name__ == "__main__":
-    add_psal(sys.argv[1])
+    oxygen(sys.argv[1])
