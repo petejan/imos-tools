@@ -85,7 +85,6 @@ def plot(file):
     dt_time = [num2date(t, units=t_unit, calendar=t_cal) for t in time]
 
     temp_var = nc.variables['TEMP']
-    temp = temp_var[:]
     psal_var = nc.variables['PSAL']
     doxy_var = nc.variables['DOXY']
     doxs_var = nc.variables['DOXS']
@@ -100,10 +99,10 @@ def plot(file):
     #pp = None
     pp = PdfPages(pdffile)
 
-    plot_var(pp, dt_time, pres_var[:], temp_var[:], 'temperature', plt.get_cmap('jet'))
-    plot_var(pp, dt_time, pres_var[:], psal_var[:], 'salinity', plt.get_cmap('gnuplot'))
-    plot_var(pp, dt_time, pres_var[:], doxy_var[:], 'oxygen concentration (mg/l)', plt.get_cmap('ocean'))
-    plot_var(pp, dt_time, pres_var[:], doxs_var[:], 'oxygen saturation', plt.get_cmap('ocean'))
+    plot_var(pp, dt_time, pres, temp_var[:], 'temperature', plt.get_cmap('jet'))
+    plot_var(pp, dt_time, pres, psal_var[:], 'salinity', plt.get_cmap('gnuplot'))
+    plot_var(pp, dt_time, pres, doxy_var[:], 'oxygen concentration (mg/l)', plt.get_cmap('ocean'))
+    plot_var(pp, dt_time, pres, doxs_var[:], 'oxygen saturation', plt.get_cmap('ocean'))
 
     pp.close()
 
