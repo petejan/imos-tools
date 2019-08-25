@@ -1,3 +1,3 @@
 rec_type, var_name, deployment_code, model, serial_number, time_deployment, time_recovery, variable_name, variable_dims, variable_shape, attribute_name, type, value
-VAR_ATT,DOX2_RAW,,,,,,,"","",calibration_slope,float32,"1.067"
+VAR_ATT,DOX2_RAW,,,,,,,"","",calibration_slope,float32,"1.095"
 VAR_ATT,DOX2_RAW,,,,,,,"","",calibration_offset,float32,"0.0"
