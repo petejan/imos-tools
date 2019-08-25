@@ -133,6 +133,9 @@ for d in dsIn.dimensions:
     print("dimension", d, " shape ", size)
     ncOut.createDimension(d, size)
 
+ncOut.createDimension('LATITUDE', 1)
+ncOut.createDimension('LONGITUDE', 1)
+
 history = dsIn.getncattr("history")
 serialNumber = dsIn.getncattr("instrument_serial_number")
 
@@ -144,7 +147,7 @@ ncOut.setncattr("date_created", datetime.utcnow().strftime(ncTimeFormat))
 ncOut.setncattr("history", history + '\n' + datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC : Convert from IMOS file : ") + fileName)
 
 ncOut.setncattr("data_type", "OceanSITES time-series data")
-ncOut.setncattr("format_version", "1.4")
+ncOut.setncattr("format_version", "1.3")
 ncOut.setncattr("network", "IMOS")
 ncOut.setncattr("institution_references", "http://www.oceansites.org, http://imos.org.au")
 ncOut.setncattr("id", outputName)
