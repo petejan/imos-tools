@@ -162,7 +162,8 @@ def parse_file(filepath):
     checksum_errors = 0
     no_sync = 0
     sample_count = 0
-    last_time = datetime.datetime(1950,1,1)
+
+    first_time = None
 
     with open(filepath, "rb") as binary_file:
         data = binary_file.read(1)
@@ -226,7 +227,7 @@ def parse_file(filepath):
                         # decode the packet
                         packetDecode = struct.unpack(unpack, packet)
                         d = dict(zip(keys_out, packetDecode))
-                        #print(packet_decoder[id]['name'], d)
+                        #print(packet_decoder[id]['name'])
                         # for k in d:
                         #     print("dict ", k, " = " , d[k])
 
@@ -237,7 +238,10 @@ def parse_file(filepath):
                             for x in ts_bcd:
                                 y.append(int((((x & 0xf0)/16) * 10) + (x & 0xf)))
                             dt = datetime.datetime(y[4]+2000, y[5], y[2], y[3], y[0], y[1])
-                            #print(dt)
+                            #print('time ', packet_decoder[id]['name'], dt, sample_count)
+                            if not first_time:
+                                first_time = dt
+                                sample_count = 0
 
                         if 'serial' in d:
                             sn = d['serial']
@@ -284,30 +288,22 @@ def parse_file(filepath):
                             #print(dt, d)
 
                         if 'Vector Velocity Data' == packet_decoder[id]['name']:
-                            sample_count += 1
-                            if sample_count >= 16:
-                                sample_count = 0
-                            if last_time != dt:
-                                sample_count = 0
-                                last_time = dt
 
-                            last_time = dt
-                            ts = dt + timedelta(microseconds=int(sample_count/16 * 1000 * 1000))
+                            # calculate the sample timestamp
+                            ts = first_time + timedelta(microseconds=int(sample_count*63000))
 
-                            # print(sample_count, ts)
-
-                            #print('velocity data', ts)
                             vector_velocity_data.append((ts, d))
+                            sample_count += 1
 
                             #print(dt, d)
                         if 'Vector With IMU' == packet_decoder[id]['name']:
                             #print('velocity data')
-                            ts = dt
-                            ts.replace(microsecond=int(sample_count/16 * 1000 * 1000))
+
+                            # use same timestamp as the last 'Vector Velocity Data' (from sample_count)
                             vector_imu_data.append((ts, d))
 
                             if len(vector_imu_data) % 1000 == 0:
-                                print("samples read ", len(vector_imu_data))
+                                print("samples read ", len(vector_imu_data), ts, dt, (dt - ts).total_seconds(), (dt-first_time).total_seconds())
 
                             #print(dt, d)
 
