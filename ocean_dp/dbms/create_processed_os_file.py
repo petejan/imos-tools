@@ -157,8 +157,6 @@ def create(mooring):
 
             for i in range(0, len(row['instruments'])):
 
-                # add attributes for the instrument and parameter from the netcdf_attributes table
-
                 # create a depth variable for each variable (needs a dimension as well)
 
                 instruments = row[2]
@@ -182,6 +180,10 @@ def create(mooring):
                 ncVarOut.sensor_nominal_depth = np.double(row[4][i])
 
                 ncVarOut.ancillary_variables = var_name + "_QC"
+
+                # add attributes for the instrument and parameter from the netcdf_attributes table
+
+
 
                 # create the QC aux variable
                 ncVarOut_qc = ncOut.createVariable(var_name + "_QC", "i1", ("TIME",), fill_value=0, zlib=True)
