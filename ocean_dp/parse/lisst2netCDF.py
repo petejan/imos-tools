@@ -40,18 +40,23 @@ import numpy as np
 #
 # convert time to netCDF cf-timeformat (double days since 1950-01-01 00:00:00 UTC)
 
-# 2018-08-21 22:11:15.010, COM6, Rx, 6.92
-# 2018-08-21 22:11:15.010, COM6, Rx, -6.92
-# 2018-08-21 22:11:15.030, COM6, Rx, -6.91
+# Date      Time      Vol         Size        Tau         Vol_sub               Size_sub              Depth
+#
+# 19800108 215756 0.000 0.000 0.000 0.000 0.000 646.060
+# 20181119 020829 4179.526 296.146 0.000 4001.060 243.772 655.170
+# 20181119 020832 4179.512 296.146 0.000 4001.047 243.772 655.150
 
 
 #
 # parse the file
 #
 
+
 def lisst_parse(files):
     time = []
     value = []
+
+    hdr = ['VOL', 'SIZE', 'TAU', 'VOL_SUB', 'SIZE_SUB', 'PRES']
 
     filepath = files[1]
     number_samples = 0
@@ -60,16 +65,20 @@ def lisst_parse(files):
         line = fp.readline()
         while line:
 
-            line_split = line.split(",")
-
+            line_split = line.split(" ")
             #print(line_split)
 
-            ts = parser.parse(line_split[0])
-            v = float(line_split[3])
-
-            time.append(ts)
-            value.append(v)
-            number_samples += 1
+            try:
+                t = line_split[0]+ " " + line_split[1]
+                ts = datetime.strptime(t, "%Y%m%d %H%M%S")
+                print(ts)
+                if ts > datetime(2000,1,1):
+                    v = [float(x) for x in line_split[2:]]
+                    time.append(ts)
+                    value.append(v)
+                    number_samples += 1
+            except ValueError:
+                pass
 
             line = fp.readline()
 
@@ -87,9 +96,9 @@ def lisst_parse(files):
 
     ncOut = Dataset(outputName, 'w', format='NETCDF4')
 
-    ncOut.instrument = "CSIRO - Deck Load Cell"
-    ncOut.instrument_model = "Deck Load Cell"
-    ncOut.instrument_serial_number = "1"
+    ncOut.instrument = "Sequioa - LISST-25X"
+    ncOut.instrument_model = "LISST-25X"
+    ncOut.instrument_serial_number = "25x-157"
 
     #     TIME:axis = "T";
     #     TIME:calendar = "gregorian";
@@ -104,8 +113,10 @@ def lisst_parse(files):
     ncTimesOut.axis = "T"
     ncTimesOut[:] = date2num(time, calendar=ncTimesOut.calendar, units=ncTimesOut.units)
 
-    ncVarOut = ncOut.createVariable("LOAD", "f4", ("TIME",), zlib=True)
-    ncVarOut[:] = value
+    for i in range(0, len(hdr)):
+        print(i, hdr[i], len(value[-1]))
+        ncVarOut = ncOut.createVariable(hdr[i], "f4", ("TIME",), zlib=True)
+        ncVarOut[:] = [v[i] for v in value]
 
     # add timespan attributes
     ncOut.setncattr("time_coverage_start", num2date(ncTimesOut[0], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
