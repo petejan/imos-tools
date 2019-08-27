@@ -62,7 +62,7 @@ def eco_parse(files):
     number_samples = 0
 
     with open(filepath, 'r', errors='ignore') as fp:
-        hdr_line = fp.readline()
+        hdr_line = fp.readline().replace("\n", "")
         hdr_split = hdr_line.split("\t")
         hdr = [re.sub("\(.*\)\n?", "", x) for x in hdr_split[3:]]
         print (hdr)
