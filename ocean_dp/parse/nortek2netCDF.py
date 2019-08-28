@@ -239,9 +239,6 @@ def parse_file(filepath):
                                 y.append(int((((x & 0xf0)/16) * 10) + (x & 0xf)))
                             dt = datetime.datetime(y[4]+2000, y[5], y[2], y[3], y[0], y[1])
                             #print('time ', packet_decoder[id]['name'], dt, sample_count)
-                            if not first_time:
-                                first_time = dt
-                                sample_count = 0
 
                         if 'serial' in d:
                             sn = d['serial']
@@ -275,6 +272,11 @@ def parse_file(filepath):
                             if packet_decode2netCDF[att]['decode'] in d:
                                 attribute_list.append((packet_decode2netCDF[att]["attrib"], float(d[packet_decode2netCDF[att]["decode"]])))
 
+                        if 'Vector System Data' == packet_decoder[id]['name']:
+                            if not first_time:
+                                first_time = dt
+                                sample_count = 0
+
                         # create an array of all the data packets (this does copy them into memory)
                         if 'Aquadopp Velocity Data' == packet_decoder[id]['name']:
                             #print('velocity data')
@@ -290,7 +292,7 @@ def parse_file(filepath):
                         if 'Vector Velocity Data' == packet_decoder[id]['name']:
 
                             # calculate the sample timestamp
-                            ts = first_time + timedelta(microseconds=int(sample_count*63000))
+                            ts = first_time + timedelta(microseconds=int(sample_count*63000)) # a sample every 63 ms, where does this come from?
 
                             vector_velocity_data.append((ts, d))
                             sample_count += 1

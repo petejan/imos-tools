@@ -94,18 +94,22 @@ def create(mooring):
         conn = psycopg2.connect(host="localhost", database="ABOS", user="pete", password="password")
 
         # get mooring info
-        cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        cur.execute(select_mooring % mooring)
-        mooring_info = cur.fetchone()
+        mooring_cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        mooring_cur.execute(select_mooring % mooring)
+        mooring_info = mooring_cur.fetchone()
         print("mooring", mooring_info)
 
         # get netCDF attributes
-        cur.execute("SELECT * FROM netcdf_attributes WHERE naming_authority IN ('OS', '*') AND mooring = '*' AND deployment = '*' AND instrument_id ISNULL AND parameter = '*'" )
-        add_netcdf_attributes(ncOut, cur)
-        cur.execute("SELECT * FROM netcdf_attributes WHERE naming_authority IN ('OS', '*') AND mooring = 'SOFS' AND deployment = '*' AND instrument_id ISNULL AND parameter = '*'" )
-        add_netcdf_attributes(ncOut, cur)
-        cur.execute("SELECT * FROM netcdf_attributes WHERE naming_authority IN ('OS', '*') AND mooring = '*' AND deployment = '" + mooring + "' AND instrument_id ISNULL AND parameter = '*'" )
-        add_netcdf_attributes(ncOut, cur)
+        attribute_cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+
+        attribute_cur.execute("SELECT * FROM netcdf_attributes WHERE naming_authority IN ('OS', '*') AND mooring = '*' AND deployment = '*' AND instrument_id ISNULL AND parameter = '*'" )
+        add_netcdf_attributes(ncOut, attribute_cur)
+        attribute_cur.execute("SELECT * FROM netcdf_attributes WHERE naming_authority IN ('OS', '*') AND mooring = 'SOFS' AND deployment = '*' AND instrument_id ISNULL AND parameter = '*'" )
+        add_netcdf_attributes(ncOut, attribute_cur)
+        attribute_cur.execute("SELECT * FROM netcdf_attributes WHERE naming_authority IN ('OS', '*') AND mooring = '*' AND deployment = '" + mooring + "' AND instrument_id ISNULL AND parameter = '*'" )
+        add_netcdf_attributes(ncOut, attribute_cur)
+
+        cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
         # get time range for parameters
         cur.execute(select_time_range)
@@ -183,7 +187,28 @@ def create(mooring):
 
                 # add attributes for the instrument and parameter from the netcdf_attributes table
 
-
+                # this could be one select, but its easier to read like this
+                # select any instrument specific attributes
+                attribute_cur.execute("SELECT * FROM netcdf_attributes WHERE naming_authority IN ('OS', '*') AND "
+                                      "(mooring = '*' OR mooring='Pulse') AND "
+                                      "(deployment = '*' OR deployment = '" + mooring + "') AND "
+                                      "(instrument_id = " + str(instruments[i]) + ") AND "
+                                      "(parameter = '*')")
+                # select any parameter specific attributes
+                add_netcdf_attributes(ncVarOut, attribute_cur)
+                attribute_cur.execute("SELECT * FROM netcdf_attributes WHERE naming_authority IN ('OS', '*') AND "
+                                      "(mooring = '*' OR mooring='Pulse') AND "
+                                      "(deployment = '*' OR deployment = '" + mooring + "') AND "
+                                      "(instrument_id ISNULL) AND "
+                                      "(parameter = '" + row['parameter_code'] + "')")
+                # select any parameter specific and instrument specific attributes
+                add_netcdf_attributes(ncVarOut, attribute_cur)
+                attribute_cur.execute("SELECT * FROM netcdf_attributes WHERE naming_authority IN ('OS', '*') AND "
+                                      "(mooring = '*' OR mooring='Pulse') AND "
+                                      "(deployment = '*' OR deployment = '" + mooring + "') AND "
+                                      "(instrument_id = " + str(instruments[i]) + ") AND "
+                                      "(parameter = '" + row['parameter_code'] + "')")
+                add_netcdf_attributes(ncVarOut, attribute_cur)
 
                 # create the QC aux variable
                 ncVarOut_qc = ncOut.createVariable(var_name + "_QC", "i1", ("TIME",), fill_value=0, zlib=True)
