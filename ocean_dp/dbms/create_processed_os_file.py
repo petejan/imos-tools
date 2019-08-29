@@ -159,6 +159,31 @@ def create(mooring):
             parameter_row = parameter_cursor.fetchone()
             print("parameter :", parameter_row)
 
+            # create a unique list of names of the form <parameter>_<depth/height>m_<n>
+            if len(row['depths']) > 0:
+                dups = {}
+                mylist = [row['parameter_code'] + "_" + str(abs(float(row['depths'][i]))) + "m" for i in range(0, len(row['instruments']))]
+                print('var_name list ', mylist)
+
+                for i, val in enumerate(mylist):
+                    if val not in dups:
+                        # Store index of first occurrence and occurrence value
+                        dups[val] = [i, 1]
+                    else:
+                        # Special case for first occurrence
+                        if dups[val][1] == 1:
+                            mylist[dups[val][0]] += "_" + str(dups[val][1])
+
+                        # Increment occurrence value, index value doesn't matter anymore
+                        dups[val][1] += 1
+
+                        # Use stored occurrence value
+                        mylist[i] += "_" + str(dups[val][1])
+            else:
+                mylist = [row['parameter_code'] for i in range(0, len(row['instruments']))]
+
+            print('var_name unqiue list ', mylist)
+
             for i in range(0, len(row['instruments'])):
 
                 # create a depth variable for each variable (needs a dimension as well)
@@ -167,9 +192,10 @@ def create(mooring):
                 print ("index , instrument, depth", i, instruments[i], row[4][i], np.abs(float(row[4][i])))
 
                 # create a variable name
-                var_name = row[0]
-                if len(row[2]) > 1:
-                    var_name += '_' + str(row[2][i])
+                # var_name = row[0]
+                # if len(row[2]) > 1:
+                #     var_name += '_' + str(row[2][i])
+                var_name = mylist[i]
 
                 # create the variable
                 ncVarOut = ncOut.createVariable(var_name, "f4", ("TIME",), fill_value=np.nan, zlib=True)
