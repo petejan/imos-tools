@@ -162,40 +162,40 @@ def create(mooring):
             # create a unique list of names of the form <parameter>_<depth/height>m_<n>
             if len(row['depths']) > 0:
                 dups = {}
-                mylist = [row['parameter_code'] + "_" + str(abs(float(row['depths'][i]))) + "m" for i in range(0, len(row['instruments']))]
-                print('var_name list ', mylist)
+                var_name_list = [row['parameter_code'] + "_" + str(int(abs(float(row['depths'][i])))) + "m" for i in range(0, len(row['instruments']))]
+                print('var_name list ', var_name_list)
 
-                for i, val in enumerate(mylist):
+                for i, val in enumerate(var_name_list):
                     if val not in dups:
                         # Store index of first occurrence and occurrence value
                         dups[val] = [i, 1]
                     else:
                         # Special case for first occurrence
                         if dups[val][1] == 1:
-                            mylist[dups[val][0]] += "_" + str(dups[val][1])
+                            var_name_list[dups[val][0]] += "_" + str(dups[val][1])
 
                         # Increment occurrence value, index value doesn't matter anymore
                         dups[val][1] += 1
 
                         # Use stored occurrence value
-                        mylist[i] += "_" + str(dups[val][1])
+                        var_name_list[i] += "_" + str(dups[val][1])
             else:
-                mylist = [row['parameter_code'] for i in range(0, len(row['instruments']))]
+                var_name_list = [row['parameter_code'] for i in range(0, len(row['instruments']))]
 
-            print('var_name unqiue list ', mylist)
+            print('var_name unqiue list ', var_name_list)
 
             for i in range(0, len(row['instruments'])):
 
                 # create a depth variable for each variable (needs a dimension as well)
 
                 instruments = row[2]
-                print ("index , instrument, depth", i, instruments[i], row[4][i], np.abs(float(row[4][i])))
+                print ("index , instrument, depth", i, instruments[i], row['depths'][i], np.abs(float(row['depths'][i])))
 
                 # create a variable name
                 # var_name = row[0]
                 # if len(row[2]) > 1:
                 #     var_name += '_' + str(row[2][i])
-                var_name = mylist[i]
+                var_name = var_name_list[i]
 
                 # create the variable
                 ncVarOut = ncOut.createVariable(var_name, "f4", ("TIME",), fill_value=np.nan, zlib=True)
@@ -207,7 +207,10 @@ def create(mooring):
                 ncVarOut.sensor_manufacturer = row[5][i]
                 ncVarOut.sensor_model = row[6][i]
                 ncVarOut.sensor_serial_number = row[7][i]
-                ncVarOut.sensor_nominal_depth = np.double(row[4][i])
+                if row['depths'][i] > 0:
+                    ncVarOut.sensor_nominal_depth = np.double(row['depths'][i])
+                else:
+                    ncVarOut.sensor_nominal_height = -np.double(row['depths'][i])
 
                 ncVarOut.ancillary_variables = var_name + "_QC"
 
