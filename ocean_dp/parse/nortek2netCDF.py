@@ -527,11 +527,11 @@ def parse_file(filepath):
             ncVarOut.comment = v['comment']
             ncVarOut.units = v['unit']
             ncVarOut[:] = vector_array[v['vector_n']]
-        elif 'mat_v' in v:
+        elif 'mat_n' in v:
             ncVarOut = ncOut.createVariable(v['name'], "f4", ("TIME", "MATRIX"), fill_value=0, zlib=True)  # fill_value=0 otherwise defaults to max
             ncVarOut.comment = v['comment']
             ncVarOut.units = v['unit']
-            ncVarOut[:] = mat_array[v['mat_v']]
+            ncVarOut[:] = mat_array[v['mat_n']]
 
     ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
 
