@@ -23,16 +23,11 @@ from netCDF4 import num2date, date2num
 from netCDF4 import Dataset
 import numpy as np
 import struct
-import csv
-from os.path import isfile, isdir, join
-from os import listdir, walk
-
-import re
 import xml.etree.ElementTree as ET
 
 
 def parse_azfp(files):
-    output_name = "SOFS-3-2012-AZFP.nc"
+    output_name = files[1] + ".nc"
 
     print("output file : %s" % output_name)
 
@@ -70,6 +65,14 @@ def parse_azfp(files):
         Y_d = float(f.findall('Y_d')[0].text)
         tilt_y_cal = {'a': Y_a, 'b': Y_b, 'c': Y_c, 'd': Y_d}
 
+    for f in root.findall('.//ULS5_LogConfiguration/Analog_Temperature'):
+        ka = float(f.findall('ka')[0].text)
+        kb = float(f.findall('kb')[0].text)
+        kc = float(f.findall('kc')[0].text)
+        a = float(f.findall('A')[0].text)
+        b = float(f.findall('B')[0].text)
+        c = float(f.findall('C')[0].text)
+        temp_cal = {'ka': ka, 'kb': kb, 'kc': kc, 'a': a, 'b': b, 'c': c}
 
     #
     # build the netCDF file
@@ -142,7 +145,7 @@ def parse_azfp(files):
 
                     t = datetime.datetime(time_dict['year'], time_dict['month'], time_dict['day'],
                                           time_dict['hour'], time_dict['min'], time_dict['second'],
-                                          time_dict['hun_seconds'] * 10 * 1000)
+                                          time_dict['hun_seconds'] * 10 * 1000) # convert hundreth of seconds to microseconds
                     print(t)
 
                     ts = date2num(t, calendar=ncTimesOut.calendar, units=ncTimesOut.units)
@@ -176,19 +179,24 @@ def parse_azfp(files):
                     pings_dict = dict(zip(d, packet))
                     #print(pings_dict)
 
-                    # read sensor data
-                    if sample_n == 0:
-                        tilt_x_var = ncOut.createVariable("TILT_X", "f4", ("TIME",), fill_value=np.nan)
-                        tilt_y_var = ncOut.createVariable("TILT_Y", "f4", ("TIME",), fill_value=np.nan)
-                        battery_var = ncOut.createVariable("BAT", "f4", ("TIME",), fill_value=np.nan)
-                        pressure_var = ncOut.createVariable("PRES", "f4", ("TIME",), fill_value=np.nan)
-                        temperature_var = ncOut.createVariable("TEMP", "f4", ("TIME",), fill_value=np.nan)
-
+                    # sensors
                     data = binary_file.read(8*2)
                     packet = struct.unpack((">8H"), data)
                     d = ['sensors', 'tilt_x', 'tilt_y', 'battery', 'pressure', 'temperature', 'ad6', 'ad7']
                     sensors_dict = dict(zip(d, packet))
                     #print(sensors_dict)
+
+                    # read sensor data
+                    if sample_n == 0:
+                        tilt_x_var = ncOut.createVariable("TILT_X", "f4", ("TIME",), fill_value=np.nan)
+                        tilt_y_var = ncOut.createVariable("TILT_Y", "f4", ("TIME",), fill_value=np.nan)
+                        battery_var = ncOut.createVariable("BAT", "f4", ("TIME",), fill_value=np.nan)
+                        battery_var.long_name = 'instrument battery voltage'
+                        pressure_var = ncOut.createVariable("PRES", "f4", ("TIME",), fill_value=np.nan)
+                        pressure_var.comment = 'not used, no sensor fitted'
+                        temperature_var = ncOut.createVariable("TEMP", "f4", ("TIME",), fill_value=np.nan)
+                        temperature_var.comment = 'instrument temperature'
+
 
                     tilt = sensors_dict['tilt_x']
                     tilt_x_var[sample_n] = tilt_x_cal['a'] + tilt_x_cal['b'] * tilt + tilt_x_cal['c'] * tilt**2 + tilt_x_cal['d'] * tilt**3
@@ -198,7 +206,12 @@ def parse_azfp(files):
                     battery_var[sample_n] = 6.5 * 2.5 * sensors_dict['battery']/65536
 
                     pressure_var[sample_n] = sensors_dict['pressure'] # Not Used ?
-                    temperature_var[sample_n] = sensors_dict['temperature'] # TODO
+
+                    v = 2.5 * sensors_dict['temperature'] / 65536
+
+                    r = (temp_cal['ka'] + temp_cal['kb'] * v ) / (temp_cal['kc'] - v)
+                    lnr = np.log(r)
+                    temperature_var[sample_n] = (1/(temp_cal['a'] + temp_cal['b'] * lnr + temp_cal['c'] * (lnr ** 3))) - 273.15
 
                     # public double getVolts(int i)
                     # {
