@@ -227,7 +227,7 @@ for path_file in sys.argv[1:len(sys.argv)]:
         var = np.squeeze(var)
 
         # create range from only good data
-        qc_m = np.ma.masked_where(qc > 1, var)
+        qc_m = np.ma.masked_where((qc == 9) | (qc == 4) | (qc == 6), var)
         mx = qc_m.max()
         mi = qc_m.min()
 

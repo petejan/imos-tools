@@ -42,6 +42,7 @@ serial_expr     = r"MS9.* .SN:(.*)."
 setup_expr      = r"(.*).=.(.*)$"
 in_air_expr     = r"IN-AIR$"
 in_water_expr   = r"IN-WATER$"
+wavelengths_expr   = r"WAVELENGTHS.=.\[(.*)\]$"
 
 def parse(file):
 
@@ -101,6 +102,15 @@ def parse(file):
                     if matchObj:
                         setup.append(("IN_WATER", "1"))
 
+                    matchObj = re.match(wavelengths_expr, line)
+                    if matchObj:
+                        #print("wavelengths_expr:matchObj.group() : ", matchObj.group())
+                        #print("wavelengths_expr:matchObj.group(1) : ", matchObj.group(1))
+
+                        wavelengths = matchObj.group(1)
+                        wlens = [float(x) for x in wavelengths.split(",")]
+                        #print (wlens)
+
                 else:
                     lineSplit = line.split(',')
                     if (lineSplit[0].startswith('MS9')):
@@ -154,7 +164,11 @@ def parse(file):
         print(s)
         ncOut.setncattr("comment_setup_" + s[0].lower(), s[1])
 
-    ncOut.createDimension("WAVELENGTH", 9)
+    ncOut.createDimension("WAVELENGTH", len(wlens))
+    ncVarOut = ncOut.createVariable('WAVELENGTH', "f4", ("WAVELENGTH"), fill_value=None)
+    ncVarOut.units = "nm"
+    ncVarOut[:] = wlens
+
     ncVarOut = ncOut.createVariable('radiation', "f4", ("TIME", "WAVELENGTH"), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
     ncVarOut.units = units
     data_array = np.array([d for d in data])
