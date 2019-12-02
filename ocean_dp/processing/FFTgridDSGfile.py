@@ -46,42 +46,71 @@ def FFTgridDSGfile(netCDFfiles):
 
     print("Read and convert time")
     time_var = ds.variables["TIME"]
-    time = num2date(time_var[:], units=time_var.units, calendar=time_var.calendar)
-    first_hour = time[0].replace(minute=0, second=0, microsecond=0)
+    #time = num2date(time_var[:], units=time_var.units, calendar=time_var.calendar)
+    #first_hour = time[0].replace(minute=0, second=0, microsecond=0)
 
-    print("first_hour ", first_hour)
+    t = time_var[:] * 24
+    hours = t
 
-    hours = np.array([(t - first_hour).total_seconds()/3600 for t in time])
-    print("hours ", hours[0], hours[-1])
+    # scale time to -pi to pi
+    hours_min = np.min(hours)
+    hours_max = np.max(hours)
+    mid_hours = (hours_max + hours_min)/2
 
-    mid_hours = np.round((hours[-1] - hours[0]) / 2)
-    print("mid hours, total ", mid_hours, (hours[-1] - hours[0]))
+    print("time min, max", hours_min, hours_max, num2date(hours_max/24, units=time_var.units, calendar=time_var.calendar), num2date(hours_min/24, units=time_var.units, calendar=time_var.calendar), num2date(mid_hours/24, units=time_var.units, calendar=time_var.calendar))
 
-    t2pi = 2*np.pi * (mid_hours - hours)/ hours[-1]
+    t2pi = 2*np.pi * (hours - mid_hours) / (hours_max - hours_min)
 
-    depths=[0,100,200,500,1000,1500,2000,2500,3500]
-    d2pi = 2*np.pi * (pres - 1500)/1500
+    # scale pressure to -pi to pi
 
-    nt_points = int(hours[-1] - hours[0])
-    nd_points = 9
+    pres_min = np.min(pres)
+    pres_max = np.max(pres)
+    pres_mid = (pres_max + pres_min)/2
+
+    print("pres min, max", pres_min, pres_max, pres_mid)
+
+    d2pi = 2*np.pi * (pres - pres_mid) / (pres_max - pres_min)
+
+    #plt.plot(t2pi)
+    #plt.show()
+
+    nt_points = int(hours_max - hours_min)
+    nd_points = 20
     print(nt_points, nd_points)
 
-    fft = np.zeros(nt_points, nd_points, dtype=complex)
+    fft = np.zeros([nt_points, nd_points], dtype=np.complex128)
 
     print("Calc FFT")
-    res = finufftpy.nufft1d2(t2pi, d2pi, temp_var[:], 0, 1e-12, nt_points, nd_points, fft, debug=True)
+
+    x = t2pi
+    y = d2pi
+    c = np.array(temp_var[:], dtype=np.complex128)
+    c.real = temp_var[:]
+    c.imag = 0
+    print(c)
+
+    print("size ", len(x), len(y), len(c))
+    # finufftpy.nufft2d2(x, y, c, isign, eps, f, debug=0, spread_debug=0, spread_sort=2, fftw=0, modeord=0, chkbnds=1, upsampfac=2.0)
+    res = finufftpy.nufft2d2(x, y, c, 0, 1e-12, fft)
 
     print("fft res", res)
+    print(fft)
+
+    for x in range(0, nd_points):
+        plt.plot(abs(fft[:,x]))
+    plt.grid(True)
+    plt.show()
 
     index_var = ds.variables["instrument_index"]
     idx = index_var[:]
     instrument_id_var = ds.variables["instrument_id"]
+    #time = num2date(time_var[:], units=time_var.units, calendar=time_var.calendar)
 
     #print(idx)
     i = 0
     for x in chartostring(instrument_id_var[:]):
         #print (i, x, time[idx == 1], pres[idx == i])
-        plt.plot(time[idx == i], pres[idx == i])  # , marker='.'
+        #plt.plot(time[idx == i], pres[idx == i])  # , marker='.'
         i += 1
 
     plt.gca().invert_yaxis()
