@@ -193,6 +193,7 @@ def sbe_asc_parse(files):
                 if matchObj:
                     print("n_samples_expr:matchObj.group() : ", matchObj.group())
                     number_samples = int(matchObj.group(1))
+                    # TODO: need if SBE37/39 here
                     #nVariables = 3
                     nVariables = 2
 
@@ -203,6 +204,7 @@ def sbe_asc_parse(files):
                     data = np.zeros((number_samples, nVariables))
                     data.fill(np.nan)
                     name.insert(0, {'col': 0, 'var_name': "TEMP", 'comment': None, 'unit': "degrees_Celsius"})
+                    # TODO: need if SBE37/39 here
                     #name.insert(1, {'col': 1, 'var_name': "CNDC", 'comment': None, 'unit': "S/m"})
                     #name.insert(2, {'col': 2, 'var_name': "PRES", 'comment': None, 'unit': "dbar"})
                     name.insert(1, {'col': 1, 'var_name': "PRES", 'comment': None, 'unit': "dbar"})
