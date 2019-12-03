@@ -37,7 +37,7 @@ def FFTgridDSGfile(netCDFfiles):
     vs = ds.get_variables_by_attributes(long_name='actual depth')
 
     pres_var = vs[0]
-    pres = pres_var[:]
+    pres = 10*np.log10(pres_var[:])
 
     #plt.plot(pres)
     #plt.show()
@@ -78,7 +78,7 @@ def FFTgridDSGfile(netCDFfiles):
     nd_points = 20
     print(nt_points, nd_points)
 
-    fft = np.zeros([nt_points, nd_points], dtype=np.complex128)
+    fft = np.zeros([nt_points, nd_points], dtype=np.complex128, order='F')
 
     print("Calc FFT")
 
@@ -90,16 +90,32 @@ def FFTgridDSGfile(netCDFfiles):
     print(c)
 
     print("size ", len(x), len(y), len(c))
+
     # finufftpy.nufft2d2(x, y, c, isign, eps, f, debug=0, spread_debug=0, spread_sort=2, fftw=0, modeord=0, chkbnds=1, upsampfac=2.0)
-    res = finufftpy.nufft2d2(x, y, c, 0, 1e-12, fft)
+    #finufftpy.nufft2d1(x, y, c, isign, eps, ms, mt, f, debug=0, spread_debug=0, spread_sort=2, fftw=0, modeord=0, chkbnds=1, upsampfac=2.0)¶
+    res = finufftpy.nufft2d1(x, y, c, 0, 1e-12, nt_points, nd_points, fft)
 
     print("fft res", res)
     print(fft)
 
     for x in range(0, nd_points):
-        plt.plot(abs(fft[:,x]))
+        plt.plot(10*np.log10(abs(fft[:,x])))
     plt.grid(True)
     plt.show()
+
+    F1 = np.fft.ifft2(fft)
+    f2 = np.fft.fftshift(F1)
+
+    print("inverted ", f2.shape, len(hours))
+    first_hour = num2date(hours_min/24, units=time_var.units, calendar=time_var.calendar).replace(minute=0, second=0, microsecond=0)
+    td = [first_hour + timedelta(hours=x) for x in range(nt_points)]
+
+    for x in range(0, nd_points):
+        plt.plot(td, abs(f2[:,x])/(len(hours)/(nt_points)))
+    plt.grid(True)
+    plt.xticks(fontsize=6)
+    plt.show()
+
 
     index_var = ds.variables["instrument_index"]
     idx = index_var[:]
@@ -113,8 +129,8 @@ def FFTgridDSGfile(netCDFfiles):
         #plt.plot(time[idx == i], pres[idx == i])  # , marker='.'
         i += 1
 
-    plt.gca().invert_yaxis()
-    plt.grid(True)
+    #plt.gca().invert_yaxis()
+    #plt.grid(True)
 
     # close the netCDF file
     ds.close()

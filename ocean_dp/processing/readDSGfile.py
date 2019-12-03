@@ -35,12 +35,12 @@ def readDSGfile(netCDFfiles):
     vs = ds.get_variables_by_attributes(long_name='actual depth')
 
     pres_var = vs[0]
-    pres = pres_var[:]
-
-    plt.plot(pres)
-    plt.show()
-
     var_temp = ds.variables["TEMP"]
+
+    plot_var = var_temp[:]
+
+    plt.plot(plot_var)
+    plt.show()
 
     time_var = ds.variables["TIME"]
     time = num2date(time_var[:], units=time_var.units, calendar=time_var.calendar)
@@ -52,11 +52,11 @@ def readDSGfile(netCDFfiles):
     #print(idx)
     i = 0
     for x in chartostring(instrument_id_var[:]):
-        print (i, x, time[idx == 1], pres[idx == i])
-        plt.plot(time[idx == i], pres[idx == i])  # , marker='.'
+        print (i, x, time[idx == 1], plot_var[idx == i])
+        plt.plot(time[idx == i], plot_var[idx == i])  # , marker='.'
         i += 1
 
-    plt.gca().invert_yaxis()
+    #plt.gca().invert_yaxis()
     plt.grid(True)
 
     # close the netCDF file
