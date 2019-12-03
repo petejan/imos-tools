@@ -193,7 +193,8 @@ def sbe_asc_parse(files):
                 if matchObj:
                     print("n_samples_expr:matchObj.group() : ", matchObj.group())
                     number_samples = int(matchObj.group(1))
-                    nVariables = 3
+                    #nVariables = 3
+                    nVariables = 2
 
                 matchObj = re.match(end_expr, line)
                 if matchObj:
@@ -202,8 +203,9 @@ def sbe_asc_parse(files):
                     data = np.zeros((number_samples, nVariables))
                     data.fill(np.nan)
                     name.insert(0, {'col': 0, 'var_name': "TEMP", 'comment': None, 'unit': "degrees_Celsius"})
-                    name.insert(1, {'col': 1, 'var_name': "CNDC", 'comment': None, 'unit': "S/m"})
-                    name.insert(2, {'col': 2, 'var_name': "PRES", 'comment': None, 'unit': "dbar"})
+                    #name.insert(1, {'col': 1, 'var_name': "CNDC", 'comment': None, 'unit': "S/m"})
+                    #name.insert(2, {'col': 2, 'var_name': "PRES", 'comment': None, 'unit': "dbar"})
+                    name.insert(1, {'col': 1, 'var_name': "PRES", 'comment': None, 'unit': "dbar"})
 
             else:
                 dataL = True
@@ -226,16 +228,17 @@ def sbe_asc_parse(files):
                     dataL = False
 
                 if dataL and (line.count(",") > 0):
-                    lineSplit = line.split(",")
-                    #print(data)
+                    lineSplit = line.strip().split(",")
+                    print(line.strip())
                     splitVarNo = 0
                     try:
                         for v in lineSplit:
-                            data[number_samples_read][splitVarNo] = float(lineSplit[splitVarNo])
+                            if splitVarNo < len(name):
+                                data[number_samples_read][splitVarNo] = float(lineSplit[splitVarNo])
                             splitVarNo = splitVarNo + 1
                         number_samples_read = number_samples_read + 1
                     except ValueError:
-                        #print("bad line")
+                        print("bad line")
                         pass
 
                     dataLine = dataLine + 1

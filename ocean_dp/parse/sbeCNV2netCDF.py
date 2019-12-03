@@ -23,6 +23,7 @@ from datetime import datetime
 from netCDF4 import num2date
 from netCDF4 import Dataset
 import numpy as np
+from dateutil import parser
 
 # source file must have 'timek' column for time
 #  flag column is excluded
@@ -41,9 +42,12 @@ import numpy as np
 # map sea bird name to netCDF variable name
 nameMap = {}
 nameMap["TIMEK"] = "TIME"
+nameMap["TIMEJ"] = "TIME"
 nameMap["TV290C"] = "TEMP"
+nameMap["T090"] = "TEMP"
 nameMap["COND0SM"] = "CNDC"
 nameMap["PRDM"] = "PRES"
+nameMap["PR"] = "PRES"
 nameMap["SAL00"] = "PSAL"
 nameMap["SBEOPOXMMKG"] = "DOX2"
 nameMap["SBEOPOXMLL"] = "DOXS"
@@ -71,7 +75,7 @@ sampleExpr = r"\* sample interval = (\d+) seconds"
 startTimeExpr = r"# start_time = (.*)"
 intervalExpr = r"# interval = (\S+): (\d+)"
 
-nvalues_expr = r"# nvalues = (\d+)"
+nvalues_expr = r"# nvalues =\s*(\d+)"
 nquant_expr = r"# nquan = (\d+)"
 
 use_expr = r".*<(Use.*)>(.?)<\/\1>"
@@ -84,7 +88,8 @@ sensor_type = r".*<(.*) SensorID=\"(.*)\" >"
 comment = r"<!--(.+?)-->"
 tag = r".*<(.+?)>(.+)<\/\1>|.*<(.+=.*)>"
 
-instr_exp = "\* Sea-Bird.?(\S+)"
+instr_exp = r"\* Sea-Bird.?(\S+)"
+sn_expr = r"\* SBE\s+\S+\s+V\s+\S+\s+SERIAL NO. (\S*)"
 
 #
 # parse the file
@@ -172,6 +177,12 @@ def main(files):
                     #print("use_expr:matchObj.group(2) : ", matchObj.group(2))
                     use_eqn = matchObj.group(2)
 
+                matchObj = re.match(startTimeExpr, line)
+                if matchObj:
+                    print("start_time_expr:matchObj.group() : ", matchObj.group())
+                    start_time = parser.parse(matchObj.group(1))
+                    print("start time ", start_time)
+
                 matchObj = re.match(equa_group, line)
                 if matchObj:
                     #print("equa_group:matchObj.group() : ", matchObj.group())
@@ -193,6 +204,12 @@ def main(files):
                     instrument_model = matchObj.group(1)
                     instrument_serialnumber = matchObj.group(2)
 
+                matchObj = re.match(sn_expr, line)
+                if matchObj:
+                    #print("sn_expr:matchObj.group() : ", matchObj.group())
+                    print("sn_expr:matchObj.group(1) : ", matchObj.group(1))
+                    instrument_serialnumber = matchObj.group(1)
+
                 matchObj = re.match(sampleExpr, line)
                 if matchObj:
                     #print("sampleExpr:matchObj.group() : ", matchObj.group())
@@ -209,7 +226,7 @@ def main(files):
                 matchObj = re.match(nvalues_expr, line)
                 if matchObj:
                     #print("nvalues_expr:matchObj.group() : ", matchObj.group())
-                    #print("nvalues_expr:matchObj.group(1) : ", matchObj.group(1))
+                    print("nvalues_expr:matchObj.group(1) : ", matchObj.group(1))
                     number_samples = int(matchObj.group(1))
 
                 matchObj = re.match(name_expr, line)
@@ -319,7 +336,10 @@ def main(files):
         varName = v['var_name']
         if varName == 'TIME':
             #print(data[:, v['col']])
-            ncTimesOut[:] = (odata[:, v['col']] + t_epoc) / 3600 / 24  # could use netCDF4.date2num here, although odata is in seconds since 2000-01-01
+            if v['unit'] == 'julian days':
+                ncTimesOut[:] = (odata[:, v['col']] + (start_time.year - 1950) * 365)  # could use netCDF4.date2num here, although odata is in days since start_time year
+            else:
+                ncTimesOut[:] = (odata[:, v['col']] + t_epoc) / 3600 / 24  # could use netCDF4.date2num here, although odata is in seconds since 2000-01-01
         else:
             ncVarOut = ncOut.createVariable(varName, "f4", ("TIME",), fill_value=np.nan, zlib=True) # fill_value=nan otherwise defaults to max
             ncVarOut.comment = v['comment']
