@@ -94,14 +94,14 @@ def mpess(filepath):
 
                 print("info block")
 
-                #packet = binary_file.read(100)
-                #info = struct.unpack(">LLBBH6LlLbBB3BHLLL3f8s3fL", packet)
+                packet = binary_file.read(100)
+                info = struct.unpack(">LLBBH6LlLbBB3BHLLL3f8s3fL", packet)
 
-                packet = binary_file.read(104)
-                info = struct.unpack(">LLHH6LlLbBBBLL3f8s3f4s2fL", packet)
+                #packet = binary_file.read(104)
+                #info = struct.unpack(">LLHH6LlLbBBBLL3f8s3f4s2fL", packet)
 
-                #info_dict = dict(zip(info_keys, info))
-                info_dict = dict(zip(info_keys_21, info))
+                info_dict = dict(zip(info_keys, info))
+                #info_dict = dict(zip(info_keys_21, info))
 
                 print("serial number 0x%08x" % info_dict["Sys_SerialNumber"])
                 print(info_dict)
