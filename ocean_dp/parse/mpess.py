@@ -241,7 +241,8 @@ def mpess(filepath):
                 #print("normal keys", normal_keys, "unpck", unpack)
                 samples = info_dict["Dep_Norm_NrOfSamples"]
 
-                pres = single_sample_dict['pres']
+                if sensors & sensor_pres_msk != 0:
+                    pres = single_sample_dict['pres']
 
                 # read all samples
                 while samples > 0:
@@ -256,7 +257,8 @@ def mpess(filepath):
                     # add all the data to a dictionary
                     normal_dict = {'ts': ds}
                     normal_dict.update({'burst': burst_number})
-                    normal_dict.update({'pres': pres})
+                    if sensors & sensor_pres_msk != 0:
+                        normal_dict.update({'pres': pres})
                     normal_dict.update(dict(zip(normal_keys, d)))
 
                     #print("normal sample ", normal_dict)
@@ -285,8 +287,9 @@ def mpess(filepath):
                     # probably should remove the last sample also
 
                 # update the last pressure entry
-                pres = end_single_sample_dict['pres']
-                normal_dict.update({'pres': pres})
+                if sensors & sensor_pres_msk != 0:
+                    pres = end_single_sample_dict['pres']
+                    normal_dict.update({'pres': pres})
                 data_array[len(data_array)-1] = normal_dict
 
                 burst_number += 1
