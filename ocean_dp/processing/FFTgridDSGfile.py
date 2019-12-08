@@ -37,7 +37,7 @@ def FFTgridDSGfile(netCDFfiles):
     vs = ds.get_variables_by_attributes(long_name='actual depth')
 
     pres_var = vs[0]
-    pres = 10*np.log10(pres_var[:])
+    pres = pres_var[:]
 
     #plt.plot(pres)
     #plt.show()
@@ -78,22 +78,22 @@ def FFTgridDSGfile(netCDFfiles):
     nd_points = 20
     print(nt_points, nd_points)
 
-    fft = np.zeros([nt_points, nd_points], dtype=np.complex128, order='F')
+    fft = np.full([nt_points, nd_points], np.nan, dtype=np.complex128, order='F', )
 
     print("Calc FFT")
 
     x = t2pi
     y = d2pi
-    c = np.array(temp_var[:], dtype=np.complex128)
-    c.real = temp_var[:]
-    c.imag = 0
+    c = np.array(temp_var[:])
+    #c.real = temp_var[:]
+    #c.imag = 0
     print(c)
 
     print("size ", len(x), len(y), len(c))
 
     # finufftpy.nufft2d2(x, y, c, isign, eps, f, debug=0, spread_debug=0, spread_sort=2, fftw=0, modeord=0, chkbnds=1, upsampfac=2.0)
     #finufftpy.nufft2d1(x, y, c, isign, eps, ms, mt, f, debug=0, spread_debug=0, spread_sort=2, fftw=0, modeord=0, chkbnds=1, upsampfac=2.0)¶
-    res = finufftpy.nufft2d1(x, y, c, 0, 1e-12, nt_points, nd_points, fft)
+    res = finufftpy.nufft2d1(x, y, c, 0, 1e-15, nt_points, nd_points, fft, debug=1, spread_debug=1, spread_sort=0)
 
     print("fft res", res)
     print(fft)
@@ -136,6 +136,37 @@ def FFTgridDSGfile(netCDFfiles):
     ds.close()
 
     plt.show()
+
+    ncOut = Dataset("fft-bin.nc", 'w', format='NETCDF4')
+
+    # add time
+    tDim = ncOut.createDimension("TIME", nt_points)
+    ncTimesOut = ncOut.createVariable("TIME", "d", ("TIME",), zlib=True)
+    ncTimesOut.long_name = "time"
+    ncTimesOut.units = "days since 1950-01-01 00:00:00 UTC"
+    ncTimesOut.calendar = "gregorian"
+    ncTimesOut.axis = "T"
+    ncTimesOut[:] = hours_min / 24
+
+    bin_dim = ncOut.createDimension("BIN", nd_points)
+    bin_var = ncOut.createVariable("BIN", "d", ("BIN",), zlib=True)
+    bin_var[:] = range(0, nd_points)
+
+    # add variables
+
+    nc_var_out = ncOut.createVariable("TEMP", "f4", ("TIME", "BIN"), fill_value=np.nan, zlib=True)
+    print("shape ", f2.shape, nc_var_out.shape)
+
+    nc_var_out[:] = abs(f2)
+
+    # add some summary metadata
+    ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
+
+    # add creating and history entry
+    ncOut.setncattr("date_created", datetime.utcnow().strftime(ncTimeFormat))
+    ncOut.setncattr("history", datetime.utcnow().strftime("%Y-%m-%d") + " created from file " + netCDFfiles[1])
+
+    ncOut.close()
 
 
 if __name__ == "__main__":

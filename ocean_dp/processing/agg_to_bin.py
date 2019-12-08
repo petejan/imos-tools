@@ -29,12 +29,13 @@ import sys
 
 
 def agg_to_bin(netCDFfiles):
-    ds = Dataset(netCDFfiles[1], 'a')
+    ds = Dataset(netCDFfiles[1], 'r')
 
     vs = ds.get_variables_by_attributes(standard_name='sea_water_pressure_due_to_sea_water')
-    print("sae water pressure variables", vs)
+    print("number sea_water_pressure_due_to_sea_water", len(vs))
 
     vs = ds.get_variables_by_attributes(long_name='actual depth')
+    print("number actual depth", len(vs))
 
     pres_var = vs[0]
     pres = pres_var[:]
@@ -57,20 +58,20 @@ def agg_to_bin(netCDFfiles):
     hours_max = np.max(hours)
 
     print("time max, min", hours_max, hours_min)
-    print("time max, min", num2date(hours_max/24, units=time_var.units, calendar=time_var.calendar), num2date(hours_min/24, units=time_var.units, calendar=time_var.calendar))
+    print("time max, min", num2date(hours_min/24, units=time_var.units, calendar=time_var.calendar), num2date(hours_max/24, units=time_var.units, calendar=time_var.calendar))
 
-    time_bins = np.arange(np.round(hours_min - 0.5), np.round(hours_max + 0.5))
+    time_bins = np.arange(np.ceil(hours_min+0.5), np.floor(hours_max-0.5))
     nt_points = len(time_bins)
+    print("time bin range ", num2date(time_bins[0]/24, units=time_var.units, calendar=time_var.calendar), num2date(time_bins[-1]/24, units=time_var.units, calendar=time_var.calendar))
 
     # make pressure bins
 
-    pres_min = 0
+    pres_min = np.min(pres)
     pres_max = np.max(pres)
-
     print("pres min, max", pres_min, pres_max)
 
     pres_bins = np.arange(0, np.round(pres_max + 10, -1), 10)
-    print("pres range ", pres_bins[0], pres_bins[-1])
+    print("pres bin range ", pres_bins[0], pres_bins[-1])
 
     nd_points = len(pres_bins)
 
@@ -81,6 +82,7 @@ def agg_to_bin(netCDFfiles):
 
     # bin data, looping over input array
     for i in range(0, len(temp)):
+        # compute the location of this data point
         h = int(np.round(hours[i] - hours_min + 0.5)) - 1
         d = int(np.round(pres[i] - pres_min + 5, -1)/ 10)
         #print (i, hours[i], pres[i], temp[i], h, d)
@@ -88,14 +90,19 @@ def agg_to_bin(netCDFfiles):
             bin[h, d] = temp[i]
         else:
             bin[h, d] += temp[i]
+        # count number of points
         count[h, d] += 1
 
-    print("count ", np.sum(count), len(hours), sum(bin))
+    print("count ", np.sum(count), len(hours))
+    only_time = ~np.isnan(bin).all(axis=1)
+    only_depth = ~np.isnan(bin).all(axis=0)
+    print("axis=0", only_time)
+    print("axis=1", only_depth)
+    print("Shape only_time, only_depth ", bin.shape, only_time.shape, only_depth.shape)
+    #s = bin[only_time, :]
+    #print("Shape ", s)
 
-    # close the netCDF file
-    ds.close()
-
-    ncOut = Dataset("bin.nc", 'w', format='NETCDF4')
+    ncOut = Dataset(netCDFfiles[1].replace("aggregated", "binned"), 'w', format='NETCDF4')
 
     # add time
     tDim = ncOut.createDimension("TIME", nt_points)
@@ -114,16 +121,25 @@ def agg_to_bin(netCDFfiles):
 
     nc_var_out = ncOut.createVariable("TEMP", "f4", ("TIME", "BIN"), fill_value=np.nan, zlib=True)
     print("shape ", bin.shape, nc_var_out.shape)
-    nc_var_out[:] = bin/count
+
+    mean = bin/count
+    nc_var_out[:] = mean
 
     # add some summary metadata
     ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
+
+    for att in ds.ncattrs():
+        print("copying attribute ", att, "value", ds.getncattr(att))
+        ncOut.setncattr(att, ds.getncattr(att))
 
     # add creating and history entry
     ncOut.setncattr("date_created", datetime.utcnow().strftime(ncTimeFormat))
     ncOut.setncattr("history", datetime.utcnow().strftime("%Y-%m-%d") + " created from file " + netCDFfiles[1])
 
     ncOut.close()
+
+    # close the netCDF file
+    ds.close()
 
 
 if __name__ == "__main__":

@@ -16,15 +16,16 @@ if __name__ == '__main__':
 
     #skips = Crawl.SKIPS + [".*FV00"]
     #skips = Crawl.SKIPS + [".*FV00", ".*realtime", ".*Real-time", ".*daily", ".*REAL_TIME", ".*regridded", ".*burst", ".*gridded", ".*long-timeseries"]
-    skips = Crawl.SKIPS + [".*realtime", ".*Real-time", ".*daily", ".*REAL_TIME", ".*regridded", ".*burst", ".*gridded", ".*long-timeseries"]
+    skips = Crawl.SKIPS + [".*realtime", ".*Real-time", ".*daily", ".*REAL_TIME", ".*regridded", ".*burst", ".*gridded", ".*long-timeseries", ".*aggregated_timeseries"]
     #skips = Crawl.SKIPS + [".*realtime", ".*Real-time", ".*daily", ".*REAL_TIME", ".*regridded"]
     #skips = Crawl.SKIPS + [".*regridded"]
 
     crawl_path = 'http://thredds.aodn.org.au/thredds/catalog/IMOS/' + path + '/catalog.xml'
     #crawl_path='http://thredds.aodn.org.au/thredds/catalog/IMOS/ANMN/NRS/NRSKAI/Biogeochem_profiles/catalog.html'
 
-    c = Crawl(crawl_path, select=['.*FV01'], skip=skips)
-    c = Crawl(crawl_path, select=['.*'], skip=skips)
+    #c = Crawl(crawl_path, select=['.*FV01'], skip=skips)
+    c = Crawl(crawl_path, select=['.*FV00'], skip=skips)
+    #c = Crawl(crawl_path, select=['.*'], skip=skips)
 
     #c = Crawl('http://dods.ndbc.noaa.gov/thredds/catalog/oceansites/DATA/IMOS-EAC/catalog.xml', select=['.*'])
     #c = Crawl('http://dods.ndbc.noaa.gov/thredds/catalog/oceansites/DATA/IMOS-ITF/catalog.xml', select=['.*'])
@@ -49,7 +50,7 @@ if __name__ == '__main__':
                 #print(site)
 
                 # check for variable attributes
-                var = nc.get_variables_by_attributes(long_name='sea_surface_wave_significant_height')
+                var = nc.get_variables_by_attributes(standard_name='sea_water_pressure_due_to_sea_water')
                 #print(var)
                 if var:
                     if use == 1:
