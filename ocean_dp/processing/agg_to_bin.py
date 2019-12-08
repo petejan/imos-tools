@@ -28,10 +28,12 @@ import matplotlib.pyplot as plt
 import sys
 
 
-def FFTgridDSGfile(netCDFfiles):
+def agg_to_bin(netCDFfiles):
     ds = Dataset(netCDFfiles[1], 'a')
 
     vs = ds.get_variables_by_attributes(standard_name='sea_water_pressure_due_to_sea_water')
+    print("sae water pressure variables", vs)
+
     vs = ds.get_variables_by_attributes(long_name='actual depth')
 
     pres_var = vs[0]
@@ -123,8 +125,6 @@ def FFTgridDSGfile(netCDFfiles):
 
     ncOut.close()
 
-    plt.show()
-
 
 if __name__ == "__main__":
-    FFTgridDSGfile(sys.argv)
+    agg_to_bin(sys.argv)
