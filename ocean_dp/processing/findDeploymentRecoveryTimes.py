@@ -28,7 +28,7 @@ def main(netCDFfile):
 
     print(netCDFfile)
 
-    ds = Dataset(netCDFfile, 'r')
+    ds = Dataset(netCDFfile, 'a')
 
     if "PRES" in ds.variables:
         var_pres = ds.variables["PRES"]
@@ -40,31 +40,38 @@ def main(netCDFfile):
 
         median = np.median(p.compressed())
         print("pressure median", median)
-        find = np.where(p.compressed() > median/2)
-        #print("find ", find)
-        dep_recovery = [find[0][0], find[0][-1]]
-        print("deployment ", find[0][0], " recovery ", find[0][-1])
-        print(p[dep_recovery])
-        ts = num2date(t[dep_recovery], units=unit)
 
-        ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
+        if median > 1:
+            find = np.where(p.compressed() > median/2)
+            #print("find ", find)
+            dep_recovery = [find[0][0], find[0][-1]]
+            print("deployment ", find[0][0], " recovery ", find[0][-1])
+            print(p[dep_recovery])
+            ts = num2date(t[dep_recovery], units=unit)
 
-        print('time deployment ', ts[0].strftime(ncTimeFormat))
-        print('time recovery ', ts[-1].strftime(ncTimeFormat))
+            ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
 
-        t_deploy = None
-        t_recover = None
-        if "time_deployment_start" in ds.ncattrs():
-            t_deploy = ds.time_deployment_start
-        if "time_deployment_end" in ds.ncattrs():
-            t_recovery = ds.time_deployment_end
+            print('time deployment ', ts[0].strftime(ncTimeFormat))
+            print('time recovery ', ts[-1].strftime(ncTimeFormat))
 
-        if t_deploy:
-            t_diff = parser.parse(t_deploy, ignoretz=True) - ts[0]
-            print("time deploy to estimated   ", t_diff, "should be positive")
-        if t_recovery:
-            t_diff = ts[-1] - parser.parse(t_recovery, ignoretz=True)
-            print("time recovery to estimated ", t_diff, "should be positive")
+            t_deploy = None
+            t_recovery = None
+            if "time_deployment_start" in ds.ncattrs():
+                t_deploy = ds.time_deployment_start
+            if "time_deployment_end" in ds.ncattrs():
+                t_recovery = ds.time_deployment_end
+
+            if t_deploy:
+                t_diff = parser.parse(t_deploy, ignoretz=True) - ts[0]
+                print("time deploy to estimated   ", t_diff, "should be positive")
+            else:
+                ds.time_deployment_start = ts[0].strftime(ncTimeFormat)
+            if t_recovery:
+                t_diff = ts[-1] - parser.parse(t_recovery, ignoretz=True)
+                print("time recovery to estimated ", t_diff, "should be positive")
+            else:
+                ds.time_deployment_end = ts[-1].strftime(ncTimeFormat)
+
 
     else:
         print("no pressure variable in file")
