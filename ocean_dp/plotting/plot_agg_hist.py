@@ -37,6 +37,11 @@ def plot_binned(netCDFfiles):
     ds = Dataset(netCDFfiles[1], 'r')
 
     depth = ds.variables["DEPTH"]
+    d = depth[:]
+    dmin = np.floor(np.min(d))
+    dmax = np.ceil(np.max(d))
+    print("D range", dmin, dmax)
+
     temp = ds.variables["TEMP"]
     time = ds.variables["TIME"]
     t_unit = ds.variables['TIME'].units  # get unit  "days since 1950-01-01T00:00:00Z"
@@ -46,12 +51,11 @@ def plot_binned(netCDFfiles):
     except AttributeError:  # Attribute doesn't exist
         t_cal = u"gregorian"  # or standard
 
-    dt_time = num2date(time[:], units=t_unit, calendar=t_cal)
+    dt_time = num2date(time[:], units=t_unit, calendar=t_cal) # why is this so slow
 
-    d = depth[:]
     t = temp[:]
 
-    h = np.histogram(d, bins=np.arange(0, 3500, 1))
+    h = np.histogram(d, bins=np.arange(0, dmax, 1))
     plt.plot(h[0], h[1][0:-1], '.-')
     plt.gca().invert_yaxis()
     plt.grid(True)
