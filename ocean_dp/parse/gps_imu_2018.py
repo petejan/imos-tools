@@ -29,6 +29,16 @@ import sys
 import struct
 
 
+#define PKT_TYPE_NMEA           0x08
+#define PKT_TYPE_UBX            0x01
+#define PKT_TYPE_RTC            0x04
+#define PKT_TYPE_MPU            0x02
+#define PKT_TYPE_ADC            0x05
+#define PKT_TYPE_FXS            0x03
+#define PKT_TYPE_COUNT          0x06
+#define PKT_TYPE_STRING         0x07
+
+
 def gps_imu_2018(netCDFfiles):
 
     ncOut = Dataset("gps.nc", 'w', format='NETCDF4')
@@ -104,26 +114,27 @@ def gps_imu_2018(netCDFfiles):
                                 if not ts_start:
                                     ts_start = ts
                                 imu_n = 0
-                            if type == 0:
+                            elif type == 0:
                                 nmea = pkt.decode('utf-8')
                                 #print("%d pos NMEA %s" % ( pos, nmea[:-2] ))
-                            if type == 1:
+                            elif type == 1:
                                 ubx = struct.unpack("<BBBBH", pkt[0:6])
                                 #print ("ubx " , ubx)
-                            if type == 7:
+                            elif type == 7:
                                 text = pkt.decode('utf-8')
                                 text = text[:-1]
                                 print ("text : %s" % text)
-                            if type == 5:
+                            elif type == 5:
                                 # print("pkt " , ord(pkt[0]), ord(pkt[1]), ord(pkt[2]), ord(pkt[3]))
                                 adc = struct.unpack("<i", pkt)
                                 #print "adc ", adc[0]
-                            if type == 6:
+                            elif type == 6:
                                 # print("pkt " , ord(pkt[0]), ord(pkt[1]), ord(pkt[2]), ord(pkt[3]))
-                                count = struct.unpack("<HHHHHHHHH", pkt)
+                                print("len ", len(pkt))
+                                count = struct.unpack("<HHHHHHHH", pkt)
                                 print("count ", count)
                                 print("found ", typeCount)
-                            if type == 3:
+                            elif type == 3:
                                 # there are 2440 of these in 1 min, or 40.67 / sec
                                 imu = struct.unpack("<hhhhhhhhhhlllll", pkt)
                                 #print ("imu  " , imu)
@@ -139,14 +150,15 @@ def gps_imu_2018(netCDFfiles):
 
                                     imu_ts += imu_timedelta
                                     imu_total += 1
-
-                            if type == 2:
+                            elif type == 2:
                                 imu = struct.unpack("<hhhhhhhhhhlllll", pkt)
                                 print("imu", imu_n, imu)
                                 imu_n += 1
                                 #print imu[0], imu[1], imu[2], imu[3], imu[4], imu[5], imu[6], imu[7], imu[8]
-                        except (UnicodeDecodeError, struct.error):
-                            print (pos, " Error : ", pkt)
+                            else:
+                                print("Unknown type ", type)
+                        except (UnicodeDecodeError):
+                            print (pos, " Error : ", pkt, "type ", type)
                             errorCount = errorCount + 1
                     else:
                         print(pos, " sum error ", checkB, s)
