@@ -39,6 +39,14 @@ def plot_binned(netCDFfiles):
     depth = ds.variables["DEPTH"]
     temp = ds.variables["TEMP"]
     time = ds.variables["TIME"]
+    t_unit = ds.variables['TIME'].units  # get unit  "days since 1950-01-01T00:00:00Z"
+
+    try:
+        t_cal = ds.variables['TIME'].calendar
+    except AttributeError:  # Attribute doesn't exist
+        t_cal = u"gregorian"  # or standard
+
+    dt_time = num2date(time[:], units=t_unit, calendar=t_cal)
 
     d = depth[:]
     t = temp[:]
@@ -57,7 +65,9 @@ def plot_binned(netCDFfiles):
 
     print("shape", time[:].shape, t.shape, d.shape)
     plt.figure(dpi=1200)
-    plt.scatter(time[:], d, c=t, s=0.1, rasterized=True)
+    plt.scatter(dt_time, d, c=t, s=0.01, rasterized=True)
+    plt.xticks(fontsize=6, rotation=35)
+    plt.grid(True)
     plt.gca().invert_yaxis()
     #plt.show()
 
