@@ -26,20 +26,46 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 import sys
+import matplotlib
+
+matplotlib.use('Agg')
+
+from matplotlib.backends.backend_pdf import PdfPages
 
 
 def plot_binned(netCDFfiles):
     ds = Dataset(netCDFfiles[1], 'r')
 
     depth = ds.variables["DEPTH"]
+    temp = ds.variables["TEMP"]
+    time = ds.variables["TIME"]
 
     d = depth[:]
+    t = temp[:]
 
     h = np.histogram(d, bins=np.arange(0, 3500, 1))
     plt.plot(h[0], h[1][0:-1], '.-')
     plt.gca().invert_yaxis()
     plt.grid(True)
-    plt.show()
+
+    pdffile = netCDFfiles[1].replace(".nc", "-histogram.pdf")
+
+    pp = PdfPages(pdffile)
+    pp.savefig()
+
+    plt.close()
+
+    print("shape", time[:].shape, t.shape, d.shape)
+    plt.figure(dpi=1200)
+    plt.scatter(time[:], d, c=t, s=0.1, rasterized=True)
+    plt.gca().invert_yaxis()
+    #plt.show()
+
+    pp.savefig(dpi=1200)
+
+    pp.close()
+
+    #plt.show()
 
     ds.close()
 
