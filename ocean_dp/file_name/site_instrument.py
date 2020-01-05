@@ -38,7 +38,10 @@ def rename(netCDFfile):
 
     new_name = deployment+'-'+instrument+'-'+instrument_sn + ".nc"
 
-    new_name = new_name.replace(" ", "-")
+    folder = os.path.dirname(netCDFfile)
+
+    new_name = folder + '/' + new_name.replace(" ", "-")
+
     print(new_name)
 
     # rename the file, maybe should be copy

@@ -24,6 +24,7 @@ from datetime import datetime
 from dateutil import parser
 from fuzzywuzzy import fuzz
 
+match_threshold = 80
 
 def parseTypeValue(att_type, v):
     if att_type == 'float64':
@@ -102,7 +103,7 @@ def add(netCDFfile, metadatafiles):
                         if fuz > fuzz_best_model:
                             fuzz_best_model = fuz
                             fuzz_model = dict1
-                        if fuz < 70:
+                        if fuz < match_threshold:
                             match = False
                             #print("instrument_model not match : ", dict1['model'])
                     if len(dict1['serial_number']) > 0:
@@ -111,7 +112,7 @@ def add(netCDFfile, metadatafiles):
                         if fuz > fuzz_best_serial:
                             fuzz_best_serial = fuz
                             fuzz_serial = dict1
-                        if fuz < 70:
+                        if fuz < match_threshold:
                             match = False
                             #print("serial_number not match : ", dict1['serial_number'])
 

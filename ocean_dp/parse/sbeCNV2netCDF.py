@@ -152,7 +152,7 @@ def main(files):
                             add_cal_tag = True
 
                         if add_cal_tag:
-                            if cal_param != 'SerialNumber' and cal_param != 'CalibrationDate':
+                            if cal_param != 'SerialNumber' and cal_param != 'CalibrationDate' and cal_param != 'SensorName':
                                 cal_value = float(cal_value)
 
                             cal_tags.append((cal_sensor, cal_param, cal_value))

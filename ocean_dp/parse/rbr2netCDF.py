@@ -153,9 +153,9 @@ def main(file):
                 matchObj = re.match(channel_expr, line)
                 if matchObj:
                     print("channel_expr:matchObj.group() : ", matchObj.group())
-                    print("channel_expr:matchObj.group(1) : ", matchObj.group(1))
-                    print("channel_expr:matchObj.group(1) : ", matchObj.group(2))
-                    print("channel_expr:matchObj.group(1) : ", matchObj.group(3))
+                    #print("channel_expr:matchObj.group(1) : ", matchObj.group(1))
+                    #print("channel_expr:matchObj.group(1) : ", matchObj.group(2))
+                    #print("channel_expr:matchObj.group(1) : ", matchObj.group(3))
 
                 matchObj = re.match(data_hdr_expr, line)
                 if matchObj:
@@ -179,7 +179,7 @@ def main(file):
                 d = np.zeros(len(name))
                 d.fill(np.nan)
 
-                t = parser.parse(lineSplit[0] + ' ' + lineSplit[1])
+                t = parser.parse(lineSplit[0] + ' ' + lineSplit[1], yearfirst = True)
                 ts.append(t)
                 #print("timestamp %s" % t)
 

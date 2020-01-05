@@ -24,10 +24,48 @@ from datetime import timedelta
 
 import numpy as np
 import matplotlib.pyplot as plt
+import pynmea2
+
+from ubxtranslator import core
+from ubxtranslator.predefined import NAV_CLS, ACK_CLS
 
 import sys
 import struct
+import io
 
+from ubxtranslator.core import Message, Cls, PadByte, Field, Flag, BitField, RepeatedBlock
+
+RXM = Cls(0x02, 'RXM', [
+    Message(0x10, 'RAW', [
+        Field('iTOW', 'U4'),
+        Field('week', 'U2'),
+        Field('numSV', 'U1'),
+        PadByte(),
+        RepeatedBlock('RB', [
+            Field('cpMes', 'R8'),
+            Field('prMes', 'R8'),
+            Field('doMes', 'R4'),
+            Field('sv', 'U1'),
+            Field('messQI', 'I1'),
+            Field('cno', 'I1'),
+            Field('lli', 'U1')
+            ])
+     ]),
+    Message(0x11, 'SFRB', [
+        Field('chn', 'U1'),
+        Field('svid', 'U1'),
+        BitField('dwrd0', 'X4', [Flag('data', 0, 23)]),
+        BitField('dwrd1', 'X4', [Flag('data', 0, 23)]),
+        BitField('dwrd2', 'X4', [Flag('data', 0, 23)]),
+        BitField('dwrd3', 'X4', [Flag('data', 0, 23)]),
+        BitField('dwrd4', 'X4', [Flag('data', 0, 23)]),
+        BitField('dwrd5', 'X4', [Flag('data', 0, 23)]),
+        BitField('dwrd6', 'X4', [Flag('data', 0, 23)]),
+        BitField('dwrd7', 'X4', [Flag('data', 0, 23)]),
+        BitField('dwrd8', 'X4', [Flag('data', 0, 23)]),
+        BitField('dwrd9', 'X2', [Flag('data', 0, 16)]),
+    ])
+    ])
 
 #define PKT_TYPE_NMEA           0x08
 #define PKT_TYPE_UBX            0x01
@@ -66,15 +104,25 @@ def gps_imu_2018(netCDFfiles):
     compass_out_var = ncOut.createVariable("COMPASS", "f4", ("TIME", "VECTOR"), fill_value=np.nan, zlib=compress)
 
     typeCount = [0, 0, 0, 0, 0, 0, 0, 0, 0]
+
     imu_timedelta = timedelta(seconds=1/40.033)
-    print(imu_timedelta)
+
     imu_ts = None
     ts_start = None
+
+    gps_gga_ts = None
+    gps_gga_timedelta = timedelta(seconds=0.2)
 
     print("file to process", len(netCDFfiles[1:]))
     imu_n = 0
     imu_total = 0
     last_ts = None
+
+    parser = core.Parser([
+        ACK_CLS,
+        NAV_CLS,
+        RXM
+    ])
 
     for fn in netCDFfiles[1:]:
         print(fn)
@@ -116,10 +164,21 @@ def gps_imu_2018(netCDFfiles):
                                 imu_n = 0
                             elif type == 0:
                                 nmea = pkt.decode('utf-8')
-                                #print("%d pos NMEA %s" % ( pos, nmea[:-2] ))
+                                print("%d pos NMEA %s" % (pos, nmea[:-2]))
+                                msg = pynmea2.parse(nmea[:-2])
+                                if msg.sentence_type == 'RMC':
+                                    print(msg.timestamp, msg.latitude, msg.longitude, msg.datestamp)
+                                    gps_gga_ts = datetime.combine(msg.datestamp, msg.timestamp)
+                                else:
+                                    print(gps_gga_ts, msg.timestamp, msg.latitude, msg.longitude, msg.altitude)
+                                    if gps_gga_ts:
+                                        gps_gga_ts = gps_gga_ts + gps_gga_timedelta
+
                             elif type == 1:
                                 ubx = struct.unpack("<BBBBH", pkt[0:6])
-                                #print ("ubx " , ubx)
+                                print ("ubx " , ubx)
+                                cls_name, msg_name, payload = parser.receive_from(io.BytesIO(pkt))
+                                #print(cls_name, msg_name) #,  payload)
                             elif type == 7:
                                 text = pkt.decode('utf-8')
                                 text = text[:-1]
@@ -138,7 +197,7 @@ def gps_imu_2018(netCDFfiles):
                                 # there are 2440 of these in 1 min, or 40.67 / sec
                                 imu = struct.unpack("<hhhhhhhhhhlllll", pkt)
                                 #print ("imu  " , imu)
-                                #print ("imu %d : compass %f %f %f, gyro %f %f %f, accel %f %f %f" % (imu_n, imu[0]*4915.0/32768, imu[1]*4915.0/32768, imu[2]*4915.0/32768, imu[3]*2000.0/32768, imu[4]*2000.0/32768, imu[5]*2000.0/32768, imu[6]*4.0/32768, imu[7]*4.0/32768, imu[8]*4.0/32768))
+                                print ("%s : imu %d : compass %f %f %f, gyro %f %f %f, accel %f %f %f" % (imu_ts, imu_n, imu[0]*4915.0/32768, imu[1]*4915.0/32768, imu[2]*4915.0/32768, imu[3]*2000.0/32768, imu[4]*2000.0/32768, imu[5]*2000.0/32768, imu[6]*4.0/32768, imu[7]*4.0/32768, imu[8]*4.0/32768))
                                 imu_n += 1
                                 if imu_ts:
                                     #print("imu ts", imu_ts)

@@ -77,7 +77,10 @@ def rename(netCDFfile):
 
     ds.close()
 
-    imosName = 'IMOS_' + facility + \
+    folder = os.path.dirname(netCDFfile)
+
+    imosName = folder + '/' + \
+               'IMOS_' + facility + \
                "_" + codesCat + \
                "_" + time_start.strftime("%Y%m%d") + \
                "_" + platform_code + \

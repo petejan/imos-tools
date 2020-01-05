@@ -62,7 +62,7 @@ def readpacket(f):
 
     (packet_len, packet_type) = struct.unpack('<HH', b)
 
-    # print("type %d len %d" % (t, l))
+    print("type %d len %d %s" % (packet_type, packet_len, types[packet_type]))
 
     f.seek(-6, 1)
     # print("file pos %d" % f.tell())
@@ -261,7 +261,7 @@ def readpacket(f):
         hdr_dict = dict(zip(['magic', 'pt', 'len', 'unused', 'rtc', 'us'], hdr_packet))
 
         ts = datetime.datetime.utcfromtimestamp(hdr_dict['rtc'])
-        #print("type %d %-10s : time %s : samples %d us %d" % (t, types[t], ts, samples, hdr_dict['us']))
+        #print("type %d %-10s : time %s : samples %d us %d" % (packet_type, types[packet_type], ts, samples, hdr_dict['us']))
 
         f_serial_data = open('serial.bin', 'ab+')
         f_serial_data.write(b[16:-4])
@@ -371,7 +371,7 @@ def parse(files):
                         dataset.setncattr('sensor_' + str(sensor_n) + '_max_v', p[2]['max_v'])
                         sensor_n += 1
                     else:
-                        if p[2] > datetime.datetime(2010,1,1):
+                        if p[2] > datetime.datetime(2000,1,1):
                             ts_num = date2num(p[2], units=times.units, calendar=times.calendar)
                             n_times += 1
                             if n_times % 500 == 0:

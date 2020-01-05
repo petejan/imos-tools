@@ -4,7 +4,7 @@ import datetime as dt
 import numpy as np
 import matplotlib
 
-matplotlib.use('Agg')
+#matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 import sys
@@ -33,15 +33,32 @@ for path_file in sys.argv[1:len(sys.argv)]:
     inst = nc.variables["instrument_index"][:]
     stationStr = nc.variables["instrument_type"][:]
 
-    temp = nc.variables["TEMP"][:]
-    temp_qc = nc.variables["TEMP_quality_control"][:]
+    temp = nc.variables["PRES"]
+    #temp_qc = nc.variables["TEMP_quality_control"][:]
 
     # print(plot_var.name, " shape ", var.shape, " len ", shape_len)
 
-    for i in np.arange(min(inst), max(inst)):
+    for i in set(inst):
+        print ('instrument index ', i)
         time_masked = np.ma.masked_where((inst != i), dt_time)
-        temp_masked = np.ma.masked_where((inst != i), temp)
+        temp_masked = np.ma.masked_where((inst != i), temp[:])
 
         pl = plt.plot(time_masked.compressed(), temp_masked.compressed())
+
+    plt.grid(True)
+
+    # should we invert the axis
+    try:
+        if temp.units == 'dbar':
+            plt.gca().invert_yaxis()
+    except AttributeError:
+        pass
+    try:
+        if temp.positive == 'down':
+            plt.gca().invert_yaxis()
+    except AttributeError:
+        pass
+
+    plt.show()
 
 
