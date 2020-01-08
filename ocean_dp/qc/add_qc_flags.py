@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
-# raw2netCDF
-# Copyright (C) 2019 Peter Jansen
+# add_qc_flags
+# Copyright (C) 2020 Peter Jansen
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
