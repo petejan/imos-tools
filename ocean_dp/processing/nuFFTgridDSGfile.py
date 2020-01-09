@@ -25,8 +25,6 @@ from datetime import timedelta
 import numpy as np
 import matplotlib.pyplot as plt
 
-import finufftpy
-
 import sys
 from pynufft import NUFFT_cpu
 
@@ -79,19 +77,6 @@ def FFTgridDSGfile(netCDFfiles):
     nd_points = 20
     print(nt_points, nd_points)
 
-    # Provided om, the size of time series (Nd), oversampled grid (Kd), and interpolatro size (Jd)
-
-    Nd = (256, 256)  # image size
-    Kd = (512, 512)  # k-space size
-    Jd = (6, 6)  # interpolation size
-
-    NufftObj = NUFFT_cpu()
-    NufftObj.plan(om, Nd, Kd, Jd)
-
-    y = NufftObj.forward(image)
-
-    fft = np.full([nt_points, nd_points], 0, dtype=np.complex128, order='F', )
-
     print("Calc FFT")
 
     x = t2pi
@@ -103,11 +88,19 @@ def FFTgridDSGfile(netCDFfiles):
 
     print("size ", len(x), len(y), len(c))
 
-    # finufftpy.nufft2d2(x, y, c, isign, eps, f, debug=0, spread_debug=0, spread_sort=2, fftw=0, modeord=0, chkbnds=1, upsampfac=2.0)
-    #finufftpy.nufft2d1(x, y, c, isign, eps, ms, mt, f, debug=0, spread_debug=0, spread_sort=2, fftw=0, modeord=0, chkbnds=1, upsampfac=2.0)¶
-    res = finufftpy.nufft2d1(x, y, c, 0, 1e-15, nt_points, nd_points, fft, debug=1, spread_debug=1, spread_sort=0)
+    # Provided om, the size of time series (Nd), oversampled grid (Kd), and interpolatro size (Jd)
 
-    print("fft res", res)
+    om = [x, y]
+    Nd = (256, 256)  # image size
+    Kd = (512, 512)  # k-space size
+    Jd = (6, 6)  # interpolation size
+
+    NufftObj = NUFFT_cpu()
+    NufftObj.plan(om, Nd, Kd, Jd)
+
+    fft = NufftObj.forward(c)
+
+    print("fft ")
     print(fft)
 
     for x in range(0, nd_points):
