@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
-# raw2netCDF
-# Copyright (C) 2019 Peter Jansen
+# add_qc_flags
+# Copyright (C) 2020 Peter Jansen
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -28,39 +28,52 @@ import os
 
 
 def add_qc(netCDFfile):
-    ds = Dataset(netCDFfile, 'a')
 
-    vars = ds.variables
+    new_name = [] # list of new file names
 
-    to_add = []
-    for v in vars:
-        #print (vars[v].dimensions)
-        if v != 'TIME':
-            to_add.append(v)
+    # loop over all file names given
+    for fn in netCDFfile[1:]:
+        ds = Dataset(fn, 'a')
 
-    for v in to_add:
-        if "TIME" in vars[v].dimensions:
-            # print("time dim ", v)
+        # read the variable names from the netCDF dataset
+        vars = ds.variables
 
-            ncVarOut = ds.createVariable(v+"_quality_control", "i1", vars[v].dimensions, fill_value=99, zlib=True)  # fill_value=99 otherwise defaults to max, imos-toolbox uses 99
-            ncVarOut[:] = np.zeros(vars[v].shape)
-            ncVarOut.long_name = "quality_code for " + v
+        # create a list of variables, don't include the 'TIME' variable
+        # TODO: detect 'TIME' variable using the standard name 'time'
+        to_add = []
+        for v in vars:
+            #print (vars[v].dimensions)
+            if v != 'TIME':
+                to_add.append(v)
 
-            vars[v].ancillary_variables = v + "_quality_control"
+        # for each variable, add a new ancillary variable <VAR>_quality_control to each which has 'TIME' as a dimension
+        for v in to_add:
+            if "TIME" in vars[v].dimensions:
+                # print("time dim ", v)
 
-    ds.file_version = "Level 1 - Quality Controlled Data"
+                ncVarOut = ds.createVariable(v+"_quality_control", "i1", vars[v].dimensions, fill_value=99, zlib=True)  # fill_value=99 otherwise defaults to max, imos-toolbox uses 99
+                ncVarOut[:] = np.zeros(vars[v].shape)
+                ncVarOut.long_name = "quality_code for " + v
 
-    ds.close()
+                vars[v].ancillary_variables = v + "_quality_control"
 
-    new_name = netCDFfile.replace("FV00", "FV01")
+        # update the file version attribute
+        ds.file_version = "Level 1 - Quality Controlled Data"
 
-    # maybe shoud be copy
-    os.rename(netCDFfile, new_name)
+        ds.close()
 
-    print(new_name)
+        # rename the file FV00 to FV01 (imos specific)
+        fn_new = fn.replace("FV00", "FV01")
+        new_name.appand(fn_new)
+
+        if fn_new != fn:
+            # copy file
+            os.copy(fn, fn_new)
+
+        print(fn_new)
 
     return new_name
 
 
 if __name__ == "__main__":
-    add_qc(sys.argv[1])
+    add_qc(sys.argv)
