@@ -20,7 +20,7 @@ import sys
 import re
 
 from datetime import datetime
-from netCDF4 import num2date
+from netCDF4 import num2date, date2num
 from netCDF4 import Dataset
 import numpy as np
 from dateutil import parser
@@ -93,6 +93,8 @@ tag = r".*<(.+?)>(.+)<\/\1>|.*<(.+=.*)>"
 
 instr_exp = r"\* Sea-Bird.?(\S+)"
 sn_expr = r"\* SBE\s+\S+\s+V\s+\S+\s+SERIAL NO. (\S*)"
+cast_exp = r"\* cast\s+(.*$)"
+
 
 #
 # parse the file
@@ -115,6 +117,7 @@ def main(files):
     cal_param = None
     cal_sensor = None
     cal_tags = []
+    cast = None
 
     with open(filepath, 'r', errors='ignore') as fp:
         line = fp.readline()
@@ -172,6 +175,12 @@ def main(files):
                     #print("sensor_end:matchObj.group() : ", matchObj.group())
                     #print("sensor_end:matchObj.group(1) : ", matchObj.group(1))
                     sensor = False
+
+                matchObj = re.match(cast_exp, line)
+                if matchObj:
+                    #print("cast_exp:matchObj.group() : ", matchObj.group())
+                    #print("cast_exp:matchObj.group(1) : ", matchObj.group(1))
+                    cast = matchObj.group(1)
 
                 matchObj = re.match(use_expr, line)
                 if matchObj:
@@ -260,7 +269,7 @@ def main(files):
                         #print('name map ', nameMap[varName])
                         ncVarName = nameMap[varName]
                     if ncVarName:
-                        name.insert(nVars, {'col': nameN, 'var_name': ncVarName, 'comment': matchObj.group(3), 'unit': unit})
+                        name.insert(nVars, {'sbe-name' : varName, 'col': nameN, 'var_name': ncVarName, 'comment': matchObj.group(3), 'unit': unit})
                         nVars = nVars + 1
                     print("name {} : {} ncName {}".format(nameN, varName, ncVarName))
 
@@ -317,6 +326,8 @@ def main(files):
     ncOut.instrument_model = instrument_model
     ncOut.instrument_serial_number = instrument_serialnumber
     #ncOut.instrument_model = instrument_model
+    if cast:
+        ncOut.instrument_cast = cast
 
     #     TIME:axis = "T";
     #     TIME:calendar = "gregorian";
@@ -330,7 +341,7 @@ def main(files):
     ncTimesOut.calendar = "gregorian"
     ncTimesOut.axis = "T"
 
-    t_epoc = (datetime(2000, 1, 1)-datetime(1950, 1, 1)).total_seconds()
+    t_epoc = date2num(datetime(2000, 1, 1), calendar=ncTimesOut.calendar, units=ncTimesOut.units)
 
     # for each variable in the data file, create a netCDF variable
     i = 0
@@ -339,10 +350,13 @@ def main(files):
         varName = v['var_name']
         if varName == 'TIME':
             #print(data[:, v['col']])
-            if v['unit'] == 'julian days':
-                ncTimesOut[:] = (odata[:, v['col']] + (start_time.year - 1950) * 365)  # could use netCDF4.date2num here, although odata is in days since start_time year
+            if (v['unit'] == 'julian days') | (v['sbe-name'] == 'TIMEJ'):
+                t_epoc = date2num(start_time, calendar=ncTimesOut.calendar, units=ncTimesOut.units)
+                ncTimesOut[:] = (odata[:, v['col']] + t_epoc)
+                print("julian days time ", odata[0, v['col']], start_time, ncTimesOut[0])
             else:
-                ncTimesOut[:] = (odata[:, v['col']] + t_epoc) / 3600 / 24  # could use netCDF4.date2num here, although odata is in seconds since 2000-01-01
+                print("time is seconds")
+                ncTimesOut[:] = (odata[:, v['col']]/ 3600 / 24) + t_epoc
         else:
             ncVarOut = ncOut.createVariable(varName, "f4", ("TIME",), fill_value=np.nan, zlib=True) # fill_value=nan otherwise defaults to max
             ncVarOut.comment = v['comment']
