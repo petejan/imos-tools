@@ -8,6 +8,8 @@ agg_files = dir('*Aggregate*.nc');
 %% Load the pressure data
 
 agg_pres = ncread(agg_files.name,'PRES');
+agg_pres_info = ncinfo(agg_files.name, 'PRES');
+
 agg_instrument_index = ncread(agg_files.name,'instrument_index');
 agg_nominal_depth  = ncread(agg_files.name,'NOMINAL_DEPTH');
 agg_time = ncread(agg_files.name,'TIME');
@@ -42,9 +44,10 @@ for i=1:length(fv00_files)
 
         % Interpolate the pressure
         pres_interp = scat_interp_pres(fv00_time,fv00_depth*ones(size(fv00_time)));
-
         
+        %
         % Create an FV01 version of the current FV00 file
+        %
 
         % Create the new FV01 file name
 
@@ -63,13 +66,15 @@ for i=1:length(fv00_files)
         % Add the relevant attributes to the PRES variable, including a
         % comment noting that the data has been linearly interpolated
 
-        pres_atts = {'_FillValue','NaN';'units','dbar';'instrument_uncertainty',2;'coordinates','TIME LATITUDE LONGITUDE NOMINAL_DEPTH';'long_name','sea_water_pressure_due_to_sea_water';'standard_name','sea_water_pressure_due_to_sea_water';'valid_max','12000';'valid_min','-15';'comment','pressure data has been linearly interpolated from surrounding pressure sensors';};
-
+        % copy attributes from agg file to output file
+        pres_atts = agg_pres_info.Attributes; % get all attribtes from the aggregate file
         for k=1:length(pres_atts)
 
-            ncwriteatt(fv01_name,'PRES',pres_atts{k,1},pres_atts{k,2});
+            ncwriteatt(fv01_name, 'PRES', pres_atts(k).Name, pres_atts(k).Value);
 
         end
+
+        ncwriteatt(fv01_name, 'PRES', 'comment','pressure data has been linearly interpolated from surrounding pressure sensors');
 
     end
 end
