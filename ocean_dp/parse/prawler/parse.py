@@ -110,6 +110,7 @@ def parse(files):
         dox2_out = []
         dox2_temp_out = []
         profile_n_out = []
+        profile_sample_out = []
 
         print('data length', len(data))
         n_profile = 0
@@ -134,6 +135,7 @@ def parse(files):
                 dox2.fill(np.nan)
 
                 profile_n = np.ones(samples, dtype=int) * n_profile
+                profile_sample = range(0, samples)
 
                 for n in range(0, samples):
                     times_out.append(x['dt'] + timedelta(seconds = (dt * n)))
@@ -178,6 +180,7 @@ def parse(files):
                         dox2_temp_out.extend(dox_temp)
 
                 profile_n_out.extend(profile_n)
+                profile_sample_out.extend(profile_sample)
 
                 n_profile += 1
 
@@ -244,6 +247,9 @@ def parse(files):
     nc_var_out.units = 'degrees_Celsius'
     nc_var_out = ncOut.createVariable("PROFILE", "i4", ("TIME"), fill_value=-1, zlib=True)
     nc_var_out[:] = profile_n_out
+    nc_var_out.units = 'count'
+    nc_var_out = ncOut.createVariable("PROFILE_SAMPLE", "i4", ("TIME"), fill_value=-1, zlib=True)
+    nc_var_out[:] = profile_sample_out
     nc_var_out.units = 'count'
 
     ncOut.setncattr("time_coverage_start", times_out[0].strftime(ncTimeFormat))
