@@ -25,6 +25,8 @@ import numpy as np
 import struct
 from datetime import timedelta
 
+import glob
+
 gps_dict = ['type', 'date', 'time', 'latDM', 'latNS', 'lonDM', 'lonEW', 'lock', 'error']
 ctd_dict = ['type', 'date', 'time', 'srate', 'sam', 'crc']
 imm_dict = ['type', 'date', 'time', 'depth', 'dir', 'np', 'pre', 'ul', 'll', 'ip', 'err_to', 'trip', 'err_c', 'vacume', 'slow_d', 'water', 'storm', 'mode']
@@ -32,6 +34,7 @@ aadi_dict = ['type', 'date', 'time', 'srate', 'sam', 'crc']
 
 times = []
 data = []
+locations = []
 
 
 def dm(x):
@@ -47,8 +50,12 @@ def decimal_degrees(degrees, minutes):
 
 def parse(files):
 
+    fn = []
+    for f in files:
+        fn.extend(glob.glob(f))
+
     last_gps = None
-    for filepath in files:
+    for filepath in fn:
         nv = -1
         print('file name', filepath)
 
@@ -65,6 +72,18 @@ def parse(files):
                         samples_read = 0
                         if line_type == 'GPS':
                             values = dict(zip(gps_dict, line_split))
+                            latitude = decimal_degrees(*dm(float(values['latDM'])))
+                            if values['latNS'] == 'S':
+                                latitude = -latitude
+                            print('latitude ', latitude)
+                            longitude = decimal_degrees(*dm(float(values['lonDM'])))
+                            if values['lonEW'] == 'W':
+                                longitude = -longitude
+                            print('longitude ', longitude)
+                            values['latitude'] = latitude
+                            values['longitude'] = longitude
+                            locations.append(values)
+
                             last_gps = values
                             nv = -1
                         elif line_type == 'IMM':
@@ -77,7 +96,7 @@ def parse(files):
                             values = dict(zip(aadi_dict, line_split))
                             nv = 2
 
-                        print(values)
+                        #print(values)
 
                         dt = datetime.datetime.strptime(values['date'] + " " + values['time'], '%m/%d/%Y %H:%M:%S')
                         #print(dt)
@@ -91,10 +110,10 @@ def parse(files):
                         samples_read += len(line_split)
                         data_block[values['type']].extend(line_split)
                         samples_to_read = int(values['sam'])
-                        print(values['type'], 'samples to read ', samples_to_read, values['sam'], samples_read/nv)
+                        # print(values['type'], 'samples to read ', samples_to_read, values['sam'], samples_read/nv)
                         if samples_to_read <= samples_read/nv:
                             nv = -1
-                            print('finished reading')
+                            # print('finished reading')
                             data[idx].append(data_block)
                             #print(data)
 
@@ -201,16 +220,8 @@ def parse(files):
     ncOut.number_of_profiles = np.int32(n_profile)
 
     if last_gps:
-        latitude = decimal_degrees(*dm(float(last_gps['latDM'])))
-        if last_gps['latNS'] == 'S':
-            latitude = -latitude
-        print('latitude ', latitude)
-        longitude = decimal_degrees(*dm(float(last_gps['lonDM'])))
-        if last_gps['lonEW'] == 'W':
-            longitude = -longitude
-        print('longitude ', longitude)
-        ncOut.latitude = latitude
-        ncOut.longitude = longitude
+        ncOut.latitude = last_gps['latitude']
+        ncOut.longitude = last_gps['longitude']
 
     # add time variable
 
@@ -218,6 +229,23 @@ def parse(files):
     #     TIME:calendar = "gregorian";
     #     TIME:long_name = "time";
     #     TIME:units = "days since 1950-01-01 00:00:00 UTC";
+
+    #print(locations)
+    ncOut.createDimension("POS", len(locations))
+    nc_var_out = ncOut.createVariable("XPOS", "f4", ("POS"), fill_value=np.nan, zlib=True)
+    nc_var_out[:] = [l['longitude'] for l in locations]
+    nc_var_out.units = 'degrees_East'
+    nc_var_out = ncOut.createVariable("YPOS", "f4", ("POS"), fill_value=np.nan, zlib=True)
+    nc_var_out[:] = [l['latitude'] for l in locations]
+    nc_var_out.units = 'degrees_North'
+    nc_var_out = ncOut.createVariable("TPOS", "d", ("POS"), fill_value=np.nan, zlib=True)
+    nc_var_out[:] = [l['latitude'] for l in locations]
+    nc_var_out.units = 'days since 1950-01-01 00:00:00 UTC'
+    nc_var_out.long_name = "position time"
+    nc_var_out.units = "days since 1950-01-01 00:00:00 UTC"
+    nc_var_out.calendar = "gregorian"
+    nc_var_out[:] = [date2num(datetime.datetime.strptime(loc['date'] + " " + loc['time'], '%m/%d/%Y %H:%M:%S'), calendar='gregorian', units="days since 1950-01-01 00:00:00 UTC") for loc in locations]
+
 
     tDim = ncOut.createDimension("TIME")
     ncTimesOut = ncOut.createVariable("TIME", "d", ("TIME",), zlib=True)
