@@ -64,7 +64,7 @@ def add_qc(netCDFfile):
 
         # rename the file FV00 to FV01 (imos specific)
         fn_new = fn.replace("FV00", "FV01")
-        new_name.appand(fn_new)
+        new_name.append(fn_new)
 
         if fn_new != fn:
             # copy file
