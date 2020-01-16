@@ -1,3 +1,4 @@
+import re
 from datetime import datetime, timedelta
 from netCDF4 import num2date, date2num
 from netCDF4 import stringtochar
@@ -349,7 +350,7 @@ for v in varNamesOut:
             # copy the variable attributes
             # this is ends up as the super set of all files
             for a in varList[v].ncattrs():
-                if a not in ('comment',):
+                if a not in ('comment', '_FillValue') and not re.match(r"calibration.*", a):
                     print("%s Attribute %s value %s" % (v, a, varList[v].getncattr(a)))
                     ncVariableOut.setncattr(a, varList[v].getncattr(a))
 
@@ -387,5 +388,5 @@ nc.close()
 
 ncOut.close()
 
-print ("Output file :  %s" % outputName);
+print ("Output file :  %s" % outputName)
 
