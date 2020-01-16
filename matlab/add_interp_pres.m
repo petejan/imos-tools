@@ -1,4 +1,4 @@
-% SOTS Pressure interpolator
+% SOTS Pressure interpolator!
 
 % This code imports pressure data from an aggregated file (constructed by
 % P.Jansen), and creates interpolated pressure records for FV00 raw
