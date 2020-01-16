@@ -1,14 +1,18 @@
 #!/bin/zsh
 
-datadir=data/temp-data/Pulse-6-2009
+datadir=data/temp-data/Pulse-8-2011
 
 echo ${datadir}
 
-python3 ocean_dp/parse/sbe37DD2netCDF.py ${datadir}/cat6962.cap
-python3 ocean_dp/parse/sbe16DD2netCDF.py ${datadir}/Instrument_Data_Upload_25032010.csv
-python3 ocean_dp/parse/rbr2netCDF.py   ${datadir}/RBR-Download-014788_eng.txt
+python3 ocean_dp/parse/sbe37DD2netCDF.py ${datadir}/Pulse-8-SBE37SM-6962.cap
 
-find ${datadir} -name "Asc*.txt" -exec python3 ocean_dp/parse/vemco2netCDF.py {} \;
+python3 ocean_dp/parse/sbe16DD2netCDF.py ${datadir}/Pulse-8-SBE16-2012-07-21.cap
+python3 ocean_dp/parse/sbeCNC2netCDF. py ${datadir}/SBE05600531_2012-08-07.cnv
+
+python3 ocean_dp/parse/rbr2netCDF.py   ${datadir}/TDR-2050-014788_20120806_0311.hex
+python3 ocean_dp/parse/rbr2netCDF.py   ${datadir}/TDR-2050-014789_20120806_0329.hex
+
+find ${datadir} -name "Minilog-T_*.csv" -exec python3 ocean_dp/parse/vemco2netCDF.py {} \;
 
 mkdir ${datadir}/netCDF
 mv ${datadir}/*.nc ${datadir}/netCDF/

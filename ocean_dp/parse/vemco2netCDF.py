@@ -147,6 +147,10 @@ def main(files):
                 type = 6
                 nVariables = 1
                 print('type 6 (MiniLog-T, temp)')
+            if line.strip() == "Date(yyyy-mm-dd),Time(hh:mm:ss),Temperature (C),Depth (m)":
+                type = 7
+                nVariables = 2
+                print('type 7 (MiniLog-TD, temp, depth)')
 
             matchObj = re.match(dataline_expr, line)
             if matchObj:
@@ -170,6 +174,9 @@ def main(files):
                 elif type == 6:
                     ts = datetime.strptime(line_split[0] + ' ' + line_split[1], '%Y-%m-%d %H:%M:%S')
                     d = [float(line_split[2])]
+                elif type == 7:
+                    ts = datetime.strptime(line_split[0] + ' ' + line_split[1], '%Y-%m-%d %H:%M:%S')
+                    d = [float(line_split[2]), float(line_split[3])]
 
                 #print(ts, d)
                 times.append(ts)

@@ -84,7 +84,7 @@ def main(files):
 
             #print("splits ", len(line_split))
 
-            if len(line_split) > 2:
+            if len(line_split) > 10:
                 ts = datetime.strptime(line_split[-1].strip(), "%d %b %Y %H:%M:%S")
                 d = [float(v) for v in line_split[0:-2]]
                 nVariables = len(d)
