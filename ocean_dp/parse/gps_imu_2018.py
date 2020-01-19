@@ -133,7 +133,7 @@ def gps_imu_2018(netCDFfiles):
                 if not byte:
                     break
                 (type, N) = struct.unpack("<BH", byte)
-                #print ('type %d N %d' %(type, N))
+                print ('type %d N %d' %(type, N))
                 pos = f.tell()
                 if (type < 9) & (N < 400):
                     pkt = f.read(N)
@@ -165,14 +165,17 @@ def gps_imu_2018(netCDFfiles):
                             elif type == 0:
                                 nmea = pkt.decode('utf-8')
                                 print("%d pos NMEA %s" % (pos, nmea[:-2]))
-                                msg = pynmea2.parse(nmea[:-2])
-                                if msg.sentence_type == 'RMC':
-                                    print(msg.timestamp, msg.latitude, msg.longitude, msg.datestamp)
-                                    gps_gga_ts = datetime.combine(msg.datestamp, msg.timestamp)
-                                else:
-                                    print(gps_gga_ts, msg.timestamp, msg.latitude, msg.longitude, msg.altitude)
-                                    if gps_gga_ts:
-                                        gps_gga_ts = gps_gga_ts + gps_gga_timedelta
+                                try:
+                                    msg = pynmea2.parse(nmea[:-2])
+                                    if msg.sentence_type == 'RMC':
+                                        print(msg.timestamp, msg.latitude, msg.longitude, msg.datestamp)
+                                        gps_gga_ts = datetime.combine(msg.datestamp, msg.timestamp)
+                                    else:
+                                        print(gps_gga_ts, msg.timestamp, msg.latitude, msg.longitude, msg.altitude)
+                                        if gps_gga_ts:
+                                            gps_gga_ts = gps_gga_ts + gps_gga_timedelta
+                                except pynmea2.nmea.ParseError:
+                                    pass
 
                             elif type == 1:
                                 ubx = struct.unpack("<BBBBH", pkt[0:6])
