@@ -122,9 +122,9 @@ def main(files):
     with open(filepath, 'r', errors='ignore') as fp:
         line = fp.readline()
         matchObj = re.match(first_line_expr, line)
-        if not matchObj:
-            print("Not a Sea Bird CNV file !")
-            return None
+        #if not matchObj:
+        #    print("Not a Sea Bird CNV file !")
+        #    return None
 
         cnt = 1
         while line:

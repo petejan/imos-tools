@@ -205,9 +205,11 @@ def sbe_asc_parse(files):
                     data.fill(np.nan)
                     name.insert(0, {'col': 0, 'var_name': "TEMP", 'comment': None, 'unit': "degrees_Celsius"})
                     # TODO: need if SBE37/39 here
-                    #name.insert(1, {'col': 1, 'var_name': "CNDC", 'comment': None, 'unit': "S/m"})
-                    #name.insert(2, {'col': 2, 'var_name': "PRES", 'comment': None, 'unit': "dbar"})
-                    name.insert(1, {'col': 1, 'var_name': "PRES", 'comment': None, 'unit': "dbar"})
+                    if re.match(".*37", instrument_model):
+                        name.insert(1, {'col': 1, 'var_name': "CNDC", 'comment': None, 'unit': "S/m"})
+                        #name.insert(2, {'col': 2, 'var_name': "PRES", 'comment': None, 'unit': "dbar"})
+                    else:
+                        name.insert(1, {'col': 1, 'var_name': "PRES", 'comment': None, 'unit': "dbar"})
 
             else:
                 dataL = True
@@ -231,7 +233,7 @@ def sbe_asc_parse(files):
 
                 if dataL and (line.count(",") > 0):
                     lineSplit = line.strip().split(",")
-                    print(line.strip())
+                    #print(line.strip())
                     splitVarNo = 0
                     try:
                         for v in lineSplit:
@@ -240,7 +242,7 @@ def sbe_asc_parse(files):
                             splitVarNo = splitVarNo + 1
                         number_samples_read = number_samples_read + 1
                     except ValueError:
-                        print("bad line")
+                        print("bad line ", lineSplit)
                         pass
 
                     dataLine = dataLine + 1

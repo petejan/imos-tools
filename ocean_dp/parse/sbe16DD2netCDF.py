@@ -70,7 +70,7 @@ def main(files):
     data = []
     times = []
     instrument_model = "SBE16plusV2"
-    instrument_serialnumber = "01606331"
+    instrument_serialnumber = "01606330"
     type = 0
 
     with open(filepath, 'r', errors='ignore') as fp:

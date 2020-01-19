@@ -77,7 +77,8 @@ from dateutil import parser
 
 id_expr = r"\* ID=(\S+)"
 serial_expr = r"\* Serial Number=(\S+)"
-source_expr = r"Source Device: ([^-]*-[^-]*-[^-]*)-(\d*)"
+source_expr_II = r"Source Device: ([^-]*-[^-]*-[^-]*)-(\d*)"
+source_expr = r"Source Device: ([^-]*-[^-]*)-(\d*)$"
 
 dataline_expr = r"^([\d.: \-,]+)\n"
 
@@ -118,6 +119,12 @@ def main(files):
                 print("serial_expr:matchObj.group(1) : ", matchObj.group(1))
                 instrument_serialnumber = matchObj.group(1)
             matchObj = re.match(source_expr, line)
+            if matchObj:
+                print("source_expr:matchObj.group() : ", matchObj.group())
+                print("source_expr:matchObj.group(1) : ", matchObj.group(1))
+                instrument_model = matchObj.group(1)
+                instrument_serialnumber = matchObj.group(2)
+            matchObj = re.match(source_expr_II, line)
             if matchObj:
                 print("source_expr:matchObj.group() : ", matchObj.group())
                 print("source_expr:matchObj.group(1) : ", matchObj.group(1))

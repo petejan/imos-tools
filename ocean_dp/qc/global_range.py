@@ -41,7 +41,7 @@ def global_range(netCDFfile, variable, max, min):
 
     # this is where the actual QC test is done
     mask = ((var[:] > max) | (var[:] < min))
-    
+
     mask = mask & (var_qc[:] < 1) # only mark data that has not been QCd already
 
     var_qc[mask] = 4
