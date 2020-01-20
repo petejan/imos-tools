@@ -30,6 +30,8 @@ if len(sys.argv) > 1:
     parser.add_argument('-f', dest='filelist', help='read file names from file')
     parser.add_argument('file', nargs='*', help='input file name')
     args = parser.parse_args()
+    
+    
 
     if not isinstance(args.filelist, type(None)):
         with open(args.filelist, "r") as ins:
@@ -43,9 +45,31 @@ if len(sys.argv) > 1:
             files.extend(glob.glob(fn))
 
     varToAgg = args.var
-else:
-    files=["EAC-2000/IMOS_ABOS-DA_STZ_20150515T000001Z_EAC2000_FV01_EAC2000-2016-SBE37SMP-140_END-20161110T221930Z_C-20170703T055824Z.nc",
-           "EAC-2000/IMOS_ABOS-DA_STZ_20150515T000001Z_EAC2000_FV01_EAC2000-2016-SBE37SMP-205_END-20161110T224850Z_C-20170703T055825Z.nc"]
+    
+
+else: 
+    
+    all_files = glob.glob('*.nc')
+    
+    files = []
+    
+    for nc_files in all_files:
+        
+        nc_check = Dataset(nc_files,"r")
+        
+        if 'PRES' in nc_check.variables:
+        
+            files.append(nc_files)
+        
+        nc_check.close()
+    
+    varToAgg = ['PRES']
+    
+    
+    
+    
+    # files=["EAC-2000/IMOS_ABOS-DA_STZ_20150515T000001Z_EAC2000_FV01_EAC2000-2016-SBE37SMP-140_END-20161110T221930Z_C-20170703T055824Z.nc",
+    #        "EAC-2000/IMOS_ABOS-DA_STZ_20150515T000001Z_EAC2000_FV01_EAC2000-2016-SBE37SMP-205_END-20161110T224850Z_C-20170703T055825Z.nc"]
 
 #    files=['EAC-2000/IMOS_ABOS-DA_AETVZ_20150515T000000Z_EAC2000_FV01_EAC2000-2016-WORKHORSE-ADCP-125_END-20160609T075415Z_C-20170703T055413Z.nc',
 #           'EAC-2000/IMOS_ABOS-DA_AETVZ_20150515T000000Z_EAC2000_FV01_EAC2000-2016-WORKHORSE-ADCP-665_END-20161110T060046Z_C-20170703T055559Z.nc']
@@ -53,13 +77,17 @@ else:
 #    files=['NRSKAI/IMOS_ANMN-NRS_CDEKSTUZ_20120116T202616Z_NRSKAI_FV01_Profile-SBE-19plus_C-20160417T122446Z.nc',
 #           'NRSKAI/IMOS_ANMN-NRS_CDEKSTUZ_20141028T153524Z_NRSKAI_FV01_Profile-SBE-19plus_C-20160417T125918Z.nc']
 
+print('Files with pressure are',files)
+
 nc = Dataset(files[0])
 varList = nc.variables
 
 # default to all variables in first file should no variable be specified
-if varToAgg is None:
-    varToAgg = varList.keys()
+if varToAgg == []:
+    varToAgg = list(varList.keys())
     varToAgg.remove("TIME")
+    print('varToAgg assigned by default')
+    x=1
 
 nc.close()
 
@@ -349,7 +377,7 @@ for v in varNamesOut:
             # copy the variable attributes
             # this is ends up as the super set of all files
             for a in varList[v].ncattrs():
-                if a not in ('comment',):
+                if a not in ('comment',) and a != '_FillValue':
                     print("%s Attribute %s value %s" % (v, a, varList[v].getncattr(a)))
                     ncVariableOut.setncattr(a, varList[v].getncattr(a))
 
