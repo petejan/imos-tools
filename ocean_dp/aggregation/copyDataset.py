@@ -244,8 +244,8 @@ def aggregate(files, varNames):
 
     filen = 0
 
-    # variables we want regardless
-    varNames += ['LATITUDE', 'LONGITUDE', 'NOMINAL_DEPTH']
+    # variables we want regardless 
+    varNames = [varNames]+['LATITUDE', 'LONGITUDE', 'NOMINAL_DEPTH']
 
     # remove any duplicates
     varNamesOut = set(varNames)
