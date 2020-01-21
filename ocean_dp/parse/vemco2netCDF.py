@@ -86,9 +86,9 @@ dataline_expr = r"^([\d.: \-,]+)\n"
 # parse the file
 #
 
-def main(files):
+def parse(files):
 
-    filepath = files[1]
+    filepath = files[0]
 
     dataLine = 0
     d = []
@@ -130,34 +130,45 @@ def main(files):
                 print("source_expr:matchObj.group(1) : ", matchObj.group(1))
                 instrument_model = matchObj.group(1)
                 instrument_serialnumber = matchObj.group(2)
-            if line.strip() == '* Date(yyyy,mm,dd),Time(hh,mm,ss),Celsius (C),Temp(AtoD),Meters (m),Depth(AtoD)':
+
+            # print(line.strip())
+            ls = line.strip();
+            if ls == '* Date(yyyy,mm,dd),Time(hh,mm,ss),Celsius (C),Temp(AtoD),Meters (m),Depth(AtoD)':
                 type = 1
                 nVariables = 2
                 print('type 1 (MiniLog-T, temp, depth)')
-            if line.strip() == "* Date(yyyy,mm,dd),Time(hh,mm,ss),Celsius (C),Temp(AtoD)":
+            elif ls == "* Date(yyyy,mm,dd),Time(hh,mm,ss),Celsius (C),Temp(AtoD)":
                 type = 2
                 nVariables = 1
                 print('type 2 (MiniLog-T, temp)')
-            if line.strip() == "* Date(yyyy-mm-dd) Time(hh:mm:ss),Temperature (C),ADC":
+            elif ls == "* Date(yyyy-mm-dd) Time(hh:mm:ss),Temperature (C),ADC":
                 type = 3
                 nVariables = 1
                 print('type 3 (MiniLog-II, temp)')
-            if line.strip() == "* Date(yyyy-mm-dd) Time(hh:mm:ss),Celsius (C),Temp(AtoD)":
+            elif ls == "* Date(yyyy-mm-dd) Time(hh:mm:ss),Celsius (C),Temp(AtoD)":
                 type = 4
                 nVariables = 1
                 print('type 4 (MiniLog-T, temp)')
-            if line.strip() == "* Date(yyyy-mm-dd) Time(hh:mm:ss),Celsius (C),Temp(AtoD),Meters (m),Depth(AtoD)":
+            elif ls == "* Date(yyyy-mm-dd) Time(hh:mm:ss),Celsius (C),Temp(AtoD),Meters (m),Depth(AtoD)":
                 type = 5
                 nVariables = 2
                 print('type 5 (MiniLog-T, temp, depth)')
-            if line.strip() == "Date(yyyy-mm-dd),Time(hh:mm:ss),Temperature (C)":
+            elif ls == "Date(yyyy-mm-dd),Time(hh:mm:ss),Temperature (C)":
                 type = 6
                 nVariables = 1
                 print('type 6 (MiniLog-T, temp)')
-            if line.strip() == "Date(yyyy-mm-dd),Time(hh:mm:ss),Temperature (C),Depth (m)":
+            elif ls == "Date(yyyy-mm-dd),Time(hh:mm:ss),Temperature (C),Depth (m)":
                 type = 7
                 nVariables = 2
                 print('type 7 (MiniLog-TD, temp, depth)')
+            elif ls == "* Date(yyyy-mm-dd) Time(hh:mm:ss),Celsius (°C),Temp(AtoD)":
+                type = 8
+                nVariables = 1
+                print('type 8 (MiniLog-T, temp)')
+            elif ls == "* Date(yyyy-mm-dd) Time(hh:mm:ss),Celsius (°C),Temp(AtoD),Meters (m),Depth(AtoD)":
+                type = 9
+                nVariables = 2
+                print('type 9 (MiniLog-TD, temp, depth)')
 
             matchObj = re.match(dataline_expr, line)
             if matchObj:
@@ -170,7 +181,7 @@ def main(files):
                     ts = datetime(int(line_split[0]), int(line_split[1]), int(line_split[2]), int(line_split[3]), int(line_split[4]), int(line_split[5]))
                     d = [float(line_split[6])]
                 elif type == 3:
-                    ts = datetime.strptime(line_split[1], '%Y-%m-%d %H:%M:%S')
+                    ts = datetime.strptime(line_split[0], '%Y-%m-%d %H:%M:%S')
                     d = [float(line_split[1])]
                 elif type == 4:
                     ts = datetime.strptime(line_split[0], '%Y-%m-%d %H:%M:%S')
@@ -184,6 +195,12 @@ def main(files):
                 elif type == 7:
                     ts = datetime.strptime(line_split[0] + ' ' + line_split[1], '%Y-%m-%d %H:%M:%S')
                     d = [float(line_split[2]), float(line_split[3])]
+                elif type == 8:
+                    ts = datetime.strptime(line_split[0], '%Y-%m-%d %H:%M:%S')
+                    d = [float(line_split[1])]
+                elif type == 9:
+                    ts = datetime.strptime(line_split[0], '%Y-%m-%d %H:%M:%S')
+                    d = [float(line_split[1]), float(line_split[3])]
 
                 #print(ts, d)
                 times.append(ts)
@@ -258,4 +275,4 @@ def main(files):
 
 
 if __name__ == "__main__":
-    main(sys.argv)
+    parse(sys.argv[1:])

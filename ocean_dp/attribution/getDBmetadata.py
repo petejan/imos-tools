@@ -29,7 +29,7 @@ def print_line(typ, var_name, dep_code, model, serial_number, time_deployment, t
 
 
 def get_db_metadata(select):
-    conn = psycopg2.connect(host="localhost", database="IMOS-DEPLOY", user="pete", password="password")
+    conn = psycopg2.connect(host="localhost", database="IMOS-DEPLOY", user="jan079", password="password")
 
     # create a cursor
     cur_site = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
@@ -92,12 +92,14 @@ def get_db_metadata(select):
         print_line("GLOBAL", "", row["cmdddname"], "", "",
                    row['cmddddeploymentdate'], row['cmdddrecoverydate'], "", "",
                    "", 'site_nominal_depth', "float64", row['cmdsldepth'])
-        print_line("GLOBAL", "", row["cmdddname"], "", "",
-                   row['cmddddeploymentdate'], row['cmdddrecoverydate'], "", "",
-                   "", 'time_deployment_start', "str", row['cmddddateinposition'].strftime(ncTimeFormat))
-        print_line("GLOBAL", "", row["cmdddname"], "", "",
-                   row['cmddddeploymentdate'], row['cmdddrecoverydate'], "", "",
-                   "", 'time_deployment_end', "str", row['cmddddateoutposition'].strftime(ncTimeFormat))
+        if row['cmddddateinposition']:
+            print_line("GLOBAL", "", row["cmdddname"], "", "",
+                       row['cmddddeploymentdate'], row['cmdddrecoverydate'], "", "",
+                       "", 'time_deployment_start', "str", row['cmddddateinposition'].strftime(ncTimeFormat))
+        if row['cmddddateoutposition']:
+            print_line("GLOBAL", "", row["cmdddname"], "", "",
+                       row['cmddddeploymentdate'], row['cmdddrecoverydate'], "", "",
+                       "", 'time_deployment_end', "str", row['cmddddateoutposition'].strftime(ncTimeFormat))
         # print_line("GLOBAL", "", row["cmdddname"], "", "",
         #            row['cmddddeploymentdate'], row['cmdddrecoverydate'], "", "",
         #            "", 'site_nominal_depth', "float64", row['cmdsldepth'])

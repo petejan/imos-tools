@@ -37,13 +37,13 @@ def format_attributes(netCDFfile):
     for item in attrs:
         ds.delncattr(item)
 
-    print (di)
+    #print (di)
     for att in sorted(attrs, key=str.lower):  # or  key=lambda s: s.lower()
         value = di[att]
         if type(value) is str:
             value = value.format(**di)
         ds.setncattr(att, value)
-        print("attr : ", att, " = " , value)
+        #print("attr : ", att, " = " , value)
 
     # update the history attribute
     # try:

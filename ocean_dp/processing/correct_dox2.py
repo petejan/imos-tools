@@ -60,7 +60,7 @@ def oxygen(netCDFfile):
     try:
         slope = ds.variables['DOX2_RAW'].calibration_slope
         offset = ds.variables['DOX2_RAW'].calibration_offset
-    except KeyError:
+    except AttributeError:
         pass
 
     # calculate disolved oxygen, umol/kg

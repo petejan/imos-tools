@@ -43,6 +43,7 @@ nameMap["Temp"] = "TEMP"
 
 unitMap = {}
 unitMap["C"] = "degrees_Celsius"
+unitMap["°C"] = "degrees_Celsius"
 
 #
 # parse the file
@@ -57,7 +58,7 @@ series_expr       = r"##\s*Series\s*(\d*)\s*(\S*)\((\S*)\)"
 soft_version_expr = r"##\sVersion.(.*)"
 
 
-def main(file):
+def parse(file):
 
     hdr = True
     dataLine = 0
@@ -67,7 +68,7 @@ def main(file):
     data = []
     ts = []
 
-    filepath = file[1]
+    filepath = file[0]
 
     with open(filepath, 'r', errors='ignore') as fp:
         line = fp.readline()
@@ -196,5 +197,5 @@ def main(file):
 
 
 if __name__ == "__main__":
-    main(sys.argv)
+    parse(sys.argv[1:])
 

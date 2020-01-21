@@ -109,9 +109,9 @@ cal_val_expr      = r"^\s*(\S*) = ([0-9e+-\.]*)"
 # parse the file
 #
 
-def main(files):
+def parse(files):
 
-    filepath = files[1]
+    filepath = files[0]
 
     dataLine = 0
     d = []
@@ -263,4 +263,4 @@ def main(files):
 
 
 if __name__ == "__main__":
-    main(sys.argv)
+    parse(sys.argv[1:])

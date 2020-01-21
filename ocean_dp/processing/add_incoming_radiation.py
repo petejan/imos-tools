@@ -18,12 +18,13 @@
 import pytz
 from netCDF4 import Dataset, num2date
 import sys
-import gsw
+
 import numpy as np
 from datetime import datetime
 
 from pysolar.solar import get_altitude
-from pysolar import radiation
+from pysolar.util import extraterrestrial_irrad
+
 import pysolar
 
 # add incoming radiation
@@ -44,8 +45,7 @@ def add_solar(netCDFfile):
     print('time ', dt_utc[0])
 
     altitude_deg = [get_altitude(lat, lon, d) for d in dt_utc]
-    # rad = [radiation.get_radiation_direct(d, get_altitude(lat, lon, d)) for d in dt_utc]
-    rad = [pysolar.util.extraterrestrial_irrad(lat, lon, d, 1370) for d in dt_utc]
+    rad = [extraterrestrial_irrad(lat, lon, d, 1370) for d in dt_utc]
 
     print("altitude", altitude_deg[0], " rad ", rad[0])
 
@@ -54,7 +54,7 @@ def add_solar(netCDFfile):
     ncVarOut.units = "W/m2"
     ncVarOut.setncattr('name', 'extraterrestrial_irrad celestial incoming solar radiation')
     ncVarOut.long_name = 'incoming_solar_radiation'
-    ncVarOut.comment = "using http://docs.pysolar.org/en/latest/ v0.8 extraterrestrial_irrad() incoming = 1370 W/m^2"
+    ncVarOut.comment = "using http://docs.pysolar.org/en/latest/ v0.8 extraterrestrial_irrad() with incoming = 1370 W/m^2"
 
     # update the history attribute
     try:
@@ -62,7 +62,7 @@ def add_solar(netCDFfile):
     except AttributeError:
         hist = ""
 
-    ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " : added PSAL from TEMP, CNDC, PRES")
+    ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " : added incoming radiation")
 
     ds.close()
 

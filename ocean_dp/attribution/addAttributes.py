@@ -24,7 +24,7 @@ from datetime import datetime
 from dateutil import parser
 from fuzzywuzzy import fuzz
 
-match_threshold = 80
+match_threshold = 90
 
 def parseTypeValue(att_type, v):
     if att_type == 'float64':
@@ -124,7 +124,7 @@ def add(netCDFfile, metadatafiles):
                             name = dict1['attribute_name']
                             att_type = dict1['type']
                             value = parseTypeValue(att_type, dict1['value'])
-                            print("add global %s (%s) = %s" % (name, att_type, value))
+                            #print("add global %s (%s) = %s" % (name, att_type, value))
                             ds.setncattr(name, value)
                             added_attribute = True
 
@@ -144,7 +144,7 @@ def add(netCDFfile, metadatafiles):
                                 name = dict1['attribute_name']
                                 att_type = dict1['type']
                                 value = parseTypeValue(att_type, dict1['value'])
-                                print("add variable %s attribute %s (%s) = %s" % (var_name, name, att_type, value))
+                                #print("add variable %s attribute %s (%s) = %s" % (var_name, name, att_type, value))
                                 ds_variables[var_name].setncattr(name, value)
                                 added_attribute = True
 

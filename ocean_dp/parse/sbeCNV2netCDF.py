@@ -100,9 +100,9 @@ cast_exp = r"\* cast\s+(.*$)"
 # parse the file
 #
 
-def main(files):
+def parse(files):
 
-    filepath = files[1]
+    filepath = files[0]
 
     hdr = True
     sensor = False
@@ -397,4 +397,4 @@ def main(files):
 
 
 if __name__ == "__main__":
-    main(sys.argv)
+    parse(sys.argv[1:])
