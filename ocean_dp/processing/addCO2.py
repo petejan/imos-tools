@@ -30,7 +30,7 @@ def addCO2(netCDFfile):
     netcdf_serials = np.array(var_time[:])
     
     # Read in the CO2 csv file, ignoring the first five rows
-    dcsv = pandas.read_csv('SOFS_prelimdata_Nov2019.csv',header=5)
+    dcsv = pandas.read_csv('SOFS_prelimdata_Nov2019test.csv',header=5)
     
     # Convert the dataframe to an array
     dc = dcsv.to_numpy()
@@ -68,15 +68,19 @@ def addCO2(netCDFfile):
     
     new_vars = ['XCO2_PRES','XCO2_OCEAN','XCO2_AIR','XCO2_PSAL','XCO2_SSTEMP']
     
+    new_units = ['kPa','umol/mol','umol/mol','Presumed PSU - not specified','deg C']
+    
     # For each of the variables in the csv file (except time), linearly 
     # interpolate to the timestamps of the netcdf file    
     for i in range(0,len(new_vars)):
-    
-        np.interp(netcdf_serials,csv_serials[matching_index],np.array(dcsv[dcsv.columns[i+1]])[matching_index].astype('float64'))
         
         ncVarOut = ds.createVariable(new_vars[i], "f4", ("TIME",), fill_value=np.nan, zlib=True)
         
+        ncVarOut[:] =  np.interp(netcdf_serials,csv_serials[matching_index],np.array(dcsv[dcsv.columns[i+1]])[matching_index].astype('float64'))
         
+        ncVarOut.units = new_units[i]
+        
+        ncVarOut.comment = "imported from 'SOFS_prelimdata_Nov2019.csv'"
         
     # update the history attribute
     try:
@@ -84,7 +88,7 @@ def addCO2(netCDFfile):
     except AttributeError:
         hist = ""
 
-    ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " : added ")
+    ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " : added 'XCO2_PRES','XCO2_OCEAN','XCO2_AIR','XCO2_PSAL','XCO2_SSTEMP' from 'SOFS_prelimdata_Nov2019.csv'")
 
     ds.close()
         
