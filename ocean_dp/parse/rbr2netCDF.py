@@ -95,7 +95,8 @@ data_hdr_expr    = r"^.*Date & Time.*$"
 
 soft_version_expr = r"^Firmware=(.*)"
 
-def main(file):
+
+def parse(file):
 
     hdr = True
     dataLine = 0
@@ -107,7 +108,7 @@ def main(file):
     logger_time = None
     file_created = None
 
-    filepath = file[1]
+    filepath = file[0]
 
     with open(filepath, 'r', errors='ignore') as fp:
         line = fp.readline()
@@ -258,5 +259,5 @@ def main(file):
 
 
 if __name__ == "__main__":
-    main(sys.argv)
+    parse(sys.argv[1:])
 
