@@ -140,7 +140,7 @@ notime_expr       = r"\* do not store time with each sample"
 
 def sbe_asc_parse(files):
 
-    filepath = files[1]
+    filepath = files[0]
 
     hdr = True
     sensor = False
@@ -319,4 +319,4 @@ def sbe_asc_parse(files):
 
 
 if __name__ == "__main__":
-    sbe_asc_parse(sys.argv)
+    sbe_asc_parse(sys.argv[1:])
