@@ -1,5 +1,0 @@
-rec_type, var_name,deployment_code, model, serial_number, time_deployment, time_recovery, variable_name, variable_dims, variable_shape, attribute_name,type,value
-GLOBAL,*,,,,,,,,,institution,str,ABOS-SOTS
-GLOBAL,*,,,,,,,,,institution_references,str,http://www.imos.org.au/aodn.html
-GLOBAL,*,,,,,,,,,voyage_deployment,str,https://www.cmar.csiro.au/data/trawler/survey_details.cfm?survey=IN2018_V02
-GLOBAL,*,,,,,,,,,voyage_recovery,str,https://www.cmar.csiro.au/data/trawler/survey_details.cfm?survey=IN2019_V02

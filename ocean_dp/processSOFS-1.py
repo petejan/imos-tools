@@ -29,7 +29,10 @@ print('step 1 (parse)')
 
 filename = ocean_dp.parse.sbeASC2netCDF.sbe_asc_parse(['SOFS-1-SBE37SM-1840-SS-7.asc'])
 filename = ocean_dp.parse.sbe37DD2netCDF.parse(['SOFS-1-SBE37SM-2971-100m-3.asc'])
-filename = ocean_dp.parse.sbeCNV2netCDF.parse(['sbe37sm-rs485_7409_2011_05_24.cnv'])
+
+cnv_files = glob.glob("*.cnv")
+for fn in cnv_files:
+    filename = ocean_dp.parse.sbeCNV2netCDF.parse([fn])
 
 vemco_files = glob.glob("Asc-*.000")
 for fn in vemco_files:
