@@ -38,6 +38,8 @@ def add_solar(netCDFfile):
     print('lat ', lat, ' lon ', lon)
 
     time = ds.variables['TIME']
+
+    print('number of points ', len(time))
     dt = num2date(time[:], units=time.units, calendar=time.calendar)
 
     dt_utc = [d.replace(tzinfo=pytz.UTC) for d in dt]

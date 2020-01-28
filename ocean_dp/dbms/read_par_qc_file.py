@@ -20,62 +20,93 @@ import datetime
 import pandas as pd
 import psycopg2
 import psycopg2.extras
+import sys
 
-data = pd.read_csv("qcPARdata.csv", dtype={"TIME": float, "INSTRUMENT_ID": int, "VALUE": float, "QC FLAG": int})
+# read the csv file using pandas
+data = pd.read_csv(sys.argv[1], dtype={"TIME": float, "INSTRUMENT_ID": int, "VALUE": float, "QC FLAG": int})
 
+# data sample, did we get the data
 print(data.head())
 
+# open a database connection
 conn = psycopg2.connect(host="localhost", database="ABOS", user="pete", password="password")
 cur = conn.cursor()
 
+# map quality codes to text
 qc_dict = {0: 'NONE', 1: 'GOOD', 2: 'PGOOD', 3: 'PBAD', 4: 'BAD', 5: 'OUT', 9: 'MISSING'}
 
-print("qc_dict : ", qc_dict[0])
+# a list of metadata from the database, keep a list so we don't have to look it up for every point
+metadata = {}
 
-for i, j in data.iterrows():
+# loop over all points, inserting them into the database
+for i, csv_row in data.iterrows():
     # print(j)
 
-    mooring = j["MOORING"].strip()
-    instrument = j["INSTRUMENT_ID"]
+    mooring = csv_row["MOORING"].strip()
+    instrument = csv_row["INSTRUMENT_ID"]
 
-    mooring_cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-    mooring_cur.execute("SELECT * FROM mooring WHERE mooring_id='%s'" % mooring)
-    mooring_info = mooring_cur.fetchone()
+    meta_data_tup = (mooring, instrument)
 
-    inst_cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-    inst_cur.execute("SELECT * FROM mooring_attached_instruments WHERE mooring_id='%s' and instrument_id = %d" % (mooring, instrument))
-    inst_info = inst_cur.fetchone()
+    # do we have a the metadat for this combination
+    if not meta_data_tup in metadata:
+        # lookup metadata in database
 
-    # print("mooring", mooring_info, inst_info)
+        # lookup lat and long
+        mooring_cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        mooring_cur.execute("SELECT * FROM mooring WHERE mooring_id='%s'" % mooring)
+        mooring_info = mooring_cur.fetchone()
+        if mooring_info is None:
+            print("mooring not found ", mooring)
+            break
 
-    new_date = datetime.datetime(1950, 1, 1, 0, 0) + datetime.timedelta(days=j["TIME"])
+        # lookup instrument depth
+        inst_cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        inst_cur.execute("SELECT * FROM mooring_attached_instruments WHERE mooring_id='%s' and instrument_id = %d" % (mooring, instrument))
+        inst_info = inst_cur.fetchone()
+        if inst_info is None:
+            print("instrument not found ", mooring, instrument)
+            break
+
+        # lookup sourcefile
+        file_cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        file_cur.execute("SELECT datafile_pk, instrument_depth FROM instrument_data_files WHERE mooring_id='%s' and instrument_id = %d" % (mooring, instrument))
+        file_info = file_cur.fetchone()
+        if file_info is None:
+            print("source file not found ", mooring, instrument)
+            break
+
+        #print("mooring", mooring_info, inst_info, file_info)
+
+        # save a new metadata record
+        metadata[meta_data_tup] = {'lat': mooring_info['latitude_in'], 'lon': mooring_info['longitude_in'], 'depth_inst': inst_info['depth'],
+                                   'source': file_info['datafile_pk'], 'depth_file': file_info['instrument_depth']}
+
+        conn.commit()
+
+    # round the time to nearest second as we have been from timestamp to float and backagain
+    new_date = datetime.datetime(1950, 1, 1, 0, 0) + datetime.timedelta(days=csv_row["TIME"])
     if new_date.microsecond >= 500000:
         new_date = new_date + datetime.timedelta(seconds=1)
-
     new_date = new_date.replace(microsecond=0)
 
-    #print("INSERT INTO processed_instrument_data (source_file_id, instrument_id, mooring_id, data_timestamp, latitude, longitude, depth, parameter_code, parameter_value, quality_code) VALUES (%(int)s, %(int)s, %(int)s, %(date)s, %s, %s, %s, %s, %s, %s)",
-    #            (2020003, instrument, mooring, new_date, mooring_info["latitude_in"], mooring_info["longitude_in"], inst_info['depth'], 'PAR', j["VALUE"], qc_str))
-
-    lat_in = mooring_info['latitude_in']
-    lon_in = mooring_info['longitude_in']
-    depth = inst_info['depth']
-    value = j['VALUE']
-    qc = j["QC FLAG"]
+    # create a metadata tuple to insert into the database
+    file = metadata[meta_data_tup]['source']
+    lat_in = metadata[meta_data_tup]['lat']
+    lon_in = metadata[meta_data_tup]['lon']
+    depth = metadata[meta_data_tup]['depth_inst']
+    value = csv_row['VALUE']
+    qc = csv_row["QC FLAG"]
     qc_str = qc_dict[qc]
-    t = (instrument, mooring, new_date, lat_in, lon_in, depth, value, qc_str)
-    print(i, j["TIME"], t)
 
-    #try:
+    t = (file, instrument, mooring, new_date, lat_in, lon_in, depth, value, qc_str)
+
+    if (i % 1000) == 0:
+        print(i, csv_row["TIME"], t)
+
+    # insert data into database
     cur.execute("INSERT INTO processed_instrument_data "
-                    "VALUES (2020003, %s, %s, %s, %s, %s, %s, 'PAR', %s, %s)", t
+                    "VALUES (%s, %s, %s, %s, %s, %s, %s, 'PAR', %s, %s)", t
                     )
-    #except psycopg2.errors.UniqueViolation:
-    #    print("except ", i, j["TIME"], t)
-
-
-    #if i>10:
-    #    break
 
 conn.commit()
 
