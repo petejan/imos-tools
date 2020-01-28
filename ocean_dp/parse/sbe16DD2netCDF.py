@@ -56,11 +56,9 @@ var_names = [var_temp, var_cndc, var_pres, var_volt1, var_volt2, var_volt3, var_
 
 #
 # parse the file
-#
+# we don't get the serial number from the download files, so get it from the input arguments
 
-def main(files):
-
-    filepath = files[1]
+def parse(sn, filepath):
 
     dataLine = 0
     d = []
@@ -70,7 +68,7 @@ def main(files):
     data = []
     times = []
     instrument_model = "SBE16plusV2"
-    instrument_serialnumber = "01606330"
+    instrument_serialnumber = sn
     type = 0
 
     with open(filepath, 'r', errors='ignore') as fp:
@@ -152,4 +150,4 @@ def main(files):
 
 
 if __name__ == "__main__":
-    main(sys.argv)
+    parse(sys.argv[1], sys.argv[2])

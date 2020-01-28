@@ -25,6 +25,8 @@ from dateutil import parser
 from netCDF4 import date2num, num2date
 from netCDF4 import Dataset
 
+import os
+
 import numpy as np
 
 # source file must have 'timek' column for time
@@ -311,7 +313,7 @@ def sbe_asc_parse(files):
 
     # add creating and history entry
     ncOut.setncattr("date_created", datetime.utcnow().strftime(ncTimeFormat))
-    ncOut.setncattr("history", datetime.utcnow().strftime("%Y-%m-%d") + " created from file " + filepath)
+    ncOut.setncattr("history", datetime.utcnow().strftime("%Y-%m-%d") + " created from file " + os.path.basename(filepath))
 
     ncOut.close()
 

@@ -18,6 +18,7 @@
 
 import sys
 import re
+import os
 
 from datetime import datetime
 from netCDF4 import num2date, date2num
@@ -389,7 +390,7 @@ def parse(files):
 
     # add creating and history entry
     ncOut.setncattr("date_created", datetime.utcnow().strftime(ncTimeFormat))
-    ncOut.setncattr("history", datetime.utcnow().strftime("%Y-%m-%d") + " created from file " + filepath)
+    ncOut.setncattr("history", datetime.utcnow().strftime("%Y-%m-%d") + " created from file " + os.path.basename(filepath))
 
     ncOut.close()
 

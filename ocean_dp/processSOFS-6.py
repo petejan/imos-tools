@@ -35,19 +35,36 @@ print(process.memory_info().rss)  # in bytes
 
 path = sys.argv[1] + "/"
 
-print('file path : ', path)
+print ('file path : ', path)
 
 print('step 1 (parse)')
 
-filename = ocean_dp.parse.sbeASC2netCDF.sbe_asc_parse([os.path.join(path, 'SOFS-7.5-SBE39-6273-4500m.asc')])
+filename = ocean_dp.parse.starmon2netCDF.parse([os.path.join(path, '4T4777.DAT')])
 
 cnv_files = glob.glob(os.path.join(path, "*.cnv"))
 for fn in cnv_files:
     filename = ocean_dp.parse.sbeCNV2netCDF.parse([fn])
 
-vemco_files = glob.glob(os.path.join(path, "*.DAT"))
+vemco_files = glob.glob(os.path.join(path, "Minilog-II-T*.csv"))
 for fn in vemco_files:
-    filename = ocean_dp.parse.starmon2netCDF.parse([fn])
+    filename = ocean_dp.parse.vemco2netCDF.parse([fn])
+
+# two files SBE37SM-RS485_03708764_2017_12_05.cnv, SBE37SM-RS485_03710136_2017_12_05.cnv where set to the wrong year (2016 not 2017)
+ocean_dp.processing.scale_offset_var.scale_offset(os.path.join(path, "SBE37SM-RS485_03708764_2017_12_05.cnv.nc"), 'TIME', 1.0, 366.0)
+ocean_dp.processing.scale_offset_var.scale_offset(os.path.join(path, "SBE37SM-RS485_03710136_2017_12_05.cnv.nc"), 'TIME', 1.0, 366.0)
+
+# fixup the time_coverage_start, end
+ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
+ncOut = Dataset(os.path.join(path, "SBE37SM-RS485_03708764_2017_12_05.cnv.nc"), 'a')
+ncTimesOut = ncOut.variables["TIME"]
+ncOut.setncattr("time_coverage_start", num2date(ncTimesOut[0], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
+ncOut.setncattr("time_coverage_end", num2date(ncTimesOut[-1], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
+ncOut.close()
+ncOut = Dataset(os.path.join(path, "SBE37SM-RS485_03710136_2017_12_05.cnv.nc"), 'a')
+ncTimesOut = ncOut.variables["TIME"]
+ncOut.setncattr("time_coverage_start", num2date(ncTimesOut[0], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
+ncOut.setncattr("time_coverage_end", num2date(ncTimesOut[-1], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
+ncOut.close()
 
 # make a netCDF directory to put them in
 try:
@@ -62,10 +79,11 @@ for fn in ncFiles:
 # for each of the new files, process them
 ncFiles = glob.glob(os.path.join(path, 'netCDF', '*.nc'))
 for fn in ncFiles:
-    print("processing file : " + fn)
 
+    print("processing file : " + fn)
+    
     filename = ocean_dp.attribution.addAttributes.add(fn,
-                                                      ['metadata/sofs-7.5.metadata.csv',
+                                                      ['metadata/sofs-6.metadata.csv',
                                                        'metadata/imos.metadata.csv',
                                                        'metadata/sots.metadata.csv',
                                                        'metadata/sofs.metadata.csv',

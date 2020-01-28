@@ -128,6 +128,7 @@ def parse(file):
                 d = np.zeros(len(name))
                 d.fill(np.nan)
                 t = datetime.strptime(lineSplit[1], '%d/%m/%Y %H:%M:%S')
+
                 ts.append(t)
                 #print("timestamp %s" % ts)
                 for v in name:

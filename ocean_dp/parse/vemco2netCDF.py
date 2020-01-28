@@ -18,6 +18,7 @@
 
 import sys
 import re
+import os
 
 from datetime import datetime
 from netCDF4 import date2num, num2date
@@ -169,6 +170,18 @@ def parse(files):
                 type = 9
                 nVariables = 2
                 print('type 9 (MiniLog-TD, temp, depth)')
+            elif ls == "Date(yyyy-mm-dd),Time(hh:mm:ss),Temperature (°C),Depth (m)":
+                type = 10
+                nVariables = 2
+                print('type 10 (MiniLog-TD, temp, depth)')
+            elif ls == "Date(yyyy-mm-dd),Time(hh:mm:ss),Temperature (°C)":
+                type = 11
+                nVariables = 1
+                print('type 11 (MiniLog-T)')
+            elif ls == "Date(yyyy-mm-dd) Time(hh:mm:ss),Temperature (°C),ADC":
+                type = 12
+                nVariables = 1
+                print('type 12 (MiniLog-T)')
 
             matchObj = re.match(dataline_expr, line)
             if matchObj:
@@ -201,6 +214,15 @@ def parse(files):
                 elif type == 9:
                     ts = datetime.strptime(line_split[0], '%Y-%m-%d %H:%M:%S')
                     d = [float(line_split[1]), float(line_split[3])]
+                elif type == 10:
+                    ts = datetime.strptime(line_split[0] + ' ' + line_split[1], '%Y-%m-%d %H:%M:%S')
+                    d = [float(line_split[2]), float(line_split[3])]
+                elif type == 11:
+                    ts = datetime.strptime(line_split[0] + ' ' + line_split[1], '%Y-%m-%d %H:%M:%S')
+                    d = [float(line_split[2])]
+                elif type == 12:
+                    ts = datetime.strptime(line_split[0], '%Y-%m-%d %H:%M:%S')
+                    d = [float(line_split[1])]
 
                 #print(ts, d)
                 times.append(ts)
@@ -267,7 +289,7 @@ def parse(files):
 
     # add creating and history entry
     ncOut.setncattr("date_created", datetime.utcnow().strftime(ncTimeFormat))
-    ncOut.setncattr("history", datetime.utcnow().strftime("%Y-%m-%d") + " created from file " + filepath)
+    ncOut.setncattr("history", datetime.utcnow().strftime("%Y-%m-%d") + " created from file " + os.path.basename(filepath))
 
     ncOut.close()
 

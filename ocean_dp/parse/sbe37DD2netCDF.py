@@ -18,6 +18,7 @@
 
 import sys
 import re
+import os
 
 from datetime import datetime
 from netCDF4 import date2num, num2date
@@ -94,10 +95,13 @@ from dateutil import parser
 var_temp = {'name': 'TEMP', 'attributes': {'units' : 'degrees_Celsius', 'instrument_uncertainty' : np.float32(0.005)}}
 var_cndc = {'name': 'CNDC', 'attributes': {'units' : 'S/m', 'instrument_uncertainty' : np.float32(0.0005)}}
 var_pres = {'name': 'PRES', 'attributes': {'units' : 'dbar', 'instrument_uncertainty' : np.float32(0.1/100 * 2000)}}
+var_dox  = {'name': 'DOX', 'attributes': {'units' : 'ml/l', 'instrument_uncertainty' : np.float32(0.07)}}
+var_psal = {'name': 'PSAL', 'attributes': {'units' : '1'}}
 
-var_names = [var_temp, var_cndc, var_pres]
+var_names3 = [var_temp, var_cndc, var_pres]
+var_names5 = [var_temp, var_cndc, var_pres, var_dox, var_psal]
 
-model_serial_expr = r"(SBE\S*) (\S*).*SERIAL NO. (\S*)"
+model_serial_expr = r".*(SBE\S*) (\S*).*SERIAL NO. (\S*).*$"
 
 temp_cal_expr     = r"^temperature: \s*(\S*)"
 cond_cal_expr     = r"^conductivity: \s*(\S*)"
@@ -134,7 +138,7 @@ def parse(files):
         line = fp.readline()
 
         while line:
-
+            #print('line dataline ', data_lines, " : ", line)
             if ~data_lines:
                 # match calibrations
                 # temp
@@ -181,11 +185,12 @@ def parse(files):
                 # match the serial number expression
                 #print("Line {}: {} : {}".format(cnt, dataLine, line.strip()))
                 matchObj = re.match(model_serial_expr, line)
+                # print("match ", matchObj)
                 if matchObj:
                     #print("model_serial_expr:matchObj.group() : ", matchObj.group())
-                    #print("model_serial_expr:matchObj.group(1) : ", matchObj.group(1))
+                    print("model_serial_expr:matchObj.group(1) : ", matchObj.group(1))
                     #print("model_serial_expr:matchObj.group(1) : ", matchObj.group(2))
-                    #print("model_serial_expr:matchObj.group(1) : ", matchObj.group(3))
+                    print("model_serial_expr:matchObj.group(3) : ", matchObj.group(3))
                     instrument_model = matchObj.group(1)
                     instrument_serialnumber = matchObj.group(3)
 
@@ -193,7 +198,7 @@ def parse(files):
 
             #print("splits ", len(line_split))
 
-            if len(line_split) >= 5:
+            if len(line_split) >= 5 and line[0] == ' ':
                 ts = datetime.strptime(line_split[-2].strip() + ' ' + line_split[-1].strip(), "%d %b %Y %H:%M:%S")
                 d = [float(v) for v in line_split[0:-2]]
                 nVariables = len(d)
@@ -212,6 +217,8 @@ def parse(files):
 
     # trim data to what was read
     print("nSamples %d nVariables %d" % (number_samples, nVariables))
+
+    print('instrument ', instrument_model, ':', instrument_serialnumber)
 
     #
     # build the netCDF file
@@ -242,6 +249,10 @@ def parse(files):
     ncTimesOut.axis = "T"
     ncTimesOut[:] = date2num(times, calendar=ncTimesOut.calendar, units=ncTimesOut.units)
 
+    var_names = var_names3
+    if nVariables == 5:
+        var_names = var_names5
+
     # for each variable in the data file, create a netCDF variable
     for v in range(0, nVariables):
         ncVarOut = ncOut.createVariable(var_names[v]["name"], "f4", ("TIME",), fill_value=np.nan, zlib=True) # fill_value=nan otherwise defaults to max
@@ -255,7 +266,7 @@ def parse(files):
 
     # add creating and history entry
     ncOut.setncattr("date_created", datetime.utcnow().strftime(ncTimeFormat))
-    ncOut.setncattr("history", datetime.utcnow().strftime("%Y-%m-%d") + " created from file " + filepath)
+    ncOut.setncattr("history", datetime.utcnow().strftime("%Y-%m-%d") + " created from file " + os.path.basename(filepath))
 
     ncOut.close()
 

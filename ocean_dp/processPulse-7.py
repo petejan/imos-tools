@@ -26,8 +26,9 @@ print(process.memory_info().rss)  # in bytes
 
 print('step 1 (parse)')
 
-filename = ocean_dp.parse.rbr2netCDF.parse(['014788_20110426_1347_eng.txt'])
-filename = ocean_dp.parse.rbr2netCDF.parse(['014789_20110429_2327_eng.txt'])
+cnv_files = glob.glob("*_eng.txt")
+for fn in cnv_files:
+    filename = ocean_dp.parse.rbr2netCDF.parse([fn])
 
 cnv_files = glob.glob("*.cnv")
 for fn in cnv_files:
