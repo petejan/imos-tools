@@ -2,7 +2,7 @@ import sys
 
 print('Python %s on %s' % (sys.version, sys.platform))
 
-sys.path.extend(['/Users/jan079/ABOS/git/imos-tools'])
+sys.path.extend(['.'])
 
 import shutil
 
@@ -32,7 +32,7 @@ print ('file path : ', path)
 
 print('step 1 (parse)')
 
-filename = ocean_dp.parse.sbeASC2netCDF.sbe_asc_parse([os.path.join(path, 'SOFS-2-SBE37SM-2971.cap')])
+filename = ocean_dp.parse.sbe37DD2netCDF.parse([os.path.join(path, 'SOFS-2-SBE37SM-2971.cap')])
 
 cnv_files = glob.glob(os.path.join(path, "*.cnv"))
 for fn in cnv_files:
