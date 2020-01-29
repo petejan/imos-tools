@@ -51,8 +51,10 @@ var_volt5 = {'name': 'VOLT5', 'attributes': {'units' : 'V'}}
 var_volt6 = {'name': 'VOLT6', 'attributes': {'units' : 'V'}}
 var_tgp = {'name': 'TOTAL_GAS_PRESSURE', 'attributes': {'units' : 'millibars'}}
 var_tgtd = {'name': 'TEMP_GTD', 'attributes': {'units' : 'degrees_Celsius'}}
+var_psal = {'name': 'PSAL', 'attributes': {'units' : '1'}}
 
-var_names = [var_temp, var_cndc, var_pres, var_volt1, var_volt2, var_volt3, var_volt4, var_volt5, var_volt6, var_tgp, var_tgp]
+var_names11 = [var_temp, var_cndc, var_pres, var_volt1, var_volt2, var_volt3, var_volt4, var_volt5, var_volt6, var_tgp, var_tgtd]
+var_names12 = [var_temp, var_cndc, var_pres, var_volt1, var_volt2, var_volt3, var_volt4, var_volt5, var_volt6, var_tgp, var_tgtd, var_psal]
 
 #
 # parse the file
@@ -84,7 +86,7 @@ def parse(sn, filepath):
 
             if len(line_split) > 10:
                 ts = datetime.strptime(line_split[-1].strip(), "%d %b %Y %H:%M:%S")
-                d = [float(v) for v in line_split[0:-2]]
+                d = [float(v) for v in line_split[0:-1]]
                 nVariables = len(d)
 
                 #print(ts, d)
@@ -129,8 +131,13 @@ def parse(sn, filepath):
     ncTimesOut.axis = "T"
     ncTimesOut[:] = date2num(times, calendar=ncTimesOut.calendar, units=ncTimesOut.units)
 
+    var_names = var_names11
+    if nVariables == 12:
+        var_names = var_names12
+
     # for each variable in the data file, create a netCDF variable
     for v in range(0, nVariables):
+        print("variable : ", var_names[v]["name"])
         ncVarOut = ncOut.createVariable(var_names[v]["name"], "f4", ("TIME",), fill_value=np.nan, zlib=True) # fill_value=nan otherwise defaults to max
         for a in var_names[v]["attributes"]:
             ncVarOut.setncattr(a, var_names[v]["attributes"][a])

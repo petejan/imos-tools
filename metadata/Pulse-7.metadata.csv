@@ -29,7 +29,7 @@ GLOBAL,,,Minilog-T,4829,2010-09-09,2011-04-18,,"","",deployment_code,str,"Pulse-
 GLOBAL,,,Minilog-T,4830,2010-09-09,2011-04-18,,"","",deployment_code,str,"Pulse-7-2010"
 GLOBAL,,,Minilog-T,6098,2010-09-09,2011-04-18,,"","",deployment_code,str,"Pulse-7-2010"
 GLOBAL,,,Minilog-T,6100,2010-09-09,2011-04-18,,"","",deployment_code,str,"Pulse-7-2010"
-GLOBAL,,,Minilog-T,6101,2010-09-09,2011-04-18,,"","",deployment_code,str,"Pulse-7-2010"
+GLOBAL,,,Minilog-TD,6101,2010-09-09,2011-04-18,,"","",deployment_code,str,"Pulse-7-2010"
 GLOBAL,,,ECO-PAR,135,2010-09-09,2011-04-18,,"","",deployment_code,str,"Pulse-7-2010"
 GLOBAL,,,FLNTUS,1215,2010-09-09,2011-04-18,,"","",deployment_code,str,"Pulse-7-2010"
 
@@ -70,6 +70,6 @@ VAR,NOMINAL_DEPTH,Pulse-7-2010,Minilog-T,4829,2010-09-09,2011-04-18,NOMINAL_DEPT
 VAR,NOMINAL_DEPTH,Pulse-7-2010,Minilog-T,4830,2010-09-09,2011-04-18,NOMINAL_DEPTH,"()","()",,float64,"140.00"
 VAR,NOMINAL_DEPTH,Pulse-7-2010,Minilog-T,6098,2010-09-09,2011-04-18,NOMINAL_DEPTH,"()","()",,float64,"45.00"
 VAR,NOMINAL_DEPTH,Pulse-7-2010,Minilog-T,6100,2010-09-09,2011-04-18,NOMINAL_DEPTH,"()","()",,float64,"60.00"
-VAR,NOMINAL_DEPTH,Pulse-7-2010,Minilog-T,6101,2010-09-09,2011-04-18,NOMINAL_DEPTH,"()","()",,float64,"160.00"
+VAR,NOMINAL_DEPTH,Pulse-7-2010,Minilog-TD,6101,2010-09-09,2011-04-18,NOMINAL_DEPTH,"()","()",,float64,"160.00"
 VAR,NOMINAL_DEPTH,Pulse-7-2010,ECO-PAR,135,2010-09-09,2011-04-18,NOMINAL_DEPTH,"()","()",,float64,"31.10"
 VAR,NOMINAL_DEPTH,Pulse-7-2010,FLNTUS,1215,2010-09-09,2011-04-18,NOMINAL_DEPTH,"()","()",,float64,"31.10"

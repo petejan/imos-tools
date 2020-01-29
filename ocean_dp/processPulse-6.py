@@ -10,6 +10,8 @@ import ocean_dp.parse.sbeASC2netCDF
 import ocean_dp.parse.rbr2netCDF
 import ocean_dp.parse.sbeCNV2netCDF
 import ocean_dp.parse.vemco2netCDF
+import ocean_dp.parse.sbe37DD2netCDF
+import ocean_dp.parse.sbe16DD2netCDF
 
 import ocean_dp.attribution.addAttributes
 import ocean_dp.attribution.add_geospatial_attributes
@@ -32,15 +34,18 @@ print ('file path : ', path)
 
 print('step 1 (parse)')
 
+filename = ocean_dp.parse.sbe37DD2netCDF.parse([os.path.join(path, 'cat6962.cap')])
+filename = ocean_dp.parse.sbe16DD2netCDF.parse("01606331", os.path.join(path, 'Instrument_Data_Upload_25032010.csv'))
+
 cnv_files = glob.glob(os.path.join(path, "*.cnv"))
 for fn in cnv_files:
-    filename = ocean_dp.parse.sbeCNV2netCDF.parse([fn])
+    filename = ocean_dp.parse.sbeCNV2netCDF.parse(os.path.join(path, [fn]))
 
 rbr_files = glob.glob(os.path.join(path, "*_eng.txt"))
 for fn in rbr_files:
     filename = ocean_dp.parse.rbr2netCDF.parse([fn])
 
-vemco_files = glob.glob(os.path.join(path, "Asc-*.000"))
+vemco_files = glob.glob(os.path.join(path, "Asc-*.txt"))
 for fn in vemco_files:
     filename = ocean_dp.parse.vemco2netCDF.parse([fn])
 
@@ -57,8 +62,9 @@ for fn in ncFiles:
 # for each of the new files, process them
 ncFiles = glob.glob(os.path.join(path, 'netCDF', '*.nc'))
 for fn in ncFiles:
+    print ("processing " , fn)
     filename = ocean_dp.attribution.addAttributes.add(fn,
-                                                      ['metadata/pulse-7.metadata.csv',
+                                                      ['metadata/pulse-6.metadata.csv',
                                                        'metadata/imos.metadata.csv',
                                                        'metadata/sots.metadata.csv',
                                                        'metadata/sofs.metadata.csv',

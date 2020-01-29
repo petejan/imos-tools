@@ -43,8 +43,8 @@ def add(netCDFfile, metadatafiles):
 
     ds = Dataset(netCDFfile, 'a')
 
-    time_start = parser.parse(ds.time_coverage_start, ignoretz=True, dayfirst=True)
-    time_end = parser.parse(ds.time_coverage_end, ignoretz=True, dayfirst=True)
+    time_start = parser.parse(ds.time_coverage_start, ignoretz=True, yearfirst=True, dayfirst=False)
+    time_end = parser.parse(ds.time_coverage_end, ignoretz=True,  yearfirst=True, dayfirst=False)
     instrument_model = ds.instrument_model
     instrument_serial_number = ds.instrument_serial_number
 
