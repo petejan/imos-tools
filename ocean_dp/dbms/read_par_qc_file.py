@@ -73,13 +73,13 @@ for i, csv_row in data.iterrows():
         file_info = file_cur.fetchone()
         if file_info is None:
             print("source file not found ", mooring, instrument)
-            break
+            file_info = {'datafile_pk': 2020003, 'instrument_depth': inst_info['depth']}
 
         #print("mooring", mooring_info, inst_info, file_info)
 
         # save a new metadata record
         metadata[meta_data_tup] = {'lat': mooring_info['latitude_in'], 'lon': mooring_info['longitude_in'], 'depth_inst': inst_info['depth'],
-                                   'source': file_info['datafile_pk'], 'depth_file': file_info['instrument_depth']}
+                                   'source': file_info['datafile_pk']}
 
         conn.commit()
 
@@ -104,9 +104,12 @@ for i, csv_row in data.iterrows():
         print(i, csv_row["TIME"], t)
 
     # insert data into database
-    cur.execute("INSERT INTO processed_instrument_data "
-                    "VALUES (%s, %s, %s, %s, %s, %s, %s, 'PAR', %s, %s)", t
-                    )
+    try:
+        cur.execute("INSERT INTO processed_instrument_data "
+                        "VALUES (%s, %s, %s, %s, %s, %s, %s, 'PAR', %s, %s)", t
+                        )
+    except psycopg2.errors.UniqueViolation:
+        print("duplicate entry ", csv_row["TIME"], t)
 
 conn.commit()
 
