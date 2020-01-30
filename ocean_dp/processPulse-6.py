@@ -45,7 +45,7 @@ rbr_files = glob.glob(os.path.join(path, "*_eng.txt"))
 for fn in rbr_files:
     filename = ocean_dp.parse.rbr2netCDF.parse([fn])
 
-vemco_files = glob.glob(os.path.join(path, "Asc-*.txt"))
+vemco_files = glob.glob(os.path.join(path, "Asc*.txt"))
 for fn in vemco_files:
     filename = ocean_dp.parse.vemco2netCDF.parse([fn])
 

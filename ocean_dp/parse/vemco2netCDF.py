@@ -133,12 +133,21 @@ def parse(files):
                 instrument_serialnumber = matchObj.group(2)
 
             # print(line.strip())
-            ls = line.strip();
+            ls = line.strip()
+            #print(ls)
             if ls == '* Date(yyyy,mm,dd),Time(hh,mm,ss),Celsius (C),Temp(AtoD),Meters (m),Depth(AtoD)':
                 type = 1
                 nVariables = 2
                 print('type 1 (MiniLog-T, temp, depth)')
+            elif ls == '* Date(yyyy,mm,dd),Time(hh,mm,ss),Celsius (°C),Temp(AtoD),Meters (m),Depth(AtoD)':
+                    type = 1
+                    nVariables = 2
+                    print('type 1 (MiniLog-T, temp, depth)')
             elif ls == "* Date(yyyy,mm,dd),Time(hh,mm,ss),Celsius (C),Temp(AtoD)":
+                type = 2
+                nVariables = 1
+                print('type 2 (MiniLog-T, temp)')
+            elif ls == "* Date(yyyy,mm,dd),Time(hh,mm,ss),Celsius (°C),Temp(AtoD)":
                 type = 2
                 nVariables = 1
                 print('type 2 (MiniLog-T, temp)')

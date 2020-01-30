@@ -33,21 +33,28 @@ def global_range(netCDFfile, variable, max, min):
 
     var = ds.variables[variable]
 
+    print (var)
     try:
-        var_qc = ds.variables[variable + "_quality_control"]
+        qc_var = var.ancillary_variables
+        print("QC var name ", qc_var)
+        var_qc = ds.variables[qc_var]
     except KeyError:
         print("no QC variable found")
         return None
 
+    qc = var_qc[:]
     # this is where the actual QC test is done
     mask = ((var[:] > max) | (var[:] < min))
 
-    mask = mask & (var_qc[:] < 1) # only mark data that has not been QCd already
+    mask = mask & (qc < 1) # only mark data that has not been QCd already
 
-    var_qc[mask] = 4
-    count = sum(mask)
-    print('marked records ', count)
+    qc[mask] = 4
+    marked = np.zeros_like(qc)
+    marked[mask] = 1
+    count = sum(marked)
+    print('marked records ', count, mask, qc)
 
+    var_qc[:] = qc
     # update the history attribute
     history = ds.history
     ds.setncattr("history", history + "\n" + datetime.utcnow().strftime("%Y-%m-%d") + " " + variable + " global range min = " + str(min) + " max = " + str(max) + " marked " + str(count))
