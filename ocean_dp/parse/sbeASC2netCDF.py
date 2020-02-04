@@ -157,6 +157,7 @@ def sbe_asc_parse(files):
     cal_param = None
     cal_sensor = None
     cal_tags = []
+    data = None
 
     with open(filepath, 'r', errors='ignore') as fp:
         line = fp.readline()
@@ -195,25 +196,14 @@ def sbe_asc_parse(files):
                 if matchObj:
                     print("n_samples_expr:matchObj.group() : ", matchObj.group())
                     number_samples = int(matchObj.group(1))
-                    # TODO: need if SBE37/39 here
-                    #nVariables = 3
-                    nVariables = 2
 
                 matchObj = re.match(end_expr, line)
                 if matchObj:
                     print("end_expr:matchObj.group() : ", matchObj.group())
                     hdr = False
-                    data = np.zeros((number_samples, nVariables))
-                    data.fill(np.nan)
-                    name.insert(0, {'col': 0, 'var_name': "TEMP", 'comment': None, 'unit': "degrees_Celsius"})
-                    # TODO: need if SBE37/39 here
-                    if re.match(".*37", instrument_model):
-                        name.insert(1, {'col': 1, 'var_name': "CNDC", 'comment': None, 'unit': "S/m"})
-                        #name.insert(2, {'col': 2, 'var_name': "PRES", 'comment': None, 'unit': "dbar"})
-                    else:
-                        name.insert(1, {'col': 1, 'var_name': "PRES", 'comment': None, 'unit': "dbar"})
 
             else:
+
                 dataL = True
                 matchObj = re.match(start_time_expr, line)
                 if matchObj:
@@ -235,6 +225,27 @@ def sbe_asc_parse(files):
 
                 if dataL and (line.count(",") > 0):
                     lineSplit = line.strip().split(",")
+                    if data is None:
+                        print("First data line : ", line.strip())
+                        nVariables = len(lineSplit) - 2  # 2 for the date and time
+                        data = np.zeros((number_samples, nVariables))
+                        print("number variables ", nVariables)
+                        data.fill(np.nan)
+                        print("data split number ", len(lineSplit))
+                        name.insert(0, {'col': 0, 'var_name': "TEMP", 'comment': None, 'unit': "degrees_Celsius"})
+                        if re.match(".*37", instrument_model):
+                            if nVariables >= 2:
+                                name.insert(1, {'col': 1, 'var_name': "CNDC", 'comment': None, 'unit': "S/m"})
+                            if nVariables >= 3:
+                                name.insert(2, {'col': 2, 'var_name': "PRES", 'comment': None, 'unit': "dbar"})
+                            if nVariables >= 4:
+                                name.insert(3, {'col': 3, 'var_name': "PSAL", 'comment': None, 'unit': "1"})
+                        else:
+                            if nVariables >= 2:
+                                name.insert(1, {'col': 1, 'var_name': "PRES", 'comment': None, 'unit': "dbar"})
+
+                        print("variables ", name)
+
                     #print(line.strip())
                     splitVarNo = 0
                     try:
