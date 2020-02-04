@@ -38,6 +38,9 @@ import numpy as np
 # map starODDI name to netCDF variable name
 nameMap = {}
 nameMap["Temp"] = "TEMP"
+nameMap["depth"] = "PRES"
+nameMap["pitch"] = "PITCH"
+nameMap["roll"] = "ROLL"
 
 # also map units .....
 
@@ -52,10 +55,13 @@ unitMap["°C"] = "degrees_Celsius"
 # search expressions within file
 
 first_line_expr = r"\#B\tCreated:\s(.*)"
+first_line_old_expr = r"\#0\tDate-time:\s(.*)"
 
 recorder_expr     = r"##\s*Recorder\s*(\d*)\s*([\S ]*)\s*(\S*)"
 series_expr       = r"##\s*Series\s*(\d*)\s*(\S*)\((\S*)\)"
 soft_version_expr = r"##\sVersion.(.*)"
+channel_expr      = r"#\d*\s*Channel\s*(\d*):\s*(\S*)\((\S*)\)"
+recorder_old_expr = r"#1\s*Recorder:\s*.(.)(\d*)"
 
 
 def parse(file):
@@ -72,8 +78,9 @@ def parse(file):
 
     with open(filepath, 'r', errors='ignore') as fp:
         line = fp.readline()
-        matchObj = re.match(first_line_expr, line)
-        if not matchObj:
+        matchObj1 = re.match(first_line_old_expr, line)
+        matchObj2 = re.match(first_line_expr, line)
+        if not matchObj1 and not matchObj2:
             print("Not a Starmon-mini DAT file !")
             return None
 
@@ -81,7 +88,7 @@ def parse(file):
         while line:
             #print("Line {}: {} : {}".format(cnt, dataLine, line.strip()))
             if hdr:
-                if line[0] != '#':
+                if line[0].isdigit():
                     hdr = False
                 else:
                     matchObj = re.match(soft_version_expr, line)
@@ -95,6 +102,11 @@ def parse(file):
                         #print("first_line_expr:matchObj.group() : ", matchObj.group())
                         #print("first_line_expr:matchObj.group(1) : ", matchObj.group(1))
                         file_created = matchObj.group(1)
+                    matchObj = re.match(first_line_old_expr, line)
+                    if matchObj:
+                        #print("first_line_old_expr:matchObj.group() : ", matchObj.group())
+                        #print("first_line_old_expr:matchObj.group(1) : ", matchObj.group(1))
+                        file_created = matchObj.group(1)
 
                     matchObj = re.match(recorder_expr, line)
                     if matchObj:
@@ -104,6 +116,14 @@ def parse(file):
                         #print("recorder_expr:matchObj.group(3) : ", matchObj.group(3))
                         instrument_model = matchObj.group(2)
                         instrument_serial_number = matchObj.group(3)
+
+                    matchObj = re.match(recorder_old_expr, line)
+                    if matchObj:
+                        print("recorder_old_expr:matchObj.group() : ", matchObj.group())
+                        #print("recorder_old_expr:matchObj.group(1) : ", matchObj.group(1))
+                        #print("recorder_old_expr:matchObj.group(2) : ", matchObj.group(2))
+                        instrument_model = matchObj.group(1)
+                        instrument_serial_number = matchObj.group(2)
 
                     matchObj = re.match(series_expr, line)
                     if matchObj:
@@ -121,22 +141,50 @@ def parse(file):
 
                         name.insert(nVars, {'col': int(nameN), 'var_name': ncVarName, 'unit': unit})
 
+                    matchObj = re.match(channel_expr, line)
+                    if matchObj:
+                        print("channel_expr:matchObj.group() : ", matchObj.group())
+                        #print("channel_expr:matchObj.group(1) : ", matchObj.group(1))
+                        #print("channel_expr:matchObj.group(2) : ", matchObj.group(2))
+                        #print("channel_expr:matchObj.group(3) : ", matchObj.group(3))
+                        nameN = matchObj.group(1)
+                        ncVarName = matchObj.group(2)
+                        if ncVarName in nameMap:
+                            ncVarName = nameMap[ncVarName]
+                        unit = matchObj.group(3)
+                        if unit in unitMap:
+                            unit = unitMap[unit]
+
+                        name.insert(nVars, {'col': int(nameN), 'var_name': ncVarName, 'unit': unit})
+
             if not hdr:
-                lineSplit = line.split('\t')
+                lineSplit = line.strip().split('\t')
                 #print(lineSplit)
                 splitVarNo = 0
                 d = np.zeros(len(name))
                 d.fill(np.nan)
-                t = datetime.strptime(lineSplit[1], '%d/%m/%Y %H:%M:%S')
+                t = None
+                try:
+                    t = datetime.strptime(lineSplit[1], '%d/%m/%Y %H:%M:%S')
+                except ValueError:
+                    pass
+                if t is None:
+                    try:
+                        t = datetime.strptime(lineSplit[1], '%d.%m.%y %H:%M:%S')
+                    except ValueError:
+                        pass
+                if t is None:
+                    print("Could not parse time ", lineSplit[1])
+                    return None
 
                 ts.append(t)
                 #print("timestamp %s" % ts)
                 for v in name:
                     #print("{} : {}".format(splitVarNo, v))
-                    d[splitVarNo] = float(lineSplit[v['col']+2])
+                    d[splitVarNo] = float(lineSplit[v['col']+1])
                     splitVarNo = splitVarNo + 1
                 data.append(d)
-                #print(t, d)
+                print(t, d)
                 number_samples_read = number_samples_read + 1
 
                 dataLine = dataLine + 1
@@ -190,7 +238,8 @@ def parse(file):
     ncOut.setncattr("time_coverage_start", num2date(ncTimesOut[0], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
     ncOut.setncattr("time_coverage_end", num2date(ncTimesOut[-1], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
     ncOut.setncattr("date_created", datetime.utcnow().strftime(ncTimeFormat))
-    ncOut.setncattr("history", datetime.utcnow().strftime("%Y-%m-%d") + " created from file " + filepath + " source file created " + file_created + " by software  " + software.replace("\t", " "))
+    #ncOut.setncattr("history", datetime.utcnow().strftime("%Y-%m-%d") + " created from file " + filepath + " source file created " + file_created + " by software  " + software.replace("\t", " "))
+    ncOut.setncattr("history", datetime.utcnow().strftime("%Y-%m-%d") + " created from file " + filepath + " source file created " + file_created)
 
     ncOut.close()
 
