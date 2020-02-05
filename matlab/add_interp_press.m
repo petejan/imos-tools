@@ -134,6 +134,30 @@ for i=1:length(fv00_files)
         nccreate(fv01_name, 'PRES', 'Dimensions',{'TIME',size(pres_interp,1)}, 'FillValue',NaN);
         ncwrite(fv01_name, 'PRES', pres_interp);
                 
+        % Add quality control variables to the FV01 file, assigning 8 to
+        % interpolated data in line with Argo
+        for v = fv00_contents.Variables
+            
+            if ~isempty(v.Dimensions)
+            
+                nccreate(fv01_name, v.Name + "_quality_control",'Dimensions',{v.Dimensions.Name,v.Dimensions.Length},'FillValue',99);
+                
+                ncwriteatt(fv01_name,v.Name + "_quality_control",'long_name',"quality_code for"+v.Name);
+                
+                ncwriteatt(fv01_name,v.Name,'ancillary_variables',v.Name + "_quality_control");
+                
+                if contains(v.Name,'PRES')
+                    
+                    ncwrite(fv01_name, v.Name + "_quality_control",8*ones(size(fv00_time)));
+                    
+                end
+                
+            end
+            
+        end
+        
+            
+            
         % copy attributes from agg file to output file
         pres_atts = agg_pres_info.Attributes; % get all attribtes from the aggregate file
         for k=1:length(pres_atts)
