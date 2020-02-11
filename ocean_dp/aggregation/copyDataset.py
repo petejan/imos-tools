@@ -15,7 +15,6 @@ import glob
 
 # similar more general tool project https://ncagg.readthedocs.io/en/latest/ (does not work on python3 2019-10-01)
 # has configurable way of dealing with attributes
-
 # file sets to test against
 # http://thredds.aodn.org.au/thredds/catalog/IMOS/ANMN/NRS/NRSKAI/Temperature/catalog.html
 # http://thredds.aodn.org.au/thredds/catalog/IMOS/ANMN/NRS/NRSKAI/Biogeochem_profiles/catalog.html
@@ -244,8 +243,8 @@ def aggregate(files, varNames):
 
     filen = 0
 
-    # variables we want regardless
-    varNames += ['LATITUDE', 'LONGITUDE', 'NOMINAL_DEPTH']
+    # variables we want regardless 
+    varNames = [varNames]+['LATITUDE', 'LONGITUDE', 'NOMINAL_DEPTH']
 
     # remove any duplicates
     varNamesOut = set(varNames)
@@ -344,7 +343,7 @@ def aggregate(files, varNames):
                         dMin = maVariableAll.max(0)
                         ncOut.setncattr("geospatial_vertical_max", dMax)
                         ncOut.setncattr("geospatial_vertical_min", dMin)
-
+                        
     dsIn.close()  # we're done with the varList now
 
     ncOut.close()
