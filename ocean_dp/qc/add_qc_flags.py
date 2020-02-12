@@ -18,11 +18,12 @@
 
 from netCDF4 import Dataset, num2date
 import sys
-
+from datetime import datetime
 import numpy as np
 from dateutil import parser
 import pytz
 import os
+import shutil
 
 # add QC variables to file
 
@@ -32,8 +33,31 @@ def add_qc(netCDFfile):
     new_name = [] # list of new file names
 
     # loop over all file names given
-    for fn in netCDFfile[1:]:
-        ds = Dataset(fn, 'a')
+    for fn in netCDFfile:
+
+        # rename the file FV00 to FV01 (imos specific)
+        fn_new = fn.replace("FV00", "FV01")
+        
+        # Change the creation date in the filename to today
+        now=datetime.utcnow()
+        
+
+        
+        fn_new = "".join((fn_new[0:-11],now.strftime("%Y%m%d"),fn_new[-3::]))
+        
+        # Add the new file name to the list of new file names
+        new_name.append(fn_new)
+
+        # If a new (different) filename has been successfully generated, make 
+        # a copy of the old file with the new name
+        if fn_new != fn:
+            # copy file
+            shutil.copy(fn, fn_new)
+              
+
+        print(fn_new)
+
+        ds = Dataset(fn_new, 'a')
 
         # read the variable names from the netCDF dataset
         vars = ds.variables
@@ -51,29 +75,30 @@ def add_qc(netCDFfile):
             if "TIME" in vars[v].dimensions:
                 # print("time dim ", v)
 
-                ncVarOut = ds.createVariable(v+"_quality_control", "i1", vars[v].dimensions, fill_value=99, zlib=True)  # fill_value=99 otherwise defaults to max, imos-toolbox uses 99
-                ncVarOut[:] = np.zeros(vars[v].shape)
-                ncVarOut.long_name = "quality_code for " + v
+                if v+"_quality_control" not in ds.variables:
+                    ncVarOut = ds.createVariable(v+"_quality_control", "i1", vars[v].dimensions, fill_value=99, zlib=True)  # fill_value=99 otherwise defaults to max, imos-toolbox uses 99
+                    ncVarOut[:] = np.zeros(vars[v].shape)
+                    ncVarOut.long_name = "quality_code for " + v
+                    ncVarOut.flag_values = np.array([0, 1, 2, 3, 4, 6, 7, 9])
+                    ncVarOut.flag_meanings = 'unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value'
+                    
 
-                vars[v].ancillary_variables = v + "_quality_control"
+                    vars[v].ancillary_variables = v + "_quality_control"
 
-        # update the file version attribute
+        # update the global attributes
         ds.file_version = "Level 1 - Quality Controlled Data"
+        
+        ds.date_created = now.strftime("%Y-%m-%dT%H:%M:%SZ")
+        
+        ds.history += ' ' + now.strftime("%Y%m%d:") + ' converted to FV01 file, quality_control variables added.'
+
+        # ADD quality control attributes!!
 
         ds.close()
 
-        # rename the file FV00 to FV01 (imos specific)
-        fn_new = fn.replace("FV00", "FV01")
-        new_name.append(fn_new)
-
-        if fn_new != fn:
-            # copy file
-            os.copy(fn, fn_new)
-
-        print(fn_new)
 
     return new_name
 
 
 if __name__ == "__main__":
-    add_qc(sys.argv)
+    add_qc(sys.argv[1:])
