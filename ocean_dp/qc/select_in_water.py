@@ -27,6 +27,7 @@ import pytz
 import os
 import shutil
 
+# Submit argument as a list
 
 def select_in_water(netCDFfiles):
     
@@ -36,7 +37,7 @@ def select_in_water(netCDFfiles):
     for fn in netCDFfiles:
         
         # Check the file is an IMOS formatted file
-        if fn.split('_')[0]=='IMOS'
+        if fn.split('_')[0]=='IMOS':
         
             # Change the creation date in the filename to today
             now=datetime.utcnow()
@@ -45,7 +46,7 @@ def select_in_water(netCDFfiles):
             
             fn_new_split = fn_new.split('_')
             
-            fn_new_split[-1] = "C-" + now.strftime("%Y%m%d")
+            fn_new_split[-1] = "C-" + now.strftime("%Y%m%d") + ".nc"
             
             fn_new = '_'.join(fn_new_split)
             
@@ -99,6 +100,12 @@ def select_in_water(netCDFfiles):
                     varout[:] = np.array(varin[:])[deployed]
                     
             ds.date_created = now.strftime("%Y-%m-%dT%H:%M:%SZ")     
+            
+            # update the time coverage attributes
+            
+            ds.time_coverage_start = ods.time_deployment_start
+            
+            ds.time_coverage_end = ods.time_deployment_end
             
             # update the history attribute
             try:
