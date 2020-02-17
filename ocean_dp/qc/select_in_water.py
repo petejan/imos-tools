@@ -32,90 +32,86 @@ import shutil
 def select_in_water(netCDFfiles):
     
     new_name = [] # list of new file names
+    now = datetime.utcnow()            
 
     # loop over all file names given
     for fn in netCDFfiles:
         
         # Check the file is an IMOS formatted file
-        if fn.split('_')[0]=='IMOS':
-        
+        if fn.split('_')[0]=='IMOS':        
+            fn_new = fn_new.replace("FV00", "FV01")           
+            fn_new_split = fn_new.split('_')            
             # Change the creation date in the filename to today
-            now=datetime.utcnow()
-            
-            fn_new = fn.replace("FV00", "FV01")
-            
-            fn_new_split = fn_new.split('_')
-            
-            fn_new_split[-1] = "C-" + now.strftime("%Y%m%d") + ".nc"
-            
+            fn_new_split[-1] = "C-" + now.strftime("%Y%m%d") + ".nc"            
             fn_new = '_'.join(fn_new_split)
+        else:
+            fn_new = fn.replace(".nc", "-trim.nc")
             
-            # Add the new file name to the list of new file names
-            new_name.append(fn_new)
-                
-            # Load the original netcdf file
-            ods = Dataset(fn,'a')
-            
-            # Extract the time dimension, and the deployment start and end        
-            time = np.array(ods.variables['TIME'][:])
-            
-            inw = parse(ods.time_deployment_start)
-            outw = parse(ods.time_deployment_end)
-            
-            # Convert the start and end to the number format used in TIME
-            inw_num = date2num(inw.replace(tzinfo=None),units = ods.variables['TIME'].units)
-            outw_num = date2num(outw.replace(tzinfo=None),units = ods.variables['TIME'].units)
-            
-            # Create logical index of deployed times        
-            deployed = np.logical_and(time>=inw_num,time<=outw_num)
-            
-            # Determine the length of the new time dimension        
-            time_dim = len(time[deployed])
-            
-            # Create the new netcdf file
-            ds = Dataset(fn_new, "w", format="NETCDF4")
-            
-            TIME = ds.createDimension("TIME",time_dim)
-            
-            # Copy global attributes        
-            for att in ods.ncattrs():
-                
-                ds.setncattr(att,ods.getncattr(att))
-            
-            # Copy variables            
-            for v_name, varin in ods.variables.items():
-                
-                varout = ds.createVariable(v_name, varin.datatype, varin.dimensions)
+        # Add the new file name to the list of new file names
+        new_name.append(fn_new)
+
+        # Load the original netcdf file
+        ods = Dataset(fn,'a')
+
+        # Extract the time dimension, and the deployment start and end    
+        # TODO: check this works
+        v = nc.get_variables_by_attributes(standard_name='time')
+        time = np.array(v[0][:])
+
+        inw = parse(ods.time_deployment_start)
+        outw = parse(ods.time_deployment_end)
+
+        # Convert the start and end to the number format used in TIME
+        inw_num = date2num(inw.replace(tzinfo=None), units=ods.variables['TIME'].units)
+        outw_num = date2num(outw.replace(tzinfo=None), units=ods.variables['TIME'].units)
+
+        # Create logical index of deployed times        
+        deployed = np.logical_and(time>=inw_num, time<=outw_num)
+
+        # Determine the length of the new time dimension        
+        time_dim_len = len(time[deployed])
+
+        # Create the new netcdf file
+        ds = Dataset(fn_new, "w", format="NETCDF4")
+
+        new_time_dim = ds.createDimension("TIME", time_dim_len)
+
+        # Copy global attributes        
+        for att in ods.ncattrs():
+            ds.setncattr(att, ods.getncattr(att))
+
+        # Copy variables            
+        for v_name, varin in ods.variables.items():
+
+            varout = ds.createVariable(v_name, varin.datatype, varin.dimensions)
+
+            # Copy variable attributes
+            varout.setncatts({k: varin.getncattr(k) for k in varin.ncattrs()})
+
+            # Fill variables with deployed data            
+            # TODO: should check if the dimensions for the variable include TIME, and truncate that dimension
+            if np.array(varin[:]).size == 1:
+                varout[:] = varin[:]
+            else:
+                varout[:] = np.array(varin[:])[deployed]
+
+        ds.date_created = now.strftime("%Y-%m-%dT%H:%M:%SZ")     
+
+        # update the time coverage attributes            
+        ds.time_coverage_start = ods.time_deployment_start            
+        ds.time_coverage_end = ods.time_deployment_end
+
+        # update the history attribute
+        try:
+            hist = ds.history + "\n"
+        except AttributeError:
+            hist = ""        
+        ds.history += hist + now.strftime("%Y%m%d:") + 'Data subset to only contain deployed (in water) data - the full record can be found in the corresponding FV00 file.'        
+
+        ds.close()       
+        ods.close()
         
-                # Copy variable attributes
-                varout.setncatts({k: varin.getncattr(k) for k in varin.ncattrs()})
-        
-                # Fill variables with deployed data            
-                if np.array(varin[:]).size == 1:
-                    
-                    varout[:] = varin[:]
-                    
-                else:
-                    
-                    varout[:] = np.array(varin[:])[deployed]
-                    
-            ds.date_created = now.strftime("%Y-%m-%dT%H:%M:%SZ")     
-            
-            # update the time coverage attributes
-            
-            ds.time_coverage_start = ods.time_deployment_start
-            
-            ds.time_coverage_end = ods.time_deployment_end
-            
-            # update the history attribute
-            try:
-                hist = ds.history + "\n"
-            except AttributeError:
-                hist = ""        
-            ds.history += hist + now.strftime("%Y%m%d:") + 'Data subset to only contain deployed (in water) data - the full record can be found in the corresponding FV00 file.'        
-            
-            ds.close()       
-            ods.close()
+    return new_name
 
 
 if __name__ == "__main__":
