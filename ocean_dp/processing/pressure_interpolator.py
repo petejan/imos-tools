@@ -24,14 +24,18 @@ import shutil
 
 # Supply netCDFfiles as a ['list'] of files, agg as a 'string'
 
-def pressure_interpolator(netCDFfiles = None,agg = None):
+def pressure_interpolator(netCDFfiles = [],agg = []):
     
-    if netCDFfiles==None:
+    if netCDFfiles==[]:
+        
+        print('netcdffiles = none')
     
         # Load the filenames of the fv01 files in the current folder
         netCDFfiles = glob.glob('*FV01*.nc')
             
-    if agg ==None:
+    if agg == []:
+        
+        print('agg = none')
         
     # Extract the aggregate file data
         agg = Dataset(glob.glob('*Aggregate*.nc')[0], mode="r")
@@ -42,6 +46,8 @@ def pressure_interpolator(netCDFfiles = None,agg = None):
         
     # Loop through each of the fv01 files
     for fn in netCDFfiles:
+        
+        print('File selected is '+fn)
         
         # Change the creation date in the filename to today
         now=datetime.utcnow()
@@ -58,15 +64,24 @@ def pressure_interpolator(netCDFfiles = None,agg = None):
         # If a new (different) filename has been successfully generated, make 
         # a copy of the old file with the new name
         if fn_new != fn:
+            
+            print('copying file')
             # copy file
             shutil.copy(fn, fn_new)
         
         # Open and work in the new copy
         fv01_contents = Dataset(fn_new,mode='a')
         
+        print('copied file opened')
+        
         # Check the current file doesn't contain pressure to run the following
         # interpolator
         if not 'PRES' in fv01_contents.variables:
+            
+            print("file doesn't contain pressure")
+            
+            print(fv01_contents.variables.keys())
+            print(agg.variables.keys())
             
             # Create a NaN array to fill with pressure values
             interp_agg_pres = np.full((len(agg.variables["NOMINAL_DEPTH"])+1,len(fv01_contents.variables["TIME"])),np.nan)
@@ -160,11 +175,11 @@ def pressure_interpolator(netCDFfiles = None,agg = None):
             # Close the netcdf files
             
             fv01_contents.close()
-            
-            agg.close()
         
         # Deal with files that already contain pressure, but contain NaNs            
-        elif any(np.isnan(agg.variables['PRES'][:])):
+        elif any(np.isnan(np.array(fv01_contents.variables['PRES'][:]))):
+            
+            print("file contains pressure and agg contains NaNs")
             
             # Create a NaN array to fill with pressure values
             interp_agg_pres = np.full((len(agg.variables["NOMINAL_DEPTH"])+1,len(fv01_contents.variables["TIME"])),np.nan)
@@ -226,12 +241,19 @@ def pressure_interpolator(netCDFfiles = None,agg = None):
             # Find indices where the netcdf data and interpolated data don't match (where the NaNs are in the netcdf)
             nan_rep_idx = np.where(interp_fv01_pres!=fv01_contents.variables['PRES'][:])[1]
             
+            #
             fv01_contents.variables['PRES_quality_control'][nan_rep_idx] = 7
+        
+            print('QC altered in original press')
         
             # Insert pressure value with NaNs interpolated back into netcdf
             fv01_contents.variables['PRES'][:] = interp_fv01_pres
             
+            print('press altered in orginal press')
+            
             fv01_contents.close()
+            
+    agg.close()
             
                 
                 
