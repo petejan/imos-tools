@@ -90,8 +90,8 @@ def netcdf_gen(file_name, nominal_depth, *args):
 
                 # Create variables from input data
                 for name_in, data_in in zip(var_names, var_data):
-                    ds.createVariable(name_in, "f8", ("TIME"))
-                    ds.variables[name_in][:] = data_in
+                    var = ds.createVariable(name_in, "f8", ("TIME"), fill_value=np.NAN)
+                    var[:] = data_in
 
                 ds.close()
                 print("generated ", file_name)

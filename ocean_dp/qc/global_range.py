@@ -33,7 +33,6 @@ def global_range(netCDFfile, variable, max, min):
 
     var = ds.variables[variable]
 
-    print (var)
     try:
         qc_var = var.ancillary_variables
         print("QC var name ", qc_var)
@@ -45,8 +44,10 @@ def global_range(netCDFfile, variable, max, min):
     qc = var_qc[:]
     # this is where the actual QC test is done
     mask = ((var[:] > max) | (var[:] < min))
+    print('mask data ', mask)
 
-    mask = mask & (qc < 1) # only mark data that has not been QCd already
+    mask = mask & (qc < 1)  # only mark data that has not been QCd already
+    print('mask other qc ', mask)
 
     qc[mask] = 4
     marked = np.zeros_like(qc)
@@ -55,9 +56,13 @@ def global_range(netCDFfile, variable, max, min):
     print('marked records ', count, mask, qc)
 
     var_qc[:] = qc
+
     # update the history attribute
-    history = ds.history
-    ds.setncattr("history", history + "\n" + datetime.utcnow().strftime("%Y-%m-%d") + " " + variable + " global range min = " + str(min) + " max = " + str(max) + " marked " + str(count))
+    try:
+        hist = ds.history + "\n"
+    except AttributeError:
+        hist = ""
+    ds.setncattr("history", hist + "\n" + datetime.utcnow().strftime("%Y-%m-%d") + " " + variable + " global range min = " + str(min) + " max = " + str(max) + " marked " + str(count))
 
     ds.close()
 
@@ -67,4 +72,4 @@ def global_range(netCDFfile, variable, max, min):
 if __name__ == "__main__":
 
     # usage is <file_name> <variable_name> <max> <min>
-    global_range(sys.argv[1], sys.argv[2], float(sys.argv[3]), float(sys.argv[4]))
+    global_range(sys.argv[1], sys.argv[2], max=float(sys.argv[3]), min=float(sys.argv[4]))
