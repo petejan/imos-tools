@@ -39,7 +39,7 @@ def select_in_water(netCDFfiles):
         
         # Check the file is an IMOS formatted file
         if fn.split('_')[0]=='IMOS':        
-            fn_new = fn_new.replace("FV00", "FV01")           
+            fn_new = fn.replace("FV00", "FV01")           
             fn_new_split = fn_new.split('_')            
             # Change the creation date in the filename to today
             fn_new_split[-1] = "C-" + now.strftime("%Y%m%d") + ".nc"            
@@ -55,7 +55,7 @@ def select_in_water(netCDFfiles):
 
         # Extract the time dimension, and the deployment start and end    
         # TODO: check this works
-        v = nc.get_variables_by_attributes(standard_name='time')
+        v = ods.get_variables_by_attributes(standard_name='time')
         time = np.array(v[0][:])
 
         inw = parse(ods.time_deployment_start)
