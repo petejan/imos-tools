@@ -21,7 +21,7 @@ import glob
 # http://thredds.aodn.org.au/thredds/catalog/IMOS/ABOS/DA/EAC2000/catalog.html
 
 from dateutil.parser import parse
-
+ 
 
 def aggregate(files, varNames):
     # split this into   createCatalog - copy needed information into structure
@@ -244,7 +244,7 @@ def aggregate(files, varNames):
     filen = 0
 
     # variables we want regardless 
-    varNames = [varNames]+['LATITUDE', 'LONGITUDE', 'NOMINAL_DEPTH']
+    varNames.extend(['LATITUDE', 'LONGITUDE', 'NOMINAL_DEPTH'])
 
     # remove any duplicates
     varNamesOut = set(varNames)
