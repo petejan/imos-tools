@@ -74,7 +74,7 @@ def netcdf_gen(file_name, nominal_depth, *args):
                 time_var.setncattr('valid_min', 0)
 
                 t0 = date2num(datetime(2020, 1, 1), units=time_var.units)
-                ds.variables['TIME'][:] = np.arange(t0, t0 + (1 / 24) * len(var_data[1]), 1 / 24)
+                ds.variables['TIME'][:] = np.linspace(t0,t0 + (1 / 24) * (len(var_data[0]-1)),num=len(var_data[0]))
 
                  # Create the nominal depth variable
                 nom_depth_var = ds.createVariable("NOMINAL_DEPTH", "f8")
