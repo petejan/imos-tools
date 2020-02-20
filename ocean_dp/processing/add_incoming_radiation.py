@@ -24,6 +24,7 @@ from datetime import datetime
 
 from pysolar.solar import get_altitude
 from pysolar.util import extraterrestrial_irrad
+from pysolar.util import global_irradiance_overcast
 
 import pysolar
 
@@ -57,6 +58,16 @@ def add_solar(netCDFfile):
     ncVarOut.setncattr('name', 'extraterrestrial_irrad celestial incoming solar radiation')
     ncVarOut.long_name = 'incoming_solar_radiation'
     ncVarOut.comment = "using http://docs.pysolar.org/en/latest/ v0.8 extraterrestrial_irrad() with incoming = 1370 W/m^2"
+
+    rad = [global_irradiance_overcast(lat, lon, d, 1370) for d in dt_utc]
+
+    ncVarOut = ds.createVariable("SURFACE", "f4", ("TIME",), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
+    ncVarOut[:] = rad
+    ncVarOut.units = "W/m2"
+    ncVarOut.setncattr('name', 'extraterrestrial_irrad celestial incoming solar radiation')
+    ncVarOut.long_name = 'incoming_solar_radiation'
+    ncVarOut.comment = "using http://docs.pysolar.org/en/latest/ v0.8 global_irradiance_overcast() with incoming = 1370 W/m^2"
+
 
     # update the history attribute
     try:
