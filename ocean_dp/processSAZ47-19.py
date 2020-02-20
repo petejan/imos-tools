@@ -33,6 +33,10 @@ print('file path : ', path)
 
 print('step 1 (parse)')
 
+cnv_files = glob.glob(os.path.join(path, "*.cnv"))
+for fn in cnv_files:
+    filename = ocean_dp.parse.sbeCNV2netCDF.parse([fn])
+
 asc_files = glob.glob(os.path.join(path, "*.asc"))
 for fn in asc_files:
     print(fn)
@@ -58,7 +62,7 @@ for fn in ncFiles:
     print("processing file : " + fn)
 
     filename = ocean_dp.attribution.addAttributes.add(fn,
-                                                      ['metadata/saz47-20.metadata.csv',
+                                                      ['metadata/saz47-19.metadata.csv',
                                                        'metadata/imos.metadata.csv',
                                                        'metadata/sots.metadata.csv',
                                                        'metadata/saz.metadata.csv',

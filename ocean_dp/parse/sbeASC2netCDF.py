@@ -158,6 +158,7 @@ def sbe_asc_parse(files):
     cal_sensor = None
     cal_tags = []
     data = None
+    no_time = False
 
     with open(filepath, 'r', errors='ignore') as fp:
         line = fp.readline()
@@ -182,6 +183,10 @@ def sbe_asc_parse(files):
                     use_eqn = None
                     cal_param = None
                     cal_sensor = None
+
+                matchObj = re.match(notime_expr, line)
+                if matchObj:
+                    no_time = True
 
                 matchObj = re.match(model_serial_expr, line)
                 if matchObj:
@@ -227,13 +232,16 @@ def sbe_asc_parse(files):
                     lineSplit = line.strip().split(",")
                     if data is None:
                         print("First data line : ", line.strip())
-                        nVariables = len(lineSplit) - 2  # 2 for the date and time
+                        if no_time:
+                            nVariables = len(lineSplit)
+                        else:
+                            nVariables = len(lineSplit) - 2  # 2 for the date and time
                         data = np.zeros((number_samples, nVariables))
                         print("number variables ", nVariables)
                         data.fill(np.nan)
-                        print("data split number ", len(lineSplit))
+                        print("data split number ", len(lineSplit), instrument_model)
                         name.insert(0, {'col': 0, 'var_name': "TEMP", 'comment': None, 'unit': "degrees_Celsius"})
-                        if re.match(".*37", instrument_model):
+                        if instrument_model.index('37') >= 0:
                             if nVariables >= 2:
                                 name.insert(1, {'col': 1, 'var_name': "CNDC", 'comment': None, 'unit': "S/m"})
                             if nVariables >= 3:
