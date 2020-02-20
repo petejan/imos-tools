@@ -17,6 +17,7 @@ from netCDF4 import Dataset, date2num
 import sys
 from datetime import datetime
 import numpy as np
+import shutil
 
  # Provide the function with a filename (don't include .nc), a nominal depth,
 # and pairs of names and arrays containing the data to be included as variables.
@@ -25,6 +26,8 @@ import numpy as np
 
  # For example, netcdf_gen('test',30,'PRES',pres_data,'TEMP',temp_data)
 # from the command line gen_test_data.py test 30 PRES 10,20,30 TEMP 11,12,NaN
+
+
 
 def netcdf_gen(file_name, nominal_depth, *args):
     # Convert the args tuple to a list
@@ -93,10 +96,49 @@ def netcdf_gen(file_name, nominal_depth, *args):
                     ds.createVariable(name_in, "f8", ("TIME"))
                     ds.variables[name_in][:] = data_in
 
+                        # read the variable names from the netCDF dataset
+                vars = ds.variables
+        
+                # create a list of variables, don't include the 'TIME' variable
+                # TODO: detect 'TIME' variable using the standard name 'time'
+                to_add = []
+                
+                for v in vars:
+                    #print (vars[v].dimensions)
+                    if v != 'TIME':
+                        to_add.append(v)
+        
+                # for each variable, add a new ancillary variable <VAR>_quality_control to each which has 'TIME' as a dimension
+                for v in to_add:
+                    if "TIME" in vars[v].dimensions:
+                        # print("time dim ", v)
+        
+                        if v+"_quality_control" not in ds.variables:
+                            ncVarOut = ds.createVariable(v+"_quality_control", "i1", vars[v].dimensions, fill_value=99, zlib=True)  # fill_value=99 otherwise defaults to max, imos-toolbox uses 99
+                            ncVarOut[:] = np.zeros(vars[v].shape)
+                            ncVarOut.long_name = "quality_code for " + v
+                            ncVarOut.flag_values = np.array([0, 1, 2, 3, 4, 6, 7, 9])
+                            ncVarOut.flag_meanings = 'unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value'
+                            
+        
+                            vars[v].ancillary_variables = v + "_quality_control"
+
+                # update the global attributes
+                ds.file_version = "Level 1 - Quality Controlled Data"
+                
+                ds.history = datetime.utcnow().strftime("%Y%m%d:") + ' converted to FV01 file, quality_control variables added.'
+        
+                # ADD quality control attributes!!
+        
                 ds.close()
+                
+                #add_qc(file_name)
+                
                 print("generated ", file_name)
 
                 return (file_name)
+            
+                
 
             else:
                 print('Data arrays not of equal length')
