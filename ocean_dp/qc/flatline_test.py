@@ -26,23 +26,31 @@ import glob
 import pytz
 import os
 
-def flatline_test(target_files,target_vars_in=[],window=3,flag=3):
-    
-    # If files aren't specified, take all the IMOS.nc files in the current folder
-    if not target_files:
-        
-        target_files = glob.glob('IMOS*.nc')
+
+# If files aren't specified, take all the IMOS*.nc files in the current folder
+def flatline_test_all_files(target_vars_in=[], window=3, flag=3):
+    target_files = glob.glob('IMOS*.nc')
+
+    flatline_test_files(target_files, target_vars_in=target_vars_in, window=window, flag=flag)
+
+
+def flatline_test_files(target_files, target_vars_in=[], window=3, flag=3):
     
     # Loop through each files in target_files
     for current_file in target_files:
-        
         # Print each filename
         print("input file %s" % current_file)
-        
+
         # Extract netcdf data into nc
         nc = Dataset(current_file, mode="a")
-        
-        # Extract time
+
+        # run the flat line test
+        flatline_test(nc=nc, target_vars_in=target_vars_in, window=window, flag=flag)
+
+
+def flatline_test(nc, target_vars_in=[], window=3, flag=3):
+
+        # Extract time, TODO: This is not used, should we set the window based on time, not samples?
         ncTime = nc.get_variables_by_attributes(standard_name='time')
     
         # If target_vars aren't user specified, set it to all the variables of 
@@ -56,12 +64,10 @@ def flatline_test(target_files,target_vars_in=[],window=3,flag=3):
             
             # Remove any quality_control variables
             qc_vars = [s for s in target_vars if 'quality_control' in s]
-            
             target_vars = [s for s in target_vars if s not in qc_vars]
                             
             # Remove any variables of single length
             single_vars = [s for s in target_vars if nc.variables[s].size==1]
-            
             target_vars = [s for s in target_vars if s not in single_vars]
             
             print('target_vars are '+' '.join(target_vars))
@@ -84,16 +90,17 @@ def flatline_test(target_files,target_vars_in=[],window=3,flag=3):
                     
                     # set corresponding QC value to...
                     nc.variables[current_var+'_quality_control'][i:(i+window)] = flag
-                   
-        nc.history += ' ' + datetime.utcnow().strftime("%Y%m%d:") + 'flatline_test performed, flatlines of '+str(window)+' consecutive values or more were flagged with '+str(flag)            
-                    
+
+        # update the history attribute
+        try:
+            hist = nc.history + "\n"
+        except AttributeError:
+            hist = ""
+
+        nc.setncattr('history', hist + 'flatline_test performed on [' + str(target_vars) + '], window '+str(window)+' consecutive values or more were flagged with '+str(flag) )
+
         nc.close()
     
-            
-            
-            
-            
-    
-    
-    
-    
+if __name__ == "__main__":
+    # usage is <file_name> <variable_name> <window> <flag value>
+    flatline_test(target_files=[sys.argv[1]], target_vars_in=[sys.argv[2]], window=float(sys.argv[3]), flag=float(sys.argv[4]))
