@@ -27,6 +27,8 @@ import matplotlib.pyplot as plt
 
 import sys
 
+time_bin_hours =  1
+pres_bin = 10
 
 def time2bin(time, time_min, bin_width):
     return int(np.round(time - time_min + bin_width/2)/bin_width)
@@ -44,7 +46,7 @@ def agg_to_bin(netCDFfiles):
     #print("number actual depth", len(vs))
 
     pres_var = vs[0]
-    pres = pres_var[:]
+    pres = pres_var[:].data
 
     #plt.plot(pres)
     #plt.show()
@@ -63,11 +65,11 @@ def agg_to_bin(netCDFfiles):
     print("time max, min", hours_max, hours_min)
     print("time max, min", num2date(hours_min/24, units=time_var.units, calendar=time_var.calendar), num2date(hours_max/24, units=time_var.units, calendar=time_var.calendar))
 
-    print('t[0] bin, t[end] bin', time2bin(hours[0], hours_min, 1), time2bin(hours[-1], hours_min, 1))
+    print('t[0] bin, t[end] bin', time2bin(hours[0], hours_min, time_bin_hours), time2bin(hours[-1], hours_min, time_bin_hours))
 
-    time_bins = hours_min + np.arange(time2bin(hours[0], hours_min, 1), time2bin(hours[-1], hours_min, 1), 1)
+    time_bins = hours_min + np.arange(time2bin(hours[0], hours_min, time_bin_hours), time2bin(hours[-1]+1  , hours_min, time_bin_hours), time_bin_hours) * time_bin_hours
 
-    nt_points = len(time_bins)+1
+    nt_points = len(time_bins)
     print("time bin range ", num2date(time_bins[0]/24, units=time_var.units, calendar=time_var.calendar), num2date(time_bins[-1]/24, units=time_var.units, calendar=time_var.calendar))
 
     # make pressure bins
@@ -76,11 +78,11 @@ def agg_to_bin(netCDFfiles):
     pres_max = np.max(pres)
     print("pres min, max", pres_min, pres_max)
 
-    pres_bins = 0 + np.arange(pres2bin(0, 0, 10), pres2bin(pres_max, 0, 10)) * 10
+    pres_bins = 0 + np.arange(pres2bin(0, 0, pres_bin), pres2bin(pres_max+pres_bin, 0, pres_bin)) * pres_bin
 
     print("pres bin range ", pres_bins[0], pres_bins[-1])
 
-    nd_points = len(pres_bins)+1
+    nd_points = len(pres_bins)
 
     print(nt_points, nd_points)
 
