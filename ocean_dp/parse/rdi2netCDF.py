@@ -340,6 +340,8 @@ def rdi_parse(files):
     ncOut.dist_centre_bin1_cm = np.int32(fixed_decoded['bin1_dist'])
     ncOut.xmit_pulse_length_cm = np.int32(fixed_decoded['xmit_pulse_len'])
 
+    ncOut.time_between_pings_sec = np.float(fixed_decoded['tpp_min'] * 60 + fixed_decoded['tpp_sec'] + fixed_decoded['tpp_hun_sec']/100)
+
     # add fixed header data as attributes
     for x in fixed_decoded:
         #print("fixed value ", x)

@@ -43,9 +43,6 @@ def agg_to_bin(netCDFfiles):
     #plt.plot(pres)
     #plt.show()
 
-    temp_var = ds.variables["TEMP"]
-    temp = temp_var[:]
-
     print("Read and convert time")
     time_var = ds.variables["TIME"]
     #time = num2date(time_var[:], units=time_var.units, calendar=time_var.calendar)
@@ -60,7 +57,7 @@ def agg_to_bin(netCDFfiles):
     print("time max, min", hours_max, hours_min)
     print("time max, min", num2date(hours_min/24, units=time_var.units, calendar=time_var.calendar), num2date(hours_max/24, units=time_var.units, calendar=time_var.calendar))
 
-    time_bins = np.arange(np.ceil(hours_min+0.5), np.floor(hours_max-0.5))
+    time_bins = np.arange(np.ceil(hours_min+0.5), np.floor(hours_max+10.5))
     nt_points = len(time_bins)
     print("time bin range ", num2date(time_bins[0]/24, units=time_var.units, calendar=time_var.calendar), num2date(time_bins[-1]/24, units=time_var.units, calendar=time_var.calendar))
 
@@ -80,16 +77,21 @@ def agg_to_bin(netCDFfiles):
     bin = np.full([nt_points, nd_points], np.nan)
     count = np.zeros([nt_points, nd_points])
 
+    v1_var = ds.variables["VCUR"]
+    v1 = v1_var[:]
+
+    # TODO: need to get QC variable also
+
     # bin data, looping over input array
-    for i in range(0, len(temp)):
+    for i in range(0, len(v1)):
         # compute the location of this data point
         h = int(np.round(hours[i] - hours_min + 0.5)) - 1
-        d = int(np.round(pres[i] - pres_min + 5, -1)/ 10)
-        #print (i, hours[i], pres[i], temp[i], h, d)
+        d = int(np.round(pres[i] - pres_min + 5, -1)/ 10) - 1
+        print (i, hours[i], pres[i], v1[i], h, d)
         if np.isnan(bin[h, d]):
-            bin[h, d] = temp[i]
+            bin[h, d] = v1[i]
         else:
-            bin[h, d] += temp[i]
+            bin[h, d] += v1[i]
         # count number of points
         count[h, d] += 1
 
@@ -119,7 +121,7 @@ def agg_to_bin(netCDFfiles):
 
     # add variables
 
-    nc_var_out = ncOut.createVariable("TEMP", "f4", ("TIME", "BIN"), fill_value=np.nan, zlib=True)
+    nc_var_out = ncOut.createVariable(v1_var.name, "f4", ("TIME", "BIN"), fill_value=np.nan, zlib=True)
     print("shape ", bin.shape, nc_var_out.shape)
 
     mean = bin/count

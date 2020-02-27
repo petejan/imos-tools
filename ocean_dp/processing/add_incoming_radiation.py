@@ -52,6 +52,13 @@ def add_solar(netCDFfile):
 
     print("altitude", altitude_deg[0], " rad ", rad[0])
 
+    ncVarOut = ds.createVariable("ALT", "f4", ("TIME",), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
+    ncVarOut[:] = altitude_deg
+    ncVarOut.units = "deg"
+    ncVarOut.setncattr('name', 'sun altitude')
+    ncVarOut.long_name = 'sun_altitude'
+    ncVarOut.comment = "using http://docs.pysolar.org/en/latest/ v0.8 get_altitude"
+
     ncVarOut = ds.createVariable("SOLAR", "f4", ("TIME",), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
     ncVarOut[:] = rad
     ncVarOut.units = "W/m2"
@@ -59,7 +66,7 @@ def add_solar(netCDFfile):
     ncVarOut.long_name = 'incoming_solar_radiation'
     ncVarOut.comment = "using http://docs.pysolar.org/en/latest/ v0.8 extraterrestrial_irrad() with incoming = 1370 W/m^2"
 
-    rad = [global_irradiance_overcast(lat, lon, d, 1370) for d in dt_utc]
+    rad = [global_irradiance_overcast(lat, lon, d, 1370, temperature=10) for d in dt_utc]
 
     ncVarOut = ds.createVariable("SURFACE", "f4", ("TIME",), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
     ncVarOut[:] = rad
