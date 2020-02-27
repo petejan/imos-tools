@@ -62,7 +62,7 @@ def global_range(netCDFfile, variable, max, min):
         hist = ds.history + "\n"
     except AttributeError:
         hist = ""
-    ds.setncattr("history", hist + "\n" + datetime.utcnow().strftime("%Y-%m-%d") + " " + variable + " global range min = " + str(min) + " max = " + str(max) + " marked " + str(count))
+    ds.setncattr("history", hist + datetime.utcnow().strftime("%Y-%m-%d") + " " + variable + " global range min = " + str(min) + " max = " + str(max) + " marked " + str(count))
 
     ds.close()
 

@@ -40,8 +40,17 @@ def aggregate(files, varNames):
     # TODO: maybe delete files here without variables we're not interested in
     # TODO: Create set of variables in all files
 
-    filen = 0
+    files_to_process = []
     for path_file in files:
+        nc = Dataset(path_file, mode="r")
+
+        if varNames[0] in nc.variables:
+            files_to_process.append(path_file)
+        nc.close()
+
+
+    filen = 0
+    for path_file in files_to_process:
 
         print("input file %s" % path_file)
 
@@ -85,7 +94,7 @@ def aggregate(files, varNames):
     # createTimeArray (1D, OBS) - from list of structures
     #
 
-    dsTime = Dataset(files[0], mode="r")
+    dsTime = Dataset(files_to_process[0], mode="r")
 
     ncTime = dsTime.get_variables_by_attributes(standard_name='time')
 
@@ -100,7 +109,7 @@ def aggregate(files, varNames):
 
     # TODO: what to do with <Data-Code> with a reduced number of variables
 
-    splitPath = files[0].split("/")
+    splitPath = files_to_process[0].split("/")
     splitParts = splitPath[-1].split("_") # get the last path item (the file nanme), split by _
 
     tStartMaksed = num2date(maTimeAll[idx].compressed()[0], units=ncTime[0].units, calendar=ncTime[0].calendar)
@@ -137,7 +146,7 @@ def aggregate(files, varNames):
     #
 
     tDim = ncOut.createDimension("OBS", len(maTimeAll.compressed()))
-    iDim = ncOut.createDimension("instrument", len(files))
+    iDim = ncOut.createDimension("instrument", len(files_to_process))
     strDim = ncOut.createDimension("strlen", 256) # netcdf4 allow variable length strings, should we use them, probably not
 
     #
@@ -166,7 +175,7 @@ def aggregate(files, varNames):
 
     # global attributes
     # TODO: get list of variables, global attributes and dimensions from first pass above
-    dsIn = Dataset(files[0], mode='r')
+    dsIn = Dataset(files_to_process[0], mode='r')
     for a in dsIn.ncattrs():
         if not (a in globalAttributeBlackList):
             #print("Attribute %s value %s" % (a, dsIn.getncattr(a)))
@@ -205,9 +214,9 @@ def aggregate(files, varNames):
 
     # instrument index
     indexVarType = "i1"
-    if len(files) > 128:
+    if len(files_to_process) > 128:
         indexVarType = "i2"
-        if len(files) > 32767: # your really keen then
+        if len(files_to_process) > 32767: # your really keen then
             indexVarType = "i4"
 
     #
@@ -227,9 +236,9 @@ def aggregate(files, varNames):
     ncInstrumentTypeVar.setncattr("long_name", "source instrument make, model, serial_number")
 
     filen = 0
-    data = numpy.empty(len(files), dtype="S256")
-    instrument = numpy.empty(len(files), dtype="S256")
-    for path_file in files:
+    data = numpy.empty(len(files_to_process), dtype="S256")
+    instrument = numpy.empty(len(files_to_process), dtype="S256")
+    for path_file in files_to_process:
         data[filen] = path_file
         ncType = Dataset(path_file, mode='r')
         instrument[filen] = ncType.instrument + '-' + ncType.instrument_serial_number
@@ -254,7 +263,7 @@ def aggregate(files, varNames):
     # copyData
     #
 
-    # copy variable data from all files into output file
+    # copy variable data from all files_to_process into output file
 
     # should we add uncertainty to variables here if they don't have one from a default set
 
@@ -264,8 +273,8 @@ def aggregate(files, varNames):
 
         if (v != 'TIME') & (v in varList):
 
-            # TODO: need to deal with files that don't have v variable in it
-            for path_file in files:
+            # TODO: need to deal with files_to_process that don't have v variable in it
+            for path_file in files_to_process:
                 print("%d : %s file %s" % (filen, v, path_file))
 
                 nc1 = Dataset(path_file, mode="r")
@@ -308,7 +317,7 @@ def aggregate(files, varNames):
                         maVariableAll = ma.append(maVariableAll, maVariable)
 
                 # copy the variable attributes
-                # this is ends up as the super set of all files
+                # this is ends up as the super set of all files_to_process
                 for a in varList[v].ncattrs():
                     if a not in ('comment', '_FillValue') and not re.match(r"calibration.*", a):
                         #print("%s Attribute %s value %s" % (v, a, varList[v].getncattr(a)))
@@ -346,7 +355,6 @@ def aggregate(files, varNames):
                         ncOut.setncattr("geospatial_vertical_min", dMin)
 
     dsIn.close()  # we're done with the varList now
-
     ncOut.close()
 
     return outputName
