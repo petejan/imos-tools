@@ -28,14 +28,20 @@ import matplotlib.pyplot as plt
 import sys
 
 
+def time2bin(time, time_min, bin_width):
+    return int(np.round(time - time_min + bin_width/2)/bin_width)
+
+def pres2bin(pres, pres_min, bin_width):
+    return int(np.round(pres - pres_min + bin_width/2)/bin_width)
+
 def agg_to_bin(netCDFfiles):
     ds = Dataset(netCDFfiles[1], 'r')
 
     vs = ds.get_variables_by_attributes(standard_name='sea_water_pressure_due_to_sea_water')
     print("number sea_water_pressure_due_to_sea_water", len(vs))
 
-    vs = ds.get_variables_by_attributes(long_name='actual depth')
-    print("number actual depth", len(vs))
+    #vs = ds.get_variables_by_attributes(long_name='actual depth')
+    #print("number actual depth", len(vs))
 
     pres_var = vs[0]
     pres = pres_var[:]
@@ -57,8 +63,11 @@ def agg_to_bin(netCDFfiles):
     print("time max, min", hours_max, hours_min)
     print("time max, min", num2date(hours_min/24, units=time_var.units, calendar=time_var.calendar), num2date(hours_max/24, units=time_var.units, calendar=time_var.calendar))
 
-    time_bins = np.arange(np.ceil(hours_min+0.5), np.floor(hours_max+10.5))
-    nt_points = len(time_bins)
+    print('t[0] bin, t[end] bin', time2bin(hours[0], hours_min, 1), time2bin(hours[-1], hours_min, 1))
+
+    time_bins = hours_min + np.arange(time2bin(hours[0], hours_min, 1), time2bin(hours[-1], hours_min, 1), 1)
+
+    nt_points = len(time_bins)+1
     print("time bin range ", num2date(time_bins[0]/24, units=time_var.units, calendar=time_var.calendar), num2date(time_bins[-1]/24, units=time_var.units, calendar=time_var.calendar))
 
     # make pressure bins
@@ -67,17 +76,18 @@ def agg_to_bin(netCDFfiles):
     pres_max = np.max(pres)
     print("pres min, max", pres_min, pres_max)
 
-    pres_bins = np.arange(0, np.round(pres_max + 10, -1), 10)
+    pres_bins = 0 + np.arange(pres2bin(0, 0, 10), pres2bin(pres_max, 0, 10)) * 10
+
     print("pres bin range ", pres_bins[0], pres_bins[-1])
 
-    nd_points = len(pres_bins)
+    nd_points = len(pres_bins)+1
 
     print(nt_points, nd_points)
 
     bin = np.full([nt_points, nd_points], np.nan)
     count = np.zeros([nt_points, nd_points])
 
-    v1_var = ds.variables["VCUR"]
+    v1_var = ds.variables["TEMP"]
     v1 = v1_var[:]
 
     # TODO: need to get QC variable also
@@ -85,8 +95,8 @@ def agg_to_bin(netCDFfiles):
     # bin data, looping over input array
     for i in range(0, len(v1)):
         # compute the location of this data point
-        h = int(np.round(hours[i] - hours_min + 0.5)) - 1
-        d = int(np.round(pres[i] - pres_min + 5, -1)/ 10) - 1
+        h = time2bin(hours[i], hours_min, 1)
+        d = pres2bin(pres[i], 0, 10)
         print (i, hours[i], pres[i], v1[i], h, d)
         if np.isnan(bin[h, d]):
             bin[h, d] = v1[i]
@@ -104,7 +114,7 @@ def agg_to_bin(netCDFfiles):
     #s = bin[only_time, :]
     #print("Shape ", s)
 
-    ncOut = Dataset(netCDFfiles[1].replace("aggregated", "binned"), 'w', format='NETCDF4')
+    ncOut = Dataset(netCDFfiles[1].replace("Aggregate", "binned"), 'w', format='NETCDF4')
 
     # add time
     tDim = ncOut.createDimension("TIME", nt_points)

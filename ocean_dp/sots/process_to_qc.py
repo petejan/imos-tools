@@ -63,9 +63,13 @@ for fn in file_qc:
 
 pres_file = ocean_dp.aggregation.copyDataset.aggregate(file_glob, ['PRES'])
 
+# TODO: only run interpolator on files that don't contain pressure, or at least don't add IP to every filename
 interp_file = ocean_dp.processing.pressure_interpolator.pressure_interpolator(file_glob, pres_file)
 
 temp_agg_file = ocean_dp.aggregation.copyDataset.aggregate(interp_file, ['TEMP', 'PRES'])
+
+# now bin the aggregate file
+
 
 
 
