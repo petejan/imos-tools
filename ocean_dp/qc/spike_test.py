@@ -50,63 +50,113 @@ def spike_test_files(target_files, target_vars_in=[], thresh_low=2, thresh_high=
 
 def spike_test(nc, target_vars_in=[], thresh_low=2, thresh_high=4, flag_low=3, flag_high=4):
     
-        # If target_vars aren't user specified, set it to all the variables of 
-        # the current_file, removing unwanted variables
-        if target_vars_in == []:
+    # If target_vars aren't user specified, set it to all the variables of 
+    # the current_file, removing unwanted variables
+    if target_vars_in == []:
+        
+        target_vars = list(nc.variables.keys())
+        
+        # Remove TIME
+        target_vars.remove('TIME')
+        
+        # Remove any quality_control variables
+        qc_vars = [s for s in target_vars if 'quality_control' in s]
+        target_vars = [s for s in target_vars if s not in qc_vars]
+                        
+        # Remove any variables of single length
+        single_vars = [s for s in target_vars if nc.variables[s].size==1]
+        target_vars = [s for s in target_vars if s not in single_vars]
+        
+        print('target_vars are '+' '.join(target_vars))
+        
+    else:
+        target_vars = target_vars_in
+        
+    # For each variable, extract the data 
+    for current_var in target_vars:
+        
+        var_data = np.array(nc.variables[current_var])
+        
+        print('checking '+current_var+' for high spikes')
+        
+        # Step through the data, one element at a time, starting from the 2nd element
+        for i in range(1,(len(var_data)-1)):
             
-            target_vars = list(nc.variables.keys())
+            # Calculate the mean of the i-1 and i+1 elements
+            shoulder_mean = np.mean(np.take(var_data,[i-1,i+1]))
             
-            # Remove TIME
-            target_vars.remove('TIME')
-            
-            # Remove any quality_control variables
-            qc_vars = [s for s in target_vars if 'quality_control' in s]
-            target_vars = [s for s in target_vars if s not in qc_vars]
-                            
-            # Remove any variables of single length
-            single_vars = [s for s in target_vars if nc.variables[s].size==1]
-            target_vars = [s for s in target_vars if s not in single_vars]
-            
-            print('target_vars are '+' '.join(target_vars))
-            
-        else:
-            target_vars = target_vars_in
-            
-        # For each variable, extract the data 
-        for current_var in target_vars:
-            
-            var_data = np.array(nc.variables[current_var])
-            
-            print('checking '+current_var)
-            
-            # Step through the data, one element at a time, starting from the 2nd element
-            for i in range(1,(len(var_data)-1)):
+            # Check for spike exceeding high threshold
+            if abs(var_data[i]-shoulder_mean) > thresh_high:
                 
-                # Calculate the mean of the i-1 and i+1 elements
-                shoulder_mean = np.mean(np.take(var_data,[i-1,i+1]))
+                print('High spike found')
                 
-                # Check for spike exceeding high threshold
-                if abs(var_data[i]-shoulder_mean) > thresh_high:
-                    
-                    #set corresponding QC value to...
-                    nc.variables[current_var+'_quality_control'][i] = flag_high
-
+                #set corresponding QC value to...
+                nc.variables[current_var+'_quality_control'][i] = flag_high
                 
-                # Check for spike exceeding low threshold
-                elif abs(var_data[i]-shoulder_mean) > thresh_low:
-                    
-                    # set corresponding QC value to...
-                    nc.variables[current_var+'_quality_control'][i] = flag_low
+        # # Extract the qc data         
+        # current_qc = np.array(nc.variables[current_var+'_quality_control'][:])      
+        
+        # # Find all the instances of consecutive 4s, and reset them to 0        
+        # for i in np.where(current_qc==4)[0][0:-1][np.diff(np.where(current_qc==4)[0])==1]:
 
-        # update the history attribute
-        try:
-            hist = nc.history + "\n"
-        except AttributeError:
-            hist = ""
+        #     nc.variables[current_var+'_quality_control'][i:i+2] = 0       
+        
+        # Find the indices where qc isn't set to 4 (high spike), removing the final element as it can't be check for a spike
+        low_spike_chk_idx = np.where(nc.variables[current_var+'_quality_control'][:]!=4)[0][0:-1]
+        
+        #print(low_spike_chk_idx)
+        
+        # Remove from the indices those that are either side of a high spike
+        for i in np.where(nc.variables[current_var+'_quality_control'][:]==4)[0]:
+            
+            low_spike_chk_idx=low_spike_chk_idx[low_spike_chk_idx!=[i-1]]
+            
+            low_spike_chk_idx=low_spike_chk_idx[low_spike_chk_idx!=[i+1]]
+        
+        #print(low_spike_chk_idx)
+        
+        print('checking '+current_var+' for low spikes')
+        
+        # For each of the remaining indices
+        for i in low_spike_chk_idx:
+            
+            #print('i is '+str(i))
+            
+            # Calculate the mean of the i-1 and i+1 elements
+            shoulder_mean = np.mean(np.take(var_data,[i-1,i+1]))
+            
+            #print('shoulder mean is '+str(shoulder_mean))
+            
+            abs_diff = abs(var_data[i]-shoulder_mean)
+            
+            #print('absolute difference is '+str(abs_diff))
+            
+            # Check for spike exceeding low threshold
+            if abs(var_data[i]-shoulder_mean) > thresh_low:
+                
+                print('Low spike found')
+                
+                #set corresponding QC value to...
+                nc.variables[current_var+'_quality_control'][i] = flag_low        
 
-        nc.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + ' :spike_test performed on [' + str(target_vars) + '], with spikes greater than '+str(thresh_high)+' flagged as '+str(flag_high)+' and spikes greater than '+str(thresh_low)+' flagged as '+str(flag_low))
+        # # Extract the qc data         
+        # current_qc = np.array(nc.variables[current_var+'_quality_control'][:])      
+        
+        # # Find all the instances of consecutive 3s, and reset them to 0        
+        # for i in np.where(current_qc==3)[0][0:-1][np.diff(np.where(current_qc==3)[0])==1]:
 
-        nc.close()
+        #     nc.variables[current_var+'_quality_control'][i:i+2] = 0     
+
+
+    # update the history attribute
+    try:
+        hist = nc.history + "\n"
+    except AttributeError:
+        hist = ""
+
+    nc.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + ' :spike_test performed on [' + str(target_vars) + '], with spikes greater than '+str(thresh_high)+' flagged as '+str(flag_high)+' and spikes greater than '+str(thresh_low)+' flagged as '+str(flag_low))
+
+    nc.close()
     
 if __name__ == "__main__":
     # usage is <file_name> <variable_name> <window> <flag value>
