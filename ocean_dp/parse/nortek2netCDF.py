@@ -122,13 +122,15 @@ packet_decoder[128] = {'name': 'Aquadopp Diagnostics Data', 'keys': ['time_bcd',
 packet_decoder[6] = {'name': 'Aquadopp Diagnostics Data Header', 'keys': ['records', 'cell', 'noise1', 'noise2', 'noise3', 'noise4', 'proc1', 'proc2',
                             'proc3', 'proc4', 'dis1', 'dis2', 'dist3', 'dist4', 'spare', 'checksum'], 'unpack': "<2H4B8H6sH"}
 
+packet_decoder[7] = {'name': 'Vector and Vectrino Probe Check Data', 'keys': ['samples', 'firstsample', 'AmpB1...', 'AmpB2...', 'AmpB3...', 'checksum'], 'unpack': "<HH{0}B{0}B{0}BH"}
+
 packet_decoder[18] = {'name': 'Vector Velocity Data Header', 'keys': ['time_bcd', 'NRecords', 'noise1', 'noise2', 'noise3', 'spare', 'corr1', 'corr2', 'corr3', 'spare1', 'spare3', 'checksum'], 'unpack': "<6sH3BB3B1B20BH"}
 packet_decoder[17] = {'name': 'Vector System Data', 'keys': ['time_bcd', 'battery', 'soundSpeed', 'heading', 'pitch', 'roll', 'temp', 'error', 'status', 'anain', 'checksum'], 'unpack': "<6s6HBBHH"}
 packet_decoder[16] = {'name': 'Vector Velocity Data', 'keys': ['anaIn2LSB', 'count', 'presMSB', 'anaIn2MSB', 'presLSW', 'anaIn1', 'vel1', 'vel2', 'vel3', 'amp1', 'amp2', 'amp3', 'corr1', 'corr2', 'corr3', 'checksum'], 'unpack': "<BBBB5H3B3BH"}
 packet_decoder[113] = {'name': 'Vector With IMU', 'keys': ['EnsCnt', 'AHRSid', 'accelX', 'accelY', 'accelZ', 'angRateX', 'angRateY', 'angRateZ', 'MagX', 'MagY', 'MagZ', 'M11', 'M12', 'M13', 'M21', 'M22', 'M23', 'M31', 'M32', 'M33', 'timer', 'IMUchSum', 'checksum'], 'unpack': "<BB18fIHH"}
 
 packet_decoder[33] = {'name': 'Aquadopp Profiler Velocity Data', 'keys': ['time_bcd', 'error', 'AnaIn1', 'battery', 'soundSpd_Anain2', 'head', 'pitch', 'roll',
-                            'presMSB', 'status', 'presLSW', 'temp', 'vel_b1...', 'vel_b2...', 'vel_b3...', 'amp1...', 'amp2...', 'amp3...', 'checksum' ], 'unpack': '<6s7hBBHH{0}h{0}BH'}
+                              'presMSB', 'status', 'presLSW', 'temp', 'vel_b1...', 'vel_b2...', 'vel_b3...', 'amp1...', 'amp2...', 'amp3...', 'checksum' ], 'unpack': '<6s7hBBHH{0}h{0}BH'}
 
 
 # TODO: how to map the above into netCDF attributes....
@@ -210,7 +212,11 @@ def parse_file(filepath):
                         # deal with the variable length packets
                         if 'Aquadopp Profiler Velocity Data' == packet_decoder[id]['name']:
                             #print(unpack.format(number_bins * number_beams))
-                            unpack = unpack.format(number_bins * number_beams)
+                            unpack = unpack.format(number_samples * number_beams)
+
+                        if 'Vector and Vectrino Probe Check Data' == packet_decoder[id]['name']:
+                            unpack = unpack.format(300)
+                            number_samples = 300
 
                         keys = packet_decoder[id]['keys']
                         #print(type(keys))
@@ -218,7 +224,7 @@ def parse_file(filepath):
                         for k in keys:
                             if k.endswith("..."):
                                 kn = k.replace("...", "")
-                                for i in range(0, number_bins):
+                                for i in range(0, number_samples):
                                     keys_out.append(kn + "[" + str(i) + "]")
                             else:
                                 keys_out.append(k)
@@ -228,7 +234,7 @@ def parse_file(filepath):
                         packetDecode = struct.unpack(unpack, packet)
                         d = dict(zip(keys_out, packetDecode))
                         #print(packet_decoder[id]['name'])
-                        # for k in d:
+                        #for k in d:
                         #     print("dict ", k, " = " , d[k])
 
                         # decode and capture any datacodes
@@ -260,6 +266,7 @@ def parse_file(filepath):
 
                         if 'NBins' in d:
                             number_bins = d['NBins']
+                            number_samples = number_bins
 
                         if 'NBeam' in d:
                             number_beams = d['NBeam']
@@ -290,7 +297,6 @@ def parse_file(filepath):
                             #print(dt, d)
 
                         if 'Vector Velocity Data' == packet_decoder[id]['name']:
-
                             # calculate the sample timestamp
                             ts = first_time + timedelta(microseconds=int(sample_count*63000)) # a sample every 63 ms, where does this come from?
 
@@ -299,7 +305,7 @@ def parse_file(filepath):
 
                             #print(dt, d)
                         if 'Vector With IMU' == packet_decoder[id]['name']:
-                            #print('velocity data')
+                            print('Vector With IMU')
 
                             # use same timestamp as the last 'Vector Velocity Data' (from sample_count)
                             vector_imu_data.append((ts, d))
@@ -307,15 +313,15 @@ def parse_file(filepath):
                             if len(vector_imu_data) % 1000 == 0:
                                 print("samples read ", len(vector_imu_data), ts, dt, (dt - ts).total_seconds(), (dt-first_time).total_seconds())
 
-                            #print(dt, d)
+                            print(dt, d)
 
                     except KeyError:
                         print('packet_decode not found ', id)
             else:
                 no_sync += 1
-                if no_sync > 100:
-                    print("no sync found in first 100 bytes, maybe not a nortek file")
-                    return None
+                #if no_sync > 100:
+                #    print("no sync found in first 100 bytes, maybe not a nortek file")
+                #    return None
 
             data = binary_file.read(1)
             bad_ck_pos = binary_file.tell()
@@ -326,7 +332,7 @@ def parse_file(filepath):
     print('vector velocity data samples ', len(vector_velocity_data))
     print('vector IMU data samples ', len(vector_imu_data))
 
-    number_samples_read = len(velocity_data) + len(vector_imu_data) + len(aquapro_data)
+    number_samples_read = len(velocity_data) + len(vector_velocity_data) + len(aquapro_data)
 
     aquadopp = len(velocity_data) > 0
     vector = len(vector_velocity_data) > 0
@@ -451,40 +457,42 @@ def parse_file(filepath):
             data_array[1][i] = ((vector_velocity_data[i][1]['presMSB'] * 65536) + vector_velocity_data[i][1]['presLSW']) * 0.001
             data_array[2][i] = vector_velocity_data[i][1]['anaIn1']
 
-            vector_array[0][i][0] = vector_imu_data[i][1]['accelX']
-            vector_array[0][i][1] = vector_imu_data[i][1]['accelY']
-            vector_array[0][i][2] = vector_imu_data[i][1]['accelZ']
+            if vectImu:
+                vector_array[0][i][0] = vector_imu_data[i][1]['accelX']
+                vector_array[0][i][1] = vector_imu_data[i][1]['accelY']
+                vector_array[0][i][2] = vector_imu_data[i][1]['accelZ']
 
-            vector_array[1][i][0] = vector_imu_data[i][1]['angRateX']
-            vector_array[1][i][1] = vector_imu_data[i][1]['angRateY']
-            vector_array[1][i][2] = vector_imu_data[i][1]['angRateZ']
+                vector_array[1][i][0] = vector_imu_data[i][1]['angRateX']
+                vector_array[1][i][1] = vector_imu_data[i][1]['angRateY']
+                vector_array[1][i][2] = vector_imu_data[i][1]['angRateZ']
 
-            vector_array[2][i][0] = vector_imu_data[i][1]['MagX']
-            vector_array[2][i][1] = vector_imu_data[i][1]['MagY']
-            vector_array[2][i][2] = vector_imu_data[i][1]['MagZ']
+                vector_array[2][i][0] = vector_imu_data[i][1]['MagX']
+                vector_array[2][i][1] = vector_imu_data[i][1]['MagY']
+                vector_array[2][i][2] = vector_imu_data[i][1]['MagZ']
 
-            mat_array[0][i][0] = vector_imu_data[i][1]['M11']
-            mat_array[0][i][1] = vector_imu_data[i][1]['M12']
-            mat_array[0][i][2] = vector_imu_data[i][1]['M13']
-            mat_array[0][i][3] = vector_imu_data[i][1]['M21']
-            mat_array[0][i][4] = vector_imu_data[i][1]['M22']
-            mat_array[0][i][5] = vector_imu_data[i][1]['M23']
-            mat_array[0][i][6] = vector_imu_data[i][1]['M31']
-            mat_array[0][i][7] = vector_imu_data[i][1]['M32']
-            mat_array[0][i][8] = vector_imu_data[i][1]['M33']
+                mat_array[0][i][0] = vector_imu_data[i][1]['M11']
+                mat_array[0][i][1] = vector_imu_data[i][1]['M12']
+                mat_array[0][i][2] = vector_imu_data[i][1]['M13']
+                mat_array[0][i][3] = vector_imu_data[i][1]['M21']
+                mat_array[0][i][4] = vector_imu_data[i][1]['M22']
+                mat_array[0][i][5] = vector_imu_data[i][1]['M23']
+                mat_array[0][i][6] = vector_imu_data[i][1]['M31']
+                mat_array[0][i][7] = vector_imu_data[i][1]['M32']
+                mat_array[0][i][8] = vector_imu_data[i][1]['M33']
 
         var_names = []
         var_names.append({'data_n':  1, 'name': 'PRES', 'comment': "pressure", 'unit': 'dbar'})
         var_names.append({'data_n':  2, 'name': 'ANALOG1', 'comment': "voltage", 'unit': 'V'})
 
-        var_names.append({'vector_n':  0, 'name': 'ACCEL', 'comment': "acceleration", 'unit': 'm/s'})
-        var_names.append({'vector_n':  1, 'name': 'ANG_RATE', 'comment': "angular rate", 'unit': 'deg/s'})
-        var_names.append({'vector_n':  2, 'name': 'MAG', 'comment': "magnetic", 'unit': 'gauss'})
+        if vectImu:
+            var_names.append({'vector_n':  0, 'name': 'ACCEL', 'comment': "acceleration", 'unit': 'm/s'})
+            var_names.append({'vector_n':  1, 'name': 'ANG_RATE', 'comment': "angular rate", 'unit': 'deg/s'})
+            var_names.append({'vector_n':  2, 'name': 'MAG', 'comment': "magnetic", 'unit': 'gauss'})
 
-        var_names.append({'mat_n':  0, 'name': 'ORIENTATION', 'comment': "matrix", 'unit': '1'})
+            var_names.append({'mat_n':  0, 'name': 'ORIENTATION', 'comment': "matrix", 'unit': '1'})
 
-        ncOut.createDimension("VECTOR", 3)
-        ncOut.createDimension("MATRIX", 9)
+            ncOut.createDimension("VECTOR", 3)
+            ncOut.createDimension("MATRIX", 9)
 
     ncOut.instrument = 'Nortek - ' + instrument_model
     ncOut.instrument_model = instrument_model
