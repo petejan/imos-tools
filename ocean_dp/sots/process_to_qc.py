@@ -30,6 +30,7 @@ import ocean_dp.qc.add_qc_flags
 import ocean_dp.qc.global_range
 import ocean_dp.aggregation.copyDataset
 import ocean_dp.processing.pressure_interpolator
+import ocean_dp.processing.agg_to_bin
 
 path = sys.argv[1] + "/"
 
@@ -69,6 +70,8 @@ interp_file = ocean_dp.processing.pressure_interpolator.pressure_interpolator(fi
 temp_agg_file = ocean_dp.aggregation.copyDataset.aggregate(interp_file, ['TEMP', 'PRES'])
 
 # now bin the aggregate file
+
+bin_file = ocean_dp.processing.agg_to_bin.agg_to_bin(temp_agg_file)
 
 
 

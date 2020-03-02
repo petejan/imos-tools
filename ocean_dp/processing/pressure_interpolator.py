@@ -96,6 +96,7 @@ def pressure_interpolator(netCDFfiles = [], agg = []):
             print(datetime.utcnow(), 'interpolating aggregate to file times')
 
             # For each nominal depth, interpolate the agg data at the fv01 times
+            # TODO: look at only calculating pressures for sensors above and below the NOMINAL_DEPTH that we're interested in
             for j in range(1, len(agg_nominal_depths)):
                 
                 time_selection = agg.variables["TIME"][agg.variables["instrument_index"][:]==(j-1)]
