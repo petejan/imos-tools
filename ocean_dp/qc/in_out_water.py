@@ -60,6 +60,16 @@ def in_out_water(netCDFfile):
 
 
     ds.file_version = "Level 1 - Quality Controlled Data"
+    
+    # update the history attribute
+    try:
+        hist = nc.history + "\n"
+        
+    except AttributeError:
+        hist = ""
+    
+    nc.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + ': in water test performed, with out of water data flagged at QC=7')        
+            
 
     ds.close()
 

@@ -14,7 +14,8 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 import numpy.ma as ma
 import sys
-from netCDF4 import Dataset
+from netCDF4 import Dataset, num2date
+from dateutil import parser
 import numpy as np
 import argparse
 import glob
@@ -23,26 +24,249 @@ import os
 import matplotlib.pyplot as plt
 from matplotlib import colors
 from matplotlib.ticker import PercentFormatter
+from sigfig import round
 
-netcdf_files = []
+deployments = []
 
-temp_diffs = np.array([])
+for x in os.listdir("/Users/tru050/Desktop/cloudstor/Shared/SOTS-Temp-Raw-Data"):
+    
+    if ('Pulse' in x) or ('SOFS' in x):
+        
+        deployments.append(x)
+
+
+
+# check for in water test in history of netcdf file, if not perform the test
+
+netcdffiles = []
+
+mins=[]
+
+maxs=[]
+
+all_dtemp_dtime = np.array([])
+
+all_dtemp_dtime_deps = []
 
 for root, dirs, files in os.walk("/Users/tru050/Desktop/cloudstor/Shared/SOTS-Temp-Raw-Data"):
-    for file,dirx in files,dirs:
-        if file.endswith('.nc'):
-            netcdf_files.append(file)
-            nc = Dataset(os.path.join(dirs, file),mode='r')
+    
+    for fname in files:
+      
+        if fname.endswith('.nc') and 'FV01' in fname:
+        
+            print(fname)  #Here, the wanted file name is printed
+
+      
+            nc = Dataset(os.path.join(root,fname), mode = 'r')
             
-            temp_diffs = np.concatenate((temp_diffs,np.diff(np.array(nc.variables['TEMP'][:]))))
+            if 'TEMP_quality_control' in list(nc.variables) and np.array(nc.variables['TEMP'][:]).ndim == 1 and nc.variables['TIME'].getncattr('units') =='days since 1950-01-01 00:00:00 UTC':
+                
+                # Calculate temperature changes
+                nc_temp_diffs = np.diff(np.array(nc.variables['TEMP'][np.array(nc.variables['TEMP_quality_control'][:])!=7]))
+                
+                # Extract the time data
+                nc_time = np.array(nc.variables['TIME'][np.array(nc.variables['TEMP_quality_control'][:])!=7])
+            
+                # Convert from days to hours
+                nc_time_hr = nc_time*24
+                
+                # Calculate time changes
+                nc_time_hr_diffs = np.diff(nc_time_hr)
+                
+                # Calculate the rate of change of temperature wrt time
+                nc_dtemp_dtime = np.divide(nc_temp_diffs,nc_time_hr_diffs)
+                
+                # Add the results for this netcdf to the record for all files
+                all_dtemp_dtime = np.concatenate((all_dtemp_dtime,nc_dtemp_dtime))
+                
+                all_dtemp_dtime_deps += ([nc.deployment_code] * len(nc_dtemp_dtime))
+                
+                netcdffiles.append(fname)
+                
+                mins.append(np.amin(nc_dtemp_dtime))
+                
+                maxs.append(np.amax(nc_dtemp_dtime))
             
             nc.close()
-            
 
-print (list_of_files)
+
+fig, ax = plt.subplots()
+
+bins = np.linspace(-450,450,901)
+
+line_thick = 0.5
+
+counts,bins,bars = ax.hist(all_dtemp_dtime,bins,log=True)                   
+
+ax.axvline(x=3*np.std(all_dtemp_dtime),color='r',linewidth=line_thick) 
+
+ax.axvline(x=-3*np.std(all_dtemp_dtime),color='r',linewidth=line_thick) 
+
+ax.set_title('Hourly temp changes from all FV01 files in SOTS-TEMP-Raw_Data')    
+
+label_coords = (0.01, 0.9)
+
+label_method = 'axes fraction'
+
+ax.annotate('~1.84E7 measurements',xy=label_coords, xycoords=label_method)
+
+
+
+def last_four(entry):
     
+    output = entry[-4::]
     
+    return output
+
+
+deployments = []
+
+for x in os.listdir("/Users/tru050/Desktop/cloudstor/Shared/SOTS-Temp-Raw-Data"):
     
+    if ('Pulse' in x) or ('SOFS' in x):
+        
+        deployments.append(x)
+
+deployments.sort(key=last_four)
+
+
+
+
+
+
+
+all_deployment_dtemp_dtime = [None] * len(deployments)
+
+for current_deployment, plt_idx in zip(deployments, range(0,len(deployments))):
+    
+    print('current deployment is '+current_deployment)
+    
+    deployment_dtemp_dtime = np.array([])
+    
+    for root, dirs, files in os.walk("/Users/tru050/Desktop/cloudstor/Shared/SOTS-Temp-Raw-Data"):
+    
+        for fname in files:
+          
+            if current_deployment in fname and fname.endswith('.nc') and 'FV00' in fname:
+            
+                #print(fname)  #Here, the wanted file name is printed
+
+                nc = Dataset(os.path.join(root,fname), mode = 'r')
+                
+                if 'TEMP' in nc.variables and np.array(nc.variables['TEMP'][:]).ndim == 1 and nc.variables['TIME'].getncattr('units') =='days since 1950-01-01 00:00:00 UTC':
+                    
+                    time_var = nc.variables["TIME"]
+                    
+                    time = num2date(time_var[:], units=time_var.units, calendar=time_var.calendar)
+                
+                    time_deploy = parser.parse(nc.time_deployment_start, ignoretz=True)
+                    
+                    time_recovery = parser.parse(nc.time_deployment_end, ignoretz=True)
+                    
+                    #print('using '+fname)
+                    
+                    temp_extract = np.array(nc.variables['TEMP'][:][(time >= time_deploy) | (time <= time_recovery)])
+                    
+                    # Calculate temperature changes
+                    nc_temp_diffs = np.diff(temp_extract)
+                    
+                    # Extract the time data
+                    nc_time = np.array(nc.variables['TIME'][:][(time >= time_deploy) | (time <= time_recovery)])
+                
+                    # Convert from days to hours
+                    nc_time_hr = nc_time*24
+                    
+                    # Calculate time changes
+                    nc_time_hr_diffs = np.diff(nc_time_hr)
+                    
+                    # Calculate the rate of change of temperature wrt time
+                    nc_dtemp_dtime = np.divide(nc_temp_diffs,nc_time_hr_diffs)
+                    
+                    # Add the results for this netcdf to the record for the deployment
+                    deployment_dtemp_dtime = np.concatenate((deployment_dtemp_dtime,nc_dtemp_dtime))
+                    
+                    all_deployment_dtemp_dtime[plt_idx] = deployment_dtemp_dtime
+                
+                nc.close()
+                
+                
+
+
+
+
+
+
+fig, ax = plt.subplots(4,4)
+
+ax=ax.flatten()             
+
+line_thick = 1  
+
+label_coords = (0.6, 0.6)
+label_method = 'axes fraction' 
+                
+for plt_idx,dep_name in zip(range(0,len(deployments)),deployments):            
+
+    print('plotting '+ str(len(all_deployment_dtemp_dtime[plt_idx])) + ' values')
+            
+    hist_data = ax[plt_idx].hist(all_deployment_dtemp_dtime[plt_idx],21,log=True)
+    
+    ax[plt_idx].set_title(dep_name,fontsize=10) 
+    
+    #ax[plt_idx].axvline(x=3*np.mean(all_deployment_dtemp_dtime[plt_idx]),color='g',linewidth=line_thick)
+    
+    ax[plt_idx].axvline(x=np.mean(all_deployment_dtemp_dtime[plt_idx])+3*np.std(all_deployment_dtemp_dtime[plt_idx]),color='r',linewidth=line_thick) 
+
+    ax[plt_idx].axvline(x=np.mean(all_deployment_dtemp_dtime[plt_idx])-3*np.std(all_deployment_dtemp_dtime[plt_idx]),color='r',linewidth=line_thick) 
+    
+    anno = 'mean = '+str(round(float(np.mean(all_deployment_dtemp_dtime[plt_idx])),sigfigs=3))
+    
+    anno += '\n3SD = ' + str(round(float(3*np.std(all_deployment_dtemp_dtime[plt_idx])),sigfigs=3))
+    
+    anno += '\nsamples = ' + str(len(all_deployment_dtemp_dtime[plt_idx]))
+    
+    ax[plt_idx].annotate(anno,xy=label_coords, xycoords=label_method,fontsize=8)
+    
+    #ax[plt_idx].set_ylim(bottom=0,top=np.max(hist_data[0]))
+    
+    #ax[plt_idx].set_xlim(left=-450, right=450)      np.linspace(-450,450,901)
+    
+#ax[-1].axis('off')
+    
+all_data = np.concatenate(all_deployment_dtemp_dtime)    
+    
+hist_data = ax[15].hist(all_data,21,log=True)
+
+ax[15].set_title('All data',fontsize=10) 
+
+#ax[plt_idx].axvline(x=3*np.mean(all_deployment_dtemp_dtime[plt_idx]),color='g',linewidth=line_thick)
+
+ax[15].axvline(x=np.mean(all_data)+3*np.std(all_data),color='r',linewidth=line_thick) 
+
+ax[15].axvline(x=np.mean(all_data)-3*np.std(all_data),color='r',linewidth=line_thick) 
+
+anno = 'mean = '+str(round(float(np.mean(all_data)),sigfigs=3))
+
+anno += '\n3SD = ' + str(round(float(3*np.std(all_data)),sigfigs=3))
+
+anno += '\nsamples = ' + str(len(all_data))
+
+ax[15].annotate(anno,xy=label_coords, xycoords=label_method,fontsize=8)
+
+    
+fig.subplots_adjust(left=0.05,right=0.99,bottom=0.1,top=0.9,wspace=0.15,hspace=0.4)
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 files = glob.glob('*.nc')
@@ -58,6 +282,8 @@ for current_file in files:
 fig, ax = plt.subplots()
 
 ax.hist(temp_diffs,100,log=True)
+
+
 
 
 # use os.walk??? to run in each netcdf folder?? os.scandir()?
