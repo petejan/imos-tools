@@ -36,7 +36,7 @@ def add_psal(netCDFfile):
     SP = var_psal[:]
     p = var_pres[:]
 
-    SA = gsw.SA_from_SP(SP, p, ds.longitude, ds.latitude)
+    SA = gsw.SA_from_SP(SP, p, ds.variables["LONGITUDE"][0], ds.variables["LATITUDE"][0])
     pt = gsw.pt0_from_t(SA, t, p)
 
     oxsol = gsw.O2sol_SP_pt(SP, pt)

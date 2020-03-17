@@ -31,8 +31,10 @@ def scale_offset(netCDFfile, var, scale, offset):
     var_temp = ds.variables[var]
 
     t = var_temp[:]
+    #print(t)
 
     var_temp[:] = t * float(scale) + float(offset)
+    #print(var_temp[:])
 
     var_temp.comment = "rescale scale = " + str(scale) + " offset " + str(offset)
 
@@ -42,7 +44,7 @@ def scale_offset(netCDFfile, var, scale, offset):
     except AttributeError:
         hist = ""
 
-    ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " : scale, offset variable '" + var + "'")
+    ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " : scale, offset variable " + var + "")
 
     ds.close()
 

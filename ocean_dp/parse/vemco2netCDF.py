@@ -187,7 +187,7 @@ def parse(files):
                 type = 11
                 nVariables = 1
                 print('type 11 (MiniLog-T)')
-            elif ls == "Date(yyyy-mm-dd) Time(hh:mm:ss),Temperature (°C),ADC":
+            elif ls == "Date(yyyy-mm-dd) Time(hh:mm:ss),Temperature (°C),ADC" or ls == "Date(yyyy-mm-dd) Time(hh:mm:ss),Temperature (C),ADC":
                 type = 12
                 nVariables = 1
                 print('type 12 (MiniLog-T)')

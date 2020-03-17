@@ -241,14 +241,15 @@ def sbe_asc_parse(files):
                         data.fill(np.nan)
                         print("data split number ", len(lineSplit), instrument_model)
                         name.insert(0, {'col': 0, 'var_name': "TEMP", 'comment': None, 'unit': "degrees_Celsius"})
-                        if instrument_model.index('37') >= 0:
-                            if nVariables >= 2:
-                                name.insert(1, {'col': 1, 'var_name': "CNDC", 'comment': None, 'unit': "S/m"})
-                            if nVariables >= 3:
-                                name.insert(2, {'col': 2, 'var_name': "PRES", 'comment': None, 'unit': "dbar"})
-                            if nVariables >= 4:
-                                name.insert(3, {'col': 3, 'var_name': "PSAL", 'comment': None, 'unit': "1"})
-                        else:
+                        try:
+                            if instrument_model.index("37") >= 0:
+                                if nVariables >= 2:
+                                    name.insert(1, {'col': 1, 'var_name': "CNDC", 'comment': None, 'unit': "S/m"})
+                                if nVariables >= 3:
+                                    name.insert(2, {'col': 2, 'var_name': "PRES", 'comment': None, 'unit': "dbar"})
+                                if nVariables >= 4:
+                                    name.insert(3, {'col': 3, 'var_name': "PSAL", 'comment': None, 'unit': "1"})
+                        except ValueError:
                             if nVariables >= 2:
                                 name.insert(1, {'col': 1, 'var_name': "PRES", 'comment': None, 'unit': "dbar"})
 

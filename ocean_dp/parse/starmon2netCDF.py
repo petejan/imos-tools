@@ -61,6 +61,7 @@ recorder_expr     = r"##\s*Recorder\s*(\d*)\s*([\S ]*)\s*(\S*)"
 series_expr       = r"##\s*Series\s*(\d*)\s*(\S*)\((\S*)\)"
 soft_version_expr = r"##\sVersion.(.*)"
 channel_expr      = r"#\d*\s*Channel\s*(\d*):\s*(\S*)\((\S*)\)"
+axis_expr         = r"##\s*Axis\s*(\d*)\s*(\S*)\((\S*)\)"
 recorder_old_expr = r"#1\s*Recorder:\s*.(.)(\d*)"
 
 
@@ -90,6 +91,7 @@ def parse(file):
             if hdr:
                 if line[0].isdigit():
                     hdr = False
+                    print(name)
                 else:
                     matchObj = re.match(soft_version_expr, line)
                     if matchObj:
@@ -127,11 +129,12 @@ def parse(file):
 
                     matchObj = re.match(series_expr, line)
                     if matchObj:
-                        #print("series_expr:matchObj.group() : ", matchObj.group())
+                        print("series_expr:matchObj.group() : ", matchObj.group())
                         #print("series_expr:matchObj.group(1) : ", matchObj.group(1))
                         #print("series_expr:matchObj.group(2) : ", matchObj.group(2))
                         #print("series_expr:matchObj.group(3) : ", matchObj.group(3))
-                        nameN = matchObj.group(1)
+                        #nameN = matchObj.group(1)
+                        nameN = int(matchObj.group(1)) + 1
                         ncVarName = matchObj.group(2)
                         if ncVarName in nameMap:
                             ncVarName = nameMap[ncVarName]
@@ -139,7 +142,7 @@ def parse(file):
                         if unit in unitMap:
                             unit = unitMap[unit]
 
-                        name.insert(nVars, {'col': int(nameN), 'var_name': ncVarName, 'unit': unit})
+                        name.insert(nVars, {'col': nameN, 'var_name': ncVarName, 'unit': unit})
 
                     matchObj = re.match(channel_expr, line)
                     if matchObj:
@@ -156,6 +159,23 @@ def parse(file):
                             unit = unitMap[unit]
 
                         name.insert(nVars, {'col': int(nameN), 'var_name': ncVarName, 'unit': unit})
+
+                    matchObj = re.match(axis_expr, line)
+                    if matchObj:
+                        print("channel_expr:axis_expr.group() : ", matchObj.group())
+                        #print("channel_expr:axis_expr.group(1) : ", matchObj.group(1))
+                        #print("channel_expr:axis_expr.group(2) : ", matchObj.group(2))
+                        #print("channel_expr:axis_expr.group(3) : ", matchObj.group(3))
+                        nameN = int(matchObj.group(1)) + 1
+                        print("axis_expr:nameN ", nameN)
+                        ncVarName = matchObj.group(2)
+                        if ncVarName in nameMap:
+                            ncVarName = nameMap[ncVarName]
+                        unit = matchObj.group(3)
+                        if unit in unitMap:
+                            unit = unitMap[unit]
+
+                        #name.insert(nVars, {'col': nameN, 'var_name': ncVarName, 'unit': unit})
 
             if not hdr:
                 lineSplit = line.strip().split('\t')
@@ -184,7 +204,7 @@ def parse(file):
                     d[splitVarNo] = float(lineSplit[v['col']+1])
                     splitVarNo = splitVarNo + 1
                 data.append(d)
-                print(t, d)
+                #print(t, d)
                 number_samples_read = number_samples_read + 1
 
                 dataLine = dataLine + 1

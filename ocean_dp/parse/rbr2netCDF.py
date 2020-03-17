@@ -166,8 +166,13 @@ def parse(file):
 
                     # TODO: extract these from the data_split variable, and the channel expression
 
-                    name.append({'var_name': 'TEMP', 'unit':'degrees_Celsius', 'col':2})
-                    name.append({'var_name': 'PRES', 'unit':'dbar', 'col':3})
+                    data_col = 2
+                    if 'Temp' in data_split:
+                        name.append({'var_name': 'TEMP', 'unit':'degrees_Celsius', 'col':data_col})
+                        data_col += 1
+                    if 'Pres' in data_split:
+                        name.append({'var_name': 'PRES', 'unit':'dbar', 'col':data_col})
+                        data_col += 1
 
                     hdr = False
             else:

@@ -33,7 +33,7 @@ conn = psycopg2.connect(host="localhost", database="ABOS", user="pete", password
 cur = conn.cursor()
 
 # map quality codes to text
-qc_dict = {0: 'NONE', 1: 'GOOD', 2: 'PGOOD', 3: 'PBAD', 4: 'BAD', 5: 'OUT', 9: 'MISSING'}
+qc_dict = {0: 'RAW', 1: 'GOOD', 2: 'PGOOD', 3: 'PBAD', 4: 'BAD', 5: 'OUT', 9: 'MISSING'}
 
 # a list of metadata from the database, keep a list so we don't have to look it up for every point
 metadata = {}
@@ -85,9 +85,17 @@ for i, csv_row in data.iterrows():
 
     # round the time to nearest second as we have been from timestamp to float and backagain
     new_date = datetime.datetime(1950, 1, 1, 0, 0) + datetime.timedelta(days=csv_row["TIME"])
-    if new_date.microsecond >= 500000:
-        new_date = new_date + datetime.timedelta(seconds=1)
-    new_date = new_date.replace(microsecond=0)
+
+    #print("input date", new_date)
+
+    #print("microseconds", new_date.microsecond)
+
+    a, b = divmod(new_date.microsecond, 500000)
+    #print("a", a, "b", b)
+
+    new_date = new_date + datetime.timedelta(microseconds=-b) + datetime.timedelta(microseconds=a*500000)
+
+    #print("new_date", new_date)
 
     # create a metadata tuple to insert into the database
     file = metadata[meta_data_tup]['source']
@@ -105,9 +113,9 @@ for i, csv_row in data.iterrows():
 
     # insert data into database
     try:
-        cur.execute("INSERT INTO processed_instrument_data "
+        cur.execute("INSERT INTO raw_instrument_data "
                         "VALUES (%s, %s, %s, %s, %s, %s, %s, 'PAR', %s, %s)", t
-                        )
+                    )
     except psycopg2.errors.UniqueViolation:
         print("duplicate entry ", csv_row["TIME"], t)
 

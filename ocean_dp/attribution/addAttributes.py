@@ -86,14 +86,16 @@ def add(netCDFfile, metadatafiles):
                             #print("deployment not match : ", dict1['deployment_code'])
 
                     # match time
-                    if len(dict1['time_deployment']) > 0:
-                        if time_end < parser.parse(dict1['time_deployment'], ignoretz=True, dayfirst=False):
-                            match = False
-                            #print("Time end before deployment ", time_end, dict1['time_deployment'])
-                    if len(dict1['time_recovery']) > 0:
-                        if time_start > parser.parse(dict1['time_recovery'], ignoretz=True, dayfirst=False):
-                            match = False
-                            #print("Time start after recovery ", time_start, dict1['time_recovery'], parser.parse(dict1['time_recovery'], ignoretz=True, dayfirst=False))
+                    if 'time_deployment' in dict1:
+                        if len(dict1['time_deployment']) > 0:
+                            if time_end < parser.parse(dict1['time_deployment'], ignoretz=True, dayfirst=False):
+                                match = False
+                                #print("Time end before deployment ", time_end, dict1['time_deployment'])
+                    if 'time_recovery' in dict1:
+                        if len(dict1['time_recovery']) > 0:
+                            if time_start > parser.parse(dict1['time_recovery'], ignoretz=True, dayfirst=False):
+                                match = False
+                                #print("Time start after recovery ", time_start, dict1['time_recovery'], parser.parse(dict1['time_recovery'], ignoretz=True, dayfirst=False))
 
                     # match instrument
                     # fuzzie matching : https://medium.com/@categitau/fuzzy-string-matching-in-python-68f240d910fe

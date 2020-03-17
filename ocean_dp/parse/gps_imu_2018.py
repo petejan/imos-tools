@@ -133,7 +133,7 @@ def gps_imu_2018(netCDFfiles):
                 if not byte:
                     break
                 (type, N) = struct.unpack("<BH", byte)
-                print ('type %d N %d' %(type, N))
+                #print ('type %d N %d' %(type, N))
                 pos = f.tell()
                 if (type < 9) & (N < 400):
                     pkt = f.read(N)

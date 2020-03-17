@@ -104,6 +104,13 @@ def plot(file):
     plot_var(pp, dt_time, pres, doxy_var[:], 'oxygen concentration (mg/l)', plt.get_cmap('ocean'))
     plot_var(pp, dt_time, pres, doxs_var[:], 'oxygen saturation', plt.get_cmap('ocean'))
 
+    if 'FLU' in nc.variables:
+        flu_var = nc.variables['FLU']
+        plot_var(pp, dt_time, pres, flu_var[:], 'fl', plt.get_cmap('ocean'))
+    if 'BS' in nc.variables:
+        bs_var = nc.variables['BS']
+        plot_var(pp, dt_time, pres, bs_var[:], 'bs', plt.get_cmap('ocean'))
+
     pp.close()
 
     nc.close()
