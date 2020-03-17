@@ -45,7 +45,21 @@ label_method = 'axes fraction'
 
 for i in set(np.array(ins_idx)):
 
-    ax[i].plot(time[ins_idx==i],temp[ins_idx==i])
+    cur_temp = temp[ins_idx==i]
+    
+    cur_time = time[ins_idx==i]
+    
+    cur_time_hr = cur_time*24
+    
+    # Calculate time changes
+    cur_time_hr_diffs = np.diff(cur_time_hr)
+    
+    cur_temp_diffs = np.diff(cur_temp)
+    
+    # Calculate the rate of change of temperature wrt time
+    cur_dtemp_dtime = np.divide(cur_temp_diffs,cur_time_hr_diffs)
+    
+    ax[i].scatter(cur_time,cur_temp,s=1,c=np.concatenate((np.array([0]),cur_dtemp_dtime)),cmap='cool')
     
     ax[i].annotate('S:'+str(i),xy=label_coords, xycoords=label_method,fontsize=8)
     
