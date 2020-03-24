@@ -114,6 +114,8 @@ def roc_test(nc,*args,target_vars_in=[]):
                 
                 # For any change greater than change_per_hr, assign a qc value of 4
                 nc.variables[current_var+'_quality_control'][[x for x in abs(np.insert(var_roc,0,0)) > change_per_hr]] = 4
+                
+                print(current_var + ' tested: '+str(sum([x for x in abs(np.insert(var_roc,0,0)) > change_per_hr])) + ' changes found above '+str(change_per_hr)+' '+nc.variables[current_var].units+' per hour')
                     
             # update the history attribute
             try:
@@ -152,6 +154,8 @@ def roc_test(nc,*args,target_vars_in=[]):
                 
                 # For any change greater than change_per_hr, assign a qc value of 4
                 nc.variables[current_var+'_quality_control'][[x for x in abs(np.insert(var_roc,0,0)) > rate_spec[current_var]]] = 4
+                
+                print(current_var + ' tested: '+str(sum([x for x in abs(np.insert(var_roc,0,0)) > rate_spec[current_var]])) + ' changes found above '+str(rate_spec[current_var])+' '+nc.variables[current_var].units+' per hour')
                     
             # update the history attribute
             try:

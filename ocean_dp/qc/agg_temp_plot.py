@@ -43,6 +43,17 @@ ax=ax.flatten()
 label_coords = (0.1, 0.8)
 label_method = 'axes fraction' 
 
+# cmap = colors.ListedColormap(['black','green','blue','red','orange'])
+
+# boundaries = [0,5,10,20,40,80]
+
+cmap = colors.ListedColormap(['blue','orange','red'])
+
+boundaries = [0,20,30,500]
+
+norm = colors.BoundaryNorm(boundaries, cmap.N, clip=True)
+
+
 for i in set(np.array(ins_idx)):
 
     cur_temp = temp[ins_idx==i]
@@ -59,9 +70,17 @@ for i in set(np.array(ins_idx)):
     # Calculate the rate of change of temperature wrt time
     cur_dtemp_dtime = np.divide(cur_temp_diffs,cur_time_hr_diffs)
     
-    ax[i].scatter(cur_time,cur_temp,s=1,c=np.concatenate((np.array([0]),cur_dtemp_dtime)),cmap='cool')
+    im = ax[i].scatter(cur_time,cur_temp,s=1,c=np.concatenate((np.array([0]),np.abs(cur_dtemp_dtime))),cmap=cmap,norm=norm)
     
-    ax[i].annotate('S:'+str(i),xy=label_coords, xycoords=label_method,fontsize=8)
+    #ax[i].set_title(,fontsize=10) 
+    
+    ax[i].annotate('Ins:'+str(i),xy=label_coords, xycoords=label_method,fontsize=8)
+    
+    if i==27:
+        fig.colorbar(im)
+    
+    
+fig.colorbar(cmap)
     
 i=1
 fig, ax = plt.subplots()

@@ -26,15 +26,14 @@ import glob
 import pytz
 import os
 
-
 # If files aren't specified, take all the IMOS*.nc files in the current folder
-def spike_test_all_files(target_vars_in=[], thresh_low=10, thresh_high=20, flag_low=3, flag_high=4):
+def spike_test_all_files(target_vars_in=[], thresh_low=2, thresh_high=4, flag_low=3, flag_high=4):
     target_files = glob.glob('IMOS*.nc')
 
     spike_test_files(target_files, target_vars_in=target_vars_in, thresh_low=thresh_low,thresh_high=thresh_high,flag_low=flag_low, flag_high=flag_high)
 
 
-def spike_test_files(target_files, target_vars_in=[], thresh_low=10, thresh_high=20, flag_low=3, flag_high=4):
+def spike_test_files(target_files, target_vars_in=[], thresh_low=2, thresh_high=4, flag_low=3, flag_high=4):
     
     # Loop through each files in target_files
     for current_file in target_files:
@@ -48,7 +47,8 @@ def spike_test_files(target_files, target_vars_in=[], thresh_low=10, thresh_high
         spike_test(nc=nc, target_vars_in=target_vars_in, thresh_low=thresh_low,thresh_high=thresh_high,flag_low=flag_low, flag_high=flag_high)
 
 
-def spike_test(nc, target_vars_in=[], thresh_low=10, thresh_high=20, flag_low=3, flag_high=4):
+
+def spike_test(nc, target_vars_in=[], thresh_low=2, thresh_high=4, flag_low=3, flag_high=4):
     
     # If target_vars aren't user specified, set it to all the variables of 
     # the current_file, removing unwanted variables
@@ -77,8 +77,6 @@ def spike_test(nc, target_vars_in=[], thresh_low=10, thresh_high=20, flag_low=3,
         
         var_data = np.array(nc.variables[current_var])
         
-        
-        
         print('checking '+current_var+' for high spikes')
         
         # Step through the data, one element at a time, starting from the 2nd element
@@ -91,34 +89,12 @@ def spike_test(nc, target_vars_in=[], thresh_low=10, thresh_high=20, flag_low=3,
             shoulder_diff = np.diff(var_data[i-1:i+2])
             
             # Check for spike exceeding high threshold
-            if (abs(var_data[i]-shoulder_mean) > thresh_high) & (True in (shoulder_diff>0)) & (True in (shoulder_diff<0)):# & (1.25*abs(shoulder_diff[0]) >= abs(x[1]) >= 0.75*abs(shoulder_diff[0])):
+            if (abs(var_data[i]-shoulder_mean) > thresh_high) & (True in (shoulder_diff>=0)) & (False in (shoulder_diff>=0)):
                 
                 print('High spike found')
                 
                 #set corresponding QC value to...
                 nc.variables[current_var+'_quality_control'][i] = flag_high
-                
-        # # Extract the qc data         
-        # current_qc = np.array(nc.variables[current_var+'_quality_control'][:])      
-        
-        # # Find all the instances of consecutive 4s, and reset them to 0        
-        # for i in np.where(current_qc==4)[0][0:-1][np.diff(np.where(current_qc==4)[0])==1]:
-
-        #     nc.variables[current_var+'_quality_control'][i:i+2] = 0       
-        
-        # Find the indices where qc isn't set to 4 (high spike), removing the final element as it can't be check for a spike
-        low_spike_chk_idx = np.where(nc.variables[current_var+'_quality_control'][:]!=4)[0][0:-1]
-        
-        #print(low_spike_chk_idx)
-        
-        # Remove from the indices those that are either side of a high spike
-        for i in np.where(nc.variables[current_var+'_quality_control'][:]==4)[0]:
-            
-            low_spike_chk_idx=low_spike_chk_idx[low_spike_chk_idx!=[i-1]]
-            
-            low_spike_chk_idx=low_spike_chk_idx[low_spike_chk_idx!=[i+1]]
-        
-        #print(low_spike_chk_idx)
         
         print('checking '+current_var+' for low spikes')
         
@@ -135,12 +111,12 @@ def spike_test(nc, target_vars_in=[], thresh_low=10, thresh_high=20, flag_low=3,
             
             #print('shoulder mean is '+str(shoulder_mean))
             
-            #abs_diff = abs(var_data[i]-shoulder_mean)
+            abs_diff = abs(var_data[i]-shoulder_mean)
             
             #print('absolute difference is '+str(abs_diff))
             
             # Check for spike exceeding low threshold
-            if (abs(var_data[i]-shoulder_mean) > thresh_low) & (True in (shoulder_diff>0)) & (True in (shoulder_diff<0)): #& (1.25*abs(shoulder_diff[0]) >= abs(x[1]) >= 0.75*abs(shoulder_diff[0])):
+            if (abs(var_data[i]-shoulder_mean) > thresh_low) & (True in (shoulder_diff>=0)) & (False in (shoulder_diff>=0)):
                 
                 print('Low spike found')
                 
@@ -171,8 +147,3 @@ if __name__ == "__main__":
     spike_test_files(target_files=[sys.argv[1]], target_vars_in=[sys.argv[2]], thresh_low=float(sys.argv[3]), thresh_high=float(sys.argv[4]), flag_low= float(sys.argv[5]), flag_high= float(sys.argv[6]))
 
     
-
-
-
-
-
