@@ -494,7 +494,7 @@ def parse_file(filepath):
             ncOut.createDimension("VECTOR", 3)
             ncOut.createDimension("MATRIX", 9)
 
-    ncOut.instrument = 'Nortek - ' + instrument_model
+    ncOut.instrument = 'Nortek ; ' + instrument_model
     ncOut.instrument_model = instrument_model
     ncOut.instrument_serial_number = instrument_serialnumber
     ncOut.instrument_head_serial_number = instrument_head_serialnumber

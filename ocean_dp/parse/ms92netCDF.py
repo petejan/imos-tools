@@ -143,7 +143,7 @@ def parse(file):
 
     ncOut = Dataset(outputName, 'w', format='NETCDF4')
 
-    ncOut.instrument = 'In-situ Marine Optics - ' + 'MS9'
+    ncOut.instrument = 'In-situ Marine Optics ; ' + 'MS9'
     ncOut.instrument_model = 'MS9'
     ncOut.instrument_serial_number = instrument_serial_number
 

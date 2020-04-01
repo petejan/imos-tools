@@ -90,7 +90,7 @@ def nmea_parse(files):
 
     ncOut = Dataset(outputName, 'w', format='NETCDF4')
 
-    ncOut.instrument = "UBLOX - LEA-6T"
+    ncOut.instrument = "UBLOX ; LEA-6T"
     ncOut.instrument_model = "LEA-6T"
     ncOut.instrument_serial_number = "1"
 

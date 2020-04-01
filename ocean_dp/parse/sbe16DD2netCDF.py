@@ -114,7 +114,7 @@ def parse(sn, filepath):
 
     ncOut = Dataset(outputName, 'w', format='NETCDF4')
 
-    ncOut.instrument = 'Sea-Bird Electronics - ' + instrument_model
+    ncOut.instrument = 'Sea-Bird Electronics ; ' + instrument_model
     ncOut.instrument_model = instrument_model
     ncOut.instrument_serial_number = instrument_serialnumber
 

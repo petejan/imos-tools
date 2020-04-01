@@ -99,7 +99,7 @@ def eco_parse(files):
 
     ncOut = Dataset(outputName, 'w', format='NETCDF4')
 
-    ncOut.instrument = "WetLABs - BBFL2WB"
+    ncOut.instrument = "WetLABs ; BBFL2WB"
     ncOut.instrument_model = "BBFL2WB"
     ncOut.instrument_serial_number = "902"
 

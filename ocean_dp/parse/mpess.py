@@ -318,7 +318,7 @@ def mpess(filepath):
 
     ncOut = Dataset(outputName, 'w', format='NETCDF4')
 
-    ncOut.instrument = 'CSIRO - ' + instrument_model
+    ncOut.instrument = 'CSIRO ; ' + instrument_model
     ncOut.instrument_model = instrument_model
     ncOut.instrument_serial_number = instrument_serialnumber
 

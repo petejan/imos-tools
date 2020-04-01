@@ -82,7 +82,7 @@ def parse_azfp(files):
 
     ncOut = Dataset(output_name, 'w', format='NETCDF4')
 
-    ncOut.instrument = 'ASL Environmental Sciences - ' + instrument_model
+    ncOut.instrument = 'ASL Environmental Sciences ; ' + instrument_model
     ncOut.instrument_model = instrument_model
     ncOut.instrument_serial_number = instrument_serialnumber
 

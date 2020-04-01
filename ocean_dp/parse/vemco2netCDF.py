@@ -265,7 +265,7 @@ def parse(files):
 
     ncOut = Dataset(outputName, 'w', format='NETCDF4')
 
-    ncOut.instrument = 'Vemco - ' + instrument_model
+    ncOut.instrument = 'Vemco ; ' + instrument_model
     ncOut.instrument_model = instrument_model
     ncOut.instrument_serial_number = instrument_serialnumber
 

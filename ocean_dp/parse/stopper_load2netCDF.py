@@ -87,7 +87,7 @@ def sbe_asc_parse(files):
 
     ncOut = Dataset(outputName, 'w', format='NETCDF4')
 
-    ncOut.instrument = "CSIRO - Deck Load Cell"
+    ncOut.instrument = "CSIRO ; Deck Load Cell"
     ncOut.instrument_model = "Deck Load Cell"
     ncOut.instrument_serial_number = "1"
 

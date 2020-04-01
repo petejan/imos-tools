@@ -121,7 +121,7 @@ def gps_imu_2020(netCDFfiles):
 
     ncOut = Dataset("gps.nc", 'w', format='NETCDF4')
 
-    ncOut.instrument = "CSIRO GPS/IMU Logger"
+    ncOut.instrument = "CSIRO ; GPS/IMU Logger"
     ncOut.instrument_model = "SOFS-7.5"
     ncOut.instrument_serial_number = "2018"
 

@@ -190,7 +190,7 @@ def main(files):
     instrument_model = 'WORKHORSE ' + inst_system_text
     instrument_serialnumber = fixed_decoded['inst_serial']
 
-    ncOut.instrument = 'RDI - ' + instrument_model
+    ncOut.instrument = 'RDI ; ' + instrument_model
     ncOut.instrument_model = instrument_model
     ncOut.instrument_serial_number = str(instrument_serialnumber)
 
