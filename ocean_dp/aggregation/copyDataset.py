@@ -232,7 +232,7 @@ def aggregate(files, varNames):
     ncFileNameVar = ncOut.createVariable("source_file", "S1", ("instrument", "strlen"))
     ncFileNameVar.setncattr("long_name", "source file for this instrument")
 
-    ncInstrumentTypeVar = ncOut.createVariable("instrument_type", "S1", ("instrument", "strlen"))
+    ncInstrumentTypeVar = ncOut.createVariable("instrument_id", "S1", ("instrument", "strlen"))
     ncInstrumentTypeVar.setncattr("long_name", "source instrument make, model, serial_number")
 
     filen = 0
@@ -241,7 +241,7 @@ def aggregate(files, varNames):
     for path_file in files_to_process:
         data[filen] = path_file
         ncType = Dataset(path_file, mode='r')
-        instrument[filen] = ncType.instrument + '-' + ncType.instrument_serial_number
+        instrument[filen] = ncType.deployment_code + " ; " + ncType.instrument + ' ; ' + ncType.instrument_serial_number
         filen += 1
 
     ncFileNameVar[:] = stringtochar(data)

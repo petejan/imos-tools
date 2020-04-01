@@ -27,6 +27,7 @@ import sys
 
 # Supply netCDFfiles as a ['list'] of files, agg as a 'string'
 
+
 def pressure_interpolator(netCDFfiles = [], agg = []):
     
     if netCDFfiles==[]:
@@ -40,7 +41,7 @@ def pressure_interpolator(netCDFfiles = [], agg = []):
         
         print('agg = none')
         
-    # Extract the aggregate file data
+        # Extract the aggregate file data
         agg = Dataset(glob.glob('*Aggregate*.nc')[0], mode="r")
         
     else:
@@ -53,13 +54,17 @@ def pressure_interpolator(netCDFfiles = [], agg = []):
     for fn in netCDFfiles:
         
         print(datetime.utcnow(), 'processing file : ', fn)
-        
+
         # Change the creation date in the filename to today
         now = datetime.utcnow()
             
         fn_new_split = os.path.basename(fn).split('_')
         fn_new_split[-1] = "C-" + now.strftime("%Y%m%d") + ".nc"
-        fn_new_split[2] += 'IP'
+        try:
+            fn_new_split[2].index("IP")
+        except ValueError:
+            fn_new_split[2] += 'IP'
+
         fn_new = os.path.join(os.path.dirname(fn), '_'.join(fn_new_split))
 
         # If a new (different) filename has been successfully generated, make 
