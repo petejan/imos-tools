@@ -236,17 +236,19 @@ for path_file in sys.argv[1:len(sys.argv)]:
         var = np.squeeze(var)
 
         for idx in instrument_index_unique:
-            print("plotting : ", plot_var.name, " shape ", var.shape, " len ", shape_len, " instrument ", idx)
+            print(" plotting : ", plot_var.name, " shape ", var.shape, " var_shape ", shape_len, " instrument ", idx)
 
             var_idx = np.ma.masked_where(instrument_index != idx, var).compressed()
             qc_idx = np.ma.masked_where(instrument_index != idx, qc).compressed()
+            dt_time_msk = np.ma.masked_where(instrument_index != idx, dt_time).compressed()
+
             # create range from only good data
             qc_m = np.ma.masked_where((qc_idx == 9) | (qc_idx == 4) | (qc_idx == 6), var_idx)
             mx = qc_m.max()
             mi = qc_m.min()
 
             marg = (mx - mi) * 0.1
-            print(" max ", mx, " min ", mi)
+            print("  max ", mx, " min ", mi)
 
             #plt.ylim([mi - marg, mx + marg])
 
@@ -271,20 +273,20 @@ for path_file in sys.argv[1:len(sys.argv)]:
                 dpth = 'unknown'
                 dpth = nc.variables["NOMINAL_DEPTH"][:]
 
-            print(" depth ", dpth)
+            print("  depth ", dpth)
 
-            leg = [x + ' (' + str(y) + ' m)' for x, y in zip(sn, dpth)]
+            leg = [x.strip() + ' (' + str(y).strip() + ' m)' for x, y in zip(sn, dpth)]
 
             # if less than 200 points plot with a dot and line
             plot_marks = '-'
             if len(dt_time) < 200:
                 plot_marks = '.-'
 
-            dt_time_msk = np.ma.masked_where(instrument_index != idx, dt_time).compressed()
             #print(dt_time_msk)
             #print(qc_m)
 
-            pl = ax.plot(dt_time_msk, qc_m, plot_marks, label=leg[idx-1])
+            pl.extend(ax.plot(dt_time_msk, qc_m, plot_marks, label=leg[idx-1]))
+            #print(" plot list ", pl)
 
             # mark qc>2 with yellow dot, qc>3 with red dot
             qc_m = np.ma.masked_where((qc_idx <= 2) | (qc_idx == 8), var_idx)
@@ -329,14 +331,14 @@ for path_file in sys.argv[1:len(sys.argv)]:
 
         # invert the yaxis if the units are dbar
         try:
-            print(" units ", plot_var.units)
+            print("  units ", plot_var.units)
             if plot_var.units.startswith('dbar'):
                 plt.gca().invert_yaxis()
         except AttributeError:
             pass
         # invert the yaxis if the it has the attribute positive down
         try:
-            print(" positive ", plot_var.positive)
+            print("  positive ", plot_var.positive)
             if plot_var.positive == 'down':
                 plt.gca().invert_yaxis()
         except AttributeError:
@@ -353,7 +355,7 @@ for path_file in sys.argv[1:len(sys.argv)]:
         #plt.legend(iter(pl), leg, loc='lower center', bbox_to_anchor=(0.5, -0.05), ncol=5)
 
         #plt.legend(iter(pl), leg, bbox_to_anchor=(0.0, -0.2, 1.0, -0.15), loc=3, ncol=6, mode="expand", borderaxespad=0.0, fontsize='x-small')
-        plt.legend(handles=pl, bbox_to_anchor=(0.0, -0.2, 1.0, -0.15), loc=3, ncol=6, mode="expand", borderaxespad=0.0, fontsize='x-small')
+        plt.legend(handles=pl, bbox_to_anchor=(0.0, -0.2, 1.0, -0.15), loc=3, ncol=1, mode="expand", borderaxespad=0.0, fontsize='x-small')
 
         # plt.savefig(plot + '.pdf')
         pp.savefig(fig, papertype='a4')
