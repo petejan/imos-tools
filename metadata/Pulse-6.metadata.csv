@@ -38,6 +38,17 @@ GLOBAL,,Pulse-6-2009,,,2009-09-27,2010-03-18,,"","",site_nominal_depth,float64,"
 GLOBAL,,Pulse-6-2009,,,2009-09-27,2010-03-18,,"","",time_deployment_start,str,"2009-09-28T00:00:00Z"
 GLOBAL,,Pulse-6-2009,,,2009-09-27,2010-03-18,,"","",time_deployment_end,str,"2010-03-18T02:05:00Z"
 
+VAR_ATT,TIME,Pulse-6-2009,MDS-MKVL,200341,,,,,,comment_scale_offset,str,"1.0 -0.04166666666667"
+VAR_ATT,TIME,Pulse-6-2009,MDS-MKVL,200665,,,,,,comment_scale_offset,str,"1.0 -0.4166666666667"
+
+VAR_ATT,VOLT2,Pulse-6-2009,SBE16plus,01606331,,,,,,comment_attached_instrument,str,"Wet-LABS ; PARS-134"
+VAR_ATT,VOLT2,Pulse-6-2009,SBE16plus,01606331,,,,,,calibration_PAR_Im,float64,"1.3589"
+VAR_ATT,VOLT2,Pulse-6-2009,SBE16plus,01606331,,,,,,calibration_PAR_analog_A1,float64,"0.8902"
+VAR_ATT,VOLT2,Pulse-6-2009,SBE16plus,01606331,,,,,,calibration_PAR_analog_A0,float64,"1.3145"
+VAR_ATT,VOLT2,Pulse-6-2009,SBE16plus,01606331,,,,,,calibration_PAR_date,str,"Mar. 27, 2009"
+VAR_ATT,VOLT2,Pulse-6-2009,SBE16plus,01606331,,,,,,calibration_PAR_facility,str,"Wet-LABS"
+VAR_ATT,VOLT2,Pulse-6-2009,SBE16plus,01606331,,,,,,calibration_PAR_SN,str,"PARS-134"
+
 VAR,NOMINAL_DEPTH,Pulse-6-2009,Optode 3975,1161,2009-09-27,2010-03-18,NOMINAL_DEPTH,"()","()",,float64,"37.50"
 VAR,NOMINAL_DEPTH,Pulse-6-2009,MDS-MKVL,200341,2009-09-27,2010-03-18,NOMINAL_DEPTH,"()","()",,float64,"0.00"
 VAR,NOMINAL_DEPTH,Pulse-6-2009,MDS-MKVL,200664,2009-09-27,2010-03-18,NOMINAL_DEPTH,"()","()",,float64,"27.00"

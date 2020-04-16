@@ -78,10 +78,9 @@ def add_qc(netCDFfile):
                 if v+"_quality_control" not in ds.variables:
                     ncVarOut = ds.createVariable(v+"_quality_control", "i1", vars[v].dimensions, fill_value=99, zlib=True)  # fill_value=99 otherwise defaults to max, imos-toolbox uses 99
                     ncVarOut[:] = np.zeros(vars[v].shape)
-                    ncVarOut.long_name = "quality_code for " + v
-                    ncVarOut.flag_values = np.array([0, 1, 2, 3, 4, 6, 7, 9])
+                    ncVarOut.long_name = "quality flag for " + v
+                    ncVarOut.flag_values = np.array([0, 1, 2, 3, 4, 6, 7, 9], dtype=np.int8)
                     ncVarOut.flag_meanings = 'unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value'
-                    
 
                     vars[v].ancillary_variables = v + "_quality_control"
 
@@ -90,7 +89,7 @@ def add_qc(netCDFfile):
         
         ds.date_created = now.strftime("%Y-%m-%dT%H:%M:%SZ")
         
-        ds.history += ' ' + now.strftime("%Y-%m-%d : ") + ' quality_control variables added.'
+        ds.history += ' ' + now.strftime("%Y-%m-%d : ") + 'quality_control variables added.'
 
         # ADD quality control attributes!!
 

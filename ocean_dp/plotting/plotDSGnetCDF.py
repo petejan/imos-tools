@@ -64,7 +64,7 @@ for path_file in sys.argv[1:len(sys.argv)]:
     aux_vars = list()
     for var in nc.variables:
         try:
-            aux_vars.append(nc.variables[var].getncattr('ancillary_variables'))
+            aux_vars.extend(nc.variables[var].getncattr('ancillary_variables').split(' '))
         except AttributeError:
             pass
 
@@ -199,26 +199,28 @@ for path_file in sys.argv[1:len(sys.argv)]:
             #print('\t%s:' % nc_attr, repr(plot_var.getncattr(nc_attr)), type(attrVal))
             text += nc_attr + ' : ' + str(attrVal) + '\n'
 
+        qc = np.zeros_like(plot_var[:])
         if hasattr(plot_var, 'ancillary_variables'):
             qc_var_name = plot_var.getncattr('ancillary_variables')
-            qc_var = nc.variables[qc_var_name]
+            for qc_var_n in qc_var_name.split(' '):
+                qc_var = nc.variables[qc_var_n]
 
-            text += "\nAUX : " + qc_var.name + str(qc_var.dimensions) + "\n"
+                text += "\nAUX : " + qc_var.name + str(qc_var.dimensions) + "\n"
 
-            nc_attrs = qc_var.ncattrs()
-            # print "NetCDF AUX Variable Attributes:"
-            for nc_attr in nc_attrs:
-                # print '\t%s:' % nc_attr, repr(nc.getncattr(nc_attr))
-                text += nc_attr + ' : ' + str(qc_var.getncattr(nc_attr)) + '\n'
+                nc_attrs = qc_var.ncattrs()
+                # print "NetCDF AUX Variable Attributes:"
+                for nc_attr in nc_attrs:
+                    # print '\t%s:' % nc_attr, repr(nc.getncattr(nc_attr))
+                    text += nc_attr + ' : ' + str(qc_var.getncattr(nc_attr)) + '\n'
 
-            qc = nc.variables[qc_var_name][:]
+                if qc_var_n.endswith("_quality_control"):
 
-            if plot_var.dimensions[0] != nctime.get_dims()[0].name:
-                qc = np.transpose(qc)
+                    qc = qc_var[:]
 
-            qc = np.squeeze(qc)
-        else:
-            qc = np.zeros_like(plot_var[:])
+                    if plot_var.dimensions[0] != nctime.get_dims()[0].name:
+                        qc = np.transpose(qc)
+
+                    qc = np.squeeze(qc)
 
         plt.text(-0.1, 0.0, text, fontsize=8, family='monospace')
         plt.axis('off')
@@ -234,6 +236,7 @@ for path_file in sys.argv[1:len(sys.argv)]:
         if plot_var.dimensions[0] != nctime.get_dims()[0].name:
             var = np.transpose(var)
         var = np.squeeze(var)
+        var.mask = False
 
         for idx in instrument_index_unique:
             print(" plotting : ", plot_var.name, " shape ", var.shape, " var_shape ", shape_len, " instrument ", idx)
@@ -241,6 +244,9 @@ for path_file in sys.argv[1:len(sys.argv)]:
             var_idx = np.ma.masked_where(instrument_index != idx, var).compressed()
             qc_idx = np.ma.masked_where(instrument_index != idx, qc).compressed()
             dt_time_msk = np.ma.masked_where(instrument_index != idx, dt_time).compressed()
+
+            print("var_idx", var_idx)
+            print("qc_idx", qc_idx)
 
             # create range from only good data
             qc_m = np.ma.masked_where((qc_idx == 9) | (qc_idx == 4) | (qc_idx == 6), var_idx)

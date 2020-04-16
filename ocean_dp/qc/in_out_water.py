@@ -47,17 +47,30 @@ def in_out_water(netCDFfile):
     print(time_deploy)
 
     print(to_add)
+
+    # create a mask for the time range
+    mask = (time <= time_deploy) | (time >= time_recovery)
+
     for v in to_add:
         if "TIME" in vars[v].dimensions:
-
             if v.endswith("_quality_control"):
-
                 print("QC time dim ", v)
 
                 ncVarOut = vars[v]
-                mask = (time <= time_deploy) | (time >= time_recovery)
-                ncVarOut[mask] = np.ones(vars[v].shape)[mask] * 7
+                ncVarOut[mask] = 7
+            else:
+                # create a qc variable just for this test flags
+                if v + "_quality_control_io" in ds.variables:
+                    ncVarOut = ds.variables[v + "_quality_control_io"]
+                else:
+                    ncVarOut = ds.createVariable(v + "_quality_control_io", "i1", vars[v].dimensions, fill_value=99, zlib=True)  # fill_value=0 otherwise defaults to max
+                ncVarOut[:] = np.zeros(vars[v].shape)
+                ncVarOut.long_name = "quality flag for " + v
+                ncVarOut.flag_values = np.array([0, 1, 2, 3, 4, 6, 7, 9], dtype=np.int8)
+                ncVarOut.flag_meanings = 'unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value'
 
+                v.ancillary_variables = v.ancillary_variables + " " + v + "_quality_control_io"
+                ncVarOut[mask] = 7
 
     ds.file_version = "Level 1 - Quality Controlled Data"
 

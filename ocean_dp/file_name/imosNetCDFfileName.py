@@ -23,6 +23,7 @@ import os
 import numpy as np
 
 nameCode = {}
+nameCode['PAR'] = "F"
 nameCode['TEMP'] = "T"
 nameCode['PSAL'] = "S"
 nameCode['CNDC'] = "C"

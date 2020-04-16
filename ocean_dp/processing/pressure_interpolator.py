@@ -28,25 +28,19 @@ import sys
 # Supply netCDFfiles as a ['list'] of files, agg as a 'string'
 
 
-def pressure_interpolator(netCDFfiles = [], agg = []):
-    
-    if netCDFfiles==[]:
-        
-        print('netcdffiles = none')
-    
+def pressure_interpolator(netCDFfiles=None, agg_file=None):
+
+    if not netCDFfiles:
+        print('netCDFfiles = none')
         # Load the filenames of the fv01 files in the current folder
         netCDFfiles = glob.glob('*FV01*.nc')
-            
-    if agg == []:
-        
+
+    if not agg_file:
         print('agg = none')
-        
         # Extract the aggregate file data
-        agg = Dataset(glob.glob('*Aggregate*.nc')[0], mode="r")
-        
-    else:
-        
-        agg = Dataset(glob.glob(agg)[0], mode="r")
+        agg_file = glob.glob('*Aggregate*.nc')
+
+    agg = Dataset(agg_file, mode="r")
 
     out_file_list = []
 
@@ -61,9 +55,9 @@ def pressure_interpolator(netCDFfiles = [], agg = []):
         fn_new_split = os.path.basename(fn).split('_')
         fn_new_split[-1] = "C-" + now.strftime("%Y%m%d") + ".nc"
         try:
-            fn_new_split[2].index("IP")
+            fn_new_split[2].index("Z")
         except ValueError:
-            fn_new_split[2] += 'IP'
+            fn_new_split[2] += 'Z'
 
         fn_new = os.path.join(os.path.dirname(fn), '_'.join(fn_new_split))
 
@@ -258,4 +252,4 @@ def pressure_interpolator(netCDFfiles = [], agg = []):
 
 
 if __name__ == "__main__":
-    pressure_interpolator(sys.argv[2:], sys.argv[1])
+    pressure_interpolator(netCDFfiles=sys.argv[2:], agg_file=sys.argv[1])

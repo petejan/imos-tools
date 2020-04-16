@@ -34,27 +34,53 @@ def global_range(netCDFfile, variable, max, min):
     var = ds.variables[variable]
 
     try:
-        qc_var = var.ancillary_variables
+        # find the existing quality_control variable in the auxillary variables list
+        aux_vars = var.ancillary_variables
+        aux_var = aux_vars.split(" ")
+        qc_vars = [i for i in aux_var if i.endswith("_quality_control")]
+        qc_var = qc_vars[0]
         print("QC var name ", qc_var)
         var_qc = ds.variables[qc_var]
     except KeyError:
         print("no QC variable found")
         return None
 
+    # read existing quality_control flags
     qc = var_qc[:]
+
     # this is where the actual QC test is done
     mask = ((var[:] > max) | (var[:] < min))
     print('mask data ', mask)
 
+    # create a qc variable just for this test flags
+    if var.name + "_quality_control_gr" in ds.variables:
+        ncVarOut = ds.variables[var.name + "_quality_control_gr"]
+    else:
+        ncVarOut = ds.createVariable(var.name + "_quality_control_gr", "i1", var.dimensions, fill_value=99, zlib=True)  # fill_value=0 otherwise defaults to max
+    ncVarOut[:] = np.zeros(var.shape)
+    ncVarOut.long_name = "quality flag for " + var.name
+    ncVarOut.flag_values = np.array([0, 1, 2, 3, 4, 6, 7, 9], dtype=np.int8)
+    ncVarOut.flag_meanings = 'unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value'
+
+    # add new variable to list of aux variables
+    var.ancillary_variables = var.ancillary_variables + " " + var.name + "_quality_control_gr"
+
+    # store the qc flags
+    ncVarOut[mask] = 4
+
+    # store qc flags to main quality_control flags variable
     mask = mask & (qc < 1)  # only mark data that has not been QCd already
     print('mask other qc ', mask)
 
-    qc[mask] = 4
+    qc[mask] = 4  # mark the out of range points with bad_data
+
+    # calculate the number of points marked as bad_data
     marked = np.zeros_like(qc)
     marked[mask] = 1
     count = sum(marked)
     print('marked records ', count, mask, qc)
 
+    # write flags back to main QC variable
     var_qc[:] = qc
 
     # update the history attribute
