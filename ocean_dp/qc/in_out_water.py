@@ -27,49 +27,56 @@ import os
 # flag out of water as QC value 7 (not_deployed), with wise leave as 0
 
 
-def in_out_water(netCDFfile):
+def in_out_water(netCDFfile, var_name=None):
     ds = Dataset(netCDFfile, 'a')
 
-    vars = ds.variables
-
+    nc_vars = ds.variables
     to_add = []
-    for v in vars:
-        #print (vars[v].dimensions)
-        if v != 'TIME':
-            to_add.append(v)
+    if var_name:
+        to_add.append(var_name)
+    else:
+        for v in nc_vars:
+            #print (vars[v].dimensions)
+            if v != 'TIME':
+                to_add.append(v)
 
-    time_var = vars["TIME"]
+    time_var = nc_vars["TIME"]
     time = num2date(time_var[:], units=time_var.units, calendar=time_var.calendar)
 
     time_deploy = parser.parse(ds.time_deployment_start, ignoretz=True)
     time_recovery = parser.parse(ds.time_deployment_end, ignoretz=True)
 
-    print(time_deploy)
+    print('deployment time', time_deploy)
 
     print(to_add)
+
+    # create a mask for the time range
+    mask = (time <= time_deploy) | (time >= time_recovery)
+
     for v in to_add:
-        if "TIME" in vars[v].dimensions:
-
+        if "TIME" in nc_vars[v].dimensions:
             if v.endswith("_quality_control"):
-
                 print("QC time dim ", v)
 
-                ncVarOut = vars[v]
-                mask = (time <= time_deploy) | (time >= time_recovery)
-                ncVarOut[mask] = np.ones(vars[v].shape)[mask] * 7
+                ncVarOut = nc_vars[v]
+                ncVarOut[mask] = 7
+            else:
+                # create a qc variable just for this test flags
+                if v + "_quality_control_io" in ds.variables:
+                    ncVarOut = ds.variables[v + "_quality_control_io"]
+                else:
+                    ncVarOut = ds.createVariable(v + "_quality_control_io", "i1", nc_vars[v].dimensions, fill_value=99, zlib=True)  # fill_value=0 otherwise defaults to max
+                ncVarOut[:] = np.zeros(nc_vars[v].shape)
+                ncVarOut.long_name = "quality flag for " + v
+                ncVarOut.flag_values = np.array([0, 1, 2, 3, 4, 6, 7, 9], dtype=np.int8)
+                ncVarOut.flag_meanings = 'unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value'
 
+                nc_vars[v].ancillary_variables = nc_vars[v].ancillary_variables + " " + v + "_quality_control_io"
+                ncVarOut[mask] = 7
+        
+        ds.variables[v + "_quality_control"][:] = np.maximum(ds.variables[v + "_quality_control_io"][:],ds.variables[v + "_quality_control"][:])
 
     ds.file_version = "Level 1 - Quality Controlled Data"
-    
-    # update the history attribute
-    try:
-        hist = nc.history + "\n"
-        
-    except AttributeError:
-        hist = ""
-    
-    nc.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + ': in water test performed, with out of water data flagged at QC=7')        
-            
 
     ds.close()
 
@@ -77,4 +84,7 @@ def in_out_water(netCDFfile):
 
 
 if __name__ == "__main__":
-    in_out_water(sys.argv[1])
+    if len(sys.argv) > 2 & sys.argv[1].startswith('-'):
+        in_out_water(sys.argv[2], var_name=sys.argv[1][1:])
+    else:
+        in_out_water(sys.argv[1])

@@ -26,15 +26,19 @@ import glob
 import pytz
 import os
 
+default_high = 100
+
+default_low = 50
+
 
 # If files aren't specified, take all the IMOS*.nc files in the current folder
-def spike_test_all_files(target_vars_in=[], thresh_low=10, thresh_high=20, flag_low=3, flag_high=4):
+def spike_test_all_files(target_vars_in=[], thresh_low=default_low, thresh_high=default_high, flag_low=3, flag_high=4):
     target_files = glob.glob('IMOS*.nc')
 
     spike_test_files(target_files, target_vars_in=target_vars_in, thresh_low=thresh_low,thresh_high=thresh_high,flag_low=flag_low, flag_high=flag_high)
 
 
-def spike_test_files(target_files, target_vars_in=[], thresh_low=10, thresh_high=20, flag_low=3, flag_high=4):
+def spike_test_files(target_files, target_vars_in=[], thresh_low=default_low, thresh_high=default_high, flag_low=3, flag_high=4):
     
     # Loop through each files in target_files
     for current_file in target_files:
@@ -48,7 +52,7 @@ def spike_test_files(target_files, target_vars_in=[], thresh_low=10, thresh_high
         spike_test(nc=nc, target_vars_in=target_vars_in, thresh_low=thresh_low,thresh_high=thresh_high,flag_low=flag_low, flag_high=flag_high)
 
 
-def spike_test(nc, target_vars_in=[], thresh_low=10, thresh_high=20, flag_low=3, flag_high=4):
+def spike_test(nc, target_vars_in=[], thresh_low=default_low, thresh_high=default_high, flag_low=3, flag_high=4):
     
     # If target_vars aren't user specified, set it to all the variables of 
     # the current_file, removing unwanted variables
@@ -72,12 +76,27 @@ def spike_test(nc, target_vars_in=[], thresh_low=10, thresh_high=20, flag_low=3,
     else:
         target_vars = target_vars_in
         
-    # For each variable, extract the data 
+    # For each variable
     for current_var in target_vars:
         
-        var_data = np.array(nc.variables[current_var])
+        # Extract the variable
+        nc_var = nc.variables[current_var]
         
-        
+        # Create a test specific qc variable if it  doesn't already exist
+        if nc_var.name + "_quality_control_spk" in nc.variables:
+            ncVarOut = nc.variables[nc_var.name + "_quality_control_spk"]
+        else:
+            ncVarOut = nc.createVariable(nc_var.name + "_quality_control_spk", "i1", nc_var.dimensions, fill_value=99, zlib=True)  # fill_value=0 otherwise defaults to max
+            ncVarOut[:] = np.zeros(nc_var.shape)
+            ncVarOut.long_name = "quality flag for " + nc_var.name
+            ncVarOut.flag_values = np.array([0, 1, 2, 3, 4, 6, 7, 9], dtype=np.int8)
+            ncVarOut.flag_meanings = 'unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value'
+    
+        # add new variable to list of aux variables
+        nc_var.ancillary_variables = nc_var.ancillary_variables + " " + nc_var.name + "_quality_control_spk"
+                
+        # Extract the variable data
+        var_data = np.array(nc.variables[current_var][:])
         
         print('checking '+current_var+' for high spikes')
         
@@ -96,20 +115,12 @@ def spike_test(nc, target_vars_in=[], thresh_low=10, thresh_high=20, flag_low=3,
                 print('High spike found')
                 
                 #set corresponding QC value to...
-                nc.variables[current_var+'_quality_control'][i] = flag_high
+                nc.variables[current_var+'_quality_control_spk'][i] = flag_high
                 
-        # # Extract the qc data         
-        # current_qc = np.array(nc.variables[current_var+'_quality_control'][:])      
-        
-        # # Find all the instances of consecutive 4s, and reset them to 0        
-        # for i in np.where(current_qc==4)[0][0:-1][np.diff(np.where(current_qc==4)[0])==1]:
-
-        #     nc.variables[current_var+'_quality_control'][i:i+2] = 0       
         
         # Find the indices where qc isn't set to 4 (high spike), removing the final element as it can't be check for a spike
         low_spike_chk_idx = np.where(nc.variables[current_var+'_quality_control'][:]!=4)[0][0:-1]
-        
-        #print(low_spike_chk_idx)
+
         
         # Remove from the indices those that are either side of a high spike
         for i in np.where(nc.variables[current_var+'_quality_control'][:]==4)[0]:
@@ -133,28 +144,15 @@ def spike_test(nc, target_vars_in=[], thresh_low=10, thresh_high=20, flag_low=3,
             # Calculate the step changes
             shoulder_diff = np.diff(var_data[i-1:i+2])
             
-            #print('shoulder mean is '+str(shoulder_mean))
-            
-            #abs_diff = abs(var_data[i]-shoulder_mean)
-            
-            #print('absolute difference is '+str(abs_diff))
-            
             # Check for spike exceeding low threshold
             if (abs(var_data[i]-shoulder_mean) > thresh_low) & (True in (shoulder_diff>0)) & (True in (shoulder_diff<0)): #& (1.25*abs(shoulder_diff[0]) >= abs(x[1]) >= 0.75*abs(shoulder_diff[0])):
                 
                 print('Low spike found')
                 
                 #set corresponding QC value to...
-                nc.variables[current_var+'_quality_control'][i] = flag_low        
-
-        # # Extract the qc data         
-        # current_qc = np.array(nc.variables[current_var+'_quality_control'][:])      
-        
-        # # Find all the instances of consecutive 3s, and reset them to 0        
-        # for i in np.where(current_qc==3)[0][0:-1][np.diff(np.where(current_qc==3)[0])==1]:
-
-        #     nc.variables[current_var+'_quality_control'][i:i+2] = 0     
-
+                nc.variables[current_var+'_quality_control_spk'][i] = flag_low   
+                
+    nc.variables[current_var  + "_quality_control"][:] = np.maximum(nc.variables[current_var  + "_quality_control_spk"][:],nc.variables[current_var  + "_quality_control"][:])
 
     # update the history attribute
     try:

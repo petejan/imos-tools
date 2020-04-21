@@ -106,14 +106,31 @@ def roc_test(nc,*args,target_vars_in=[]):
             # For each variable
             for current_var in target_vars:
                 
-                # Extract the data
-                var_data = np.array(nc.variables[current_var])
+                # Extract the variable
+                nc_var = nc.variables[current_var]
+                
+                if nc_var.name + "_quality_control_roc" in nc.variables:
+                    ncVarOut = nc.variables[nc_var.name + "_quality_control_roc"]
+                else:
+                    ncVarOut = nc.createVariable(nc_var.name + "_quality_control_roc", "i1", nc_var.dimensions, fill_value=99, zlib=True)  # fill_value=0 otherwise defaults to max
+                    ncVarOut[:] = np.zeros(nc_var.shape)
+                    ncVarOut.long_name = "quality flag for " + nc_var.name
+                    ncVarOut.flag_values = np.array([0, 1, 2, 3, 4, 6, 7, 9], dtype=np.int8)
+                    ncVarOut.flag_meanings = 'unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value'
+            
+                # add new variable to list of aux variables
+                nc_var.ancillary_variables = nc_var.ancillary_variables + " " + nc_var.name + "_quality_control_roc"
+                
+                # Extract the variable data
+                var_data = np.array(nc.variables[current_var][:])
                 
                 # Calculate dvar/dtime
                 var_roc = np.divide(np.diff(var_data),np.diff(nc_time_hr))
                 
                 # For any change greater than change_per_hr, assign a qc value of 4
-                nc.variables[current_var+'_quality_control'][[x for x in abs(np.insert(var_roc,0,0)) > change_per_hr]] = 4
+                nc.variables[current_var+'_quality_control_roc'][[x for x in abs(np.insert(var_roc,0,0)) > change_per_hr]] = 4
+                
+                nc.variables[current_var  + "_quality_control"][:] = np.maximum(nc.variables[current_var  + "_quality_control_roc"][:],nc.variables[current_var  + "_quality_control"][:])
                 
                 print(current_var + ' tested: '+str(sum([x for x in abs(np.insert(var_roc,0,0)) > change_per_hr])) + ' changes found above '+str(change_per_hr)+' '+nc.variables[current_var].units+' per hour')
                     
@@ -146,6 +163,22 @@ def roc_test(nc,*args,target_vars_in=[]):
             # For each variable
             for current_var in target_vars:
                 
+                # Extract the variable
+                nc_var = nc.variables[current_var]
+                
+                if nc_var.name + "_quality_control_roc" in nc.variables:
+                    ncVarOut = nc.variables[nc_var.name + "_quality_control_roc"]
+                else:
+                    ncVarOut = nc.createVariable(nc_var.name + "_quality_control_roc", "i1", nc_var.dimensions, fill_value=99, zlib=True)  # fill_value=0 otherwise defaults to max
+                    ncVarOut[:] = np.zeros(nc_var.shape)
+                    ncVarOut.long_name = "quality flag for " + nc_var.name
+                    ncVarOut.flag_values = np.array([0, 1, 2, 3, 4, 6, 7, 9], dtype=np.int8)
+                    ncVarOut.flag_meanings = 'unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value'
+            
+                # add new variable to list of aux variables
+                nc_var.ancillary_variables = nc_var.ancillary_variables + " " + nc_var.name + "_quality_control_roc"
+                                
+                
                 # Extract the data
                 var_data = np.array(nc.variables[current_var])
                 
@@ -153,7 +186,9 @@ def roc_test(nc,*args,target_vars_in=[]):
                 var_roc = np.divide(np.diff(var_data),np.diff(nc_time_hr))
                 
                 # For any change greater than change_per_hr, assign a qc value of 4
-                nc.variables[current_var+'_quality_control'][[x for x in abs(np.insert(var_roc,0,0)) > rate_spec[current_var]]] = 4
+                nc.variables[current_var+'_quality_control_roc'][[x for x in abs(np.insert(var_roc,0,0)) > rate_spec[current_var]]] = 4
+                
+                nc.variables[current_var  + "_quality_control"][:] = np.maximum(nc.variables[current_var  + "_quality_control_roc"][:],nc.variables[current_var  + "_quality_control"][:])
                 
                 print(current_var + ' tested: '+str(sum([x for x in abs(np.insert(var_roc,0,0)) > rate_spec[current_var]])) + ' changes found above '+str(rate_spec[current_var])+' '+nc.variables[current_var].units+' per hour')
                     

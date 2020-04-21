@@ -38,7 +38,10 @@ def aggregate(files, varNames):
     # look over all files, create a time array from all files
     # TODO: maybe delete files here without variables we're not interested in
     # TODO: Create set of variables in all files
-
+    if not isinstance(varNames, list):
+        
+        varNames = [varNames]
+    
     filen = 0
     for path_file in files:
 
@@ -351,56 +354,56 @@ def aggregate(files, varNames):
     return outputName
 
 
-def collect_vars_to_agg(files):
+# def collect_vars_to_agg(files):
 
-    var_list = []
+#     var_list = []
 
-    nc = Dataset(files[0])
-    varList = nc.variables
+#     nc = Dataset(files[0])
+#     varList = nc.variables
 
-    # default to all variables in first file should no variable be specified
-    var_list.extend(varList.keys())
-    var_list.remove("TIME")
+#     # default to all variables in first file should no variable be specified
+#     var_list.extend(varList.keys())
+#     var_list.remove("TIME")
 
-    nc.close()
+#     nc.close()
 
-    print("collect_vars_to_agg::", var_list)
+#     print("collect_vars_to_agg::", var_list)
 
-    return var_list
+#     return var_list
 
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
 
-    files = []
-    varToAgg = None # defaults to all in first file
+#     files = []
+#     varToAgg = None # defaults to all in first file
 
-    if len(sys.argv) > 1:
-        parser = argparse.ArgumentParser()
-        parser.add_argument('-v', action='append', dest='var', help='variable to include in output file (defaults to all)')
-        parser.add_argument('-f', dest='filelist', help='read file names from file')
-        parser.add_argument('file', nargs='*', help='input file name')
-        args = parser.parse_args()
+#     if len(sys.argv) > 1:
+#         parser = argparse.ArgumentParser()
+#         parser.add_argument('-v', action='append', dest='var', help='variable to include in output file (defaults to all)')
+#         parser.add_argument('-f', dest='filelist', help='read file names from file')
+#         parser.add_argument('file', nargs='*', help='input file name')
+#         args = parser.parse_args()
 
-        if not isinstance(args.filelist, type(None)):
-            with open(args.filelist, "r") as ins:
-                for line in ins:
-                    print(line)
-                    files.append(line.strip())
+#         if not isinstance(args.filelist, type(None)):
+#             with open(args.filelist, "r") as ins:
+#                 for line in ins:
+#                     print(line)
+#                     files.append(line.strip())
 
-        if len(args.file):
-            # files = args.file
-            for fn in args.file:
-                files.extend(glob.glob(fn))
+#         if len(args.file):
+#             # files = args.file
+#             for fn in args.file:
+#                 files.extend(glob.glob(fn))
 
-        varToAgg = args.var
+#         varToAgg = args.var
 
-    if isinstance(varToAgg, type(None)):
-        varToAgg = collect_vars_to_agg(files)
+#     if isinstance(varToAgg, type(None)):
+#         varToAgg = collect_vars_to_agg(files)
 
-    print("Aggregating variables ", varToAgg)
+#     print("Aggregating variables ", varToAgg)
 
-    outputName = aggregate(files, varToAgg)
+#     outputName = aggregate(files, varToAgg)
 
-    print("Output file :  %s" % outputName)
+#     print("Output file :  %s" % outputName)
 
 

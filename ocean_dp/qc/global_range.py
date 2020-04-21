@@ -28,29 +28,71 @@ from datetime import datetime
 # flag 4 (bad) when out of global range
 
 
-def global_range(netCDFfile, variable, max, min):
+def global_range(netCDFfile, variable, max, min, qc_value=4):
     ds = Dataset(netCDFfile, 'a')
 
-    var = ds.variables[variable]
+    nc_var = ds.variables[variable]
+    var_data = nc_var[:]
+    var_data.mask = False
 
     try:
-        var_qc = ds.variables[variable + "_quality_control"]
+        # find the existing quality_control variable in the auxillary variables list
+        aux_vars = nc_var.ancillary_variables
+        aux_var = aux_vars.split(" ")
+        qc_vars = [i for i in aux_var if i.endswith("_quality_control")]
+        qc_var = qc_vars[0]
+        print("QC var name ", qc_var)
+        var_qc = ds.variables[qc_var]
     except KeyError:
         print("no QC variable found")
         return None
 
+    # read existing quality_control flags
+    qc = var_qc[:]
+
     # this is where the actual QC test is done
-    mask = ((var[:] > max) | (var[:] < min))
+    mask = ((var_data > max) | (var_data < min))
+    print('mask data ', mask)
 
-    mask = mask & (var_qc[:] < 1) # only mark data that has not been QCd already
+    # create a qc variable just for this test flags
+    if nc_var.name + "_quality_control_gr" in ds.variables:
+        ncVarOut = ds.variables[nc_var.name + "_quality_control_gr"]
+    else:
+        ncVarOut = ds.createVariable(nc_var.name + "_quality_control_gr", "i1", nc_var.dimensions, fill_value=99, zlib=True)  # fill_value=0 otherwise defaults to max
+        ncVarOut[:] = np.zeros(nc_var.shape)
+        ncVarOut.long_name = "quality flag for " + nc_var.name
+        ncVarOut.flag_values = np.array([0, 1, 2, 3, 4, 6, 7, 9], dtype=np.int8)
+        ncVarOut.flag_meanings = 'unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value'
 
-    var_qc[mask] = 4
-    count = sum(mask)
-    print('marked records ', count)
+    # add new variable to list of aux variables
+    nc_var.ancillary_variables = nc_var.ancillary_variables + " " + nc_var.name + "_quality_control_gr"
+
+    # store the qc flags
+    ncVarOut[mask] = qc_value
+
+    # store qc flags to main quality_control flags variable
+    mask = mask & (qc < 1)  # only mark data that has not been QCd already
+    print('mask other qc ', mask)
+
+    qc[mask] = qc_value  # mark the out of range points with bad_data
+
+    # calculate the number of points marked as bad_data
+    marked = np.zeros_like(qc)
+    marked[mask] = 1
+    count = sum(marked)
+    print('marked records ', count, mask, qc)
+
+    # write flags back to main QC variable
+    var_qc[:] = qc
 
     # update the history attribute
-    history = ds.history
-    ds.setncattr("history", history + "\n" + datetime.utcnow().strftime("%Y-%m-%d") + " " + variable + " global range min = " + str(min) + " max = " + str(max) + " marked " + str(count))
+    try:
+        hist = ds.history + "\n"
+    except AttributeError:
+        hist = ""
+    ds.setncattr("history", hist + datetime.utcnow().strftime("%Y-%m-%d") + " " + variable + " global range min = " + str(min) + " max = " + str(max) + " marked " + str(count))
+
+    ds.variables[variable + "_quality_control"][:] = np.maximum(ds.variables[variable + "_quality_control_gr"][:],ds.variables[variable + "_quality_control"][:])
 
     ds.close()
 
@@ -59,5 +101,8 @@ def global_range(netCDFfile, variable, max, min):
 
 if __name__ == "__main__":
 
-    # usage is <file_name> <variable_name> <max> <min>
-    global_range(sys.argv[1], sys.argv[2], float(sys.argv[3]), float(sys.argv[4]))
+    # usage is <file_name> <variable_name> <max> <min> <qc value>
+    if len(sys.argv) > 5:
+        global_range(sys.argv[1], sys.argv[2], max=float(sys.argv[3]), min=float(sys.argv[4]), qc_value=int(sys.argv[5]))
+    else:
+        global_range(sys.argv[1], sys.argv[2], max=float(sys.argv[3]), min=float(sys.argv[4]))

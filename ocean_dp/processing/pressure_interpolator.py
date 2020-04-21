@@ -26,6 +26,8 @@ import shutil
 
 def pressure_interpolator(netCDFfiles = [],agg = []):
     
+    files_out = []
+    
     if netCDFfiles==[]:
         
         print('netcdffiles = none')
@@ -64,6 +66,8 @@ def pressure_interpolator(netCDFfiles = [],agg = []):
         # If a new (different) filename has been successfully generated, make 
         # a copy of the old file with the new name
         if fn_new != fn:
+            
+            files_out.append(fn_new)
             
             print('copying file')
             # copy file
@@ -254,7 +258,8 @@ def pressure_interpolator(netCDFfiles = [],agg = []):
             fv01_contents.close()
             
     agg.close()
-            
+    
+    return files_out        
                 
                 
                 
