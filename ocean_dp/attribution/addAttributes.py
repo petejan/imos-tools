@@ -135,7 +135,7 @@ def add(netCDFfile, metadatafiles):
                             if dict1["variable_shape"] == "()":
                                 print("Create Variable : %s shape %s" % (dict1["variable_name"], dict1["variable_shape"]))
 
-                                newVar = ds.createVariable(dict1["variable_name"], "d")
+                                newVar = ds.createVariable(dict1["variable_name"], dict1['type'])
                                 newVar[:] = float(dict1["value"])
 
                         # variable attributes

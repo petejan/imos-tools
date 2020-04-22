@@ -103,6 +103,8 @@ def extract(netCDFfiles):
 
         ds.close()
 
+        out_files.append(fn_new)
+
     return out_files
 
 

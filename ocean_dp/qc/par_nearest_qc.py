@@ -177,12 +177,14 @@ for f in files[depth_order]:
     nc_var = ds.variables['PAR']
 
     # create a qc variable just for this test flags
-    if nc_var.name + "_quality_control_nn" in ds.variables:
-        ncVarOut = ds.variables[nc_var.name + "_quality_control_nn"]
+    qc_var_name = nc_var.name + "_quality_control_nn"
+    if qc_var_name in ds.variables:
+        ncVarOut = ds.variables[qc_var_name]
     else:
-        ncVarOut = ds.createVariable(nc_var.name + "_quality_control_nn", "i1", nc_var.dimensions, fill_value=99, zlib=True)  # fill_value=0 otherwise defaults to max
+        ncVarOut = ds.createVariable(qc_var_name, "i1", nc_var.dimensions, fill_value=99, zlib=True)  # fill_value=0 otherwise defaults to max
         ncVarOut[:] = np.zeros(nc_var.shape)
         ncVarOut.long_name = "quality flag for " + nc_var.name
+        ncVarOut.quality_control_conventions = "IMOS standard flags"
         ncVarOut.flag_values = np.array([0, 1, 2, 3, 4, 6, 7, 9], dtype=np.int8)
         ncVarOut.flag_meanings = 'unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value'
 
@@ -191,7 +193,7 @@ for f in files[depth_order]:
     ncVarOut[:] = qc_array
 
     # add new variable to list of aux variables
-    #nc_var.ancillary_variables = nc_var.ancillary_variables + " " + nc_var.name + "_quality_control_nn"
+    nc_var.ancillary_variables = nc_var.ancillary_variables + " " + qc_var_name
 
     # update the history attribute
     try:

@@ -97,9 +97,10 @@ def add_solar(netCDFfiles):
             ncVarOut = ds.createVariable("ALT", "f4", ("TIME",), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
 
         ncVarOut[:] = altitude_deg
-        ncVarOut.units = "deg"
+        ncVarOut.units = "degree"
         #ncVarOut.setncattr('name', 'sun altitude')
         ncVarOut.long_name = 'sun_altitude'
+        ncVarOut.coordinates = 'TIME LATITUDE LONGITUDE NOMINAL_DEPTH'
         ncVarOut.comment = "using http://docs.pysolar.org/en/latest/ v0.8 get_altitude"
 
         if 'SOLAR' in ds.variables:
@@ -111,6 +112,7 @@ def add_solar(netCDFfiles):
         ncVarOut.units = "W/m2"
         #ncVarOut.setncattr('name', 'extraterrestrial_irrad celestial incoming solar radiation')
         ncVarOut.long_name = 'incoming_solar_radiation'
+        ncVarOut.coordinates = 'TIME LATITUDE LONGITUDE NOMINAL_DEPTH'
         ncVarOut.comment = "using http://docs.pysolar.org/en/latest/ v0.8 extraterrestrial_irrad() with incoming = 1361 W/m^2"
 
         if 'ePAR' in ds.variables:
@@ -121,8 +123,9 @@ def add_solar(netCDFfiles):
         ncVarOut[:] = par
         ncVarOut.units = "umol/m^2/s"
         #ncVarOut.setncattr('name', 'global_irradiance_overcast solar radiation')
-        ncVarOut.long_name = 'incoming_solar_radiation'
+        #ncVarOut.long_name = 'incoming_solar_radiation'
         ncVarOut.long_name = 'incoming_solar_radiation converted to PAR (x2.114) attenuated by depth'
+        ncVarOut.coordinates = 'TIME LATITUDE LONGITUDE NOMINAL_DEPTH'
         ncVarOut.comment = "using http://docs.pysolar.org/en/latest/ v0.8 extraterrestrial_irrad() with incoming = 1361 W/m^2, x 2.114, kd = 0.04"
 
         # rad = [global_irradiance_overcast(lat, lon, d, 1361, temperature=10) for d in dt_utc]

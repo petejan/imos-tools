@@ -62,6 +62,7 @@ def global_range(netCDFfile, variable, max, min, qc_value=4):
         ncVarOut[:] = np.zeros(nc_var.shape)
         ncVarOut.long_name = "quality flag for " + nc_var.name
         ncVarOut.flag_values = np.array([0, 1, 2, 3, 4, 6, 7, 9], dtype=np.int8)
+        ncVarOut.quality_control_conventions = "IMOS standard flags"
         ncVarOut.flag_meanings = 'unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value'
 
     # add new variable to list of aux variables

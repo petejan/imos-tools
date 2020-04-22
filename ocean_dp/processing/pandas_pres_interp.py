@@ -168,8 +168,8 @@ def interpolator(target_files=None, pres_file=None):
             pres_var.setncattr('long_name', 'sea_water_pressure_due_to_sea_water')
             pres_var.setncattr('units', 'dbar')
             pres_var.setncattr('coordinates', 'TIME LATITUDE LONGITUDE NOMINAL_DEPTH')
-            pres_var.setncattr('valid_max', np.float64(12000))
-            pres_var.setncattr('valid_min', np.float64(-15))
+            pres_var.setncattr('valid_max', np.float32(12000))
+            pres_var.setncattr('valid_min', np.float32(-15))
             pres_var.ancillary_variables = "PRES_quality_control"
             pres_var.setncattr('comments', 'interpolated from surounding pressure sensors on mooring')
             pres_var[interp_msk] = interp_pres_target[interp_msk]
@@ -179,6 +179,8 @@ def interpolator(target_files=None, pres_file=None):
             else:
                 pres_qc_var = interp_ds.createVariable('PRES_quality_control', 'i1', interp_ds.variables['TIME'].dimensions, fill_value=99, zlib=True)
             pres_qc_var.long_name = "quality_code for PRES"
+            pres_qc_var.standard_name = "PRES status_flag"
+            pres_qc_var.quality_control_conventions = "IMOS standard flags"
             pres_qc_var.flag_values = np.array([0, 1, 2, 3, 4, 6, 7, 9], dtype=np.int8)
             pres_qc_var.flag_meanings = 'unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value'
             pres_qc_var[interp_msk] = 7

@@ -96,6 +96,9 @@ def add_qc(netCDFfile, var_name=None):
                     ncVarOut = ds.createVariable(v +"_quality_control", "i1", nc_vars[v].dimensions, fill_value=99, zlib=True)  # fill_value=99 otherwise defaults to max, imos-toolbox uses 99
                     ncVarOut[:] = np.zeros(nc_vars[v].shape)
                     ncVarOut.long_name = "quality flag for " + v
+                    if 'standard_name' in nc_vars[v].ncattrs:
+                        ncVarOut.standard_name = v + " status_flag"
+                    ncVarOut.quality_control_conventions = "IMOS standard flags"
                     ncVarOut.flag_values = np.array([0, 1, 2, 3, 4, 6, 7, 9], dtype=np.int8)
                     ncVarOut.flag_meanings = 'unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value'
 

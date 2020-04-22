@@ -66,6 +66,7 @@ def climate_range(netCDFfile, variable_name, qc_value=3):
     else:
         ncVarOut = ds.createVariable(nc_var.name + "_quality_control_cl", "i1", nc_var.dimensions, fill_value=99, zlib=True)  # fill_value=0 otherwise defaults to max
         ncVarOut.long_name = "quality flag for " + nc_var.name
+        ncVarOut.quality_control_conventions = "IMOS standard flags"
         ncVarOut.flag_values = np.array([0, 1, 2, 3, 4, 6, 7, 9], dtype=np.int8)
         ncVarOut.flag_meanings = 'unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value'
 

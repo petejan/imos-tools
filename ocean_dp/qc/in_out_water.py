@@ -72,6 +72,7 @@ def in_out_water(netCDFfile, var_name=None):
                         ncVarOut = ds.createVariable(v + "_quality_control_io", "i1", nc_vars[v].dimensions, fill_value=99, zlib=True)  # fill_value=0 otherwise defaults to max
                     ncVarOut[:] = np.zeros(nc_vars[v].shape)
                     ncVarOut.long_name = "quality flag for " + v
+                    ncVarOut.quality_control_conventions = "IMOS standard flags"
                     ncVarOut.flag_values = np.array([0, 1, 2, 3, 4, 6, 7, 9], dtype=np.int8)
                     ncVarOut.flag_meanings = 'unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value'
 
