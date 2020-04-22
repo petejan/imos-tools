@@ -18,6 +18,7 @@ import sys
 import glob
 import fnmatch
 import os
+import time
 
 # Addition of folder containing user defined packages/modules
 sys.path.append('/Users/tru050/Documents/GitHub/imos-tools/ocean_dp/qc')
@@ -32,6 +33,11 @@ import pressure_interpolator
 
 import global_range
 import rate_of_change_test
+import spike_test
+import flatline_test
+import qc_checker
+
+start = time.time()
 
 # Set the working directory
 os.chdir('/Users/tru050/Desktop/sofs7.5 test data')
@@ -67,8 +73,17 @@ for ncfile in fv01_pres_interp_files:
 rate_of_change_test.roc_test_files(fv01_pres_interp_files,'TEMP',20)
 
 # Spike
-
+spike_test.spike_test_files(fv01_pres_interp_files,target_vars_in=['TEMP'])
 
 # Flatline
+flatline_test.flatline_test_files(fv01_pres_interp_files,['TEMP'])
+
+# Check qc process has worked
+fv01_qc_checked = qc_checker.qc_checker_files(fv01_pres_interp_files,['TEMP'])
+
+end = time.time()
+
+print('time elapsed: '+end-start)
+
 
 

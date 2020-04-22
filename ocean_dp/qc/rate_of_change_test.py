@@ -79,18 +79,9 @@ def roc_test(nc,*args,target_vars_in=[]):
             # the current_file, removing unwanted variables
             if target_vars_in == []:
                 
-                target_vars = list(nc.variables.keys())
+                all_vars = list(nc.variables.keys())
                 
-                # Remove TIME
-                target_vars.remove('TIME')
-                
-                # Remove any quality_control variables
-                qc_vars = [s for s in target_vars if 'quality_control' in s]
-                target_vars = [s for s in target_vars if s not in qc_vars]
-                                
-                # Remove any variables of single length
-                single_vars = [s for s in target_vars if nc.variables[s].size==1]
-                target_vars = [s for s in target_vars if s not in single_vars]
+                target_vars = [s for s in all_vars if 'TIME' not in s and 'quality_control' not in s and nc.variables[s].size!=1]
                 
                 print('target_vars are '+' '.join(target_vars))
                 
