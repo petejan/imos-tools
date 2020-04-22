@@ -83,7 +83,7 @@ fv01_qc_checked = qc_checker.qc_checker_files(fv01_pres_interp_files,['TEMP'])
 
 end = time.time()
 
-print('time elapsed: '+end-start)
+print('time elapsed: '+str(end-start))
 
 
 

@@ -36,6 +36,7 @@ def qc_checker_all_files(target_vars_in=[]):
     
     target_files = glob.glob('IMOS*.nc')
 
+    # Returns the files that conform to the qc labelling
     successful_files = qc_checker_files(target_files, target_vars_in=target_vars_in)
     
 
@@ -51,17 +52,19 @@ def qc_checker_files(target_files,target_vars_in=[]):
         # Extract netcdf data into nc
         nc = Dataset(current_file, mode="a")
 
-        # run the spike test - specifying *args here makes python unpack args to be passed again successfully as separate items
+        # If the qc_checker was successfull, add the filename to the list
         if qc_checker(nc,target_vars_in=target_vars_in):
         
             successful_files.append(current_file)
-        
+    
+    # Returns the files that conform to the qc labelling    
     return successful_files
 
 
 # Enter args as variable name and rate of change limit, ie. 'TEMP',4
 def qc_checker(nc,target_vars_in=[]):
     
+    # Collect all the variables from the netcdf
     all_vars = list(nc.variables.keys())
     
     # If target_vars aren't user specified, set it to all the variables of 
@@ -74,31 +77,38 @@ def qc_checker(nc,target_vars_in=[]):
         
     else:
         target_vars = target_vars_in    
-        
-    qc_behaving = True    
-        
+           
+    # For each of the variables selected    
     for current_var in target_vars:
         
+        # Collect the global qc data
         qc_global_data = np.array(nc.variables[current_var+"_quality_control"][:])
         
+        # Collect the names of all the other test specific qc vectors
         qc_test_specific = [s for s in all_vars if current_var+"_quality_control" in s and not s.endswith('control')]
         
+        # For each of the other test specific qc vectors
         for current_qc_test in qc_test_specific:
             
+            # Extract the data
             qc_test_data = np.array(nc.variables[current_qc_test])
             
             #print('checking '+current_qc_test)
             
-            # If true, fail process
+            # If any of the test specific qc vectors ever have a great value than the global qc vector at a timestamp, the qc process has failed
             if any(np.less(qc_global_data,qc_test_data)):
                 
                 print(current_qc_test + "failed")
                 
                 qc_behaving = False
                 
-    if qc_behaving:
-        
-        return True
+            else:
+                
+                # The qc process has succeeded 
+                qc_behaving = True
+    
+    # Returns true if qc has succeeded, false if not
+    return qc_behaving
     
 
     # Close the current netcdf file
