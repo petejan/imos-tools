@@ -33,6 +33,8 @@ fixed_decoder = {'keys': ['cpuVER', 'cpuREV', 'sysConfig', 'read', 'lag_len', 'n
                           'xmit_pulse_len', 'ref_layer', 'false_target_thresh', 'spare', 'tx_lag_dist', 'cpu_board',
                           'system_bandwidth', 'system_power', 'spare2', 'inst_serial', 'beam_angle'],
                  'unpack': "<BBHBBBBHHHBBBBHBBBBHHBBHHHBBHQHBBLB"}
+
+# should we create a netCDF variable for every variable here?
 variable_decoder = {'keys': ['ensemble_no', 'year', 'month', 'day', 'hour', 'minute', 'second', 'hsec',
                              'ensemble_msb', 'result', 'speed_of_sound', 'depth_of_trans', 'heading', 'pitch',
                              'roll', 'salinity', 'temperature', 'mpt_min', 'mpt_sec', 'mpt_hsec', 'hdg_stdev',
@@ -55,13 +57,13 @@ inst_coords_decoder[1] = 'Instrument'
 inst_coords_decoder[2] = 'Ship'
 inst_coords_decoder[3] = 'Earth'
 
-volt_scale = {}
-volt_scale[0] = [2092719, 43838]
-volt_scale[1] = [592157, 11451]
-volt_scale[2] = [592157, 11451]
-volt_scale[3] = [380667, 11451]
-volt_scale[4] = [253765, 11451]
-volt_scale[5] = [253765, 11451]
+volt_scale_system = {}
+volt_scale_system[0] = [2092719, 43838]
+volt_scale_system[1] = [592157, 11451]
+volt_scale_system[2] = [592157, 11451]
+volt_scale_system[3] = [380667, 11451]
+volt_scale_system[4] = [253765, 11451]
+volt_scale_system[5] = [253765, 11451]
 
 
 def rdi_parse(files):
@@ -241,8 +243,8 @@ def rdi_parse(files):
 
                             var_press[number_ensambles_read] = variable_decoded['pressure']/1000
                             var_press_v[number_ensambles_read] = variable_decoded['press_variance']/1000
-                            var_txv[number_ensambles_read] = variable_decoded['adc1']*volt_scale[inst_system][0]/1000000
-                            var_txi[number_ensambles_read] = variable_decoded['adc0']*volt_scale[inst_system][1]/1000000
+                            var_txv[number_ensambles_read] = variable_decoded['adc1']*volt_scale_system[inst_system][0]/1000000
+                            var_txi[number_ensambles_read] = variable_decoded['adc0']*volt_scale_system[inst_system][1]/1000000
                             var_sspeed[number_ensambles_read] = variable_decoded['speed_of_sound']
 
                         if data == b'\x00\x01':  # velocity data
@@ -307,7 +309,7 @@ def rdi_parse(files):
     instrument_model = 'WorkHorse ' + inst_system_text
     instrument_serialnumber = fixed_decoded['inst_serial']
 
-    ncOut.instrument = 'RDI - ' + instrument_model
+    ncOut.instrument = 'RDI ; ' + instrument_model
     ncOut.instrument_model = instrument_model
     ncOut.instrument_serial_number = str(instrument_serialnumber)
     ncOut.frequency = np.float(inst_system_decoder[inst_system][1])

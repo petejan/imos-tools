@@ -28,6 +28,7 @@ from os.path import isfile, isdir, join
 from os import listdir, walk
 
 import re
+import os
 
 first_line_expr   = r"^TRIAXYS BUOY DATA REPORT"
 raw_first_line_expr = r"^Sample"
@@ -135,8 +136,7 @@ def parse_dir_spec(output_name, file):
 
                     # create variables if needed
                     if "DIR_SPEC" not in ds.variables:
-                        ncVarOut = ds.createVariable("DIR_SPEC", "f4", ("TIME", "FREQ", "DIR"),
-                                                     fill_value=np.nan)  # fill_value=nan otherwise defaults to max
+                        ncVarOut = ds.createVariable("DIR_SPEC", "f4", ("TIME", "FREQ", "DIR"), fill_value=np.nan)  # fill_value=nan otherwise defaults to max
                         ncVarOut.units = "m^2/Hz"
                         ncVarOut.comment = "from directional spectrum processed file"
                         ncVarOut.comment_processing_version = version
@@ -144,15 +144,13 @@ def parse_dir_spec(output_name, file):
                         ncVarOut = ds.variables["DIR_SPEC"]
 
                     if "DIR_SPEC_RES_LOW" not in ds.variables:
-                        dir_spec_low = ds.createVariable("DIR_SPEC_RES_LOW", "f4", ("TIME"), fill_value=np.nan,
-                                                         zlib=True)  # fill_value=nan otherwise defaults to max
+                        dir_spec_low = ds.createVariable("DIR_SPEC_RES_LOW", "f4", ("TIME"), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
                         dir_spec_low.units = "Hz"
                         dir_spec_low.comment = "directional spectra range low"
                     else:
                         dir_spec_low = ds.variables["DIR_SPEC_RES_LOW"]
                     if "DIR_SPEC_RES_HI" not in ds.variables:
-                        dir_spec_hi = ds.createVariable("DIR_SPEC_RES_HI", "f4", ("TIME"), fill_value=np.nan,
-                                                        zlib=True)  # fill_value=nan otherwise defaults to max
+                        dir_spec_hi = ds.createVariable("DIR_SPEC_RES_HI", "f4", ("TIME"), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
                         dir_spec_hi.units = "Hz"
                         dir_spec_hi.comment = "directional spectra range high"
                     else:
@@ -160,8 +158,7 @@ def parse_dir_spec(output_name, file):
 
                     # create coordinate variable values
                     if "FREQ" not in ds.variables:
-                        freq_var = ds.createVariable("FREQ", "f4", ("FREQ"), fill_value=np.nan,
-                                                     zlib=True)  # fill_value=nan otherwise defaults to max
+                        freq_var = ds.createVariable("FREQ", "f4", ("FREQ"), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
                         freq_var.units = "Hz"
                         freq_var.comment = "specra frequency"
                         f = np.arange(0, freq_space * num_frequencies, freq_space)
@@ -171,8 +168,7 @@ def parse_dir_spec(output_name, file):
                         freq_var = ds.variables["FREQ"]
 
                     if "DIR" not in ds.variables:
-                        dir_var = ds.createVariable("DIR", "f4", ("DIR"), fill_value=np.nan,
-                                                    zlib=True)  # fill_value=nan otherwise defaults to max
+                        dir_var = ds.createVariable("DIR", "f4", ("DIR"), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
                         dir_var.units = "Hz"
                         dir_var.comment = "specra direction"
                         d = np.arange(0, dir_space * num_dir, dir_space)
@@ -280,16 +276,14 @@ def parse_raw(output_name, file):
 
             # create variables if needed
             if "ACCEL" not in ds.variables:
-                accel_var = ds.createVariable("ACCEL", "f4", ("TIME", "SAMPLE", "VECTOR"),
-                                              fill_value=np.nan)  # fill_value=nan otherwise defaults to max
+                accel_var = ds.createVariable("ACCEL", "f4", ("TIME", "SAMPLE", "VECTOR"), fill_value=np.nan)  # fill_value=nan otherwise defaults to max
                 accel_var.units = "m/s^2"
                 accel_var.comment = "raw acceleration"
             else:
                 accel_var = ds.variables["ACCEL"]
 
             if "GYRO" not in ds.variables:
-                gyro_var = ds.createVariable("GYRO", "f4", ("TIME", "SAMPLE", "VECTOR"),
-                                             fill_value=np.nan)  # fill_value=nan otherwise defaults to max
+                gyro_var = ds.createVariable("GYRO", "f4", ("TIME", "SAMPLE", "VECTOR"), fill_value=np.nan)  # fill_value=nan otherwise defaults to max
                 gyro_var.units = "rad/s"
                 gyro_var.comment = "raw gyroscope measurement"
             else:
@@ -370,8 +364,7 @@ def parse_non_dir_spec(output_name, file):
                         # print(freq_dim)
 
                     if "NON_DIR_SPEC" not in ds.variables:
-                        ncVarOut = ds.createVariable("NON_DIR_SPEC", "f4", ("TIME", "FREQ"), fill_value=np.nan,
-                                                     zlib=True)  # fill_value=nan otherwise defaults to max
+                        ncVarOut = ds.createVariable("NON_DIR_SPEC", "f4", ("TIME", "FREQ"), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
                         ncVarOut.units = "m^2/Hz"
                         ncVarOut.comment = "from non-directional spectrum processed file"
                         ncVarOut.comment_processing_version = version
@@ -379,8 +372,7 @@ def parse_non_dir_spec(output_name, file):
                         ncVarOut = ds.variables["NON_DIR_SPEC"]
 
                     if "FREQ" not in ds.variables:
-                        freq_var = ds.createVariable("FREQ", "f4", ("FREQ"), fill_value=np.nan,
-                                                     zlib=True)  # fill_value=nan otherwise defaults to max
+                        freq_var = ds.createVariable("FREQ", "f4", ("FREQ"), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
                         freq_var.units = "Hz"
                         freq_var.comment = "spectra frequency"
                     else:
@@ -478,8 +470,7 @@ def parse_heave(output_name, file):
                         freq_dim = ds.createDimension("VECTOR", 3)
 
                     if "HEAVE" not in ds.variables:
-                        ncVarOut = ds.createVariable("HEAVE", "f4", ("TIME", "SAMPLE_TIME", "VECTOR"),
-                                                     fill_value=np.nan)  # fill_value=nan otherwise defaults to max
+                        ncVarOut = ds.createVariable("HEAVE", "f4", ("TIME", "SAMPLE_TIME", "VECTOR"), fill_value=np.nan)  # fill_value=nan otherwise defaults to max
                         ncVarOut.units = "m"
                         ncVarOut.comment = "from heave processed file, heave, north, east"
                         ncVarOut.comment_processing_version = version
@@ -487,8 +478,7 @@ def parse_heave(output_name, file):
                         ncVarOut = ds.variables["HEAVE"]
 
                     if "SAMPLE_TIME" not in ds.variables:
-                        sample_t_var = ds.createVariable("SAMPLE_TIME", "f4", ("SAMPLE_TIME"), fill_value=np.nan,
-                                                         zlib=True)  # fill_value=nan otherwise defaults to max
+                        sample_t_var = ds.createVariable("SAMPLE_TIME", "f4", ("SAMPLE_TIME"), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
                         sample_t_var.units = "s"
                         sample_t_var.comment = "sample time"
                     else:
@@ -569,7 +559,7 @@ def parse_summary(output_name, file):
 
     ncOut = Dataset(output_name, 'w', format='NETCDF4')
 
-    ncOut.instrument = 'AXYS Technologies - ' + instrument_model
+    ncOut.instrument = 'AXYS Technologies ; ' + instrument_model
     ncOut.instrument_model = instrument_model
     ncOut.instrument_serial_number = instrument_serialnumber
 
@@ -592,8 +582,7 @@ def parse_summary(output_name, file):
         v = name[i]
         print("Variable %s (%s)" % (v['var_name'], v['units']))
         varName = v['var_name']
-        ncVarOut = ncOut.createVariable(varName, "f4", ("TIME",), fill_value=np.nan,
-                                        zlib=True)  # fill_value=nan otherwise defaults to max
+        ncVarOut = ncOut.createVariable(varName, "f4", ("TIME",), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
 
         # print("Create Variable %s : %s" % (ncVarOut, data[v[0]]))
         data = np.zeros((number_samples_read))
@@ -609,12 +598,8 @@ def parse_summary(output_name, file):
         ncVarOut.units = v['units']
 
     # add timespan attributes
-    ncOut.setncattr("time_coverage_start",
-                    num2date(ncTimesOut[0], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(
-                        ncTimeFormat))
-    ncOut.setncattr("time_coverage_end",
-                    num2date(ncTimesOut[-1], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(
-                        ncTimeFormat))
+    ncOut.setncattr("time_coverage_start", num2date(ncTimesOut[0], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
+    ncOut.setncattr("time_coverage_end", num2date(ncTimesOut[-1], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
 
     # add creating and history entry
     ncOut.setncattr("date_created", datetime.datetime.utcnow().strftime(ncTimeFormat))
@@ -623,8 +608,101 @@ def parse_summary(output_name, file):
     ncOut.close()
 
 
+def parse_wave(output_name, file):
+
+    instrument_model = 'TriAXYS'
+    instrument_serialnumber = '04811'
+    sample_interval = 0
+    number_samples_read = 0
+    times = []
+    odata = []
+    name = {}
+    name[0] = {'var_name': 'ZCROSS', 'header': 'Number of Zero Crossings', 'units': 'count'}
+    name[1] = {'var_name': 'WAVE_HEIGHT_MEAN', 'header': 'Average Wave Height (Havg)', 'units': 'm'}
+    name[2] = {'var_name': 'WAVE_PERIOD_MEAN', 'header': 'Tz', 'units': 's'}
+    name[3] = {'var_name': 'WAVE_HEIGHT_MAX', 'header': 'Max Wave Height (Hmax)', 'units': 'm'}
+    name[4] = {'var_name': 'WAVE_HEIGHT_SIG', 'header': 'Significant Wave Height (Hsig)', 'units': 'm'}
+    name[5] = {'var_name': 'WAVE_PERIOD_SIG', 'header': 'Significant Wave Period (Tsig)', 'units': 's'}
+    name[6] = {'var_name': 'WAVE_PERIOD_TP', 'header': 'Tp5', 'units': 's'}
+    name[7] = {'var_name': 'WAVE_PERIOD_READ', 'header': 'Peak Period', 'units': 's'}
+    name[8] = {'var_name': 'WM0', 'header': 'Hm0', 'units': 'm'}
+    name[9] = {'var_name': 'WAVE_DIR_MEAN', 'header': 'Mean Magnetic Direction', 'units': 'degrees'}
+    name[10] = {'var_name': 'WAVE_DIR_SIGMA', 'header': 'Mean Spread', 'units': 'degrees'}
+
+    with open(file, newline='') as csvfile:
+        reader = csv.DictReader(csvfile, delimiter='\t')
+        if 'Year' not in reader.fieldnames:
+            return
+
+        for row in reader:
+            #print(row)
+            times.append(datetime.datetime.strptime(row['Year']+' '+row['MonthDay']+' '+row['Time'], "%Y %m%d %H%M%S"))
+            odata.append(row)
+
+    number_samples_read = len(times)
+    print("sampled read ", number_samples_read)
+
+    idx_sort = np.argsort(times)
+    print(idx_sort)
+
+    #
+    # build the netCDF file
+    #
+
+    ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
+
+    ncOut = Dataset(output_name, 'w', format='NETCDF4')
+
+    ncOut.instrument = 'AXYS Technologies ; ' + instrument_model
+    ncOut.instrument_model = instrument_model
+    ncOut.instrument_serial_number = instrument_serialnumber
+
+    #     TIME:axis = "T";
+    #     TIME:calendar = "gregorian";
+    #     TIME:long_name = "time";
+    #     TIME:units = "days since 1950-01-01 00:00:00 UTC";
+
+    tDim = ncOut.createDimension("TIME", number_samples_read)
+    ncTimesOut = ncOut.createVariable("TIME", "d", ("TIME",), zlib=True)
+    ncTimesOut.long_name = "time"
+    ncTimesOut.units = "days since 1950-01-01 00:00:00 UTC"
+    ncTimesOut.calendar = "gregorian"
+    ncTimesOut.axis = "T"
+    # sort the times
+    t_unsorted = date2num(times, calendar=ncTimesOut.calendar, units=ncTimesOut.units)
+    ncTimesOut[:] = t_unsorted[idx_sort]
+
+    for i in name:
+        v = name[i]
+        print("Variable %s (%s)" % (v['var_name'], v['units']))
+        varName = v['var_name']
+        ncVarOut = ncOut.createVariable(varName, "f4", ("TIME",), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
+
+        # print("Create Variable %s : %s" % (ncVarOut, data[v[0]]))
+        data = np.zeros((number_samples_read))
+        data.fill(np.nan)
+        x = 0
+        for j in idx_sort:
+            # print (j)
+            val = odata[j]
+            data[x] = val[v['header']]
+            x += 1
+
+        ncVarOut[:] = data
+        ncVarOut.units = v['units']
+
+    # add timespan attributes
+    ncOut.setncattr("time_coverage_start", num2date(ncTimesOut[0], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
+    ncOut.setncattr("time_coverage_end", num2date(ncTimesOut[-1], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
+
+    # add creating and history entry
+    ncOut.setncattr("date_created", datetime.datetime.utcnow().strftime(ncTimeFormat))
+    ncOut.setncattr("history", datetime.datetime.utcnow().strftime("%Y-%m-%d") + " created from file " + os.path.basename(file))
+
+    ncOut.close()
+
 def parse_triaxys(files):
-    output_name = "SOFS-7.5-2018-TriAXYS.nc"
+    output_name = "TriAXYS.nc"
 
     print("output file : %s" % output_name)
 
@@ -648,9 +726,13 @@ def parse_triaxys(files):
         if filepath.endswith('Summary.txt'):
             parse_summary(output_name, filepath)
 
+        elif filepath.endswith('.WAVE'):
+            print("WAVE")
+            parse_wave(output_name, filepath)
+
         elif filepath.endswith('.RAW'):
             print("RAW")
-            parse_raw(output_name, filepath)
+            #parse_raw(output_name, filepath)
 
         elif filepath.endswith('.DIRSPEC'):
             print("DIRSPEC")
@@ -662,7 +744,7 @@ def parse_triaxys(files):
 
         elif filepath.endswith('.HNE'):
             print("Heave")
-            parse_heave(output_name, filepath)
+            #parse_heave(output_name, filepath)
 
     return output_name
 
