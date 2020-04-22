@@ -22,7 +22,7 @@ import sys
 import numpy as np
 from datetime import datetime
 
-from pysolar.solar import get_altitude
+from pysolar.solar import get_altitude_fast
 from pysolar.util import extraterrestrial_irrad
 from pysolar.util import global_irradiance_overcast
 
@@ -80,11 +80,10 @@ def add_solar(netCDFfiles):
         #lat_array = np.full_like(ds.variables['TIME'][:], lat)
         #lon_array = np.full_like(ds.variables['TIME'][:], lon)
 
-        altitude_deg = [get_altitude(lat, lon, d) for d in dt_utc]
-        rad = [extraterrestrial_irrad(lat, lon, d, 1361) for d in dt_utc]
-
-        #altitude_deg = get_altitude(lat_array, lon_array, dt)
-        #rad = extraterrestrial_irrad(lat_array, lon_array, dt_utc, 1361)
+        #altitude_deg = [get_altitude(lat, lon, d) for d in dt_utc]
+        #rad = [extraterrestrial_irrad(lat, lon, d, 1361) for d in dt_utc]
+        altitude_deg = get_altitude_fast(lat, lon, dt)
+        rad = extraterrestrial_irrad(lat, lon, dt, 1361)
 
         #print("rad ", rad)
         #print("depth ", depth)

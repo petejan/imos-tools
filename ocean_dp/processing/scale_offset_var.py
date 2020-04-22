@@ -25,10 +25,10 @@ from datetime import datetime
 # add OXSOL to a data file with TEMP, PSAL, PRES variables, many assumptions are made about the input file
 
 
-def scale_offset(netCDFfile, var, scale, offset):
+def scale_offset(netCDFfile, nc_var, scale, offset):
     ds = Dataset(netCDFfile, 'a')
 
-    var_temp = ds.variables[var]
+    var_temp = ds.variables[nc_var]
 
     t = var_temp[:]
     #print(t)
@@ -44,10 +44,10 @@ def scale_offset(netCDFfile, var, scale, offset):
     except AttributeError:
         hist = ""
 
-    ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " : scale, offset variable " + var + "")
+    ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " : scale, offset variable " + nc_var + "")
 
     ds.close()
 
 
 if __name__ == "__main__":
-    scale_offset(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
+    scale_offset(sys.argv[1], nc_var=sys.argv[2], scale=sys.argv[3], offset=sys.argv[4])

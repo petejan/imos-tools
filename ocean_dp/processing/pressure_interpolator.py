@@ -164,7 +164,7 @@ def pressure_interpolator(netCDFfiles=None, agg_file=None):
 
             pres_qc_var = fv01_contents.createVariable('PRES_quality_control', 'i1', fv01_contents.variables['TIME'].dimensions, fill_value=99, zlib=True)
             pres_qc_var.long_name = "quality_code for PRES"
-            pres_qc_var.flag_values = np.array([0, 1, 2, 3, 4, 6, 7, 9])
+            pres_qc_var.flag_values = np.array([0, 1, 2, 3, 4, 6, 7, 9], dtype=np.int8)
             pres_qc_var.flag_meanings = 'unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value'
             pres_qc_var[:] = 7  # interpolated
 

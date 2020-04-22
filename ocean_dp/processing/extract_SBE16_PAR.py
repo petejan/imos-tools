@@ -42,7 +42,7 @@ def extract(netCDFfiles):
                 fn_new_split[2].index("R") # for want of a better code
             except ValueError:
                 fn_new_split[2] += 'R'
-            fn_new_split[6] = 'Pulse-6-2009-PAR-134'
+            fn_new_split[6] = 'Pulse-6-2009-PAR-134-37m'
 
             fn_new = os.path.join(os.path.dirname(fn), '_'.join(fn_new_split))
 
@@ -57,6 +57,10 @@ def extract(netCDFfiles):
         # copy global attributes
         for ga in ds_in.ncattrs():
             ds.setncattr(ga, ds_in.getncattr(ga))
+
+        ds.setncattr("instrument", "Wet-LABS ; PARS")
+        ds.setncattr("instrument_model", "PARS")
+        ds.setncattr("instrument_serial_number", "135")
 
         # copy required variables
         for v in ['TIME', 'NOMINAL_DEPTH', 'LATITUDE', 'LONGITUDE', 'PRES', 'VOLT2', 'VOLT2_quality_control']:
