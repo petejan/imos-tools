@@ -1,87 +1,89 @@
 rec_type, var_name, deployment_code, model, serial_number, time_deployment, time_recovery, variable_name, variable_dims, variable_shape, attribute_name, type, value
-GLOBAL,,,Optode 3975C,1419,2011-08-02,2012-07-19,,"","",deployment_code,str,"Pulse-8-2011"
-GLOBAL,,,MDS-MKVL,200341,2011-08-02,2012-07-19,,"","",deployment_code,str,"Pulse-8-2011"
-GLOBAL,,,MDS-MKVL,200664,2011-08-02,2012-07-19,,"","",deployment_code,str,"Pulse-8-2011"
-GLOBAL,,,MDS-MKVL,200665,2011-08-02,2012-07-19,,"","",deployment_code,str,"Pulse-8-2011"
-GLOBAL,,,CR1000 Serial expansion board,007,2011-08-02,2012-07-19,,"","",deployment_code,str,"Pulse-8-2011"
-GLOBAL,,,Mooring,Mix Layer Depth,2011-08-02,2012-07-19,,"","",deployment_code,str,"Pulse-8-2011"
-GLOBAL,,,Mooring,Pulse 8  August 2011,2011-08-02,2012-07-19,,"","",deployment_code,str,"Pulse-8-2011"
-GLOBAL,,,Mooring,Surface Float,2011-08-02,2012-07-19,,"","",deployment_code,str,"Pulse-8-2011"
-GLOBAL,,,RAS Box and Frame,Artemis,2011-08-02,2012-07-19,,"","",deployment_code,str,"Pulse-8-2011"
-GLOBAL,,,processing_site_code,20,2011-08-02,2012-07-19,,"","",deployment_code,str,"Pulse-8-2011"
-GLOBAL,,,CR1000,39052,2011-08-02,2012-07-19,,"","",deployment_code,str,"Pulse-8-2011"
-GLOBAL,,,ACR8242XS,35505,2011-08-02,2012-07-19,,"","",deployment_code,str,"Pulse-8-2011"
-GLOBAL,,,ACR8242XS,35506,2011-08-02,2012-07-19,,"","",deployment_code,str,"Pulse-8-2011"
-GLOBAL,,,RAS-3-48-500,11906-01,2011-08-02,2012-07-19,,"","",deployment_code,str,"Pulse-8-2011"
-GLOBAL,,,3DM-GX1,9475,2011-08-02,2012-07-19,,"","",deployment_code,str,"Pulse-8-2011"
-GLOBAL,,,9601-D-N,300034012747500,2011-08-02,2012-07-19,,"","",deployment_code,str,"Pulse-8-2011"
-GLOBAL,,,9601-DGS-LP,300034012572560,2011-08-02,2012-07-19,,"","",deployment_code,str,"Pulse-8-2011"
-GLOBAL,,,230A-101,110287,2011-08-02,2012-07-19,,"","",deployment_code,str,"Pulse-8-2011"
-GLOBAL,,,GTD,29-102-15,2011-08-02,2012-07-19,,"","",deployment_code,str,"Pulse-8-2011"
-GLOBAL,,,TDR-2050,14788,2011-08-02,2012-07-19,,"","",deployment_code,str,"Pulse-8-2011"
-GLOBAL,,,TDR-2050,14789,2011-08-02,2012-07-19,,"","",deployment_code,str,"Pulse-8-2011"
-GLOBAL,,,MBARI-ISUSX V3,76,2011-08-02,2012-07-19,,"","",deployment_code,str,"Pulse-8-2011"
-GLOBAL,,,SBE16plusV2,01606330,2011-08-02,2012-07-19,,"","",deployment_code,str,"Pulse-8-2011"
-GLOBAL,,,SBE37SM-RS232,6962,2011-08-02,2012-07-19,,"","",deployment_code,str,"Pulse-8-2011"
-GLOBAL,,,SBE43,431634,2011-08-02,2012-07-19,,"","",deployment_code,str,"Pulse-8-2011"
-GLOBAL,,,SBE56,05600531,2011-08-02,2012-07-19,,"","",deployment_code,str,"Pulse-8-2011"
-GLOBAL,,,Minilog-T,4823,2011-08-02,2012-07-19,,"","",deployment_code,str,"Pulse-8-2011"
-GLOBAL,,,Minilog-T,4824,2011-08-02,2012-07-19,,"","",deployment_code,str,"Pulse-8-2011"
-GLOBAL,,,Minilog-T,4825,2011-08-02,2012-07-19,,"","",deployment_code,str,"Pulse-8-2011"
-GLOBAL,,,Minilog-T,4826,2011-08-02,2012-07-19,,"","",deployment_code,str,"Pulse-8-2011"
-GLOBAL,,,Minilog-T,4827,2011-08-02,2012-07-19,,"","",deployment_code,str,"Pulse-8-2011"
-GLOBAL,,,Minilog-T,4828,2011-08-02,2012-07-19,,"","",deployment_code,str,"Pulse-8-2011"
-GLOBAL,,,Minilog-T,4829,2011-08-02,2012-07-19,,"","",deployment_code,str,"Pulse-8-2011"
-GLOBAL,,,Minilog-T,4830,2011-08-02,2012-07-19,,"","",deployment_code,str,"Pulse-8-2011"
-GLOBAL,,,Minilog-T,6098,2011-08-02,2012-07-19,,"","",deployment_code,str,"Pulse-8-2011"
-GLOBAL,,,Minilog-T,6100,2011-08-02,2012-07-19,,"","",deployment_code,str,"Pulse-8-2011"
-GLOBAL,,,Minilog-T,6101,2011-08-02,2012-07-19,,"","",deployment_code,str,"Pulse-8-2011"
-GLOBAL,,,ECO-PAR,134,2011-08-02,2012-07-19,,"","",deployment_code,str,"Pulse-8-2011"
-GLOBAL,,,FLNTUS,1215,2011-08-02,2012-07-19,,"","",deployment_code,str,"Pulse-8-2011"
-
-VAR,LATITUDE,Pulse-8-2011,,,2011-08-02,2012-07-19,LATITUDE,"()","()",,float64,"-46.9295400000"
-VAR,LONGITUDE,Pulse-8-2011,,,2011-08-02,2012-07-19,LONGITUDE,"()","()",,float64,"142.2146600000"
-
-GLOBAL,,Pulse-8-2011,,,2011-08-02,2012-07-19,,"","",site_nominal_depth,float64,"4300.00"
-GLOBAL,,Pulse-8-2011,,,2011-08-02,2012-07-19,,"","",time_deployment_start,str,"2011-08-03T11:59:00Z"
-GLOBAL,,Pulse-8-2011,,,2011-08-02,2012-07-19,,"","",time_deployment_end,str,"2012-07-19T21:46:00Z"
-
-VAR,NOMINAL_DEPTH,Pulse-8-2011,Optode 3975C,1419,2011-08-02,2012-07-19,NOMINAL_DEPTH,"()","()",,float64,"34.00"
-VAR,NOMINAL_DEPTH,Pulse-8-2011,MDS-MKVL,200341,2011-08-02,2012-07-19,NOMINAL_DEPTH,"()","()",,float64,"50.00"
-VAR,NOMINAL_DEPTH,Pulse-8-2011,MDS-MKVL,200664,2011-08-02,2012-07-19,NOMINAL_DEPTH,"()","()",,float64,"27.00"
-VAR,NOMINAL_DEPTH,Pulse-8-2011,MDS-MKVL,200665,2011-08-02,2012-07-19,NOMINAL_DEPTH,"()","()",,float64,"0.00"
-VAR,NOMINAL_DEPTH,Pulse-8-2011,CR1000 Serial expansion board,007,2011-08-02,2012-07-19,NOMINAL_DEPTH,"()","()",,float64,"0.00"
-VAR,NOMINAL_DEPTH,Pulse-8-2011,Mooring,Mix Layer Depth,2011-08-02,2012-07-19,NOMINAL_DEPTH,"()","()",,float64,"0.00"
-VAR,NOMINAL_DEPTH,Pulse-8-2011,Mooring,Pulse 8  August 2011,2011-08-02,2012-07-19,NOMINAL_DEPTH,"()","()",,float64,"0.00"
-VAR,NOMINAL_DEPTH,Pulse-8-2011,Mooring,Surface Float,2011-08-02,2012-07-19,NOMINAL_DEPTH,"()","()",,float64,"0.00"
-VAR,NOMINAL_DEPTH,Pulse-8-2011,RAS Box and Frame,Artemis,2011-08-02,2012-07-19,NOMINAL_DEPTH,"()","()",,float64,"34.00"
-VAR,NOMINAL_DEPTH,Pulse-8-2011,processing_site_code,20,2011-08-02,2012-07-19,NOMINAL_DEPTH,"()","()",,float64,"0.00"
-VAR,NOMINAL_DEPTH,Pulse-8-2011,CR1000,39052,2011-08-02,2012-07-19,NOMINAL_DEPTH,"()","()",,float64,"0.00"
-VAR,NOMINAL_DEPTH,Pulse-8-2011,ACR8242XS,35505,2011-08-02,2012-07-19,NOMINAL_DEPTH,"()","()",,float64,"4300.00"
-VAR,NOMINAL_DEPTH,Pulse-8-2011,ACR8242XS,35506,2011-08-02,2012-07-19,NOMINAL_DEPTH,"()","()",,float64,"4300.00"
-VAR,NOMINAL_DEPTH,Pulse-8-2011,RAS-3-48-500,11906-01,2011-08-02,2012-07-19,NOMINAL_DEPTH,"()","()",,float64,"34.00"
-VAR,NOMINAL_DEPTH,Pulse-8-2011,3DM-GX1,9475,2011-08-02,2012-07-19,NOMINAL_DEPTH,"()","()",,float64,"0.00"
-VAR,NOMINAL_DEPTH,Pulse-8-2011,9601-D-N,300034012747500,2011-08-02,2012-07-19,NOMINAL_DEPTH,"()","()",,float64,"0.00"
-VAR,NOMINAL_DEPTH,Pulse-8-2011,9601-DGS-LP,300034012572560,2011-08-02,2012-07-19,NOMINAL_DEPTH,"()","()",,float64,"0.00"
-VAR,NOMINAL_DEPTH,Pulse-8-2011,230A-101,110287,2011-08-02,2012-07-19,NOMINAL_DEPTH,"()","()",,float64,"34.00"
-VAR,NOMINAL_DEPTH,Pulse-8-2011,GTD,29-102-15,2011-08-02,2012-07-19,NOMINAL_DEPTH,"()","()",,float64,"34.00"
-VAR,NOMINAL_DEPTH,Pulse-8-2011,TDR-2050,14788,2011-08-02,2012-07-19,NOMINAL_DEPTH,"()","()",,float64,"475.00"
-VAR,NOMINAL_DEPTH,Pulse-8-2011,TDR-2050,14789,2011-08-02,2012-07-19,NOMINAL_DEPTH,"()","()",,float64,"630.00"
-VAR,NOMINAL_DEPTH,Pulse-8-2011,MBARI-ISUSX V3,76,2011-08-02,2012-07-19,NOMINAL_DEPTH,"()","()",,float64,"34.00"
-VAR,NOMINAL_DEPTH,Pulse-8-2011,SBE16plusV2,01606330,2011-08-02,2012-07-19,NOMINAL_DEPTH,"()","()",,float64,"34.00"
-VAR,NOMINAL_DEPTH,Pulse-8-2011,SBE37SM-RS232,6962,2011-08-02,2012-07-19,NOMINAL_DEPTH,"()","()",,float64,"105.00"
-VAR,NOMINAL_DEPTH,Pulse-8-2011,SBE43,431634,2011-08-02,2012-07-19,NOMINAL_DEPTH,"()","()",,float64,"34.00"
-VAR,NOMINAL_DEPTH,Pulse-8-2011,SBE56,05600531,2011-08-02,2012-07-19,NOMINAL_DEPTH,"()","()",,float64,"45.00"
-VAR,NOMINAL_DEPTH,Pulse-8-2011,Minilog-T,4823,2011-08-02,2012-07-19,NOMINAL_DEPTH,"()","()",,float64,"50.00"
-VAR,NOMINAL_DEPTH,Pulse-8-2011,Minilog-T,4824,2011-08-02,2012-07-19,NOMINAL_DEPTH,"()","()",,float64,"55.00"
-VAR,NOMINAL_DEPTH,Pulse-8-2011,Minilog-T,4825,2011-08-02,2012-07-19,NOMINAL_DEPTH,"()","()",,float64,"65.00"
-VAR,NOMINAL_DEPTH,Pulse-8-2011,Minilog-T,4826,2011-08-02,2012-07-19,NOMINAL_DEPTH,"()","()",,float64,"70.00"
-VAR,NOMINAL_DEPTH,Pulse-8-2011,Minilog-T,4827,2011-08-02,2012-07-19,NOMINAL_DEPTH,"()","()",,float64,"75.00"
-VAR,NOMINAL_DEPTH,Pulse-8-2011,Minilog-T,4828,2011-08-02,2012-07-19,NOMINAL_DEPTH,"()","()",,float64,"85.00"
-VAR,NOMINAL_DEPTH,Pulse-8-2011,Minilog-T,4829,2011-08-02,2012-07-19,NOMINAL_DEPTH,"()","()",,float64,"120.00"
-VAR,NOMINAL_DEPTH,Pulse-8-2011,Minilog-T,4830,2011-08-02,2012-07-19,NOMINAL_DEPTH,"()","()",,float64,"140.00"
-VAR,NOMINAL_DEPTH,Pulse-8-2011,Minilog-T,6098,2011-08-02,2012-07-19,NOMINAL_DEPTH,"()","()",,float64,"45.00"
-VAR,NOMINAL_DEPTH,Pulse-8-2011,Minilog-TD,6100,2011-08-02,2012-07-19,NOMINAL_DEPTH,"()","()",,float64,"60.00"
-VAR,NOMINAL_DEPTH,Pulse-8-2011,Minilog-TD,6101,2011-08-02,2012-07-19,NOMINAL_DEPTH,"()","()",,float64,"160.00"
-VAR,NOMINAL_DEPTH,Pulse-8-2011,ECO-PAR,134,2011-08-02,2012-07-19,NOMINAL_DEPTH,"()","()",,float64,"34.00"
-VAR,NOMINAL_DEPTH,Pulse-8-2011,FLNTUS,1215,2011-08-02,2012-07-19,NOMINAL_DEPTH,"()","()",,float64,"34.00"
+GLOBAL,,,Optode 3975C,1419,2/8/11,19/7/12,,,,deployment_code,str,Pulse-8-2011
+GLOBAL,,,MDS-MKVL,200341,2/8/11,19/7/12,,,,deployment_code,str,Pulse-8-2011
+GLOBAL,,,MDS-MKVL,200664,2/8/11,19/7/12,,,,deployment_code,str,Pulse-8-2011
+GLOBAL,,,MDS-MKVL,200665,2/8/11,19/7/12,,,,deployment_code,str,Pulse-8-2011
+GLOBAL,,,CR1000 Serial expansion board,7,2/8/11,19/7/12,,,,deployment_code,str,Pulse-8-2011
+GLOBAL,,,Mooring,Mix Layer Depth,2/8/11,19/7/12,,,,deployment_code,str,Pulse-8-2011
+GLOBAL,,,Mooring,Pulse 8  August 2011,2/8/11,19/7/12,,,,deployment_code,str,Pulse-8-2011
+GLOBAL,,,Mooring,Surface Float,2/8/11,19/7/12,,,,deployment_code,str,Pulse-8-2011
+GLOBAL,,,RAS Box and Frame,Artemis,2/8/11,19/7/12,,,,deployment_code,str,Pulse-8-2011
+GLOBAL,,,processing_site_code,20,2/8/11,19/7/12,,,,deployment_code,str,Pulse-8-2011
+GLOBAL,,,CR1000,39052,2/8/11,19/7/12,,,,deployment_code,str,Pulse-8-2011
+GLOBAL,,,ACR8242XS,35505,2/8/11,19/7/12,,,,deployment_code,str,Pulse-8-2011
+GLOBAL,,,ACR8242XS,35506,2/8/11,19/7/12,,,,deployment_code,str,Pulse-8-2011
+GLOBAL,,,RAS-3-48-500,11906-01,2/8/11,19/7/12,,,,deployment_code,str,Pulse-8-2011
+GLOBAL,,,3DM-GX1,9475,2/8/11,19/7/12,,,,deployment_code,str,Pulse-8-2011
+GLOBAL,,,9601-D-N,3.00034E+14,2/8/11,19/7/12,,,,deployment_code,str,Pulse-8-2011
+GLOBAL,,,9601-DGS-LP,3.00034E+14,2/8/11,19/7/12,,,,deployment_code,str,Pulse-8-2011
+GLOBAL,,,230A-101,110287,2/8/11,19/7/12,,,,deployment_code,str,Pulse-8-2011
+GLOBAL,,,GTD,29-102-15,2/8/11,19/7/12,,,,deployment_code,str,Pulse-8-2011
+GLOBAL,,,TDR-2050,14788,2/8/11,19/7/12,,,,deployment_code,str,Pulse-8-2011
+GLOBAL,,,TDR-2050,14789,2/8/11,19/7/12,,,,deployment_code,str,Pulse-8-2011
+GLOBAL,,,MBARI-ISUSX V3,76,2/8/11,19/7/12,,,,deployment_code,str,Pulse-8-2011
+GLOBAL,,,SBE16plusV2,1606330,2/8/11,19/7/12,,,,deployment_code,str,Pulse-8-2011
+GLOBAL,,,SBE37SM-RS232,6962,2/8/11,19/7/12,,,,deployment_code,str,Pulse-8-2011
+GLOBAL,,,SBE43,431634,2/8/11,19/7/12,,,,deployment_code,str,Pulse-8-2011
+GLOBAL,,,SBE56,5600531,2/8/11,19/7/12,,,,deployment_code,str,Pulse-8-2011
+GLOBAL,,,Minilog-T,4823,2/8/11,19/7/12,,,,deployment_code,str,Pulse-8-2011
+GLOBAL,,,Minilog-T,4824,2/8/11,19/7/12,,,,deployment_code,str,Pulse-8-2011
+GLOBAL,,,Minilog-T,4825,2/8/11,19/7/12,,,,deployment_code,str,Pulse-8-2011
+GLOBAL,,,Minilog-T,4826,2/8/11,19/7/12,,,,deployment_code,str,Pulse-8-2011
+GLOBAL,,,Minilog-T,4827,2/8/11,19/7/12,,,,deployment_code,str,Pulse-8-2011
+GLOBAL,,,Minilog-T,4828,2/8/11,19/7/12,,,,deployment_code,str,Pulse-8-2011
+GLOBAL,,,Minilog-T,4829,2/8/11,19/7/12,,,,deployment_code,str,Pulse-8-2011
+GLOBAL,,,Minilog-T,4830,2/8/11,19/7/12,,,,deployment_code,str,Pulse-8-2011
+GLOBAL,,,Minilog-T,6098,2/8/11,19/7/12,,,,deployment_code,str,Pulse-8-2011
+GLOBAL,,,Minilog-T,6100,2/8/11,19/7/12,,,,deployment_code,str,Pulse-8-2011
+GLOBAL,,,Minilog-T,6101,2/8/11,19/7/12,,,,deployment_code,str,Pulse-8-2011
+GLOBAL,,,ECO-PAR,134,2/8/11,19/7/12,,,,deployment_code,str,Pulse-8-2011
+GLOBAL,,,FLNTUS,1215,2/8/11,19/7/12,,,,deployment_code,str,Pulse-8-2011
+,,,,,,,,,,,,
+VAR,LATITUDE,Pulse-8-2011,,,2/8/11,19/7/12,LATITUDE,(),(),,float64,-46.92954
+VAR,LONGITUDE,Pulse-8-2011,,,2/8/11,19/7/12,LONGITUDE,(),(),,float64,142.21466
+,,,,,,,,,,,,
+GLOBAL,,Pulse-8-2011,,,2/8/11,19/7/12,,,,site_nominal_depth,float64,4300
+GLOBAL,,Pulse-8-2011,,,2/8/11,19/7/12,,,,time_deployment_start,str,2011-08-03T11:59:00Z
+GLOBAL,,Pulse-8-2011,,,2/8/11,19/7/12,,,,time_deployment_end,str,2012-07-19T21:46:00Z
+GLOBAL,,Pulse-8-2011,,,,,,,,voyage_deployment,str,http://www.cmar.csiro.au/data/trawler/survey_details.cfm?survey=SS2011_V03
+GLOBAL,,Pulse-8-2011,,,,,,,,voyage_recovery,str,http://www.cmar.csiro.au/data/trawler/survey_details.cfm?survey=SS2012_V03
+,,,,,,,,,,,,
+VAR,NOMINAL_DEPTH,Pulse-8-2011,Optode 3975C,1419,2/8/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,34
+VAR,NOMINAL_DEPTH,Pulse-8-2011,MDS-MKVL,200341,2/8/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,50
+VAR,NOMINAL_DEPTH,Pulse-8-2011,MDS-MKVL,200664,2/8/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,27
+VAR,NOMINAL_DEPTH,Pulse-8-2011,MDS-MKVL,200665,2/8/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,0
+VAR,NOMINAL_DEPTH,Pulse-8-2011,CR1000 Serial expansion board,7,2/8/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,0
+VAR,NOMINAL_DEPTH,Pulse-8-2011,Mooring,Mix Layer Depth,2/8/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,0
+VAR,NOMINAL_DEPTH,Pulse-8-2011,Mooring,Pulse 8  August 2011,2/8/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,0
+VAR,NOMINAL_DEPTH,Pulse-8-2011,Mooring,Surface Float,2/8/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,0
+VAR,NOMINAL_DEPTH,Pulse-8-2011,RAS Box and Frame,Artemis,2/8/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,34
+VAR,NOMINAL_DEPTH,Pulse-8-2011,processing_site_code,20,2/8/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,0
+VAR,NOMINAL_DEPTH,Pulse-8-2011,CR1000,39052,2/8/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,0
+VAR,NOMINAL_DEPTH,Pulse-8-2011,ACR8242XS,35505,2/8/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,4300
+VAR,NOMINAL_DEPTH,Pulse-8-2011,ACR8242XS,35506,2/8/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,4300
+VAR,NOMINAL_DEPTH,Pulse-8-2011,RAS-3-48-500,11906-01,2/8/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,34
+VAR,NOMINAL_DEPTH,Pulse-8-2011,3DM-GX1,9475,2/8/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,0
+VAR,NOMINAL_DEPTH,Pulse-8-2011,9601-D-N,3.00034E+14,2/8/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,0
+VAR,NOMINAL_DEPTH,Pulse-8-2011,9601-DGS-LP,3.00034E+14,2/8/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,0
+VAR,NOMINAL_DEPTH,Pulse-8-2011,230A-101,110287,2/8/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,34
+VAR,NOMINAL_DEPTH,Pulse-8-2011,GTD,29-102-15,2/8/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,34
+VAR,NOMINAL_DEPTH,Pulse-8-2011,TDR-2050,14788,2/8/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,475
+VAR,NOMINAL_DEPTH,Pulse-8-2011,TDR-2050,14789,2/8/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,630
+VAR,NOMINAL_DEPTH,Pulse-8-2011,MBARI-ISUSX V3,76,2/8/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,34
+VAR,NOMINAL_DEPTH,Pulse-8-2011,SBE16plusV2,1606330,2/8/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,34
+VAR,NOMINAL_DEPTH,Pulse-8-2011,SBE37SM-RS232,6962,2/8/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,105
+VAR,NOMINAL_DEPTH,Pulse-8-2011,SBE43,431634,2/8/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,34
+VAR,NOMINAL_DEPTH,Pulse-8-2011,SBE56,5600531,2/8/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,45
+VAR,NOMINAL_DEPTH,Pulse-8-2011,Minilog-T,4823,2/8/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,50
+VAR,NOMINAL_DEPTH,Pulse-8-2011,Minilog-T,4824,2/8/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,55
+VAR,NOMINAL_DEPTH,Pulse-8-2011,Minilog-T,4825,2/8/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,65
+VAR,NOMINAL_DEPTH,Pulse-8-2011,Minilog-T,4826,2/8/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,70
+VAR,NOMINAL_DEPTH,Pulse-8-2011,Minilog-T,4827,2/8/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,75
+VAR,NOMINAL_DEPTH,Pulse-8-2011,Minilog-T,4828,2/8/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,85
+VAR,NOMINAL_DEPTH,Pulse-8-2011,Minilog-T,4829,2/8/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,120
+VAR,NOMINAL_DEPTH,Pulse-8-2011,Minilog-T,4830,2/8/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,140
+VAR,NOMINAL_DEPTH,Pulse-8-2011,Minilog-T,6098,2/8/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,45
+VAR,NOMINAL_DEPTH,Pulse-8-2011,Minilog-TD,6100,2/8/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,60
+VAR,NOMINAL_DEPTH,Pulse-8-2011,Minilog-TD,6101,2/8/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,160
+VAR,NOMINAL_DEPTH,Pulse-8-2011,ECO-PAR,134,2/8/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,34
+VAR,NOMINAL_DEPTH,Pulse-8-2011,FLNTUS,1215,2/8/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,34
