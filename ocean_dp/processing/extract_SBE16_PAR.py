@@ -79,6 +79,8 @@ def extract(netCDFfiles):
         for va in ds_in.variables['VOLT2'].ncattrs():
             if va not in ('_FillValue'):
                 new_var.setncattr(va, ds_in.variables['VOLT2'].getncattr(va))
+        new_var.standard_name = 'downwelling_photosynthetic_photon_flux_in_sea_water'
+        new_var.long_name = 'downwelling_photosynthetic_photon_flux_in_sea_water'
         new_var.units = 'μmol photons/m2/s'
         new_var.comment_sensor_type = 'cosine sensor, with integrated anti-fouling Bio-wiper'
         new_var.ancillary_variables = "PAR_quality_control"
@@ -89,7 +91,7 @@ def extract(netCDFfiles):
         for va in ds_in.variables['VOLT2_quality_control'].ncattrs():
             if va not in ('_FillValue'):
                 new_var.setncattr(va, ds_in.variables['VOLT2_quality_control'].getncattr(va))
-        new_var.long_name = 'quality_code for PAR'
+        new_var.long_name = 'quality_code for downwelling_photosynthetic_photon_flux_in_sea_water'
 
         ds_in.close()
 

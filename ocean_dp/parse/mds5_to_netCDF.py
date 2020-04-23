@@ -202,6 +202,7 @@ def parse(file):
     ncTimesOut[:] = date2num(ts, units=ncTimesOut.units, calendar=ncTimesOut.calendar)
 
     ncVarOut = ncOut.createVariable('PAR', "f4", ("TIME",), fill_value=np.nan, zlib=True) # fill_value=nan otherwise defaults to max
+    ncVarOut.long_name = "omnidirectional photosynthetic spherical_photon flux in sea water"  # change later in metadata for surface ones
     ncVarOut.units = 'umol/m^2/s'
     ncVarOut.calibration_date = coeff_date
     ncVarOut.comment_sensor_type = 'spherical sensor'
