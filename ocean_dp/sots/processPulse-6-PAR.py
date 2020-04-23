@@ -17,6 +17,11 @@ import ocean_dp.processing.pandas_pres_interp
 import ocean_dp.processing.add_incoming_radiation
 import ocean_dp.processing.apply_scale_offset_attributes
 import ocean_dp.processing.extract_SBE16_PAR
+import ocean_dp.qc.add_qc_flags
+import ocean_dp.qc.in_out_water
+import ocean_dp.qc.global_range
+import ocean_dp.qc.climate_range
+import ocean_dp.qc.par_nearest_qc
 
 import glob
 
@@ -72,16 +77,42 @@ for fn in new_names:
     filename = ocean_dp.file_name.imosNetCDFfileName.rename(filename)
     print('step 3 imos name : ', filename)
 
-    filenames = ocean_dp.processing.pandas_pres_interp.interpolator([filename], '/Users/pete/cloudstor/SOTS-Temp-Raw-Data/Pulse-6-2009/netCDF/IMOS_ABOS-SOTS_CPT_20090928_SOFS_FV02_Pulse-Aggregate-PRES_END-20100318_C-20200227.nc')
+    filenames = ocean_dp.processing.pandas_pres_interp.interpolator([filename], os.path.join(path, 'IMOS_ABOS-SOTS_CPT_20090928_SOFS_FV02_Pulse-Aggregate-PRES_END-20100318_C-20200227.nc'))
     print('step 4 pressure interpolator : ', filename)
 
     filename = ocean_dp.processing.add_incoming_radiation.add_solar(filenames)
     print('step 5 add incoming radiation : ', filename)
 
+print('step SBE16 data')
 sbe16_file = ocean_dp.processing.extract_SBE16_PAR.extract([os.path.join(path, 'IMOS_ABOS-SOTS_CPT_20090930_SOFS_FV01_Pulse-6-2009-SBE16plusV2-01606331-38m_END-20100325_C-20200227.nc')])
-new_name = os.path.join(path, "../netCDF", os.path.basename(sbe16_file))
-os.rename(sbe16_file, new_name)
-filename = ocean_dp.processing.add_incoming_radiation.add_solar(new_name)
+new_name = os.path.join(path, "../netCDF", os.path.basename(sbe16_file[0]))
+print("new name", sbe16_file[0], new_name)
+os.rename(sbe16_file[0], new_name)
+filename = ocean_dp.processing.add_incoming_radiation.add_solar([new_name])
+
+print('step 6 add qc flags')
+fv00_files = glob.glob(os.path.join(path, "../netCDF/IMOS*X*FV00_Pulse-6-2009*.nc"))
+ocean_dp.qc.add_qc_flags.add_qc(fv00_files, "PAR")
+
+print('step 7 in/out water')
+fv01_files = glob.glob(os.path.join(path, "../netCDF/IMOS*X*FV01_Pulse-6-2009*.nc"))
+ocean_dp.qc.in_out_water.in_out_water(fv01_files, "PAR")
+
+print('step 8 global range')
+fv01_files = glob.glob(os.path.join(path, "../netCDF/IMOS*X*FV01_Pulse-6-2009*.nc"))
+ocean_dp.qc.global_range.global_range(fv01_files, 'PAR', max=10000, min=-1.7)
+
+print('step 9 global range, pbad 4500')
+fv01_files = glob.glob(os.path.join(path, "../netCDF/IMOS*X*FV01_Pulse-6-2009*.nc"))
+ocean_dp.qc.global_range.global_range(fv01_files, 'PAR', max=4500, min=-1.7)
+
+print('step 10 climate qc')
+fv01_files = glob.glob(os.path.join(path, "../netCDF/IMOS*X*FV01_Pulse-6-2009*.nc"))
+ocean_dp.qc.climate_range.climate_range(fv01_files, "PAR")
+
+print('step 11 nearest')
+fv01_files = glob.glob(os.path.join(path, "../netCDF/IMOS_ABOS*X*FV01*Pulse-6*.nc"))
+ocean_dp.qc.par_nearest_qc.add_qc(fv01_files)
 
 #ocean_dp/qc/add_qc_flags.py -PAR netCDF/IMOS_ABOS-SOTS_FZX_20090922_SOFS_FV00_Pulse-6-2009-MDS-MKVL-200341-0m_END-20100323_C-20200417.nc
 #ocean_dp/qc/in_out_water.py -PAR netCDF/IMOS_ABOS-SOTS_FZX_20090922_SOFS_FV01_Pulse-6-2009-MDS-MKVL-200341-0m_END-20100323_C-20200417.nc
@@ -89,6 +120,8 @@ filename = ocean_dp.processing.add_incoming_radiation.add_solar(new_name)
 #ocean_dp/qc/global_range.py netCDF/IMOS_ABOS-SOTS_FZX_20090922_SOFS_FV01_Pulse-6-2009-MDS-MKVL-200341-0m_END-20100323_C-20200417.nc PAR 4500 -1.7 3
 #ocean_dp/qc/climate_range.py netCDF/IMOS_ABOS-SOTS_FZX_20090922_SOFS_FV01_Pulse-6-2009-MDS-MKVL-200341-0m_END-20100323_C-20200417.nc PAR
 
+#find netCDF -name "IMOS*FV01*.nc" -exec python3 imos-tools/ocean_dp/qc/climate_range.py {} PAR \;
+#python3 imos-tools/ocean_dp/qc/par_nearest_qc.py
 
 print(process.memory_info().rss)  # in bytes
 

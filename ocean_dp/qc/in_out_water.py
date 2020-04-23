@@ -63,7 +63,6 @@ def in_out_water(netCDFfile, var_name=None):
                     print("QC time dim ", v)
 
                     ncVarOut = nc_vars[v]
-                    ncVarOut[mask] = 7
                 else:
                     # create a qc variable just for this test flags
                     if v + "_quality_control_io" in ds.variables:
@@ -77,7 +76,8 @@ def in_out_water(netCDFfile, var_name=None):
                     ncVarOut.flag_meanings = 'unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value'
 
                     nc_vars[v].ancillary_variables = nc_vars[v].ancillary_variables + " " + v + "_quality_control_io"
-                    ncVarOut[mask] = 6
+
+                ncVarOut[mask] = 6
 
         ds.file_version = "Level 1 - Quality Controlled Data"
 

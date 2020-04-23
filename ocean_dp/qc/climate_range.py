@@ -28,82 +28,86 @@ from datetime import datetime
 # flag 4 (bad) when out of climate range
 
 
-def climate_range(netCDFfile, variable_name, qc_value=3):
-    ds = Dataset(netCDFfile, 'a')
+def climate_range(netCDFfiles, variable_name, qc_value=3):
 
-    nc_var = ds.variables[variable_name]
+    for netCDFfile in netCDFfiles:
+        print("climate_range file", netCDFfile)
 
-    try:
-        # find the existing quality_control variable in the auxillary variables list
-        aux_vars = nc_var.ancillary_variables
-        aux_var = aux_vars.split(" ")
-        qc_vars = [i for i in aux_var if i.endswith("_quality_control")]
-        qc_var = qc_vars[0]
-        print("QC var name ", qc_var)
-        var_qc = ds.variables[qc_var]
-    except KeyError:
-        print("no QC variable found")
-        return None
+        ds = Dataset(netCDFfile, 'a')
 
-    # read existing quality_control flags
-    qc = var_qc[:]
+        nc_var = ds.variables[variable_name]
 
-    nc_alt = ds.variables['ALT']
-    alt_msk = (nc_alt[:] < -15) | (nc_alt[:] > 10)
+        try:
+            # find the existing quality_control variable in the auxillary variables list
+            aux_vars = nc_var.ancillary_variables
+            aux_var = aux_vars.split(" ")
+            qc_vars = [i for i in aux_var if i.endswith("_quality_control")]
+            qc_var = qc_vars[0]
+            print("QC var name ", qc_var)
+            var_qc = ds.variables[qc_var]
+        except KeyError:
+            print("no QC variable found")
+            return None
 
-    nc_e_var = ds.variables['e' + variable_name]
-    e_var = nc_e_var[:] * 3  # Southern Ocean Time Series (SOTS) Quality Assessment and Control Report PAR Instruments Version 1.0 page 9 : Test 7:
+        # read existing quality_control flags
+        existing_qc_flags = var_qc[:]
 
-    e_var = e_var + 10
+        nc_alt = ds.variables['ALT']
+        alt_msk = (nc_alt[:] < -15) | (nc_alt[:] > 10)
 
-    # this is where the actual QC test is done
-    mask = (nc_var > e_var) & alt_msk
-    print('mask data ', mask)
+        nc_e_var = ds.variables['e' + variable_name]
+        e_var = nc_e_var[:]
+        e_var.mask = False
 
-    # create a qc variable just for this test flags
-    if nc_var.name + "_quality_control_cl" in ds.variables:
-        ncVarOut = ds.variables[nc_var.name + "_quality_control_cl"]
-    else:
-        ncVarOut = ds.createVariable(nc_var.name + "_quality_control_cl", "i1", nc_var.dimensions, fill_value=99, zlib=True)  # fill_value=0 otherwise defaults to max
-        ncVarOut.long_name = "quality flag for " + nc_var.name
-        ncVarOut.quality_control_conventions = "IMOS standard flags"
-        ncVarOut.flag_values = np.array([0, 1, 2, 3, 4, 6, 7, 9], dtype=np.int8)
-        ncVarOut.flag_meanings = 'unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value'
+        e_var = (e_var*3) + 10  # Southern Ocean Time Series (SOTS) Quality Assessment and Control Report PAR Instruments Version 1.0 page 9 : Test 7:
+                                # the +10 QC's the night time data as well
 
-    ncVarOut[:] = np.zeros(nc_var.shape)
+        # this is where the actual QC test is done
+        mask = (nc_var > e_var) & alt_msk
+        print('mask data ', mask)
 
-    # add new variable to list of aux variables
-    nc_var.ancillary_variables = nc_var.ancillary_variables + " " + nc_var.name + "_quality_control_cl"
+        # create a qc variable just for this test flags
+        if nc_var.name + "_quality_control_cl" in ds.variables:
+            ncVarOut = ds.variables[nc_var.name + "_quality_control_cl"]
+        else:
+            ncVarOut = ds.createVariable(nc_var.name + "_quality_control_cl", "i1", nc_var.dimensions, fill_value=99, zlib=True)  # fill_value=0 otherwise defaults to max
+            ncVarOut.long_name = "quality flag for " + nc_var.name
+            ncVarOut.quality_control_conventions = "IMOS standard flags"
+            ncVarOut.flag_values = np.array([0, 1, 2, 3, 4, 6, 7, 9], dtype=np.int8)
+            ncVarOut.flag_meanings = 'unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value'
 
-    # store the qc flags
-    ncVarOut[alt_msk] = 1
-    ncVarOut[mask] = qc_value
+        new_qc_flags = np.zeros(nc_var.shape) + 2
 
-    # store qc flags to main quality_control flags variable
-    mask = mask & (qc < 1)  # only mark data that has not been QCd already
-    print('mask other qc ', mask)
+        # add new variable to list of aux variables
+        nc_var.ancillary_variables = nc_var.ancillary_variables + " " + nc_var.name + "_quality_control_cl"
 
-    qc[mask] = qc_value  # mark the out of range points with bad_data
+        # store the qc flags
+        new_qc_flags[alt_msk] = 1
+        new_qc_flags[mask] = qc_value
+        ncVarOut[:] = new_qc_flags
 
-    # calculate the number of points marked as bad_data
-    marked = np.zeros_like(qc)
-    marked[mask] = 1
-    count = sum(marked)
-    print('marked records ', count, mask, qc)
+        # update the existing qc-flags
+        existing_qc_flags = np.max([existing_qc_flags, new_qc_flags], axis=0)
 
-    # write flags back to main QC variable
-    var_qc[:] = qc
+        # calculate the number of points marked as bad_data
+        marked = np.zeros_like(existing_qc_flags)
+        marked[mask] = 1
+        count = sum(marked)
+        print('marked records ', count, mask, existing_qc_flags)
 
-    # update the history attribute
-    try:
-        hist = ds.history + "\n"
-    except AttributeError:
-        hist = ""
-    ds.setncattr("history", hist + datetime.utcnow().strftime("%Y-%m-%d") + " " + variable_name + " climate range, marked " + str(count))
+        # write flags back to main QC variable
+        var_qc[:] = existing_qc_flags
 
-    ds.close()
+        # update the history attribute
+        try:
+            hist = ds.history + "\n"
+        except AttributeError:
+            hist = ""
+        ds.setncattr("history", hist + datetime.utcnow().strftime("%Y-%m-%d") + " " + variable_name + " climate range, marked " + str(count))
 
-    return netCDFfile
+        ds.close()
+
+    return netCDFfiles
 
 
 if __name__ == "__main__":

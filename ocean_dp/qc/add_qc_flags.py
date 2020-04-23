@@ -36,8 +36,10 @@ def add_qc(netCDFfile, var_name=None):
     for fn in netCDFfile:
 
         fn_new = fn
-        if os.path.basename(fn).startswith("IMOS"):
-            fn_split = fn.split('_')
+        dirname = os.path.dirname(fn_new)
+        basename = os.path.basename(fn_new)
+        if basename.startswith("IMOS"):
+            fn_split = basename.split('_')
 
             # IMOS_ABOS-SOTS_CPT_20090922_SOFS_FV01_Pulse-6-2009-SBE37SM-RS232-6962-100m_END-20100323_C-20200227.nc
             # 0    1         2   3        4    5    6                                    7            8
@@ -48,7 +50,7 @@ def add_qc(netCDFfile, var_name=None):
             now = datetime.utcnow()
 
             fn_split[8] = now.strftime("C-%Y%m%d.nc")
-            fn_new = "_".join(fn_split)
+            fn_new = os.path.join(dirname, "_".join(fn_split))
 
         # Add the new file name to the list of new file names
         new_name.append(fn_new)
@@ -96,8 +98,8 @@ def add_qc(netCDFfile, var_name=None):
                     ncVarOut = ds.createVariable(v +"_quality_control", "i1", nc_vars[v].dimensions, fill_value=99, zlib=True)  # fill_value=99 otherwise defaults to max, imos-toolbox uses 99
                     ncVarOut[:] = np.zeros(nc_vars[v].shape)
                     ncVarOut.long_name = "quality flag for " + v
-                    if 'standard_name' in nc_vars[v].ncattrs:
-                        ncVarOut.standard_name = v + " status_flag"
+                    if 'standard_name' in nc_vars[v].ncattrs():
+                        ncVarOut.standard_name = nc_vars[v].standard_name + " status_flag"
                     ncVarOut.quality_control_conventions = "IMOS standard flags"
                     ncVarOut.flag_values = np.array([0, 1, 2, 3, 4, 6, 7, 9], dtype=np.int8)
                     ncVarOut.flag_meanings = 'unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value'
