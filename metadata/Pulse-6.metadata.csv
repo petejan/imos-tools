@@ -41,7 +41,8 @@ GLOBAL,,Pulse-6-2009,,,,,,,,voyage_deployment,str,http://www.cmar.csiro.au/data/
 GLOBAL,,Pulse-6-2009,,,,,,,,voyage_recovery,str,http://www.cmar.csiro.au/data/trawler/survey_details.cfm?survey=SS2010_V02
 ,,,,,,,,,,,,
 VAR_ATT,TIME,Pulse-6-2009,MDS-MKVL,200341,,,,,,comment_scale_offset,str,1.0 -0.04166666666667
-VAR_ATT,TIME,Pulse-6-2009,MDS-MKVL,200341,,,,,,long_name,str,omnidirectional photosynthetic spherical photon flux in air
+VAR_ATT,PAR,Pulse-6-2009,MDS-MKVL,200341,,,,,,long_name,str,omnidirectional photosynthetic spherical photon flux in air
+,,,,,,,,,,,,
 VAR_ATT,TIME,Pulse-6-2009,MDS-MKVL,200665,,,,,,comment_scale_offset,str,1.0 -0.4166666666667
 ,,,,,,,,,,,,
 VAR_ATT,VOLT2,Pulse-6-2009,SBE16plus,1606331,,,,,,comment_attached_instrument,str,Wet-LABS ; PARS-134
@@ -83,11 +84,3 @@ VAR,NOMINAL_DEPTH,Pulse-6-2009,Minilog-T,6100,27/9/09,18/3/10,NOMINAL_DEPTH,(),(
 VAR,NOMINAL_DEPTH,Pulse-6-2009,Minilog-T,6101,27/9/09,18/3/10,NOMINAL_DEPTH,(),(),,float64,160
 VAR,NOMINAL_DEPTH,Pulse-6-2009,ECO-PAR,135,27/9/09,18/3/10,NOMINAL_DEPTH,(),(),,float64,37.5
 VAR,NOMINAL_DEPTH,Pulse-6-2009,FLNTUS,1215,27/9/09,18/3/10,NOMINAL_DEPTH,(),(),,float64,37.5
-,,,,,,,,,,,,
-VAR_ATT,VOLT2,Pulse-6-2009,SBE16plus,1606331,,,,,,comment_attached_instrument,str,Wet-LABS ; PARS-134
-VAR_ATT,VOLT2,Pulse-6-2009,SBE16plus,1606331,,,,,,calibration_PAR_Im,float32,1.3589
-VAR_ATT,VOLT2,Pulse-6-2009,SBE16plus,1606331,,,,,,calibration_PAR_analog_A1,float32,0.8902
-VAR_ATT,VOLT2,Pulse-6-2009,SBE16plus,1606331,,,,,,calibration_PAR_analog_A0,float32,1.3145
-VAR_ATT,VOLT2,Pulse-6-2009,SBE16plus,1606331,,,,,,calibration_PAR_date,str,"Mar. 27, 2009"
-VAR_ATT,VOLT2,Pulse-6-2009,SBE16plus,1606331,,,,,,calibration_PAR_facility,str,Wet-LABS
-VAR_ATT,VOLT2,Pulse-6-2009,SBE16plus,1606331,,,,,,calibration_PAR_SN,str,PARS-134

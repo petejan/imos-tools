@@ -58,7 +58,7 @@ def eco_parse(files):
     time = []
     value = []
 
-    filepath = files[1]
+    filepath = files[0]
     number_samples = 0
 
     with open(filepath, 'r', errors='ignore') as fp:
@@ -135,4 +135,4 @@ def eco_parse(files):
 
 
 if __name__ == "__main__":
-    eco_parse(sys.argv)
+    eco_parse(sys.argv[1:])

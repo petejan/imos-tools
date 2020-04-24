@@ -67,7 +67,7 @@ def global_range(netCDFfiles, variable, max, min, qc_value=4):
             ncVarOut.quality_control_conventions = "IMOS standard flags"
             ncVarOut.flag_meanings = 'unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value'
 
-        new_qc_flags = np.zeros(nc_var.shape) + 1
+        new_qc_flags = np.ones(nc_var.shape)
         new_qc_flags[mask] = qc_value
 
         # store new flags

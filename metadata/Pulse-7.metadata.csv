@@ -10,7 +10,7 @@ GLOBAL,,,Mooring,Surface Float,9/9/10,18/4/11,,,,deployment_code,str,Pulse-7-201
 GLOBAL,,,RAS Box and Frame,Artemis,9/9/10,18/4/11,,,,deployment_code,str,Pulse-7-2010
 GLOBAL,,,processing_site_code,20,9/9/10,18/4/11,,,,deployment_code,str,Pulse-7-2010
 GLOBAL,,,RAS-3-48-500,11906-01,9/9/10,18/4/11,,,,deployment_code,str,Pulse-7-2010
-GLOBAL,,,9601-DGS-LP,3.00034E+14,9/9/10,18/4/11,,,,deployment_code,str,Pulse-7-2010
+GLOBAL,,,9601-DGS-LP,3.00E+14,9/9/10,18/4/11,,,,deployment_code,str,Pulse-7-2010
 GLOBAL,,,230A-101,110287,9/9/10,18/4/11,,,,deployment_code,str,Pulse-7-2010
 GLOBAL,,,GTD,29-102-15,9/9/10,18/4/11,,,,deployment_code,str,Pulse-7-2010
 GLOBAL,,,TDR-2050,14788,9/9/10,18/4/11,,,,deployment_code,str,Pulse-7-2010
@@ -31,6 +31,7 @@ GLOBAL,,,Minilog-T,6098,9/9/10,18/4/11,,,,deployment_code,str,Pulse-7-2010
 GLOBAL,,,Minilog-T,6100,9/9/10,18/4/11,,,,deployment_code,str,Pulse-7-2010
 GLOBAL,,,Minilog-TD,6101,9/9/10,18/4/11,,,,deployment_code,str,Pulse-7-2010
 GLOBAL,,,ECO-PAR,135,9/9/10,18/4/11,,,,deployment_code,str,Pulse-7-2010
+GLOBAL,,,ECO-PARS,PAR-135,9/9/10,18/4/11,,,,deployment_code,str,Pulse-7-2010
 GLOBAL,,,FLNTUS,1215,9/9/10,18/4/11,,,,deployment_code,str,Pulse-7-2010
 ,,,,,,,,,,,,
 VAR,LATITUDE,Pulse-7-2010,,,9/9/10,18/4/11,LATITUDE,(),(),,float64,-46.93473333
@@ -41,6 +42,27 @@ GLOBAL,,Pulse-7-2010,,,9/9/10,18/4/11,,,,time_deployment_start,str,2010-09-12T00
 GLOBAL,,Pulse-7-2010,,,9/9/10,18/4/11,,,,time_deployment_end,str,2011-04-17T20:00:00Z
 GLOBAL,,Pulse-7-2010,,,,,,,,voyage_deployment,str,http://www.cmar.csiro.au/data/trawler/survey_details.cfm?survey=SS2010_V07
 GLOBAL,,Pulse-7-2010,,,,,,,,voyage_recovery,str,http://www.cmar.csiro.au/data/trawler/survey_details.cfm?survey=SS2011_V03
+,,,,,,,,,,,,
+VAR_ATT,PAR,Pulse-7-2010,MDS-MKVL,200341,,,,,,long_name,str,omnidirectional photosynthetic spherical photon flux in air
+VAR_ATT,PAR,Pulse-7-2010,MDS-MKVL,200341,,,,,,coeff,str,"-1.05325996875763,1.05326104164124,0,0,"
+VAR_ATT,PAR,Pulse-7-2010,MDS-MKVL,200664,,,,,,coeff,str,"-0.817469000816345,0.817468822002411,0,0,"
+VAR_ATT,PAR,Pulse-7-2010,MDS-MKVL,200665,,,,,,coeff,str,"-1.13689994812012,1.13689994812012,0,0,"
+,,,,,,,,,,,,
+VAR_ATT,V1,Pulse-7-2010,SBE16plus,1606331,,,,,,comment_attached_instrument,str,Wet-LABS ; PARS-135
+VAR_ATT,V1,Pulse-7-2010,SBE16plus,1606331,,,,,,calibration_PAR_Im,float64,1.3589
+VAR_ATT,V1,Pulse-7-2010,SBE16plus,1606331,,,,,,calibration_PAR_analog_A1,float64,0.8946
+VAR_ATT,V1,Pulse-7-2010,SBE16plus,1606331,,,,,,calibration_PAR_analog_A0,float64,1.3285
+VAR_ATT,V1,Pulse-7-2010,SBE16plus,1606331,,,,,,calibration_PAR_date,str,"Mar. 27, 2009"
+VAR_ATT,V1,Pulse-7-2010,SBE16plus,1606331,,,,,,calibration_PAR_facility,str,Wet-LABS
+VAR_ATT,V1,Pulse-7-2010,SBE16plus,1606331,,,,,,calibration_PAR_SN,str,PARS-135
+,,,,,,,,,,,,
+VAR_ATT,PAR_COUNT,Pulse-7-2010,ECO-PARS,PAR-135,,,,,,comment_attached_instrument,str,Wet-LABS ; PARS-135
+VAR_ATT,PAR_COUNT,Pulse-7-2010,ECO-PARS,PAR-135,,,,,,calibration_PAR_Im,float64,1.3589
+VAR_ATT,PAR_COUNT,Pulse-7-2010,ECO-PARS,PAR-135,,,,,,calibration_PAR_digital_A1,float64,2943.4639
+VAR_ATT,PAR_COUNT,Pulse-7-2010,ECO-PARS,PAR-135,,,,,,calibration_PAR_digital_A0,float64,4374.0529
+VAR_ATT,PAR_COUNT,Pulse-7-2010,ECO-PARS,PAR-135,,,,,,calibration_PAR_date,str,"Mar. 27, 2009"
+VAR_ATT,PAR_COUNT,Pulse-7-2010,ECO-PARS,PAR-135,,,,,,calibration_PAR_facility,str,Wet-LABS
+VAR_ATT,PAR_COUNT,Pulse-7-2010,ECO-PARS,PAR-135,,,,,,calibration_PAR_SN,str,PARS-135
 ,,,,,,,,,,,,
 VAR,NOMINAL_DEPTH,Pulse-7-2010,Optode 3975,1161,9/9/10,18/4/11,NOMINAL_DEPTH,(),(),,float64,31.1
 VAR,NOMINAL_DEPTH,Pulse-7-2010,MDS-MKVL,200341,9/9/10,18/4/11,NOMINAL_DEPTH,(),(),,float64,0
@@ -53,7 +75,7 @@ VAR,NOMINAL_DEPTH,Pulse-7-2010,Mooring,Surface Float,9/9/10,18/4/11,NOMINAL_DEPT
 VAR,NOMINAL_DEPTH,Pulse-7-2010,RAS Box and Frame,Artemis,9/9/10,18/4/11,NOMINAL_DEPTH,(),(),,float64,31.1
 VAR,NOMINAL_DEPTH,Pulse-7-2010,processing_site_code,20,9/9/10,18/4/11,NOMINAL_DEPTH,(),(),,float64,0
 VAR,NOMINAL_DEPTH,Pulse-7-2010,RAS-3-48-500,11906-01,9/9/10,18/4/11,NOMINAL_DEPTH,(),(),,float64,31.1
-VAR,NOMINAL_DEPTH,Pulse-7-2010,9601-DGS-LP,3.00034E+14,9/9/10,18/4/11,NOMINAL_DEPTH,(),(),,float64,0
+VAR,NOMINAL_DEPTH,Pulse-7-2010,9601-DGS-LP,3.00E+14,9/9/10,18/4/11,NOMINAL_DEPTH,(),(),,float64,0
 VAR,NOMINAL_DEPTH,Pulse-7-2010,230A-101,110287,9/9/10,18/4/11,NOMINAL_DEPTH,(),(),,float64,31.1
 VAR,NOMINAL_DEPTH,Pulse-7-2010,GTD,29-102-15,9/9/10,18/4/11,NOMINAL_DEPTH,(),(),,float64,31.1
 VAR,NOMINAL_DEPTH,Pulse-7-2010,TDR-2050,14788,9/9/10,18/4/11,NOMINAL_DEPTH,(),(),,float64,475
@@ -73,5 +95,6 @@ VAR,NOMINAL_DEPTH,Pulse-7-2010,Minilog-T,4830,9/9/10,18/4/11,NOMINAL_DEPTH,(),()
 VAR,NOMINAL_DEPTH,Pulse-7-2010,Minilog-T,6098,9/9/10,18/4/11,NOMINAL_DEPTH,(),(),,float64,45
 VAR,NOMINAL_DEPTH,Pulse-7-2010,Minilog-T,6100,9/9/10,18/4/11,NOMINAL_DEPTH,(),(),,float64,60
 VAR,NOMINAL_DEPTH,Pulse-7-2010,Minilog-TD,6101,9/9/10,18/4/11,NOMINAL_DEPTH,(),(),,float64,160
-VAR,NOMINAL_DEPTH,Pulse-7-2010,ECO-PAR,135,9/9/10,18/4/11,NOMINAL_DEPTH,(),(),,float64,31.1
+VAR,NOMINAL_DEPTH,Pulse-7-2010,ECO-PAR,135,9/9/10,18/4/11,NOMINAL_DEPTH,(),(),,float64,31
+VAR,NOMINAL_DEPTH,Pulse-7-2010,ECO-PAR,PAR-135,9/9/10,18/4/11,NOMINAL_DEPTH,(),(),,float64,31
 VAR,NOMINAL_DEPTH,Pulse-7-2010,FLNTUS,1215,9/9/10,18/4/11,NOMINAL_DEPTH,(),(),,float64,31.1

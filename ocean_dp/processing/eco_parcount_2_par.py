@@ -25,8 +25,8 @@ from datetime import datetime
 import os
 
 
-def extract(netCDFfiles, sbe16_var='VOLT2'):
-    # Extract VOLT2 from a SBE16 file and create PAR
+def cal(netCDFfiles):
+    # process PAR_COUNT to PAR
 
     out_files = []
 
@@ -34,7 +34,7 @@ def extract(netCDFfiles, sbe16_var='VOLT2'):
         # Change the creation date in the filename to today
         now = datetime.utcnow()
         ds_in = Dataset(fn, 'r')
-        sn = ds_in.variables[sbe16_var].calibration_PAR_SN
+        sn = ds_in.variables['PAR_COUNT'].calibration_PAR_SN
         dep_code = ds_in.deployment_code
         depth = ds_in.instrument_nominal_depth
 
@@ -61,27 +61,27 @@ def extract(netCDFfiles, sbe16_var='VOLT2'):
         for ga in ds_in.ncattrs():
             ds.setncattr(ga, ds_in.getncattr(ga))
 
-        ds.setncattr("instrument", "Wet-LABS ; ECO-PAR")
-        ds.setncattr("instrument_model", "ECO-PAR")
+        ds.setncattr("instrument", "Wet-LABS ; ECO-PARS")
+        ds.setncattr("instrument_model", "ECO-PARS")
         ds.setncattr("instrument_serial_number", sn)
 
         # copy required variables
-        for v in ['TIME', 'NOMINAL_DEPTH', 'LATITUDE', 'LONGITUDE', 'PRES', sbe16_var]:
+        for v in ['TIME', 'NOMINAL_DEPTH', 'LATITUDE', 'LONGITUDE', 'PAR_COUNT']:
             new_var = ds.createVariable(v, ds_in.variables[v].dtype, dimensions=ds_in.variables[v].dimensions, zlib=True)
             for va in ds_in.variables[v].ncattrs():
                 new_var.setncattr(va, ds_in.variables[v].getncattr(va))
             new_var[:] = ds_in.variables[v][:]
 
         # calculate the PAR from the recorded voltage
-        VOLT2_var = ds_in.variables[sbe16_var]
-        par = VOLT2_var[:]
+        counts = ds_in.variables['PAR_COUNT']
+        par = counts[:]
         print(par)
-        new_var = ds.createVariable('PAR', VOLT2_var.dtype, VOLT2_var.dimensions, fill_value=np.nan, zlib=True)
+        new_var = ds.createVariable('PAR', counts.dtype, counts.dimensions, fill_value=np.nan, zlib=True)
         print(new_var)
-        new_var[:] = VOLT2_var.calibration_PAR_Im * 10**((par - VOLT2_var.calibration_PAR_analog_A0)/VOLT2_var.calibration_PAR_analog_A1)
-        for va in VOLT2_var.ncattrs():
+        new_var[:] = counts.calibration_PAR_Im * 10**((par - counts.calibration_PAR_digital_A0)/counts.calibration_PAR_digital_A1)
+        for va in counts.ncattrs():
             if va not in ('_FillValue'):
-                new_var.setncattr(va, VOLT2_var.getncattr(va))
+                new_var.setncattr(va, counts.getncattr(va))
         new_var.standard_name = 'downwelling_photosynthetic_photon_flux_in_sea_water'
         new_var.long_name = 'downwelling_photosynthetic_photon_flux_in_sea_water'
         new_var.units = 'umol/m2/s'
@@ -90,13 +90,13 @@ def extract(netCDFfiles, sbe16_var='VOLT2'):
 
         new_var.ancillary_variables = "PAR_quality_control"
 
-        new_var = ds.createVariable('PAR_quality_control', 'i1', VOLT2_var.dimensions, fill_value=np.int8(99), zlib=True)
+        new_var = ds.createVariable('PAR_quality_control', 'i1', counts.dimensions, fill_value=np.int8(99), zlib=True)
         print(new_var)
-        if sbe16_var+'_quality_control' in ds_in.variables:
-            new_var[:] = ds_in.variables[sbe16_var +'_quality_control'][:]
-            for va in ds_in.variables[sbe16_var+'_quality_control'].ncattrs():
+        if 'PAR_COUNT_quality_control' in ds_in.variables:
+            new_var[:] = ds_in.variables['PAR_COUNT_quality_control'][:]
+            for va in ds_in.variables['PAR_COUNT_quality_control'].ncattrs():
                 if va not in ('_FillValue'):
-                    new_var.setncattr(va, ds_in.variables[sbe16_var + '_quality_control'].getncattr(va))
+                    new_var.setncattr(va, ds_in.variables['PAR_COUNT_quality_control'].getncattr(va))
         else:
             new_var[:] = 0
         new_var.long_name = 'quality_code for downwelling_photosynthetic_photon_flux_in_sea_water'
@@ -119,4 +119,4 @@ def extract(netCDFfiles, sbe16_var='VOLT2'):
 
 
 if __name__ == "__main__":
-    extract([sys.argv[2]], sbe16_var=sys.argv[1])
+    cal([sys.argv[1]])

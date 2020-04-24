@@ -132,7 +132,13 @@ def add_qc(dataDIR):
         daily_mean_epar = df.ePAR[mask].resample(timedelta(hours=24), loffset=timedelta(hours=hr_offset)).mean()
 
         # save a the means in a list
-        daily_means.append(daily_mean.reindex(td, method='ffill'))
+        sensor_type = DS.PAR.comment_sensor_type
+        spherical = 'spherical' in sensor_type
+        if spherical:
+            print('appling spherial_factor / 2')
+            daily_means.append(daily_mean.reindex(td, method='ffill')/2)
+        else:
+            daily_means.append(daily_mean.reindex(td, method='ffill'))
 
         DS.close()
 

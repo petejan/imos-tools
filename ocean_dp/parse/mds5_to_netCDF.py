@@ -205,6 +205,7 @@ def parse(file):
     ncVarOut.long_name = "omnidirectional photosynthetic spherical_photon flux in sea water"  # change later in metadata for surface ones
     ncVarOut.units = 'umol/m^2/s'
     ncVarOut.calibration_date = coeff_date
+    ncVarOut.sensor_SeaVoX_L22_code = 'SDN:L22::TOOL0918'
     ncVarOut.comment_sensor_type = 'spherical sensor'
     ncVarOut[:] = data
 

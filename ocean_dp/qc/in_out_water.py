@@ -40,9 +40,10 @@ def in_out_water(netCDFfile, var_name=None):
             to_add.append(var_name)
         else:
             for v in nc_vars:
-                #print (vars[v].dimensions)
-                if v != 'TIME':
-                    to_add.append(v)
+                if "TIME" in nc_vars[v].dimensions:
+                    #print (vars[v].dimensions)
+                    if v != 'TIME':
+                        to_add.append(v)
 
         time_var = nc_vars["TIME"]
         time = num2date(time_var[:], units=time_var.units, calendar=time_var.calendar)
@@ -52,32 +53,32 @@ def in_out_water(netCDFfile, var_name=None):
 
         print('deployment time', time_deploy)
 
-        print(to_add)
+        print('var to add', to_add)
 
         # create a mask for the time range
         mask = (time <= time_deploy) | (time >= time_recovery)
 
         for v in to_add:
-            if "TIME" in nc_vars[v].dimensions:
-                if v.endswith("_quality_control"):
-                    print("QC time dim ", v)
+            print("var", v, ' dimensions ', nc_vars[v].dimensions)
 
-                    ncVarOut = nc_vars[v]
-                else:
-                    # create a qc variable just for this test flags
-                    if v + "_quality_control_io" in ds.variables:
-                        ncVarOut = ds.variables[v + "_quality_control_io"]
-                    else:
-                        ncVarOut = ds.createVariable(v + "_quality_control_io", "i1", nc_vars[v].dimensions, fill_value=99, zlib=True)  # fill_value=0 otherwise defaults to max
-                    ncVarOut[:] = np.zeros(nc_vars[v].shape)
-                    ncVarOut.long_name = "quality flag for " + v
-                    ncVarOut.quality_control_conventions = "IMOS standard flags"
-                    ncVarOut.flag_values = np.array([0, 1, 2, 3, 4, 6, 7, 9], dtype=np.int8)
-                    ncVarOut.flag_meanings = 'unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value'
+            ncVarOut = nc_vars[v + "_quality_control"]
+            ncVarOut[mask] = 6
 
-                    nc_vars[v].ancillary_variables = nc_vars[v].ancillary_variables + " " + v + "_quality_control_io"
+            # create a qc variable just for this test flags
+            if v + "_quality_control_io" in ds.variables:
+                ncVarOut = ds.variables[v + "_quality_control_io"]
+                ncVarOut[:] = 0
+            else:
+                ncVarOut = ds.createVariable(v + "_quality_control_io", "i1", nc_vars[v].dimensions, fill_value=99, zlib=True)  # fill_value=0 otherwise defaults to max
+            ncVarOut[:] = 0
+            ncVarOut.long_name = "quality flag for " + v
+            ncVarOut.quality_control_conventions = "IMOS standard flags"
+            ncVarOut.flag_values = np.array([0, 1, 2, 3, 4, 6, 7, 9], dtype=np.int8)
+            ncVarOut.flag_meanings = 'unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value'
 
-                ncVarOut[mask] = 6
+            nc_vars[v].ancillary_variables = nc_vars[v].ancillary_variables + " " + v + "_quality_control_io"
+
+            ncVarOut[mask] = 6
 
         ds.file_version = "Level 1 - Quality Controlled Data"
 
