@@ -40,7 +40,7 @@ import qc_checker
 start = time.time()
 
 # Set the working directory
-os.chdir('/Users/tru050/Desktop/sofs7.5 test data')
+os.chdir('/Users/tru050/Desktop/sofs6 test data')
 
 # Make a list of FV00 filenames
 fv00_files = glob.glob('*IMOS_ABOS-SOTS*FV00*.nc')
@@ -70,13 +70,13 @@ for ncfile in fv01_pres_interp_files:
     global_range.global_range(ncfile,'TEMP',40,-2)
 
 # Rate of change
-rate_of_change_test.roc_test_files(fv01_pres_interp_files,'TEMP',20)
+rate_of_change_test.roc_test_files(fv01_pres_interp_files,'TEMP',10)
 
 # Spike
 spike_test.spike_test_files(fv01_pres_interp_files,target_vars_in=['TEMP'])
 
 # Flatline
-flatline_test.flatline_test_files(fv01_pres_interp_files,['TEMP'])
+flatline_test.flatline_test_files(fv01_pres_interp_files,['TEMP'],window=10)
 
 # Check qc process has worked
 fv01_qc_checked = qc_checker.qc_checker_files(fv01_pres_interp_files,['TEMP'])

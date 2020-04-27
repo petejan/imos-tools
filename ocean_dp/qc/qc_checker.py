@@ -115,7 +115,11 @@ def qc_checker(nc,target_vars_in=[]):
     nc.close()
     
     
-    
+# def qc_check_plot(target_file,target_var)
+
+#     nc = Dataset(target_file,'r')
+
+        
     
     
     

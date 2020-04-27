@@ -57,9 +57,10 @@ def global_range(netCDFfile, variable, max, min, qc_value=4):
     # create a qc variable just for this test flags
     if nc_var.name + "_quality_control_gr" in ds.variables:
         ncVarOut = ds.variables[nc_var.name + "_quality_control_gr"]
+        ncVarOut[:] = 0
     else:
         ncVarOut = ds.createVariable(nc_var.name + "_quality_control_gr", "i1", nc_var.dimensions, fill_value=99, zlib=True)  # fill_value=0 otherwise defaults to max
-        ncVarOut[:] = np.zeros(nc_var.shape)
+        ncVarOut[:] = 0
         ncVarOut.long_name = "quality flag for " + nc_var.name
         ncVarOut.flag_values = np.array([0, 1, 2, 3, 4, 6, 7, 9], dtype=np.int8)
         ncVarOut.flag_meanings = 'unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value'

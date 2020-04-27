@@ -115,15 +115,15 @@ def spike_test(nc, target_vars_in=[], thresh_low=default_low, thresh_high=defaul
                 print('High spike found')
                 
                 #set corresponding QC value to...
-                nc.variables[current_var+'_quality_control_spk'][i] = flag_high
+                ncVarOut[i] = flag_high
                 
         
         # Find the indices where qc isn't set to 4 (high spike), removing the final element as it can't be check for a spike
-        low_spike_chk_idx = np.where(nc.variables[current_var+'_quality_control'][:]!=4)[0][0:-1]
+        low_spike_chk_idx = np.where(ncVarOut[:]!=4)[0][0:-1]
 
         
         # Remove from the indices those that are either side of a high spike
-        for i in np.where(nc.variables[current_var+'_quality_control'][:]==4)[0]:
+        for i in ncVarOut[:]==4:
             
             low_spike_chk_idx=low_spike_chk_idx[low_spike_chk_idx!=[i-1]]
             
@@ -150,7 +150,7 @@ def spike_test(nc, target_vars_in=[], thresh_low=default_low, thresh_high=defaul
                 print('Low spike found')
                 
                 #set corresponding QC value to...
-                nc.variables[current_var+'_quality_control_spk'][i] = flag_low   
+                ncVarOut[i] = flag_low   
                 
     nc.variables[current_var  + "_quality_control"][:] = np.maximum(nc.variables[current_var  + "_quality_control_spk"][:],nc.variables[current_var  + "_quality_control"][:])
 
