@@ -14,8 +14,8 @@ GLOBAL,,,ACR8242XS,35505,2/8/11,19/7/12,,,,deployment_code,str,Pulse-8-2011
 GLOBAL,,,ACR8242XS,35506,2/8/11,19/7/12,,,,deployment_code,str,Pulse-8-2011
 GLOBAL,,,RAS-3-48-500,11906-01,2/8/11,19/7/12,,,,deployment_code,str,Pulse-8-2011
 GLOBAL,,,3DM-GX1,9475,2/8/11,19/7/12,,,,deployment_code,str,Pulse-8-2011
-GLOBAL,,,9601-D-N,3.00034E+14,2/8/11,19/7/12,,,,deployment_code,str,Pulse-8-2011
-GLOBAL,,,9601-DGS-LP,3.00034E+14,2/8/11,19/7/12,,,,deployment_code,str,Pulse-8-2011
+GLOBAL,,,9601-D-N,3.00E+14,2/8/11,19/7/12,,,,deployment_code,str,Pulse-8-2011
+GLOBAL,,,9601-DGS-LP,3.00E+14,2/8/11,19/7/12,,,,deployment_code,str,Pulse-8-2011
 GLOBAL,,,230A-101,110287,2/8/11,19/7/12,,,,deployment_code,str,Pulse-8-2011
 GLOBAL,,,GTD,29-102-15,2/8/11,19/7/12,,,,deployment_code,str,Pulse-8-2011
 GLOBAL,,,TDR-2050,14788,2/8/11,19/7/12,,,,deployment_code,str,Pulse-8-2011
@@ -38,15 +38,20 @@ GLOBAL,,,Minilog-T,6100,2/8/11,19/7/12,,,,deployment_code,str,Pulse-8-2011
 GLOBAL,,,Minilog-T,6101,2/8/11,19/7/12,,,,deployment_code,str,Pulse-8-2011
 GLOBAL,,,ECO-PAR,134,2/8/11,19/7/12,,,,deployment_code,str,Pulse-8-2011
 GLOBAL,,,FLNTUS,1215,2/8/11,19/7/12,,,,deployment_code,str,Pulse-8-2011
+GLOBAL,,,ECO-PARS,PARS-134,2/8/11,19/7/12,,,,deployment_code,str,Pulse-8-2011
 ,,,,,,,,,,,,
 VAR,LATITUDE,Pulse-8-2011,,,2/8/11,19/7/12,LATITUDE,(),(),,float64,-46.92954
 VAR,LONGITUDE,Pulse-8-2011,,,2/8/11,19/7/12,LONGITUDE,(),(),,float64,142.21466
 ,,,,,,,,,,,,
 GLOBAL,,Pulse-8-2011,,,2/8/11,19/7/12,,,,site_nominal_depth,float64,4300
-GLOBAL,,Pulse-8-2011,,,2/8/11,19/7/12,,,,time_deployment_start,str,2011-08-03T11:59:00Z
+GLOBAL,,Pulse-8-2011,,,2/8/11,19/7/12,,,,time_deployment_start,str,2011-08-04T01:00:00Z
 GLOBAL,,Pulse-8-2011,,,2/8/11,19/7/12,,,,time_deployment_end,str,2012-07-19T21:46:00Z
 GLOBAL,,Pulse-8-2011,,,,,,,,voyage_deployment,str,http://www.cmar.csiro.au/data/trawler/survey_details.cfm?survey=SS2011_V03
 GLOBAL,,Pulse-8-2011,,,,,,,,voyage_recovery,str,http://www.cmar.csiro.au/data/trawler/survey_details.cfm?survey=SS2012_V03
+,,,,,,,,,,,,
+VAR_ATT,TIME,Pulse-8-2011,MDS-MKVL,200341,,,,,,comment_scale_offset,str,1.0 -0.41666666666667
+VAR_ATT,TIME,Pulse-8-2011,MDS-MKVL,200664,,,,,,comment_scale_offset,str,1.0 -0.41666666666667
+VAR_ATT,TIME,Pulse-8-2011,MDS-MKVL,200665,,,,,,comment_scale_offset,str,1.0 -0.41666666666667
 ,,,,,,,,,,,,
 VAR,NOMINAL_DEPTH,Pulse-8-2011,Optode 3975C,1419,2/8/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,34
 VAR,NOMINAL_DEPTH,Pulse-8-2011,MDS-MKVL,200341,2/8/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,50
@@ -63,8 +68,8 @@ VAR,NOMINAL_DEPTH,Pulse-8-2011,ACR8242XS,35505,2/8/11,19/7/12,NOMINAL_DEPTH,(),(
 VAR,NOMINAL_DEPTH,Pulse-8-2011,ACR8242XS,35506,2/8/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,4300
 VAR,NOMINAL_DEPTH,Pulse-8-2011,RAS-3-48-500,11906-01,2/8/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,34
 VAR,NOMINAL_DEPTH,Pulse-8-2011,3DM-GX1,9475,2/8/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,0
-VAR,NOMINAL_DEPTH,Pulse-8-2011,9601-D-N,3.00034E+14,2/8/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,0
-VAR,NOMINAL_DEPTH,Pulse-8-2011,9601-DGS-LP,3.00034E+14,2/8/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,0
+VAR,NOMINAL_DEPTH,Pulse-8-2011,9601-D-N,3.00E+14,2/8/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,0
+VAR,NOMINAL_DEPTH,Pulse-8-2011,9601-DGS-LP,3.00E+14,2/8/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,0
 VAR,NOMINAL_DEPTH,Pulse-8-2011,230A-101,110287,2/8/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,34
 VAR,NOMINAL_DEPTH,Pulse-8-2011,GTD,29-102-15,2/8/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,34
 VAR,NOMINAL_DEPTH,Pulse-8-2011,TDR-2050,14788,2/8/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,475
@@ -85,5 +90,28 @@ VAR,NOMINAL_DEPTH,Pulse-8-2011,Minilog-T,4830,2/8/11,19/7/12,NOMINAL_DEPTH,(),()
 VAR,NOMINAL_DEPTH,Pulse-8-2011,Minilog-T,6098,2/8/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,45
 VAR,NOMINAL_DEPTH,Pulse-8-2011,Minilog-TD,6100,2/8/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,60
 VAR,NOMINAL_DEPTH,Pulse-8-2011,Minilog-TD,6101,2/8/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,160
-VAR,NOMINAL_DEPTH,Pulse-8-2011,ECO-PAR,134,2/8/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,34
+VAR,NOMINAL_DEPTH,Pulse-8-2011,ECO-PAR,134,2/8/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,33.8
 VAR,NOMINAL_DEPTH,Pulse-8-2011,FLNTUS,1215,2/8/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,34
+,,,,,,,,,,,,
+VAR_ATT,PAR,Pulse-8-2011,MDS-MKVL,200341,,,,,,long_name,str,omnidirectional photosynthetic spherical photon flux in air
+VAR_ATT,PAR,Pulse-8-2011,MDS-MKVL,200341,,,,,,coeff,str,"-1.05325996875763,1.05326104164124,0,0,"
+VAR_ATT,PAR,Pulse-8-2011,MDS-MKVL,200664,,,,,,coeff,str,"-0.817469000816345,0.817468822002411,0,0,"
+VAR_ATT,PAR,Pulse-8-2011,MDS-MKVL,200665,,,,,,coeff,str,"-1.13689994812012,1.13689994812012,0,0,"
+,,,,,,,,,,,,
+VAR_ATT,VOLT2,Pulse-6-2009,SBE16plus,1606331,,,,,,comment_attached_instrument,str,Wet-LABS ; PARS-134
+VAR_ATT,VOLT2,Pulse-6-2009,SBE16plus,1606331,,,,,,calibration_PAR_Im,float64,1.3589
+VAR_ATT,VOLT2,Pulse-6-2009,SBE16plus,1606331,,,,,,calibration_PAR_analog_A1,float64,0.8902
+VAR_ATT,VOLT2,Pulse-6-2009,SBE16plus,1606331,,,,,,calibration_PAR_analog_A0,float64,1.3145
+VAR_ATT,VOLT2,Pulse-6-2009,SBE16plus,1606331,,,,,,calibration_PAR_date,str,"Mar. 27, 2009"
+VAR_ATT,VOLT2,Pulse-6-2009,SBE16plus,1606331,,,,,,calibration_PAR_facility,str,Wet-LABS
+VAR_ATT,VOLT2,Pulse-6-2009,SBE16plus,1606331,,,,,,calibration_PAR_SN,str,PARS-134
+,,,,,,,,,,,,
+VAR_ATT,PAR_COUNT,Pulse-8-2011,ECO-PARS,PAR-134,,,,,,comment_attached_instrument,str,Wet-LABS ; PARS-134
+VAR_ATT,PAR_COUNT,Pulse-8-2011,ECO-PARS,PAR-134,,,,,,calibration_PAR_Im,float64,1.3589
+VAR_ATT,PAR_COUNT,Pulse-8-2011,ECO-PARS,PAR-134,,,,,,calibration_PAR_digital_A1,float64,2923.6435
+VAR_ATT,PAR_COUNT,Pulse-8-2011,ECO-PARS,PAR-134,,,,,,calibration_PAR_digital_A0,float64,4260.0842
+VAR_ATT,PAR_COUNT,Pulse-8-2011,ECO-PARS,PAR-134,,,,,,calibration_PAR_date,str,"Mar. 27, 2009"
+VAR_ATT,PAR_COUNT,Pulse-8-2011,ECO-PARS,PAR-134,,,,,,calibration_PAR_facility,str,Wet-LABS
+VAR_ATT,PAR_COUNT,Pulse-8-2011,ECO-PARS,PAR-134,,,,,,calibration_PAR_SN,str,PARS-134
+,,,,,,,,,,,,
+VAR,NOMINAL_DEPTH,Pulse-8-2011,ECO-PARS,PARS-134,2/8/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,33.8

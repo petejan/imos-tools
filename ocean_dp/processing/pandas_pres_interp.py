@@ -60,6 +60,8 @@ def interpolator(target_files=None, pres_file=None):
     inst_idx_var = agg_ds.variables["instrument_index"]
     pres_var = agg_ds.variables["PRES"]
     pres = pres_var[:]
+    pres_qc_var = agg_ds.variables["PRES_quality_control"]
+    pres_qc = pres_qc_var[:]
 
     nominal_depths = np.array(agg_ds.variables["NOMINAL_DEPTH"][:])
 
@@ -121,7 +123,7 @@ def interpolator(target_files=None, pres_file=None):
         for j in inst_set:
             print(datetime.utcnow(), ' selecting data ', j)
 
-            msk = np.where(inst_idx == j)
+            msk = np.where((inst_idx == j) & (pres_qc <= 1))
             time_msk = time[msk]
             pres_msk = pres[msk]
 
@@ -148,7 +150,7 @@ def interpolator(target_files=None, pres_file=None):
 
         # fill the target column with interpolated value
         print(datetime.utcnow(), 'depth interpolate data frame')
-        df_interp = df_interp.interpolate(method='index', axis=1, limit=1)
+        df_interp = df_interp.interpolate(method='index', axis=1, limit=2)
 
         # extract the target pressure
         interp_pres_target = df_interp[interp_nom_depth].values

@@ -38,17 +38,20 @@ def cal(netCDFfiles):
         dep_code = ds_in.deployment_code
         depth = ds_in.instrument_nominal_depth
 
+        print("old name", fn)
         fn_new = fn + ".new.nc"
         if os.path.basename(fn).startswith("IMOS_"):
             fn_new_split = os.path.basename(fn).split('_')
             fn_new_split[-1] = "C-" + now.strftime("%Y%m%d") + ".nc"
             try:
-                fn_new_split[2].index("R") # for want of a better code
+                fn_new_split[2].index("F") # for want of a better code
             except ValueError:
-                fn_new_split[2] += 'R'
-            fn_new_split[6] = dep_code + '-' + sn + '-' + str(int(depth)) + 'm'
+                fn_new_split[2] += 'F'
+            #fn_new_split[6] = dep_code + '-' + sn + '-' + str(int(depth)) + 'm'
 
             fn_new = os.path.join(os.path.dirname(fn), '_'.join(fn_new_split))
+
+        print("new name", fn_new)
 
         ds = Dataset(fn_new, 'w')
 
@@ -66,7 +69,17 @@ def cal(netCDFfiles):
         ds.setncattr("instrument_serial_number", sn)
 
         # copy required variables
-        for v in ['TIME', 'NOMINAL_DEPTH', 'LATITUDE', 'LONGITUDE', 'PAR_COUNT']:
+        copy_vars = ['TIME', 'NOMINAL_DEPTH', 'LATITUDE', 'LONGITUDE', 'PAR_COUNT']
+        if 'ALT' in ds_in.variables:
+            copy_vars.append('ALT')
+        if 'SOLAR' in ds_in.variables:
+            copy_vars.append('SOLAR')
+        if 'ePAR' in ds_in.variables:
+            copy_vars.append('ePAR')
+        if 'PRES' in ds_in.variables:
+            copy_vars.append('PRES')
+
+        for v in copy_vars:
             new_var = ds.createVariable(v, ds_in.variables[v].dtype, dimensions=ds_in.variables[v].dimensions, zlib=True)
             for va in ds_in.variables[v].ncattrs():
                 new_var.setncattr(va, ds_in.variables[v].getncattr(va))

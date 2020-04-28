@@ -193,23 +193,24 @@ for path_file in sys.argv[1:len(sys.argv)]:
         if hasattr(plot_var, 'ancillary_variables'):
             qc_var_names = plot_var.getncattr('ancillary_variables')
             for qc_var_name in qc_var_names.split(' '):
-                qc_var = nc.variables[qc_var_name]
+                if qc_var_name in nc.variables:
+                    qc_var = nc.variables[qc_var_name]
 
-                text += "\nAUX : " + qc_var.name + str(qc_var.dimensions) + "\n"
+                    text += "\nAUX : " + qc_var.name + str(qc_var.dimensions) + "\n"
 
-                nc_attrs = qc_var.ncattrs()
-                # print "NetCDF AUX Variable Attributes:"
-                for nc_attr in nc_attrs:
-                    # print '\t%s:' % nc_attr, repr(nc.getncattr(nc_attr))
-                    text += nc_attr + ' : ' + str(qc_var.getncattr(nc_attr)) + '\n'
+                    nc_attrs = qc_var.ncattrs()
+                    # print "NetCDF AUX Variable Attributes:"
+                    for nc_attr in nc_attrs:
+                        # print '\t%s:' % nc_attr, repr(nc.getncattr(nc_attr))
+                        text += nc_attr + ' : ' + str(qc_var.getncattr(nc_attr)) + '\n'
 
-                if qc_var_name.endswith("quality_control"):
-                    qc = nc.variables[qc_var_name][:]
+                    if qc_var_name.endswith("quality_control"):
+                        qc = nc.variables[qc_var_name][:]
 
-                    if plot_var.dimensions[0] != 'TIME':
-                        qc = np.transpose(qc)
+                        if plot_var.dimensions[0] != 'TIME':
+                            qc = np.transpose(qc)
 
-                    qc = np.squeeze(qc)
+                        qc = np.squeeze(qc)
 
         plt.text(-0.1, 0.0, text, fontsize=8, family='monospace')
         plt.axis('off')

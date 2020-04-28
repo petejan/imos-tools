@@ -1,0 +1,8 @@
+rec_type, var_name, deployment_code, model, serial_number, time_deployment, time_recovery, variable_name, variable_dims, variable_shape, attribute_name, type, value
+VAR_ATT,V1,Pulse-11-2015,SBE16plus,1606330,,,,,,comment_attached_instrument,str,Wet-LABS ; PARS-134
+VAR_ATT,V1,Pulse-11-2015,SBE16plus,1606330,,,,,,calibration_PAR_Im,float64,1.3589
+VAR_ATT,V1,Pulse-11-2015,SBE16plus,1606330,,,,,,calibration_PAR_analog_A1,float64,0.8902
+VAR_ATT,V1,Pulse-11-2015,SBE16plus,1606330,,,,,,calibration_PAR_analog_A0,float64,1.3145
+VAR_ATT,V1,Pulse-11-2015,SBE16plus,1606330,,,,,,calibration_PAR_date,str,"Mar. 27, 2009"
+VAR_ATT,V1,Pulse-11-2015,SBE16plus,1606330,,,,,,calibration_PAR_facility,str,Wet-LABS
+VAR_ATT,V1,Pulse-11-2015,SBE16plus,1606330,,,,,,calibration_PAR_SN,str,PARS-134

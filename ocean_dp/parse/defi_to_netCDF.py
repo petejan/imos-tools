@@ -42,42 +42,44 @@ import numpy as np
 
 # search expressions within file
 
-first_line_expr = r"/  Alec MDS5 Data Processing"
-inst_no         = r"Inst_No=(.*),$"
-inst_type       = r"Inst_Type=(.*),$"
-coeff_date_expr = r"CoefDate=(.*),$"
-item            = r"\[Item\],$"
-hdr_setting     = r"(.*)=(.*),$"
+first_line_expr = r"// DEFI Series"
+inst_no         = r"SondeNo=(.*)$"
+inst_type       = r"SondeName=(.*)$"
+coeff_date_expr = r"CoefDate=(.*)$"
+item            = r"\[Item\]$"
+hdr_setting     = r"(.*)=(.*)$"
 
-# /  Alec MDS5 Data Processing,
-# /  Version V1.22 Jul. 1.2002,
-# /  Copyright(C)1999-2002 Alec Electronics Co.,Ltd.,
-# /  to: CSIRO,
-#
-# [Head],
-# File_Name=E:\ABOS\pulse-6\surface.Csv,
-# File_Type=.CSV,
-# Read_Flag=TRUE,
-# Data_Flag=TRUE,
-# Raw_File=E:\ABOS\pulse-6\surface.Raw,
-# Info_File=C:\WinMds5\User\WinMds5.Inf,
-# Inst_Type=L,
-# Inst_No=200341,
-# Start_Time=2009/09/22 12:00:00,
-# End_Time=2010/03/23 02:24:00,
-# Interval= 6.00000000000000E+0001,
-# CoefDate=1999/03/20,
-# Comments=Pulse-6-2009 Surface,
-# Channel_Count=1,
-# Cycle_Unit=Hz,
-# Time_Unit=Sec,
-# Sample_Count=261445,
-#
-# [Item],
-# /   Sample,YYYY/MM/DD,hh:mm:ss,Day,Light[Micromol],Light,
-# 1,2009/09/22,12:00:00,22,0.00,1,
-# 2,2009/09/22,12:01:00,22,0.00,1,
-# 3,2009/09/22,12:02:00,22,0.00,1,
+# // DEFI Series
+# // CSV File
+# // Firmware Version 1.00
+# // Software Version 1.01
+# [Head]
+# SondeName=DEFI-L
+# SondeNo=082V023
+# SensorType=Q2B0
+# SensorType2=0101
+# SensorType3=60
+# Channel=2
+# Interval=60
+# SampleCnt=256579
+# StartTime=2013/04/28 00:00:00
+# EndTime=2013/10/23 04:18:00
+# StopTime=2013/10/23 04:18:34
+# Status=01000
+# DepAdjRho=1.0250
+# ImmersionEN=1
+# Old_ImmersionEN=0
+# CoefDate=2013/02/06
+# Immersion_Effect=1.39
+# Ch1=1.191277e04,-1.836407e-01,0.000000e00,0.000000e00,0.000000e00,0.000000e00,0.000000e00,0.000000e00,
+# Ch2=1.169766e-02,8.109043e-04,0.000000e00,0.000000e00,0.000000e00,0.000000e00,0.000000e00,0.000000e00,
+# [Item]
+# TimeStamp,Quantum [umol/(m^2s)],Batt. [V],
+# 2013/04/28 00:00:00,0.4,1.6,
+# 2013/04/28 00:01:00,0.6,1.6,
+# 2013/04/28 00:02:00,0.4,1.6,
+# 2013/04/28 00:03:00,0.4,1.6,
+# 2013/04/28 00:04:00,0.3,1.6,
 
 
 def parse(file):
@@ -90,7 +92,7 @@ def parse(file):
     raw = []
     ts = []
     settings = []
-    instrument_model = 'MDS-MKV'
+    instrument_model = 'DEFI-L'
     instrument_serial_number = 'unknown'
     sep = ','
 
@@ -136,7 +138,7 @@ def parse(file):
                     if matchObj:
                         #print("inst_type:matchObj.group() : ", matchObj.group())
                         #print("inst_type:matchObj.group(1) : ", matchObj.group(1))
-                        instrument_model += matchObj.group(1)
+                        instrument_model = matchObj.group(1)
 
                     matchObj = re.match(hdr_setting, line_s)
                     if matchObj:
@@ -148,14 +150,11 @@ def parse(file):
                 lineSplit = line.strip().split(sep)
                 #print('Split ', lineSplit)
 
-                try:
-                    t = datetime.strptime(lineSplit[1] + " " + lineSplit[2], '%Y/%m/%d %H:%M:%S')
-                except ValueError:
-                    t = datetime.strptime(lineSplit[1] + " " + lineSplit[2], '%m/%d/%Y %I:%M:%S %p')
+                t = datetime.strptime(lineSplit[0], '%Y/%m/%d %H:%M:%S')
 
                 ts.append(t)
-                data.append(float(lineSplit[4]))
-                raw.append(float(lineSplit[5]))
+                data.append(float(lineSplit[1]))
+                raw.append(float(lineSplit[2]))
 
                 number_samples_read = number_samples_read + 1
 
@@ -184,7 +183,7 @@ def parse(file):
 
     ncOut = Dataset(outputName, 'w', format='NETCDF4')
 
-    ncOut.instrument = 'Alec Electronics ; ' + instrument_model
+    ncOut.instrument = 'JFE Advantech ; ' + instrument_model
     ncOut.instrument_model = instrument_model
     ncOut.instrument_serial_number = instrument_serial_number
 
@@ -205,11 +204,12 @@ def parse(file):
     ncTimesOut[:] = date2num(ts, units=ncTimesOut.units, calendar=ncTimesOut.calendar)
 
     ncVarOut = ncOut.createVariable('PAR', "f4", ("TIME",), fill_value=np.nan, zlib=True) # fill_value=nan otherwise defaults to max
-    ncVarOut.long_name = "omnidirectional photosynthetic spherical_photon flux in sea water"  # change later in metadata for surface ones
+    ncVarOut.standard_name = 'downwelling_photosynthetic_photon_flux_in_sea_water'
+    ncVarOut.long_name = 'downwelling_photosynthetic_photon_flux_in_sea_water'
     ncVarOut.units = 'umol/m^2/s'
     ncVarOut.calibration_date = coeff_date
-    ncVarOut.sensor_SeaVoX_L22_code = 'SDN:L22::TOOL0918'
-    ncVarOut.comment_sensor_type = 'spherical sensor'
+    ncVarOut.sensor_SeaVoX_L22_code = 'SDN:L22::TOOL1126'
+    ncVarOut.comment_sensor_type = 'cosine sensor'
     ncVarOut[:] = data
 
     #ncVarOut = ncOut.createVariable('PAR_RAW', "f4", ("TIME",), fill_value=np.nan, zlib=True) # fill_value=nan otherwise defaults to max

@@ -151,11 +151,11 @@ def eco_parse(files):
     if instrument_ave_setting:
         ncOut.instrument_ave_version = instrument_ave_setting
 
-    date_download = datetime.strptime(instrument_time[0], '%a %b %d %H:%M:%S.%f %Y')
-    inst_time = datetime.strptime(instrument_date[1] + " " + instrument_time[1], '%m/%d/%y %H:%M:%S')
-
     time_diff = timedelta(0)
-    if date_download and inst_time:
+    if instrument_time and instrument_date:
+        date_download = datetime.strptime(instrument_time[0], '%a %b %d %H:%M:%S.%f %Y')
+        inst_time = datetime.strptime(instrument_date[1] + " " + instrument_time[1], '%m/%d/%y %H:%M:%S')
+
         time_diff = date_download - inst_time
         print('date_download', date_download, 'inst_time', instrument_time, 'diff', time_diff)
 
