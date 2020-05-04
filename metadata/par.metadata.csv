@@ -1,0 +1,2 @@
+rec_type, var_name, deployment_code, model, serial_number, time_deployment, time_recovery, variable_name, variable_dims, variable_shape, attribute_name,type,value
+GLOBAL,*,,,,,,,,,data_qc_report,str,"Harley J, Schallenberg C, Jansen P and Trull TW (2019). Southern Ocean Time Series (SOTS) Quality Assessment and Control Report PAR Instruments Version 1.0. CSIRO, Australia. DOI: 10.26198/5ce4a647af256 (http://dx.doi.org/10.26198/5ce4a647af256)"
