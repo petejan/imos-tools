@@ -15,6 +15,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
+import textwrap
 
 from netCDF4 import Dataset
 from netCDF4 import num2date
@@ -144,7 +145,11 @@ for path_file in sys.argv[1:len(sys.argv)]:
     # print "NetCDF Global Attributes:"
     for nc_attr in sorted(nc.ncattrs(), key=lambda s: s.lower()):
         #print('\t%s:' % nc_attr, repr(nc.getncattr(nc_attr)))
-        attrib_txt = nc_attr + ' : ' + str(nc.getncattr(nc_attr)).replace('\n', '\n   ') + '\n'
+        attrib = str(nc.getncattr(nc_attr))
+        attrib_list = []
+        for l in attrib.split('\n'):
+            attrib_list.append(textwrap.fill(l, width=140, subsequent_indent='      '))
+        attrib_txt = nc_attr + ' : ' + "\n   ".join(attrib_list) + '\n'
         lines = txt.count('\n') + attrib_txt.count('\n')
         # print("lines ", lines)
         if lines > 57:
