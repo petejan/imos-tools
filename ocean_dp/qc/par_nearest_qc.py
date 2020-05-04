@@ -46,7 +46,7 @@ qc_map3 = {
 
 qc_map4 = {
             tuple([3, 2, 1, 0]): [1, 1, 1, 2],
-            tuple([3, 1, 2, 0]): [1, 4, 1, 2],
+            tuple([3, 1, 2, 0]): [1, 4, 1, 2], # checked Pulse-8
             tuple([3, 2, 0, 1]): [1, 1, 3, 3],
             tuple([3, 1, 0, 2]): [1, 4, 1, 2],
             tuple([3, 0, 2, 1]): [1, 3, 3, 3],
@@ -78,6 +78,7 @@ plot = False
 
 def add_qc(dataDIR):
 
+    spherical_scale_factor = 1.0
     daily_means = []
     daily_mean_days = []
     par_data = []
@@ -135,14 +136,14 @@ def add_qc(dataDIR):
         sensor_type = DS.PAR.comment_sensor_type
         spherical = 'spherical' in sensor_type
         if spherical:
-            print('appling spherial_factor / 2')
-            daily_means.append(daily_mean.reindex(td, method='ffill')/2)
+            print('appling spherial_factor / ', spherical_scale_factor)
+            daily_means.append(daily_mean.reindex(td, method='ffill')/spherical_scale_factor)
         else:
             daily_means.append(daily_mean.reindex(td, method='ffill'))
 
         DS.close()
 
-
+    # create an array time x depth
     if depth_order.shape[0] == 2:
         array = np.array([daily_means[0].values, daily_means[1].values])
         qc_map = qc_map2
@@ -176,6 +177,9 @@ def add_qc(dataDIR):
         axs[1].legend(np.array(depths)[depth_order], loc='upper right', fontsize='small')
         axs[1].set_ylim([0, 9])
 
+    if plot:
+        plt.show()
+
     # write QC flags back to the source file
     qc_flag_n = 0
     for f in files[depth_order]:
@@ -193,11 +197,14 @@ def add_qc(dataDIR):
             ncVarOut = ds.variables[qc_var_name]
         else:
             ncVarOut = ds.createVariable(qc_var_name, "i1", nc_var.dimensions, fill_value=99, zlib=True)  # fill_value=0 otherwise defaults to max
-            ncVarOut[:] = np.zeros(nc_var.shape)
             ncVarOut.long_name = "quality flag for " + nc_var.name
             ncVarOut.quality_control_conventions = "IMOS standard flags"
             ncVarOut.flag_values = np.array([0, 1, 2, 3, 4, 6, 7, 9], dtype=np.int8)
+            ncVarOut.comment_spherical_scale_applied = spherical_scale_factor
+
             ncVarOut.flag_meanings = 'unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value'
+
+        ncVarOut[:] = np.zeros(nc_var.shape)
 
         new_qc_flags = qc_final.values
         new_qc_flags[np.isnan(new_qc_flags)] = 0
@@ -233,5 +240,12 @@ def add_qc(dataDIR):
 
         ds.close()
 
+
 if __name__ == "__main__":
     add_qc(sys.argv[1:])
+    # data = [
+    #     '../../data/PAR/raw_files/netCDF/IMOS_ABOS-SOTS_FZX_20110802_SOFS_FV01_Pulse-8-2011-MDS-MKVL-200341-50m_END-20120105_C-20200427.nc',
+    #     '../../data/PAR/raw_files/netCDF/IMOS_ABOS-SOTS_FZX_20110802_SOFS_FV01_Pulse-8-2011-MDS-MKVL-200664-27m_END-20120722_C-20200427.nc',
+    #     '../../data/PAR/raw_files/netCDF/IMOS_ABOS-SOTS_FZX_20110802_SOFS_FV01_Pulse-8-2011-MDS-MKVL-200665-0m_END-20120722_C-20200427.nc',
+    #     '../../data/PAR/raw_files/netCDF/IMOS_ABOS-SOTS_RZXF_20110725_SOFS_FV01_Pulse-8-2011-ECO-PARS-PARS-134-34m_END-20120727_C-20200427.nc']
+    # add_qc(data)

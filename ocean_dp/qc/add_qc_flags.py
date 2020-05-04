@@ -61,7 +61,7 @@ def add_qc(netCDFfile, var_name=None):
             # copy file
             shutil.copy(fn, fn_new)
 
-        print(fn_new)
+        print("output", fn_new)
 
         ds = Dataset(fn_new, 'a')
 
@@ -105,6 +105,9 @@ def add_qc(netCDFfile, var_name=None):
                     ncVarOut.flag_meanings = 'unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value'
 
                     nc_vars[v].ancillary_variables = v + "_quality_control"
+                else:
+                    ncVarOut = ds.variables[v+"_quality_control"]
+                    ncVarOut[:] = np.zeros(nc_vars[v].shape)
 
         # update the global attributes
         ds.file_version = "Level 1 - Quality Controlled Data"

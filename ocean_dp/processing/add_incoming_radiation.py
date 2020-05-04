@@ -24,7 +24,6 @@ from datetime import datetime
 
 from pysolar.solar import get_altitude_fast
 from pysolar.util import extraterrestrial_irrad
-from pysolar.util import global_irradiance_overcast
 
 import os
 import shutil
@@ -43,10 +42,6 @@ def add_solar(netCDFfiles):
         if os.path.basename(fn).startswith("IMOS_"):
             fn_new_split = os.path.basename(fn).split('_')
             fn_new_split[-1] = "C-" + now.strftime("%Y%m%d") + ".nc"
-            try:
-                fn_new_split[2].index("X") # for want of a better code
-            except ValueError:
-                fn_new_split[2] += 'X'
 
             fn_new = os.path.join(os.path.dirname(fn), '_'.join(fn_new_split))
 
@@ -63,12 +58,11 @@ def add_solar(netCDFfiles):
 
         lat = ds.variables['LATITUDE'][:]
         lon = ds.variables['LONGITUDE'][:]
+        ndepth = ds.variables['NOMINAL_DEPTH'][:]
 
         print('lat ', lat, ' lon ', lon)
 
         time_var = ds.variables['TIME']
-        depth_var = ds.variables['PRES']
-        depth = depth_var[:]
 
         print('number of points ', len(time_var))
         dt = num2date(time_var[:], units=time_var.units, calendar=time_var.calendar, only_use_cftime_datetimes=False)
@@ -77,17 +71,15 @@ def add_solar(netCDFfiles):
 
         print('time start ', dt_utc[0])
 
-        #lat_array = np.full_like(ds.variables['TIME'][:], lat)
-        #lon_array = np.full_like(ds.variables['TIME'][:], lon)
-
-        #altitude_deg = [get_altitude(lat, lon, d) for d in dt_utc]
-        #rad = [extraterrestrial_irrad(lat, lon, d, 1361) for d in dt_utc]
         altitude_deg = get_altitude_fast(lat, lon, dt)
         rad = extraterrestrial_irrad(lat, lon, dt, 1361)
 
-        #print("rad ", rad)
-        #print("depth ", depth)
-        par = rad * np.exp(-0.04 * depth) * 2.114
+        if ndepth > 0:
+            depth_var = ds.variables['PRES']
+            depth = depth_var[:]
+            par = rad * np.exp(-0.04 * depth) * 2.114
+        else:
+            par = rad * 2.114
 
         print("altitude", altitude_deg[0], " rad ", rad[0])
 
@@ -98,7 +90,6 @@ def add_solar(netCDFfiles):
 
         ncVarOut[:] = altitude_deg
         ncVarOut.units = "degree"
-        #ncVarOut.setncattr('name', 'sun altitude')
         ncVarOut.long_name = 'sun_altitude'
         ncVarOut.coordinates = 'TIME LATITUDE LONGITUDE NOMINAL_DEPTH'
         ncVarOut.comment = "using http://docs.pysolar.org/en/latest/ v0.8 get_altitude"
@@ -110,7 +101,6 @@ def add_solar(netCDFfiles):
 
         ncVarOut[:] = rad
         ncVarOut.units = "W/m2"
-        #ncVarOut.setncattr('name', 'extraterrestrial_irrad celestial incoming solar radiation')
         ncVarOut.long_name = 'incoming_solar_radiation'
         ncVarOut.coordinates = 'TIME LATITUDE LONGITUDE NOMINAL_DEPTH'
         ncVarOut.comment = "using http://docs.pysolar.org/en/latest/ v0.8 extraterrestrial_irrad() with incoming = 1361 W/m^2"
@@ -122,20 +112,9 @@ def add_solar(netCDFfiles):
 
         ncVarOut[:] = par
         ncVarOut.units = "umol/m^2/s"
-        #ncVarOut.setncattr('name', 'global_irradiance_overcast solar radiation')
-        #ncVarOut.long_name = 'incoming_solar_radiation'
         ncVarOut.long_name = 'incoming_solar_radiation converted to PAR (x2.114) attenuated by depth'
         ncVarOut.coordinates = 'TIME LATITUDE LONGITUDE NOMINAL_DEPTH'
         ncVarOut.comment = "using http://docs.pysolar.org/en/latest/ v0.8 extraterrestrial_irrad() with incoming = 1361 W/m^2, x 2.114, kd = 0.04"
-
-        # rad = [global_irradiance_overcast(lat, lon, d, 1361, temperature=10) for d in dt_utc]
-        #
-        # ncVarOut = ds.createVariable("SURFACE", "f4", ("TIME",), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
-        # ncVarOut[:] = rad
-        # ncVarOut.units = "W/m2"
-        # #ncVarOut.setncattr('name', 'global_irradiance_overcast solar radiation')
-        # ncVarOut.long_name = 'global_irradiance_overcast'
-        # ncVarOut.comment = "using http://docs.pysolar.org/en/latest/ v0.8 global_irradiance_overcast() with incoming = 1361 W/m^2"
 
         # update the history attribute
         try:

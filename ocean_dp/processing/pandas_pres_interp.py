@@ -63,7 +63,7 @@ def interpolator(target_files=None, pres_file=None):
     pres_qc_var = agg_ds.variables["PRES_quality_control"]
     pres_qc = pres_qc_var[:]
 
-    nominal_depths = np.array(agg_ds.variables["NOMINAL_DEPTH"][:])
+    agg_nominal_depths = np.array(agg_ds.variables["NOMINAL_DEPTH"][:])
 
     inst_idx = inst_idx_var[:]
 
@@ -108,9 +108,9 @@ def interpolator(target_files=None, pres_file=None):
         interp_ds.close()
 
         # add an entry for the nominal depth of the target sensor
-        nominal_depths = np.append(nominal_depths, interp_nom_depth)
+        nominal_depths = np.append(agg_nominal_depths, interp_nom_depth)
         # add an entry for the surface, where we assume pressure = 0 dbar
-        nominal_depths = np.append(nominal_depths, -0.1)
+        nominal_depths = np.append(nominal_depths, 0)
 
         # create an array to hold all the target time pressures
         interp_pres = np.zeros([len(interp_times), len(nominal_depths)])
@@ -137,8 +137,14 @@ def interpolator(target_files=None, pres_file=None):
 
         # create a dataframe of all the data, including the target ones, filled with nan
         df = pd.DataFrame(interp_pres, index=interp_times, columns=nominal_depths)
+        print('depths', df.columns)
+        print('depths (sorted)', sorted(df.columns))
+        sort_idx = np.argsort(df.columns)
+        print('depths (sorted idx)', sort_idx)
+
         # sort the columns by depth
-        df = df.reindex(sorted(df.columns), axis=1)
+        df = df[df.columns[sort_idx]]
+        print('depths now', df.columns)
 
         if plot:
             plt = df.plot()

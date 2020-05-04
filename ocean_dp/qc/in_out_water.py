@@ -44,6 +44,13 @@ def in_out_water(netCDFfile, var_name=None):
                     #print (vars[v].dimensions)
                     if v != 'TIME':
                         to_add.append(v)
+            # remove any anx variables from the list
+            for v in nc_vars:
+                if 'ancillary_variables' in nc_vars[v].ncattrs():
+                    remove = nc_vars[v].getncattr('ancillary_variables').split(' ')
+                    print("remove ", remove)
+                    for r in remove:
+                        to_add.remove(r)
 
         time_var = nc_vars["TIME"]
         time = num2date(time_var[:], units=time_var.units, calendar=time_var.calendar)
@@ -51,6 +58,7 @@ def in_out_water(netCDFfile, var_name=None):
         time_deploy = parser.parse(ds.time_deployment_start, ignoretz=True)
         time_recovery = parser.parse(ds.time_deployment_end, ignoretz=True)
 
+        print('file', fn)
         print('deployment time', time_deploy)
 
         print('var to add', to_add)
