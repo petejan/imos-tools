@@ -131,8 +131,6 @@ for path_file in sys.argv[1:len(sys.argv)]:
 
         txt += var_line + '\n'
 
-    plt.figure(figsize=(11.69, 8.27))
-
     plt.text(-0.1, -0.1, txt, fontsize=8, family='monospace')
     plt.axis('off')
     pp.savefig()

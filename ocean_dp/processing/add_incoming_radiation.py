@@ -75,8 +75,9 @@ def add_solar(netCDFfiles):
         rad = extraterrestrial_irrad(lat, lon, dt, 1361)
 
         if ndepth > 0:
-            depth_var = ds.variables['PRES']
-            depth = depth_var[:]
+            #depth_var = ds.variables['PRES']
+            #depth = depth_var[:]
+            depth = np.ones_like(rad) * ndepth
             par = rad * np.exp(-0.04 * depth) * 2.114
         else:
             par = rad * 2.114

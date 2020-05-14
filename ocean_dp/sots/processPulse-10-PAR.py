@@ -7,6 +7,7 @@ sys.path.extend(['.'])
 import shutil
 
 import ocean_dp.parse.mds5_to_netCDF
+import ocean_dp.parse.defi_to_netCDF
 import ocean_dp.parse.eco_par2netCDF
 
 import ocean_dp.attribution.addAttributes
@@ -42,12 +43,17 @@ print ('file path : ', path)
 print('step 1 (parse)')
 
 files = []
-cnv_files = glob.glob(os.path.join(path, "*.Csv"))
+cnv_files = glob.glob(os.path.join(path, "*200*.Csv"))
 for fn in cnv_files:
     print(fn)
     files.append(ocean_dp.parse.mds5_to_netCDF.parse([fn]))
 
-log_files = glob.glob(os.path.join(path, "*.log"))
+cnv_files = glob.glob(os.path.join(path, "DEFI**.csv"))
+for fn in cnv_files:
+    print(fn)
+    files.append(ocean_dp.parse.defi_to_netCDF.parse([fn]))
+
+log_files = glob.glob(os.path.join(path, "*.txt"))
 for fn in log_files:
     print(fn)
     files.append(ocean_dp.parse.eco_par2netCDF.eco_parse([fn]))
@@ -70,7 +76,7 @@ for fn in files:
 for fn in new_names:
     print ("processing " , fn)
     filename = ocean_dp.attribution.addAttributes.add(fn,
-                                                      ['metadata/pulse-7.metadata.csv',
+                                                      ['metadata/pulse-10.metadata.csv',
                                                        'metadata/imos.metadata.csv',
                                                        'metadata/sots.metadata.csv',
                                                        'metadata/sofs.metadata.csv',
@@ -85,17 +91,54 @@ for fn in new_names:
     filename = ocean_dp.file_name.imosNetCDFfileName.rename(filename)
     print('step 3 imos name : ', filename)
 
-    # filenames = ocean_dp.processing.pandas_pres_interp.interpolator([filename], os.path.join(path, 'IMOS_ABOS-SOTS_CFPST_20100817_SOFS_FV02_Pulse-Aggregate-PRES_END-20110430_C-20200428.nc'))
+    # filenames = ocean_dp.processing.pandas_pres_interp.interpolator([filename], os.path.join(path, 'IMOS_ABOS-SOTS_P_20130428_SOFS_FV02_Pulse-Aggregate-PRES_END-20131022_C-20200428.nc'))
     # print('step 4 pressure interpolator : ', filename)
     #
     # filename = ocean_dp.processing.add_incoming_radiation.add_solar(filenames)
     # print('step 5 add incoming radiation : ', filename)
 
+pulse_files = ocean_dp.file_name.find_file_with.find_files_pattern(os.path.join(path, "../netCDF/IMOS*.nc"))
+pulse_files = ocean_dp.file_name.find_file_with.find_global(pulse_files, 'deployment_code', 'Pulse-10-2013')
+print('pulse files')
+for f in pulse_files:
+    print(f)
+
 print('step ECO-PAR cal')
-pulse_files = glob.glob(os.path.join(path, "../netCDF/IMOS*.nc"))
-pulse_7_files = ocean_dp.file_name.find_file_with.find_global(pulse_files, 'deployment_code', 'Pulse-7-2010')
-par_files = ocean_dp.file_name.find_file_with.find_variable(pulse_7_files, 'PAR_COUNT')
-ocean_dp.processing.eco_parcount_2_par.cal(par_files)
+eco_par = ocean_dp.file_name.find_file_with.find_global(pulse_files, 'instrument_model', 'ECO-PARS')
+print("eco par", eco_par)
+eco_fn = ocean_dp.processing.eco_parcount_2_par.cal(eco_par)
+
+#pulse_files.extend(eco_fn)
+
+# par_files = ocean_dp.file_name.find_file_with.find_variable(pulse_files, 'PAR')
+# par_files = ocean_dp.file_name.find_file_with.find_variable(par_files, 'ALT')
+# par_files = ocean_dp.file_name.find_file_with.find_variable(par_files, 'PRES')
+# print('par:')
+# for f in par_files:
+#     print(f)
+# fv00_files = ocean_dp.file_name.find_file_with.find_global(par_files, 'file_version', 'Level 0 - Raw data')
+#
+# print('step 6 add qc flags')
+# qc_files = ocean_dp.qc.add_qc_flags.add_qc(fv00_files, "PAR")
+#
+# fv01_files = ocean_dp.file_name.find_file_with.find_global(qc_files, 'file_version', 'Level 1 - Quality Controlled Data')
+# print('fv01:')
+# for f in fv01_files:
+#     print(f)
+# print('step 7 in/out water')
+# ocean_dp.qc.in_out_water.in_out_water(fv01_files, "PAR")
+#
+# print('step 8 global range')
+# ocean_dp.qc.global_range.global_range(fv01_files, 'PAR', max=10000, min=-1.7)
+#
+# print('step 9 global range, pbad 4500')
+# ocean_dp.qc.global_range.global_range(fv01_files, 'PAR', max=4500, min=-1.7)
+#
+# print('step 10 climate qc')
+# ocean_dp.qc.climate_range.climate_range(fv01_files, "PAR")
+#
+# print('step 11 nearest')
+# ocean_dp.qc.par_nearest_qc.add_qc(fv01_files)
 
 print(process.memory_info().rss)  # in bytes
 

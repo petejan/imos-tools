@@ -48,7 +48,7 @@ def add(netCDFfile, metadatafiles):
     instrument_model = ds.instrument_model
     instrument_serial_number = ds.instrument_serial_number
 
-    #print(time_start)
+    #print(time_start, time_end)
 
     ds_variables = ds.variables
 
@@ -88,12 +88,12 @@ def add(netCDFfile, metadatafiles):
                     # match time
                     if 'time_deployment' in dict1:
                         if len(dict1['time_deployment']) > 0:
-                            if time_end < parser.parse(dict1['time_deployment'], ignoretz=True, dayfirst=False):
+                            if time_end < parser.parse(dict1['time_deployment'], ignoretz=True, dayfirst=True):
                                 match = False
-                                #print("Time end before deployment ", time_end, dict1['time_deployment'])
+                                print("Time end before deployment ", time_end, dict1['time_deployment'])
                     if 'time_recovery' in dict1:
                         if len(dict1['time_recovery']) > 0:
-                            if time_start > parser.parse(dict1['time_recovery'], ignoretz=True, dayfirst=False):
+                            if time_start > parser.parse(dict1['time_recovery'], ignoretz=True, dayfirst=True):
                                 match = False
                                 #print("Time start after recovery ", time_start, dict1['time_recovery'], parser.parse(dict1['time_recovery'], ignoretz=True, dayfirst=False))
 

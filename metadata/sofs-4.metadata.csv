@@ -51,9 +51,9 @@ GLOBAL,,,processing_site_code,25,26/4/13,13/10/13,,,,deployment_code,str,SOFS-4-
 GLOBAL,,,CR1000,42881,26/4/13,13/10/13,,,,deployment_code,str,SOFS-4-2013
 GLOBAL,,,ACR8242XS,25690,26/4/13,13/10/13,,,,deployment_code,str,SOFS-4-2013
 GLOBAL,,,ACR8242XS,33556,26/4/13,13/10/13,,,,deployment_code,str,SOFS-4-2013
-GLOBAL,,,LI-190,Q47470,26/4/13,13/10/13,,,,deployment_code,str,SOFS-4-2013
+GLOBAL,,,LI-190SA,unknown,26/4/13,13/10/13,,,,deployment_code,str,SOFS-4-2013
 GLOBAL,,,3DM-GX1,5357,26/4/13,13/10/13,,,,deployment_code,str,SOFS-4-2013
-GLOBAL,,,A3LA-X,3.00025E+14,26/4/13,13/10/13,,,,deployment_code,str,SOFS-4-2013
+GLOBAL,,,A3LA-X,3.00E+14,26/4/13,13/10/13,,,,deployment_code,str,SOFS-4-2013
 GLOBAL,,,Aquadopp HR,ADP-5412 (AQD-11027),26/4/13,13/10/13,,,,deployment_code,str,SOFS-4-2013
 GLOBAL,,,Aquapro 1 MHz,AQP-5830 (AQD-11011),26/4/13,13/10/13,,,,deployment_code,str,SOFS-4-2013
 GLOBAL,,,Vector,VEC-5045  (VEC-8224),26/4/13,13/10/13,,,,deployment_code,str,SOFS-4-2013
@@ -119,6 +119,17 @@ GLOBAL,,SOFS-4-2013,,,26/4/13,13/10/13,,,,time_deployment_end,str,2013-10-14T19:
 GLOBAL,,SOFS-4-2013,,,,,,,,voyage_deployment,str,http://www.cmar.csiro.au/data/trawler/survey_details.cfm?survey=SS2013_V03
 GLOBAL,,SOFS-4-2013,,,,,,,,voyage_recovery,str,http://www.cmar.csiro.au/data/trawler/survey_details.cfm?survey=SS2013_V06
 ,,,,,,,,,,,,
+GLOBAL,,SOFS-4-2013,LI-190SA,unknown,26/4/13,13/10/13,,,,instrument_serial_number,str,Q47470
+VAR_ATT,PAR,SOFS-4-2013,LI-190SA,unknown,26/4/13,13/10/13,,,,calibration_date,str,"March 02, 2012"
+VAR_ATT,PAR,SOFS-4-2013,LI-190SA,unknown,26/4/13,13/10/13,,,,calibration_units,str,umol s-1 m-2 per uamp
+VAR_ATT,PAR,SOFS-4-2013,LI-190SA,unknown,26/4/13,13/10/13,,,,calibration_constant,str,8.19
+VAR_ATT,PAR,SOFS-4-2013,LI-190SA,unknown,26/4/13,13/10/13,,,,calibration_multiplier,str,-122.04
+VAR_ATT,PAR,SOFS-4-2013,LI-190SA,unknown,26/4/13,13/10/13,,,,calibration_resistor,str,604
+VAR_ATT,PAR,SOFS-4-2013,LI-190SA,unknown,26/4/13,13/10/13,,,,comment_scale_offset,str,202.05 0
+VAR_ATT,PAR,SOFS-4-2013,LI-190SA,unknown,26/4/13,13/10/13,,,,standard_name,str,downwelling_photosynthetic_photon_flux_in_air
+VAR_ATT,PAR,SOFS-4-2013,LI-190SA,unknown,26/4/13,13/10/13,,,,long_name,str,downwelling_photosynthetic_photon_flux_in_air
+VAR_ATT,PAR,SOFS-4-2013,LI-190SA,unknown,26/4/13,13/10/13,,,,units,str,umol/m^2/s
+,,,,,,,,,,,,
 VAR,NOMINAL_DEPTH,SOFS-4-2013,MF-AZFP,55046,26/4/13,13/10/13,NOMINAL_DEPTH,(),(),,float64,30
 VAR,NOMINAL_DEPTH,SOFS-4-2013,Optode 3975C,1157,26/4/13,13/10/13,NOMINAL_DEPTH,(),(),,float64,1.01
 VAR,NOMINAL_DEPTH,SOFS-4-2013,MDS-MKV/L,201316,26/4/13,13/10/13,NOMINAL_DEPTH,(),(),,float64,10
@@ -171,9 +182,9 @@ VAR,NOMINAL_DEPTH,SOFS-4-2013,processing_site_code,25,26/4/13,13/10/13,NOMINAL_D
 VAR,NOMINAL_DEPTH,SOFS-4-2013,CR1000,42881,26/4/13,13/10/13,NOMINAL_DEPTH,(),(),,float64,0
 VAR,NOMINAL_DEPTH,SOFS-4-2013,ACR8242XS,25690,26/4/13,13/10/13,NOMINAL_DEPTH,(),(),,float64,4400
 VAR,NOMINAL_DEPTH,SOFS-4-2013,ACR8242XS,33556,26/4/13,13/10/13,NOMINAL_DEPTH,(),(),,float64,4400
-VAR,NOMINAL_DEPTH,SOFS-4-2013,LI-190,Q47470,26/4/13,13/10/13,NOMINAL_DEPTH,(),(),,float64,-1.8
+VAR,NOMINAL_DEPTH,SOFS-4-2013,LI-190SA,unknown,26/4/13,13/10/13,NOMINAL_DEPTH,(),(),,float64,-1.8
 VAR,NOMINAL_DEPTH,SOFS-4-2013,3DM-GX1,5357,26/4/13,13/10/13,NOMINAL_DEPTH,(),(),,float64,0
-VAR,NOMINAL_DEPTH,SOFS-4-2013,A3LA-X,3.00025E+14,26/4/13,13/10/13,NOMINAL_DEPTH,(),(),,float64,0
+VAR,NOMINAL_DEPTH,SOFS-4-2013,A3LA-X,3.00E+14,26/4/13,13/10/13,NOMINAL_DEPTH,(),(),,float64,0
 VAR,NOMINAL_DEPTH,SOFS-4-2013,Aquadopp HR,ADP-5412 (AQD-11027),26/4/13,13/10/13,NOMINAL_DEPTH,(),(),,float64,30
 VAR,NOMINAL_DEPTH,SOFS-4-2013,Aquapro 1 MHz,AQP-5830 (AQD-11011),26/4/13,13/10/13,NOMINAL_DEPTH,(),(),,float64,1.01
 VAR,NOMINAL_DEPTH,SOFS-4-2013,Vector,VEC-5045  (VEC-8224),26/4/13,13/10/13,NOMINAL_DEPTH,(),(),,float64,30

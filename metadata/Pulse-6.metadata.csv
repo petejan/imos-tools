@@ -43,6 +43,10 @@ GLOBAL,,Pulse-6-2009,,,,,,,,voyage_recovery,str,http://www.cmar.csiro.au/data/tr
 VAR_ATT,TIME,Pulse-6-2009,MDS-MKVL,200341,,,,,,comment_scale_offset,str,1.0 -0.04166666666667
 VAR_ATT,PAR,Pulse-6-2009,MDS-MKVL,200341,,,,,,long_name,str,omnidirectional photosynthetic spherical photon flux in air
 ,,,,,,,,,,,,
+VAR_ATT,PAR,Pulse-6-2009,MDS-MKVL,200341,,,,,,comment_scale_offset,str,0.7985 0
+VAR_ATT,PAR,Pulse-6-2009,MDS-MKVL,200664,,,,,,comment_scale_offset,str,0.8860 0.8175
+VAR_ATT,PAR,Pulse-6-2009,MDS-MKVL,200665,,,,,,comment_scale_offset,str,0.7564 0
+,,,,,,,,,,,,
 VAR_ATT,TIME,Pulse-6-2009,MDS-MKVL,200665,,,,,,comment_scale_offset,str,1.0 -0.4166666666667
 ,,,,,,,,,,,,
 VAR_ATT,VOLT2,Pulse-6-2009,SBE16plus,1606331,,,,,,comment_attached_instrument,str,Wet-LABS ; PARS-134

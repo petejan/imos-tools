@@ -32,6 +32,7 @@ def apply_scale_offset(netCDFfile):
 
     for v in scale_vars:
         t = v[:]
+        t.mask = False
 
         scale_offset = v.getncattr('comment_scale_offset')
         scale_offset_split = scale_offset.split(' ')
@@ -40,7 +41,7 @@ def apply_scale_offset(netCDFfile):
         v[:] = t * float(scale) + float(offset)
 
         v.renameAttribute('comment_scale_offset', 'comment_scale_offset_applied')
-        v.comment_scale_offset_applied = "scale = " + str(scale) + " offset " + str(offset)
+        v.comment_scale_offset_applied = "scale = " + str(scale) + " offset = " + str(offset)
 
         # update the history attribute
         try:

@@ -12,9 +12,9 @@ GLOBAL,,,Mooring,Mix Layer Depth,17/3/10,20/4/11,,,,deployment_code,str,SOFS-1-2
 GLOBAL,,,processing_site_code,25,17/3/10,20/4/11,,,,deployment_code,str,SOFS-1-2010
 GLOBAL,,,ACR8242XS ,34060,17/3/10,20/4/11,,,,deployment_code,str,SOFS-1-2010
 GLOBAL,,,ACR8242XS ,34061,17/3/10,20/4/11,,,,deployment_code,str,SOFS-1-2010
-GLOBAL,,,LI-1905A,Q40966,17/3/10,20/4/11,,,,deployment_code,str,SOFS-1-2010
+GLOBAL,,,LI-190SA,unknown,17/3/10,20/4/11,,,,deployment_code,str,SOFS-1-2010
 GLOBAL,,,3DM-GX1,9476,17/3/10,20/4/11,,,,deployment_code,str,SOFS-1-2010
-GLOBAL,,,9601-DGS-LP,3.00E+14,17/3/10,20/4/11,,,,deployment_code,str,SOFS-1-2010
+GLOBAL,,,9601-DGS-LP,3E+14,17/3/10,20/4/11,,,,deployment_code,str,SOFS-1-2010
 GLOBAL,,,PCO2,112,17/3/10,20/4/11,,,,deployment_code,str,SOFS-1-2010
 GLOBAL,,,SBE37-SM 485,1840,17/3/10,20/4/11,,,,deployment_code,str,SOFS-1-2010
 GLOBAL,,,SBE37SM,2971,17/3/10,20/4/11,,,,deployment_code,str,SOFS-1-2010
@@ -65,6 +65,18 @@ GLOBAL,,SOFS-1-2010,,,,,,,,voyage_deployment,str,http://www.cmar.csiro.au/data/t
 GLOBAL,,SOFS-1-2010,,,,,,,,voyage_recovery,str,http://www.cmar.csiro.au/data/trawler/survey_details.cfm?survey=SS2011_V01
 GLOBAL,,SOFS-1-2010,,,,,,,,comment_recovery,str,Broke mooring 2011-03-02
 ,,,,,,,,,,,,
+GLOBAL,,SOFS-1-2010,LI-190SA,unknown,17/3/10,20/4/11,,,,instrument_serial_number,str,Q40966
+VAR_ATT,PAR,SOFS-1-2010,LI-190SA,unknown,17/3/10,20/4/11,,,,calibration_date,str,"May 21, 2009"
+VAR_ATT,PAR,SOFS-1-2010,LI-190SA,unknown,17/3/10,20/4/11,,,,calibration_units,str,umol s-1 m-2 per uamp
+VAR_ATT,PAR,SOFS-1-2010,LI-190SA,unknown,17/3/10,20/4/11,,,,calibration_constant,str,6.26
+VAR_ATT,PAR,SOFS-1-2010,LI-190SA,unknown,17/3/10,20/4/11,,,,calibration_multiplier,str,-159.74
+VAR_ATT,PAR,SOFS-1-2010,LI-190SA,unknown,17/3/10,20/4/11,,,,calibration_resistor,str,604
+VAR_ATT,PAR,SOFS-1-2010,LI-190SA,unknown,17/3/10,20/4/11,,,,comment_scale_offset,str,0.26447 0
+VAR_ATT,PAR,SOFS-1-2010,LI-190SA,unknown,17/3/10,20/4/11,,,,comment_scaling_issue,str,"unknown scaling, due to missing resistor on data logging to convert current to voltage"
+VAR_ATT,PAR,SOFS-1-2010,LI-190SA,unknown,17/3/10,20/4/11,,,,standard_name,str,downwelling_photosynthetic_photon_flux_in_air
+VAR_ATT,PAR,SOFS-1-2010,LI-190SA,unknown,17/3/10,20/4/11,,,,long_name,str,downwelling_photosynthetic_photon_flux_in_air
+VAR_ATT,PAR,SOFS-1-2010,LI-190SA,unknown,17/3/10,20/4/11,,,,units,str,umol/m^2/s
+,,,,,,,,,,,,
 VAR,NOMINAL_DEPTH,SOFS-1-2010,DCS,197,17/3/10,20/4/11,NOMINAL_DEPTH,(),(),,float64,30
 VAR,NOMINAL_DEPTH,SOFS-1-2010,DCS,212,17/3/10,20/4/11,NOMINAL_DEPTH,(),(),,float64,200
 VAR,NOMINAL_DEPTH,SOFS-1-2010,Optode 3975C,1157,17/3/10,20/4/11,NOMINAL_DEPTH,(),(),,float64,1.2
@@ -78,9 +90,9 @@ VAR,NOMINAL_DEPTH,SOFS-1-2010,Mooring,Mix Layer Depth,17/3/10,20/4/11,NOMINAL_DE
 VAR,NOMINAL_DEPTH,SOFS-1-2010,processing_site_code,25,17/3/10,20/4/11,NOMINAL_DEPTH,(),(),,float64,0
 VAR,NOMINAL_DEPTH,SOFS-1-2010,ACR8242XS ,34060,17/3/10,20/4/11,NOMINAL_DEPTH,(),(),,float64,4524
 VAR,NOMINAL_DEPTH,SOFS-1-2010,ACR8242XS ,34061,17/3/10,20/4/11,NOMINAL_DEPTH,(),(),,float64,4524
-VAR,NOMINAL_DEPTH,SOFS-1-2010,LI-1905A,Q40966,17/3/10,20/4/11,NOMINAL_DEPTH,(),(),,float64,-2.72
+VAR,NOMINAL_DEPTH,SOFS-1-2010,LI-190SA,unknown,17/3/10,20/4/11,NOMINAL_DEPTH,(),(),,float64,-2.72
 VAR,NOMINAL_DEPTH,SOFS-1-2010,3DM-GX1,9476,17/3/10,20/4/11,NOMINAL_DEPTH,(),(),,float64,0
-VAR,NOMINAL_DEPTH,SOFS-1-2010,9601-DGS-LP,3.00E+14,17/3/10,20/4/11,NOMINAL_DEPTH,(),(),,float64,0
+VAR,NOMINAL_DEPTH,SOFS-1-2010,9601-DGS-LP,3E+14,17/3/10,20/4/11,NOMINAL_DEPTH,(),(),,float64,0
 VAR,NOMINAL_DEPTH,SOFS-1-2010,PCO2,112,17/3/10,20/4/11,NOMINAL_DEPTH,(),(),,float64,0
 VAR,NOMINAL_DEPTH,SOFS-1-2010,SBE37-SM 485,1840,17/3/10,20/4/11,NOMINAL_DEPTH,(),(),,float64,1.2
 VAR,NOMINAL_DEPTH,SOFS-1-2010,SBE37SM,2971,17/3/10,20/4/11,NOMINAL_DEPTH,(),(),,float64,100

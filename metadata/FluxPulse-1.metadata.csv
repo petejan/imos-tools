@@ -6,19 +6,19 @@ GLOBAL,,,DEFI-L,082V025,18/3/16,30/6/16,,,,deployment_code,str,FluxPulse-1-2016
 GLOBAL,,,MF-AZFP,55052,18/3/16,30/6/16,,,,deployment_code,str,FluxPulse-1-2016
 GLOBAL,,,CR1000,37664,18/3/16,30/6/16,,,,deployment_code,str,FluxPulse-1-2016
 GLOBAL,,,Data Logger,1,18/3/16,30/6/16,,,,deployment_code,str,FluxPulse-1-2016
-GLOBAL,,,OSD Tracker,3.00234E+14,18/3/16,30/6/16,,,,deployment_code,str,FluxPulse-1-2016
+GLOBAL,,,OSD Tracker,3.00E+14,18/3/16,30/6/16,,,,deployment_code,str,FluxPulse-1-2016
 GLOBAL,,,processing_site_code,10008,18/3/16,30/6/16,,,,deployment_code,str,FluxPulse-1-2016
 GLOBAL,,,processing_site_code,26,18/3/16,30/6/16,,,,deployment_code,str,FluxPulse-1-2016
 GLOBAL,,,RAS Box,Apollo,18/3/16,30/6/16,,,,deployment_code,str,FluxPulse-1-2016
 GLOBAL,,,ACR8242XS ,35718,18/3/16,30/6/16,,,,deployment_code,str,FluxPulse-1-2016
 GLOBAL,,,ACR8242XS ,35722,18/3/16,30/6/16,,,,deployment_code,str,FluxPulse-1-2016
-GLOBAL,,,LI-1905A,Q40966,18/3/16,30/6/16,,,,deployment_code,str,FluxPulse-1-2016
+GLOBAL,,,LI-190SA,unknown,18/3/16,30/6/16,,,,deployment_code,str,FluxPulse-1-2016
 GLOBAL,,,RAS-3-48-500,12709-01,18/3/16,30/6/16,,,,deployment_code,str,FluxPulse-1-2016
 GLOBAL,,,3DM-GX1,9476,18/3/16,30/6/16,,,,deployment_code,str,FluxPulse-1-2016
-GLOBAL,,,9602-LP,3.00234E+14,18/3/16,30/6/16,,,,deployment_code,str,FluxPulse-1-2016
-GLOBAL,,,9602-LP,3.00234E+14,18/3/16,30/6/16,,,,deployment_code,str,FluxPulse-1-2016
-GLOBAL,,,9602-N,3.00234E+14,18/3/16,30/6/16,,,,deployment_code,str,FluxPulse-1-2016
-GLOBAL,,,9602-N,3.00234E+14,18/3/16,30/6/16,,,,deployment_code,str,FluxPulse-1-2016
+GLOBAL,,,9602-LP,3.00E+14,18/3/16,30/6/16,,,,deployment_code,str,FluxPulse-1-2016
+GLOBAL,,,9602-LP,3.00E+14,18/3/16,30/6/16,,,,deployment_code,str,FluxPulse-1-2016
+GLOBAL,,,9602-N,3.00E+14,18/3/16,30/6/16,,,,deployment_code,str,FluxPulse-1-2016
+GLOBAL,,,9602-N,3.00E+14,18/3/16,30/6/16,,,,deployment_code,str,FluxPulse-1-2016
 GLOBAL,,,230A-101,110287,18/3/16,30/6/16,,,,deployment_code,str,FluxPulse-1-2016
 GLOBAL,,,GTD,29-102-15,18/3/16,30/6/16,,,,deployment_code,str,FluxPulse-1-2016
 GLOBAL,,,WHLS75-I-2,20814,18/3/16,30/6/16,,,,deployment_code,str,FluxPulse-1-2016
@@ -37,7 +37,7 @@ GLOBAL,,,SBE5T,5275,18/3/16,30/6/16,,,,deployment_code,str,FluxPulse-1-2016
 GLOBAL,,,Load Cell 10826-3*,2,18/3/16,30/6/16,,,,deployment_code,str,FluxPulse-1-2016
 GLOBAL,,,DST CT,S-8171,18/3/16,30/6/16,,,,deployment_code,str,FluxPulse-1-2016
 GLOBAL,,,DST CT,S-8172,18/3/16,30/6/16,,,,deployment_code,str,FluxPulse-1-2016
-GLOBAL,,,gpswaves,3.00034E+14,18/3/16,30/6/16,,,,deployment_code,str,FluxPulse-1-2016
+GLOBAL,,,gpswaves,3.00E+14,18/3/16,30/6/16,,,,deployment_code,str,FluxPulse-1-2016
 GLOBAL,,,Minilog-II-T,353253,18/3/16,30/6/16,,,,deployment_code,str,FluxPulse-1-2016
 GLOBAL,,,Minilog-II-T,353254,18/3/16,30/6/16,,,,deployment_code,str,FluxPulse-1-2016
 GLOBAL,,,Minilog-II-T,353255,18/3/16,30/6/16,,,,deployment_code,str,FluxPulse-1-2016
@@ -79,7 +79,7 @@ GLOBAL,,,SWND,215,18/3/16,30/6/16,,,,deployment_code,str,FluxPulse-1-2016
 GLOBAL,,,SWND,228,18/3/16,30/6/16,,,,deployment_code,str,FluxPulse-1-2016
 GLOBAL,,,SWR,236,18/3/16,30/6/16,,,,deployment_code,str,FluxPulse-1-2016
 GLOBAL,,,SWR,245,18/3/16,30/6/16,,,,deployment_code,str,FluxPulse-1-2016
-GLOBAL,,,Sable,3.00234E+14,18/3/16,30/6/16,,,,deployment_code,str,FluxPulse-1-2016
+GLOBAL,,,Sable,3.00E+14,18/3/16,30/6/16,,,,deployment_code,str,FluxPulse-1-2016
 ,,,,,,,,,,,,
 VAR,LATITUDE,FluxPulse-1-2016,,,18/3/16,30/6/16,LATITUDE,(),(),,float64,-46.72399
 VAR,LONGITUDE,FluxPulse-1-2016,,,18/3/16,30/6/16,LONGITUDE,(),(),,float64,141.92972
@@ -91,6 +91,17 @@ GLOBAL,,FluxPulse-1-2016,,,,,,,,voyage_deployment,str,http://www.cmar.csiro.au/d
 GLOBAL,,FluxPulse-1-2016,,,,,,,,voyage_recovery_bottom,str,not recovered
 GLOBAL,,FluxPulse-1-2016,,,,,,,,voyage_recovery_top,str,Pacific Crest 2016-06-23
 ,,,,,,,,,,,,
+GLOBAL,,FluxPulse-1-2016,LI-190SA,unknown,18/3/16,30/6/16,,,,instrument_serial_number,str,Q40966
+VAR_ATT,PAR,FluxPulse-1-2016,LI-190SA,unknown,18/3/16,30/6/16,,,,calibration_date,str,"May 21, 2009"
+VAR_ATT,PAR,FluxPulse-1-2016,LI-190SA,unknown,18/3/16,30/6/16,,,,calibration_units,str,umol s-1 m-2 per uamp
+VAR_ATT,PAR,FluxPulse-1-2016,LI-190SA,unknown,18/3/16,30/6/16,,,,calibration_constant,str,6.26
+VAR_ATT,PAR,FluxPulse-1-2016,LI-190SA,unknown,18/3/16,30/6/16,,,,calibration_multiplier,str,-159.74
+VAR_ATT,PAR,FluxPulse-1-2016,LI-190SA,unknown,18/3/16,30/6/16,,,,calibration_resistor,str,604
+VAR_ATT,PAR,FluxPulse-1-2016,LI-190SA,unknown,18/3/16,30/6/16,,,,comment_scale_offset,str,264.47 0
+VAR_ATT,PAR,FluxPulse-1-2016,LI-190SA,unknown,18/3/16,30/6/16,,,,standard_name,str,downwelling_photosynthetic_photon_flux_in_air
+VAR_ATT,PAR,FluxPulse-1-2016,LI-190SA,unknown,18/3/16,30/6/16,,,,long_name,str,downwelling_photosynthetic_photon_flux_in_air
+VAR_ATT,PAR,FluxPulse-1-2016,LI-190SA,unknown,18/3/16,30/6/16,,,,units,str,umol/m^2/s
+,,,,,,,,,,,,
 VAR,NOMINAL_DEPTH,FluxPulse-1-2016,Optode 3975,1161,18/3/16,30/6/16,NOMINAL_DEPTH,(),(),,float64,30
 VAR,NOMINAL_DEPTH,FluxPulse-1-2016,Optode 3975C,1157,18/3/16,30/6/16,NOMINAL_DEPTH,(),(),,float64,1.01
 VAR,NOMINAL_DEPTH,FluxPulse-1-2016,DEFI-L,082V023,18/3/16,30/6/16,NOMINAL_DEPTH,(),(),,float64,10
@@ -98,19 +109,19 @@ VAR,NOMINAL_DEPTH,FluxPulse-1-2016,DEFI-L,082V025,18/3/16,30/6/16,NOMINAL_DEPTH,
 VAR,NOMINAL_DEPTH,FluxPulse-1-2016,MF-AZFP,55052,18/3/16,30/6/16,NOMINAL_DEPTH,(),(),,float64,0
 VAR,NOMINAL_DEPTH,FluxPulse-1-2016,CR1000,37664,18/3/16,30/6/16,NOMINAL_DEPTH,(),(),,float64,0
 VAR,NOMINAL_DEPTH,FluxPulse-1-2016,Data Logger,1,18/3/16,30/6/16,NOMINAL_DEPTH,(),(),,float64,0
-VAR,NOMINAL_DEPTH,FluxPulse-1-2016,OSD Tracker,3.00234E+14,18/3/16,30/6/16,NOMINAL_DEPTH,(),(),,float64,-1.1
+VAR,NOMINAL_DEPTH,FluxPulse-1-2016,OSD Tracker,3.00E+14,18/3/16,30/6/16,NOMINAL_DEPTH,(),(),,float64,-1.1
 VAR,NOMINAL_DEPTH,FluxPulse-1-2016,processing_site_code,10008,18/3/16,30/6/16,NOMINAL_DEPTH,(),(),,float64,0
 VAR,NOMINAL_DEPTH,FluxPulse-1-2016,processing_site_code,26,18/3/16,30/6/16,NOMINAL_DEPTH,(),(),,float64,0
 VAR,NOMINAL_DEPTH,FluxPulse-1-2016,RAS Box,Apollo,18/3/16,30/6/16,NOMINAL_DEPTH,(),(),,float64,30
 VAR,NOMINAL_DEPTH,FluxPulse-1-2016,ACR8242XS ,35718,18/3/16,30/6/16,NOMINAL_DEPTH,(),(),,float64,4500
 VAR,NOMINAL_DEPTH,FluxPulse-1-2016,ACR8242XS ,35722,18/3/16,30/6/16,NOMINAL_DEPTH,(),(),,float64,4500
-VAR,NOMINAL_DEPTH,FluxPulse-1-2016,LI-1905A,Q40966,18/3/16,30/6/16,NOMINAL_DEPTH,(),(),,float64,-1.8
+VAR,NOMINAL_DEPTH,FluxPulse-1-2016,LI-190SA,unknown,18/3/16,30/6/16,NOMINAL_DEPTH,(),(),,float64,-1.8
 VAR,NOMINAL_DEPTH,FluxPulse-1-2016,RAS-3-48-500,12709-01,18/3/16,30/6/16,NOMINAL_DEPTH,(),(),,float64,30
 VAR,NOMINAL_DEPTH,FluxPulse-1-2016,3DM-GX1,9476,18/3/16,30/6/16,NOMINAL_DEPTH,(),(),,float64,0
-VAR,NOMINAL_DEPTH,FluxPulse-1-2016,9602-LP,3.00234E+14,18/3/16,30/6/16,NOMINAL_DEPTH,(),(),,float64,-1.1
-VAR,NOMINAL_DEPTH,FluxPulse-1-2016,9602-LP,3.00234E+14,18/3/16,30/6/16,NOMINAL_DEPTH,(),(),,float64,-1.1
-VAR,NOMINAL_DEPTH,FluxPulse-1-2016,9602-N,3.00234E+14,18/3/16,30/6/16,NOMINAL_DEPTH,(),(),,float64,-1.8
-VAR,NOMINAL_DEPTH,FluxPulse-1-2016,9602-N,3.00234E+14,18/3/16,30/6/16,NOMINAL_DEPTH,(),(),,float64,-1.8
+VAR,NOMINAL_DEPTH,FluxPulse-1-2016,9602-LP,3.00E+14,18/3/16,30/6/16,NOMINAL_DEPTH,(),(),,float64,-1.1
+VAR,NOMINAL_DEPTH,FluxPulse-1-2016,9602-LP,3.00E+14,18/3/16,30/6/16,NOMINAL_DEPTH,(),(),,float64,-1.1
+VAR,NOMINAL_DEPTH,FluxPulse-1-2016,9602-N,3.00E+14,18/3/16,30/6/16,NOMINAL_DEPTH,(),(),,float64,-1.8
+VAR,NOMINAL_DEPTH,FluxPulse-1-2016,9602-N,3.00E+14,18/3/16,30/6/16,NOMINAL_DEPTH,(),(),,float64,-1.8
 VAR,NOMINAL_DEPTH,FluxPulse-1-2016,230A-101,110287,18/3/16,30/6/16,NOMINAL_DEPTH,(),(),,float64,30
 VAR,NOMINAL_DEPTH,FluxPulse-1-2016,GTD,29-102-15,18/3/16,30/6/16,NOMINAL_DEPTH,(),(),,float64,30
 VAR,NOMINAL_DEPTH,FluxPulse-1-2016,WHLS75-I-2,20814,18/3/16,30/6/16,NOMINAL_DEPTH,(),(),,float64,500
@@ -129,7 +140,7 @@ VAR,NOMINAL_DEPTH,FluxPulse-1-2016,SBE5T,5275,18/3/16,30/6/16,NOMINAL_DEPTH,(),(
 VAR,NOMINAL_DEPTH,FluxPulse-1-2016,Load Cell 10826-3*,2,18/3/16,30/6/16,NOMINAL_DEPTH,(),(),,float64,1
 VAR,NOMINAL_DEPTH,FluxPulse-1-2016,DST CT,S-8171,18/3/16,30/6/16,NOMINAL_DEPTH,(),(),,float64,-2
 VAR,NOMINAL_DEPTH,FluxPulse-1-2016,DST CT,S-8172,18/3/16,30/6/16,NOMINAL_DEPTH,(),(),,float64,-2
-VAR,NOMINAL_DEPTH,FluxPulse-1-2016,gpswaves,3.00034E+14,18/3/16,30/6/16,NOMINAL_DEPTH,(),(),,float64,0
+VAR,NOMINAL_DEPTH,FluxPulse-1-2016,gpswaves,3.00E+14,18/3/16,30/6/16,NOMINAL_DEPTH,(),(),,float64,0
 VAR,NOMINAL_DEPTH,FluxPulse-1-2016,Minilog-II-T,353253,18/3/16,30/6/16,NOMINAL_DEPTH,(),(),,float64,10
 VAR,NOMINAL_DEPTH,FluxPulse-1-2016,Minilog-II-T,353254,18/3/16,30/6/16,NOMINAL_DEPTH,(),(),,float64,20
 VAR,NOMINAL_DEPTH,FluxPulse-1-2016,Minilog-II-T,353255,18/3/16,30/6/16,NOMINAL_DEPTH,(),(),,float64,40
@@ -171,4 +182,4 @@ VAR,NOMINAL_DEPTH,FluxPulse-1-2016,SWND,215,18/3/16,30/6/16,NOMINAL_DEPTH,(),(),
 VAR,NOMINAL_DEPTH,FluxPulse-1-2016,SWND,228,18/3/16,30/6/16,NOMINAL_DEPTH,(),(),,float64,-2.2
 VAR,NOMINAL_DEPTH,FluxPulse-1-2016,SWR,236,18/3/16,30/6/16,NOMINAL_DEPTH,(),(),,float64,-2.2
 VAR,NOMINAL_DEPTH,FluxPulse-1-2016,SWR,245,18/3/16,30/6/16,NOMINAL_DEPTH,(),(),,float64,-2.5
-VAR,NOMINAL_DEPTH,FluxPulse-1-2016,Sable,3.00234E+14,18/3/16,30/6/16,NOMINAL_DEPTH,(),(),,float64,1.1
+VAR,NOMINAL_DEPTH,FluxPulse-1-2016,Sable,3.00E+14,18/3/16,30/6/16,NOMINAL_DEPTH,(),(),,float64,1.1
