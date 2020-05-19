@@ -130,7 +130,7 @@ for x in os.listdir("/Users/tru050/Desktop/cloudstor/Shared/SOTS-Temp-Raw-Data")
 deployments.sort(key=last_four)
 
 
-
+#######
 
 
 
@@ -207,7 +207,7 @@ label_method = 'axes fraction'
                 
 for plt_idx,dep_name in zip(range(0,len(deployments)),deployments):            
 
-    print('plotting '+ str(len(all_deployment_dtemp_dtime[plt_idx])) + ' values')
+    print('plotting '+ str((all_deployment_dtemp_dtime[plt_idx])) + ' values')
             
     hist_data = ax[plt_idx].hist(all_deployment_dtemp_dtime[plt_idx],21,log=True)
     

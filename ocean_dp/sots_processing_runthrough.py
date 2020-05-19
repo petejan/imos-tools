@@ -40,7 +40,7 @@ import qc_checker
 start = time.time()
 
 # Set the working directory
-os.chdir('/Users/tru050/Desktop/sofs6 test data')
+#os.chdir('/Users/tru050/Desktop/sofs6 test data')
 
 # Make a list of FV00 filenames
 fv00_files = glob.glob('*IMOS_ABOS-SOTS*FV00*.nc')

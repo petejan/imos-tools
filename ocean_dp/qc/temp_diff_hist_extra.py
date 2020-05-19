@@ -13,6 +13,22 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
+import numpy.ma as ma
+import sys
+from netCDF4 import Dataset
+import numpy as np
+import argparse
+import glob
+import pytz
+import os
+import matplotlib.pyplot as plt
+from matplotlib import colors
+from matplotlib.ticker import PercentFormatter
+import glob
+from netCDF4 import num2date
+from dateutil import parser
+import datetime
+
 for root, dirs, files in os.walk("/Users/tru050/Desktop/cloudstor/Shared/SOTS-Temp-Raw-Data"):
     
     for fname in files:
