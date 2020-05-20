@@ -241,12 +241,16 @@ def std_by_depth(top,bottom,deployment_in=None):
     # calculates the standard deviation of the subsample
     target_std = np.std(target_ensemble["Temp rate of change"])
         
+    # sets line thickness for plot
     line_thick = 1
     
+    # creates axes for histogram
     ax_hist=plt.axes()
     
+    # plots a histogram of the data selected
     target_ensemble.hist(column="Temp rate of change",bins=100,log=True,ax=ax_hist)
     
+    # draws lines at the mean +- 3 STD on the histogram
     ax_hist.axvline(x=target_mean+3*target_std,color='r',linewidth=line_thick) 
 
     ax_hist.axvline(x=target_mean-3*target_std,color='r',linewidth=line_thick) 
