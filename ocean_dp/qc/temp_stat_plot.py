@@ -255,6 +255,30 @@ def std_by_depth(top,bottom,deployment_in=None):
 
     ax_hist.axvline(x=target_mean-3*target_std,color='r',linewidth=line_thick) 
     
+    # sets the x label
+    ax_hist.set_xlabel('°C/hr')
+    
+    
+    label_coords = (0.65, 0.8)
+    label_method = 'axes fraction' 
+    
+    anno = 'mean = '+str(round(float(target_mean),sigfigs=3))
+    
+    anno += '\n3 STD = ' + str(round(float(3*target_std),sigfigs=3))
+    
+    anno += '\nno. samples = ' + str(len(target_ensemble))
+    
+    anno += '\n'+str(top)+'m <= depth <= '+str(bottom)+'m'
+    
+    if deployment_in == None:
+        
+        anno += '\nall available data'
+        
+    else:
+        
+        anno += '\n'+deployment_in
+            
+    ax_hist.annotate(anno,xy=label_coords, xycoords=label_method,fontsize=8)
     
     # returns the standard deviation of the subsample
     return target_std
