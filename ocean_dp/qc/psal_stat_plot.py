@@ -13,6 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
+
 import numpy.ma as ma
 import sys
 from netCDF4 import Dataset, num2date
@@ -44,9 +45,11 @@ for x in os.listdir("/Users/tru050/Desktop/cloudstor/Shared/SOTS-Temp-Raw-Data")
     if (('Pulse' in x) or ('SOFS' in x)) and ('.p' not in x):
         
         deployments.append(x)
-    
+        
+        
 # create a dataframe to store extract information
-sots_temp_ensemble = pd.DataFrame(columns = ["Temp rate of change","QC","Nominal depth","Deployment"])
+sots_psal_ensemble = pd.DataFrame(columns = ["PSAL rate of change","QC","Nominal depth","Deployment"])
+
 
 # loops through all files in the directory
 for root, dirs, files in os.walk("/Users/tru050/Desktop/cloudstor/Shared/SOTS-Temp-Raw-Data"):
@@ -65,14 +68,14 @@ for root, dirs, files in os.walk("/Users/tru050/Desktop/cloudstor/Shared/SOTS-Te
             # open the file
             nc = Dataset(os.path.join(root,fname), mode = 'a')
             
-            # check file contains temperature data
-            if 'TEMP' in list(nc.variables):
+            # check file contains psalerature data
+            if 'PSAL' in list(nc.variables):
             
                 # check that the in_out_water test has been run on the file, if not run in_out_water code
-                if not 'TEMP_quality_control_io' in list(nc.variables):
+                if not 'PSAL_quality_control_io' in list(nc.variables):
                 
                     # run in_out_water script - uncommented at this point as just copied and pasted
-                    var_name = 'TEMP'
+                    var_name = 'PSAL'
                     nc_vars = nc.variables
                     to_add = []
                     if var_name:
@@ -123,14 +126,14 @@ for root, dirs, files in os.walk("/Users/tru050/Desktop/cloudstor/Shared/SOTS-Te
                 
                 
                 
-                # check that the file has a single dimension temperature vector, and that the time format is correct
-                if np.array(nc.variables['TEMP'][:]).ndim == 1 and nc.variables['TIME'].getncattr('units') =='days since 1950-01-01 00:00:00 UTC':
+                # check that the file has a single dimension psalerature vector, and that the time format is correct
+                if np.array(nc.variables['PSAL'][:]).ndim == 1 and nc.variables['TIME'].getncattr('units') =='days since 1950-01-01 00:00:00 UTC':
                     
-                    # calculate temperature changes for in water data
-                    nc_temp_diffs = np.diff(np.array(nc.variables['TEMP'][np.array(nc.variables['TEMP_quality_control'][:])!=7]))
+                    # calculate psalerature changes for in water data
+                    nc_psal_diffs = np.diff(np.array(nc.variables['PSAL'][np.array(nc.variables['PSAL_quality_control'][:])!=7]))
                 
                     # extract the time data
-                    nc_time = np.array(nc.variables['TIME'][np.array(nc.variables['TEMP_quality_control'][:])!=7])
+                    nc_time = np.array(nc.variables['TIME'][np.array(nc.variables['PSAL_quality_control'][:])!=7])
             
                     # Convert from days to hours
                     nc_time_hr = nc_time*24
@@ -138,40 +141,40 @@ for root, dirs, files in os.walk("/Users/tru050/Desktop/cloudstor/Shared/SOTS-Te
                     # Calculate time changes in hours
                     nc_time_hr_diffs = np.diff(nc_time_hr)
                     
-                    # calculate the rate of change of temperature wrt time (degrees °C per hour)
-                    nc_dtemp_dtime = np.divide(nc_temp_diffs,nc_time_hr_diffs)
+                    # calculate the rate of change of psalerature wrt time (degrees °C per hour)
+                    nc_dpsal_dtime = np.divide(nc_psal_diffs,nc_time_hr_diffs)
                     
                     
                     
-                    # extract temp_qc data
-                    nc_temp_qc = np.array(nc.variables['TEMP_quality_control'][np.array(nc.variables['TEMP_quality_control'][:])!=7])
+                    # extract psal_qc data
+                    nc_psal_qc = np.array(nc.variables['PSAL_quality_control'][np.array(nc.variables['PSAL_quality_control'][:])!=7])
                     
-                    # calculate qc values for each nc_dtemp_dtime by taking the maximum of the qc values of the two contributing temps
-                    nc_dtemp_dtime_qc = pd.Series(nc_temp_qc).rolling(2).max().dropna().to_numpy()
+                    # calculate qc values for each nc_dpsal_dtime by taking the maximum of the qc values of the two contributing psals
+                    nc_dpsal_dtime_qc = pd.Series(nc_psal_qc).rolling(2).max().dropna().to_numpy()
                     
                     
                     
                     # extract sensor nominal depth
                     nc_nom_depth = np.array(nc.variables['NOMINAL_DEPTH'])
                     
-                    # create a vector the same size as nc_dtemp_dtime with the nominal depth
-                    nc_nom_depth_vector = np.repeat(nc_nom_depth,len(nc_dtemp_dtime))
+                    # create a vector the same size as nc_dpsal_dtime with the nominal depth
+                    nc_nom_depth_vector = np.repeat(nc_nom_depth,len(nc_dpsal_dtime))
                     
                     
                     
                     # extract deployment name
                     nc_deployment = nc.deployment_code
                     
-                    # create a list the same size as nc_dtemp_dtime with the deployment name
-                    nc_deployment_list = [nc_deployment] * len(nc_dtemp_dtime)
+                    # create a list the same size as nc_dpsal_dtime with the deployment name
+                    nc_deployment_list = [nc_deployment] * len(nc_dpsal_dtime)
                     
                     
                     
                     # combine information into an length x 4 dataframe
-                    nc_temp_ensemble = pd.DataFrame({"Temp rate of change":nc_dtemp_dtime,"QC":nc_dtemp_dtime_qc,"Nominal depth":nc_nom_depth_vector,"Deployment":nc_deployment_list})
+                    nc_psal_ensemble = pd.DataFrame({"Psal rate of change":nc_dpsal_dtime,"QC":nc_dpsal_dtime_qc,"Nominal depth":nc_nom_depth_vector,"Deployment":nc_deployment_list})
                     
-                    # append the current netcdf's dataframe to the sots_temp_ensemble
-                    sots_temp_ensemble = sots_temp_ensemble.append(nc_temp_ensemble)
+                    # append the current netcdf's dataframe to the sots_psal_ensemble
+                    sots_psal_ensemble = sots_psal_ensemble.append(nc_psal_ensemble)
                     
                     # append the filename to the list of processed files
                     processed_files.append(fname)
@@ -183,10 +186,10 @@ for root, dirs, files in os.walk("/Users/tru050/Desktop/cloudstor/Shared/SOTS-Te
 ############################# Data processing ################################
             
 # creates a new dataframe containing only data with QC < 3
-sots_temp_ensemble_qc210 = sots_temp_ensemble[sots_temp_ensemble["QC"]<3]
+sots_psal_ensemble_qc210 = sots_psal_ensemble[sots_psal_ensemble["QC"]<3]
 
 # calculates overall standard deviation
-std_total = np.std(sots_temp_ensemble_qc210["Temp rate of change"])
+std_total = np.std(sots_psal_ensemble_qc210["Psal rate of change"])
 
 
 
@@ -195,11 +198,11 @@ std_total = np.std(sots_temp_ensemble_qc210["Temp rate of change"])
 std_by_deployment_data = []
 
 # creates a dict of deployment names and standard deviations
-for i in sots_temp_ensemble_qc210.Deployment.unique():
+for i in sots_psal_ensemble_qc210.Deployment.unique():
     std_by_deployment_data.append(
         {
             'Deployment': i,
-            'STD': np.std(sots_temp_ensemble_qc210["Temp rate of change"][sots_temp_ensemble_qc210["Deployment"]==i]),
+            'STD': np.std(sots_psal_ensemble_qc210["Psal rate of change"][sots_psal_ensemble_qc210["Deployment"]==i]),
         }
     )
 
@@ -214,32 +217,32 @@ std_by_deployment = pd.DataFrame(std_by_deployment_data)
 # std_by_depth: this function takes two compulsary arguments (top: the shallowest 
 # depth(m)), bottom: the deepest depth(m)) and one option argument (deployment_in: 
 # the deployment from which data will be taken). The function will return the standard
-# deviation of the d(Temp)/d(Time) data from sensors with nominal depths at and 
+# deviation of the d(psal)/d(Time) data from sensors with nominal depths at and 
 # between the two depths, and from only the deployment_in if specified.
 #
 # sample call: std_by_depth(500,10000,'SOFS-7.5-2018')
 #
-# this will give the std of all d(Temp)/d(Time) data from SOFS-7.5-2018 from 
+# this will give the std of all d(psal)/d(Time) data from SOFS-7.5-2018 from 
 # sensors with 500m <= nominal depth <= 10000m
 # =============================================================================
 
-def std_by_depth_temp(top,bottom,deployment_in=None):
+def std_by_depth_psal(top,bottom,deployment_in=None):
     
     if deployment_in == None:
     
-        # subsamples sots_temp_ensemble_qc210 based on depth
-        target_ensemble = sots_temp_ensemble_qc210[(sots_temp_ensemble_qc210["Nominal depth"]>=top) & (sots_temp_ensemble_qc210["Nominal depth"]<=bottom)]
+        # subsamples sots_psal_ensemble_qc210 based on depth
+        target_ensemble = sots_psal_ensemble_qc210[(sots_psal_ensemble_qc210["Nominal depth"]>=top) & (sots_psal_ensemble_qc210["Nominal depth"]<=bottom)]
         
     else:   
     
-        # subsamples sots_temp_ensemble_qc210 based on depth
-        target_ensemble = sots_temp_ensemble_qc210[(sots_temp_ensemble_qc210["Nominal depth"]>=top) & (sots_temp_ensemble_qc210["Nominal depth"]<=bottom) & (sots_temp_ensemble_qc210["Deployment"]==deployment_in)]
+        # subsamples sots_psal_ensemble_qc210 based on depth
+        target_ensemble = sots_psal_ensemble_qc210[(sots_psal_ensemble_qc210["Nominal depth"]>=top) & (sots_psal_ensemble_qc210["Nominal depth"]<=bottom) & (sots_psal_ensemble_qc210["Deployment"]==deployment_in)]
         
     # calculates the mean of the subsample
-    target_mean = np.mean(target_ensemble["Temp rate of change"])
+    target_mean = np.mean(target_ensemble["Psal rate of change"])
             
     # calculates the standard deviation of the subsample
-    target_std = np.std(target_ensemble["Temp rate of change"])
+    target_std = np.std(target_ensemble["Psal rate of change"])
         
     # sets line thickness for plot
     line_thick = 1
@@ -248,7 +251,7 @@ def std_by_depth_temp(top,bottom,deployment_in=None):
     ax_hist=plt.axes()
     
     # plots a histogram of the data selected
-    target_ensemble.hist(column="Temp rate of change",bins=100,log=True,ax=ax_hist)
+    target_ensemble.hist(column="Psal rate of change",bins=100,log=True,ax=ax_hist)
     
     # draws lines at the mean +- 3 STD on the histogram
     ax_hist.axvline(x=target_mean+3*target_std,color='r',linewidth=line_thick) 
@@ -256,7 +259,7 @@ def std_by_depth_temp(top,bottom,deployment_in=None):
     ax_hist.axvline(x=target_mean-3*target_std,color='r',linewidth=line_thick) 
     
     # sets the x label
-    ax_hist.set_xlabel('°C/hr')
+    ax_hist.set_xlabel('PSU/hr')
     
     
     label_coords = (0.65, 0.8)
@@ -285,28 +288,23 @@ def std_by_depth_temp(top,bottom,deployment_in=None):
     
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            
-            
-            
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
