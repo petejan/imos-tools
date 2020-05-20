@@ -230,22 +230,32 @@ def std_by_depth(top,bottom,deployment_in=None):
         # subsamples sots_temp_ensemble_qc210 based on depth
         target_ensemble = sots_temp_ensemble_qc210[(sots_temp_ensemble_qc210["Nominal depth"]>=top) & (sots_temp_ensemble_qc210["Nominal depth"]<=bottom)]
         
-        # calculates the standard deviation of the subsample
-        target_std = np.std(target_ensemble["Temp rate of change"])
-        
-        # returns the standard deviation of the subsample
-        return target_std
-    
     else:   
     
         # subsamples sots_temp_ensemble_qc210 based on depth
         target_ensemble = sots_temp_ensemble_qc210[(sots_temp_ensemble_qc210["Nominal depth"]>=top) & (sots_temp_ensemble_qc210["Nominal depth"]<=bottom) & (sots_temp_ensemble_qc210["Deployment"]==deployment_in)]
         
-        # calculates the standard deviation of the subsample
-        target_std = np.std(target_ensemble["Temp rate of change"])
+    # calculates the mean of the subsample
+    target_mean = np.mean(target_ensemble["Temp rate of change"])
+            
+    # calculates the standard deviation of the subsample
+    target_std = np.std(target_ensemble["Temp rate of change"])
         
-        # returns the standard deviation of the subsample
-        return target_std    
+    line_thick = 1
+    
+    ax_hist=plt.axes()
+    
+    target_ensemble.hist(column="Temp rate of change",bins=100,log=True,ax=ax_hist)
+    
+    ax_hist.axvline(x=target_mean+3*target_std,color='r',linewidth=line_thick) 
+
+    ax_hist.axvline(x=target_mean-3*target_std,color='r',linewidth=line_thick) 
+    
+    
+    # returns the standard deviation of the subsample
+    return target_std
+    
+
 
 
 
