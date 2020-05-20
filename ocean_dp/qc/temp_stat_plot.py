@@ -225,15 +225,32 @@ std_by_deployment = pd.DataFrame(std_by_deployment_data)
 
 def std_by_depth_temp(top,bottom,deployment_in=None):
     
+    # if user incorrectly inputs depths, swap them and run the code
+    if top > bottom:
+        
+        top, bottom = bottom, top
+    
     if deployment_in == None:
     
         # subsamples sots_temp_ensemble_qc210 based on depth
         target_ensemble = sots_temp_ensemble_qc210[(sots_temp_ensemble_qc210["Nominal depth"]>=top) & (sots_temp_ensemble_qc210["Nominal depth"]<=bottom)]
         
+    elif isinstance(deployment_in, list):
+        
+        # subsamples sots_temp_ensemble_qc210 based on depth
+        target_ensemble = sots_temp_ensemble_qc210[(sots_temp_ensemble_qc210["Nominal depth"]>=top) & (sots_temp_ensemble_qc210["Nominal depth"]<=bottom) & (sots_temp_ensemble_qc210.Deployment.isin(deployment_in))]
+        
+        
     else:   
     
         # subsamples sots_temp_ensemble_qc210 based on depth
         target_ensemble = sots_temp_ensemble_qc210[(sots_temp_ensemble_qc210["Nominal depth"]>=top) & (sots_temp_ensemble_qc210["Nominal depth"]<=bottom) & (sots_temp_ensemble_qc210["Deployment"]==deployment_in)]
+    
+    # if not data is available with the given choices, end the function
+    if len(target_ensemble)==0:
+        
+        return 'No data available for those choices'
+        
         
     # calculates the mean of the subsample
     target_mean = np.mean(target_ensemble["Temp rate of change"])
@@ -259,7 +276,7 @@ def std_by_depth_temp(top,bottom,deployment_in=None):
     ax_hist.set_xlabel('°C/hr')
     
     
-    label_coords = (0.65, 0.8)
+    label_coords = (0.70, 0.99)
     label_method = 'axes fraction' 
     
     anno = 'mean = '+str(round(float(target_mean),sigfigs=3))
@@ -274,11 +291,17 @@ def std_by_depth_temp(top,bottom,deployment_in=None):
         
         anno += '\nall available data'
         
+    elif isinstance(deployment_in, list):
+        
+        anno += '\n'
+        
+        anno += '\n'.join(deployment_in)
+        
     else:
         
         anno += '\n'+deployment_in
             
-    ax_hist.annotate(anno,xy=label_coords, xycoords=label_method,fontsize=8)
+    ax_hist.annotate(anno,xy=label_coords, xycoords=label_method,fontsize=8,va = "top", ha="left")
     
     # returns the standard deviation of the subsample
     return target_std
