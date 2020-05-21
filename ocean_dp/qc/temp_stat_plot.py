@@ -46,7 +46,7 @@ for x in os.listdir("/Users/tru050/Desktop/cloudstor/Shared/SOTS-Temp-Raw-Data")
         deployments.append(x)
     
 # create a dataframe to store extract information
-sots_temp_ensemble = pd.DataFrame(columns = ["Temp rate of change","QC","Nominal depth","Deployment"])
+sots_temp_ensemble = pd.DataFrame(columns = ["dTemp/dtime","dTemp/dSample","QC","Nominal depth","Deployment"])
 
 # loops through all files in the directory
 for root, dirs, files in os.walk("/Users/tru050/Desktop/cloudstor/Shared/SOTS-Temp-Raw-Data"):
@@ -168,7 +168,7 @@ for root, dirs, files in os.walk("/Users/tru050/Desktop/cloudstor/Shared/SOTS-Te
                     
                     
                     # combine information into an length x 4 dataframe
-                    nc_temp_ensemble = pd.DataFrame({"Temp rate of change":nc_dtemp_dtime,"QC":nc_dtemp_dtime_qc,"Nominal depth":nc_nom_depth_vector,"Deployment":nc_deployment_list})
+                    nc_temp_ensemble = pd.DataFrame({"dTemp/dtime":nc_dtemp_dtime,"dTemp/dSample":nc_temp_diffs,"QC":nc_dtemp_dtime_qc,"Nominal depth":nc_nom_depth_vector,"Deployment":nc_deployment_list})
                     
                     # append the current netcdf's dataframe to the sots_temp_ensemble
                     sots_temp_ensemble = sots_temp_ensemble.append(nc_temp_ensemble)
@@ -186,7 +186,7 @@ for root, dirs, files in os.walk("/Users/tru050/Desktop/cloudstor/Shared/SOTS-Te
 sots_temp_ensemble_qc210 = sots_temp_ensemble[sots_temp_ensemble["QC"]<3]
 
 # calculates overall standard deviation
-std_total = np.std(sots_temp_ensemble_qc210["Temp rate of change"])
+std_time_total = np.std(sots_temp_ensemble_qc210["dTemp/dtime"])
 
 
 
@@ -199,7 +199,8 @@ for i in sots_temp_ensemble_qc210.Deployment.unique():
     std_by_deployment_data.append(
         {
             'Deployment': i,
-            'STD': np.std(sots_temp_ensemble_qc210["Temp rate of change"][sots_temp_ensemble_qc210["Deployment"]==i]),
+            'STD time': np.std(sots_temp_ensemble_qc210["dTemp/dtime"][sots_temp_ensemble_qc210["Deployment"]==i]),
+            'STD sample': np.std(sots_temp_ensemble_qc210["dTemp/dSample"][sots_temp_ensemble_qc210["Deployment"]==i])
         }
     )
 
@@ -223,7 +224,23 @@ std_by_deployment = pd.DataFrame(std_by_deployment_data)
 # sensors with 500m <= nominal depth <= 10000m
 # =============================================================================
 
-def std_by_depth_temp(top,bottom,deployment_in=None):
+def std_by_depth_temp(top,bottom,deployment_in=None,rate='time'):
+    
+    selection = ''
+    
+    if rate == 'time':
+        
+        selection = "dTemp/dtime"
+        
+    elif rate == 'sample':
+        
+        selection = "dTemp/dSample"
+        
+    else:
+        
+        return "incorrect rate specification"
+    
+    
     
     # if user incorrectly inputs depths, swap them and run the code
     if top > bottom:
@@ -253,10 +270,10 @@ def std_by_depth_temp(top,bottom,deployment_in=None):
         
         
     # calculates the mean of the subsample
-    target_mean = np.mean(target_ensemble["Temp rate of change"])
+    target_mean = np.mean(target_ensemble[selection])
             
     # calculates the standard deviation of the subsample
-    target_std = np.std(target_ensemble["Temp rate of change"])
+    target_std = np.std(target_ensemble[selection])
         
     # sets line thickness for plot
     line_thick = 1
@@ -265,7 +282,7 @@ def std_by_depth_temp(top,bottom,deployment_in=None):
     ax_hist=plt.axes()
     
     # plots a histogram of the data selected
-    target_ensemble.hist(column="Temp rate of change",bins=100,log=True,ax=ax_hist)
+    target_ensemble.hist(column=selection,bins=100,log=True,ax=ax_hist)
     
     # draws lines at the mean +- 3 STD on the histogram
     ax_hist.axvline(x=target_mean+3*target_std,color='r',linewidth=line_thick) 
@@ -273,7 +290,13 @@ def std_by_depth_temp(top,bottom,deployment_in=None):
     ax_hist.axvline(x=target_mean-3*target_std,color='r',linewidth=line_thick) 
     
     # sets the x label
-    ax_hist.set_xlabel('°C/hr')
+    if rate == 'time':
+        
+         ax_hist.set_xlabel('°C/hr')
+        
+    elif rate == 'sample':
+        
+        ax_hist.set_xlabel('°C')
     
     
     label_coords = (0.70, 0.99)
