@@ -197,7 +197,11 @@ def add_qc(dataDIR):
             ncVarOut = ds.variables[qc_var_name]
         else:
             ncVarOut = ds.createVariable(qc_var_name, "i1", nc_var.dimensions, fill_value=99, zlib=True)  # fill_value=0 otherwise defaults to max
-            ncVarOut.long_name = "quality flag for " + nc_var.name
+
+            ncVarOut.long_name = "quality flag for " + nc_var.long_name
+            if 'standard_name' in nc_var.ncattrs():
+                ncVarOut.standard_name = nc_var.standard_name + " status_flag"
+
             ncVarOut.quality_control_conventions = "IMOS standard flags"
             ncVarOut.flag_values = np.array([0, 1, 2, 3, 4, 6, 7, 9], dtype=np.int8)
             ncVarOut.comment_spherical_scale_applied = spherical_scale_factor

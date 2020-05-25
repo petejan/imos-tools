@@ -62,12 +62,18 @@ def global_range(netCDFfiles, variable, max, min, qc_value=4):
         else:
             ncVarOut = ds.createVariable(nc_var.name + "_quality_control_gr", "i1", nc_var.dimensions, fill_value=99, zlib=True)  # fill_value=0 otherwise defaults to max
             ncVarOut[:] = np.zeros(nc_var.shape)
-            ncVarOut.long_name = "quality flag for " + nc_var.name
+            ncVarOut.long_name = "quality flag for " + nc_var.long_name
+            try:
+                ncVarOut.standard_name = nc_var.standard_name + " status_flag"
+            except AttributeError:
+                pass
+
             ncVarOut.flag_values = np.array([0, 1, 2, 3, 4, 6, 7, 9], dtype=np.int8)
             ncVarOut.quality_control_conventions = "IMOS standard flags"
             ncVarOut.flag_meanings = 'unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value'
             # add new variable to list of aux variables
             nc_var.ancillary_variables = nc_var.ancillary_variables + " " + nc_var.name + "_quality_control_gr"
+            ncVarOut.comment = 'Test 4. gross range test'
 
         new_qc_flags = np.ones(nc_var.shape)
         new_qc_flags[mask] = qc_value
@@ -92,7 +98,7 @@ def global_range(netCDFfiles, variable, max, min, qc_value=4):
             hist = ds.history + "\n"
         except AttributeError:
             hist = ""
-        ds.setncattr("history", hist + datetime.utcnow().strftime("%Y-%m-%d") + " " + variable + " global range min = " + str(min) + " max = " + str(max) + " marked " + str(count))
+        ds.setncattr("history", hist + datetime.utcnow().strftime("%Y-%m-%d") + " " + variable + " global range min = " + str(min) + " max = " + str(max) + " marked " + str(int(count)))
 
         ds.close()
 

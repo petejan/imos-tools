@@ -104,5 +104,15 @@ print("eco par", eco_par)
 eco_fn = ocean_dp.processing.eco_parcount_2_par.cal(eco_par)
 pulse_files.extend(eco_fn)
 
+pulse_files = ocean_dp.file_name.find_file_with.find_files_pattern(os.path.join(path, "../netCDF", "IMOS*FV00*.nc"))
+p11 = ocean_dp.file_name.find_file_with.find_global(pulse_files, 'deployment_code', 'Pulse-11-2015')
+p11 = ocean_dp.file_name.find_file_with.find_variable(p11, 'PAR')
+print('p11 files:')
+for f in p11:
+    print(f)
+
+ocean_dp.processing.add_incoming_radiation.add_solar(p11)
+
+
 print(process.memory_info().rss)  # in bytes
 

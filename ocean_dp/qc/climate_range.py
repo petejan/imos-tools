@@ -19,6 +19,8 @@
 from netCDF4 import Dataset, num2date
 import sys
 
+import matplotlib.pyplot as plt
+
 import numpy as np
 from dateutil import parser
 import pytz
@@ -59,8 +61,15 @@ def climate_range(netCDFfiles, variable_name, qc_value=3):
         e_var = nc_e_var[:]
         e_var.mask = False
 
-        e_var = (e_var*3) + 10  # Southern Ocean Time Series (SOTS) Quality Assessment and Control Report PAR Instruments Version 1.0 page 9 : Test 7:
-                                # the +10 QC's the night time data as well
+        # Southern Ocean Time Series (SOTS) Quality Assessment and Control Report PAR Instruments Version 1.0 page 9 : Test 7:
+        # the +10 QC's the night time data as well
+        spherical = 'spherical' in nc_var.comment_sensor_type
+        if spherical:
+            e_var = (e_var * 3) + 15
+            note = 'spherical sensor, par < (3 * SOLAR) + 15'
+        else:
+            e_var = (e_var * 2) + 15
+            note = 'cosine sensor, par < (2 * SOLAR) + 15'
 
         # this is where the actual QC test is done
         mask = (nc_var > e_var) & alt_msk
@@ -71,10 +80,16 @@ def climate_range(netCDFfiles, variable_name, qc_value=3):
             ncVarOut = ds.variables[nc_var.name + "_quality_control_cl"]
         else:
             ncVarOut = ds.createVariable(nc_var.name + "_quality_control_cl", "i1", nc_var.dimensions, fill_value=99, zlib=True)  # fill_value=0 otherwise defaults to max
-            ncVarOut.long_name = "quality flag for " + nc_var.name
+
+            ncVarOut.long_name = "quality flag for " + nc_var.long_name
+            if 'standard_name' in nc_var.ncattrs():
+                ncVarOut.standard_name = nc_var.standard_name + " status_flag"
+
             ncVarOut.quality_control_conventions = "IMOS standard flags"
             ncVarOut.flag_values = np.array([0, 1, 2, 3, 4, 6, 7, 9], dtype=np.int8)
             ncVarOut.flag_meanings = 'unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value'
+            ncVarOut.comment = 'Test 7. climatology test'
+            ncVarOut.comment_note = note
 
         new_qc_flags = np.zeros(nc_var.shape) + 2
 
@@ -95,6 +110,18 @@ def climate_range(netCDFfiles, variable_name, qc_value=3):
         count = sum(marked)
         print('marked records ', count, mask, existing_qc_flags)
 
+        # temp plot data and flags
+        # time_var = ds.variables['TIME']
+        # ax1 = plt.subplot(2, 1, 1)
+        # plt.plot(time_var[:], nc_var[:])
+        # plt.plot(time_var[:], e_var[:])
+        #
+        # ax2 = plt.subplot(2, 1, 2, sharex=ax1)
+        # plt.plot(time_var[:], new_qc_flags)
+        # plt.ylim(0, 9)
+        #
+        # plt.show()
+
         # write flags back to main QC variable
         var_qc[:] = existing_qc_flags
 
@@ -103,7 +130,7 @@ def climate_range(netCDFfiles, variable_name, qc_value=3):
             hist = ds.history + "\n"
         except AttributeError:
             hist = ""
-        ds.setncattr("history", hist + datetime.utcnow().strftime("%Y-%m-%d") + " " + variable_name + " climate range, marked " + str(count))
+        ds.setncattr("history", hist + datetime.utcnow().strftime("%Y-%m-%d") + " " + variable_name + " climate range, marked " + str(int(count)))
 
         ds.close()
 
@@ -114,6 +141,6 @@ if __name__ == "__main__":
 
     # usage is <file_name> <variable_name> <qc value>
     if len(sys.argv) > 4:
-        climate_range(sys.argv[1], variable_name=sys.argv[2], qc_value=int(sys.argv[3]))
+        climate_range([sys.argv[1]], variable_name=sys.argv[2], qc_value=int(sys.argv[3]))
     else:
-        climate_range(sys.argv[1], variable_name=sys.argv[2])
+        climate_range([sys.argv[1]], variable_name=sys.argv[2])

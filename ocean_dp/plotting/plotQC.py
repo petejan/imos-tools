@@ -61,17 +61,19 @@ def plot(fn):
 
 def do_plot(fn):
 
+    var = 'PAR'
+
     #fn = sys.argv[1]
     #fn = '/Users/pete/cloudstor/SOTS-Temp-Raw-Data/SOFS-7.5-2018/netCDF/IMOS_ABOS-SOTS_TIP_20180801_SOFS_FV01_SOFS-7.5-2018-Starmon-mini-4047-40m_END-20190331_C-20200429.nc'
 
     DS = xr.open_dataset(fn)
 
     ax1 = plt.subplot(2, 1, 1)
-    plt.plot(DS.TIME, DS.PAR)
+    plt.plot(DS.TIME, DS[var])
     plt.title(DS.deployment_code + " - " + DS.instrument_model + ":" + DS.instrument_serial_number + " @ " + str(DS.instrument_nominal_depth), {'fontsize': 8})
 
     ax2 = plt.subplot(2, 1, 2, sharex=ax1)
-    aux = DS.PAR.ancillary_variables
+    aux = DS[var].ancillary_variables
     a_vars = aux.split(" ")
     for f in sorted(set(a_vars)):
         print('aux var', f)
@@ -85,5 +87,8 @@ def do_plot(fn):
 
 
 if __name__ == "__main__":
-    plot_all(sys.argv[1:])
+    if len(sys.argv[1:]) > 1:
+        plot_all(sys.argv[1:])
+    else:
+        plot(sys.argv[1])
 

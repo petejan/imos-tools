@@ -25,25 +25,22 @@ path = sys.argv[1] + "/"
 
 print ('file path : ', path)
 
-# pulse_files = ocean_dp.file_name.find_file_with.find_files_pattern(os.path.join(path, "IMOS*.nc"))
-# par_files = ocean_dp.file_name.find_file_with.find_variable(pulse_files, 'PAR')
-# epar_files = ocean_dp.file_name.find_file_with.find_variable(par_files, 'ePAR')
-#
-# print('PAR files:')
-# for f in par_files:
-#     print(f)
-#
-# par_files = ocean_dp.processing.add_incoming_radiation.add_solar(par_files)
-#
-# qc_files = ocean_dp.qc.add_qc_flags.add_qc(par_files, "PAR")  # this resets the QC to 0
+pulse_files = ocean_dp.file_name.find_file_with.find_files_pattern(os.path.join(path, "IMOS*FV00*.nc"))
+par_files = ocean_dp.file_name.find_file_with.find_variable(pulse_files, 'PAR')
+epar_files = ocean_dp.file_name.find_file_with.find_variable(par_files, 'ePAR')
 
-pulse_files = ocean_dp.file_name.find_file_with.find_files_pattern(os.path.join(path, "IMOS*.nc"))
+print('PAR files:')
+for f in par_files:
+    print(f)
+
+qc_files = ocean_dp.qc.add_qc_flags.add_qc(par_files, "PAR")  # this resets the QC to 0
+
+pulse_files = ocean_dp.file_name.find_file_with.find_files_pattern(os.path.join(path, "IMOS*FV01*.nc"))
 par_files = ocean_dp.file_name.find_file_with.find_variable(pulse_files, 'PAR')
 fv01_files = ocean_dp.file_name.find_file_with.find_global(par_files, 'file_version', 'Level 1 - Quality Controlled Data')
-fv01_files = ocean_dp.file_name.find_file_with.find_variable(fv01_files, 'ePAR')
 
 print('FV01 files:')
-for f in par_files:
+for f in fv01_files:
     print(f)
 
 print('step 4 in/out water')

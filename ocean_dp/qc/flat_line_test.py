@@ -71,7 +71,11 @@ def flatline_test(nc, target_vars_in=[], window=5, flag=4):
             ncVarOut = nc.createVariable(nc_var.name + "_quality_control_flt", "i1", nc_var.dimensions, fill_value=99, zlib=True)  # fill_value=0 otherwise defaults to max
             ncVarOut[:] = 0
             # print(all(nc.variables[nc_var.name + "_quality_control_flt"]==0))
-            ncVarOut.long_name = "quality flag for " + nc_var.name
+            ncVarOut.long_name = "quality flag for " + nc_var.long_name
+            try:
+                ncVarOut.standard_name = nc_var.standard_name + " status_flag"
+            except AttributeError:
+                pass
             ncVarOut.flag_values = np.array([0, 1, 2, 3, 4, 6, 7, 9], dtype=np.int8)
             ncVarOut.flag_meanings = 'unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value'
 
@@ -108,7 +112,7 @@ def flatline_test(nc, target_vars_in=[], window=5, flag=4):
     except AttributeError:
         hist = ""
 
-    nc.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + ' : flatline_test performed on ' + str(target_vars) + ', window ' + str(window) + ' consecutive values or more were flagged with ' + str(flag) + ' marked ' + str(points_marked))
+    nc.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + ' : flatline_test performed on ' + str(target_vars) + ', window ' + str(window) + ' consecutive values or more were flagged with ' + str(flag) + ' marked ' + str(int(points_marked)))
 
     nc.close()
 

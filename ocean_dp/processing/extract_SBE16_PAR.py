@@ -46,6 +46,7 @@ def extract(netCDFfiles, sbe16_var='VOLT2'):
                 fn_new_split[2].index("R") # for want of a better code
             except ValueError:
                 fn_new_split[2] += 'R'
+            fn_new_split[5] = 'FV00'
             fn_new_split[6] = dep_code + '-' + sn + '-' + str(int(depth)) + 'm'
 
             fn_new = os.path.join(os.path.dirname(fn), '_'.join(fn_new_split))
@@ -64,6 +65,8 @@ def extract(netCDFfiles, sbe16_var='VOLT2'):
         ds.setncattr("instrument", "Wet-LABS ; ECO-PAR")
         ds.setncattr("instrument_model", "ECO-PAR")
         ds.setncattr("instrument_serial_number", sn)
+
+        ds.file_version = 'Level 0 - Raw data'
 
         # copy required variables
         for v in ['TIME', 'NOMINAL_DEPTH', 'LATITUDE', 'LONGITUDE', 'PRES', sbe16_var]:
@@ -89,17 +92,6 @@ def extract(netCDFfiles, sbe16_var='VOLT2'):
         new_var.sensor_SeaVoX_L22_code = 'SDN:L22::TOOL0676'
 
         new_var.ancillary_variables = "PAR_quality_control"
-
-        new_var = ds.createVariable('PAR_quality_control', 'i1', VOLT2_var.dimensions, fill_value=np.int8(99), zlib=True)
-        print(new_var)
-        if sbe16_var+'_quality_control' in ds_in.variables:
-            new_var[:] = ds_in.variables[sbe16_var +'_quality_control'][:]
-            for va in ds_in.variables[sbe16_var+'_quality_control'].ncattrs():
-                if va not in ('_FillValue'):
-                    new_var.setncattr(va, ds_in.variables[sbe16_var + '_quality_control'].getncattr(va))
-        else:
-            new_var[:] = 0
-        new_var.long_name = 'quality_code for downwelling_photosynthetic_photon_flux_in_sea_water'
 
         ds_in.close()
 
