@@ -48,7 +48,7 @@ for x in os.listdir("/Users/tru050/Desktop/cloudstor/Shared/SOTS-Temp-Raw-Data")
         
         
 # create a dataframe to store extract information
-sots_psal_ensemble = pd.DataFrame(columns = ["PSAL rate of change","QC","Nominal depth","Deployment"])
+sots_psal_ensemble = pd.DataFrame(columns = ["dPsal/dtime","dPsal/dSample","QC","Nominal depth","Deployment"])
 
 
 # loops through all files in the directory
@@ -171,7 +171,7 @@ for root, dirs, files in os.walk("/Users/tru050/Desktop/cloudstor/Shared/SOTS-Te
                     
                     
                     # combine information into an length x 4 dataframe
-                    nc_psal_ensemble = pd.DataFrame({"Psal rate of change":nc_dpsal_dtime,"QC":nc_dpsal_dtime_qc,"Nominal depth":nc_nom_depth_vector,"Deployment":nc_deployment_list})
+                    nc_psal_ensemble = pd.DataFrame({"dPsal/dtime":nc_dpsal_dtime,"dPsal/dSample":nc_psal_diffs,"QC":nc_dpsal_dtime_qc,"Nominal depth":nc_nom_depth_vector,"Deployment":nc_deployment_list})
                     
                     # append the current netcdf's dataframe to the sots_psal_ensemble
                     sots_psal_ensemble = sots_psal_ensemble.append(nc_psal_ensemble)
@@ -189,7 +189,7 @@ for root, dirs, files in os.walk("/Users/tru050/Desktop/cloudstor/Shared/SOTS-Te
 sots_psal_ensemble_qc210 = sots_psal_ensemble[sots_psal_ensemble["QC"]<3]
 
 # calculates overall standard deviation
-std_total = np.std(sots_psal_ensemble_qc210["Psal rate of change"])
+std_total = np.std(sots_psal_ensemble_qc210["dPsal/dtime"])
 
 
 
@@ -202,7 +202,8 @@ for i in sots_psal_ensemble_qc210.Deployment.unique():
     std_by_deployment_data.append(
         {
             'Deployment': i,
-            'STD': np.std(sots_psal_ensemble_qc210["Psal rate of change"][sots_psal_ensemble_qc210["Deployment"]==i]),
+            'STD': np.std(sots_psal_ensemble_qc210["dPsal/dtime"][sots_psal_ensemble_qc210["Deployment"]==i]),
+            'STD sample': np.std(sots_psal_ensemble_qc210["dPsal/dSample"][sots_psal_ensemble_qc210["Deployment"]==i])
         }
     )
 
@@ -226,7 +227,23 @@ std_by_deployment = pd.DataFrame(std_by_deployment_data)
 # sensors with 500m <= nominal depth <= 10000m
 # =============================================================================
 
-def std_by_depth_psal(top,bottom,deployment_in=None):
+def std_by_depth_psal(top,bottom,deployment_in=None,rate='time'):
+    
+    selection = ''
+    
+    if rate == 'time':
+        
+        selection = "dPsal/dtime"
+        
+    elif rate == 'sample':
+        
+        selection = "dPsal/dSample"
+        
+    else:
+        
+        return "incorrect rate specification"
+    
+    
     
     # if user incorrectly inputs depths, swap them and run the code
     if top > bottom:
@@ -256,10 +273,10 @@ def std_by_depth_psal(top,bottom,deployment_in=None):
         
         
     # calculates the mean of the subsample
-    target_mean = np.mean(target_ensemble["Psal rate of change"])
+    target_mean = np.mean(target_ensemble[selection])
             
     # calculates the standard deviation of the subsample
-    target_std = np.std(target_ensemble["Psal rate of change"])
+    target_std = np.std(target_ensemble[selection])
         
     # sets line thickness for plot
     line_thick = 1
@@ -268,7 +285,7 @@ def std_by_depth_psal(top,bottom,deployment_in=None):
     ax_hist=plt.axes()
     
     # plots a histogram of the data selected
-    target_ensemble.hist(column="Psal rate of change",bins=100,log=True,ax=ax_hist)
+    target_ensemble.hist(column=selection,bins=100,log=True,ax=ax_hist)
     
     # draws lines at the mean +- 3 STD on the histogram
     ax_hist.axvline(x=target_mean+3*target_std,color='r',linewidth=line_thick) 
@@ -276,7 +293,13 @@ def std_by_depth_psal(top,bottom,deployment_in=None):
     ax_hist.axvline(x=target_mean-3*target_std,color='r',linewidth=line_thick) 
     
     # sets the x label
-    ax_hist.set_xlabel('PSU/hr')
+    if rate == 'time':
+        
+         ax_hist.set_xlabel('PSU/hr')
+        
+    elif rate == 'sample':
+        
+        ax_hist.set_xlabel('PSU/sample')
     
     
     label_coords = (0.70, 0.99)
@@ -309,7 +332,6 @@ def std_by_depth_psal(top,bottom,deployment_in=None):
     # returns the standard deviation of the subsample
     return target_std
     
-
 
 
 

@@ -70,13 +70,13 @@ for ncfile in fv01_pres_interp_files:
     global_range.global_range(ncfile,'TEMP',40,-2)
 
 # Rate of change
-rate_of_change_test.roc_test_files(fv01_pres_interp_files,'TEMP',10)
+rate_of_change_test.roc_test_files(fv01_pres_interp_files,'TEMP',3.36)
 
 # Spike
 spike_test.spike_test_files(fv01_pres_interp_files,target_vars_in=['TEMP'])
 
 # Flatline
-flatline_test.flatline_test_files(fv01_pres_interp_files,['TEMP'],window=10)
+flatline_test.flatline_test_files(fv01_pres_interp_files,['TEMP'],window=20)
 
 # Check qc process has worked
 fv01_qc_checked = qc_checker.qc_checker_files(fv01_pres_interp_files,['TEMP'])

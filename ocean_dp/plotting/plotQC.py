@@ -67,11 +67,11 @@ def do_plot(fn):
     DS = xr.open_dataset(fn)
 
     ax1 = plt.subplot(2, 1, 1)
-    plt.plot(DS.TIME, DS.PAR)
+    plt.plot(DS.TIME, DS.TEMP)
     plt.title(DS.deployment_code + " - " + DS.instrument_model + ":" + DS.instrument_serial_number + " @ " + str(DS.instrument_nominal_depth), {'fontsize': 8})
 
     ax2 = plt.subplot(2, 1, 2, sharex=ax1)
-    aux = DS.PAR.ancillary_variables
+    aux = DS.TEMP.ancillary_variables
     a_vars = aux.split(" ")
     for f in sorted(set(a_vars)):
         print('aux var', f)

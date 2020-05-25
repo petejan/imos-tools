@@ -28,6 +28,12 @@ from matplotlib.ticker import PercentFormatter
 from sigfig import round
 import pandas as pd
 
+import warnings
+import scipy.stats as st
+import statsmodels as sm
+import matplotlib
+
+
 ############################# Data extraction ################################
 
 # creates an empty array to store the names of the SOTS deployments
@@ -296,7 +302,7 @@ def std_by_depth_temp(top,bottom,deployment_in=None,rate='time'):
         
     elif rate == 'sample':
         
-        ax_hist.set_xlabel('°C')
+        ax_hist.set_xlabel('°C/sample')
     
     
     label_coords = (0.70, 0.99)
@@ -329,6 +335,7 @@ def std_by_depth_temp(top,bottom,deployment_in=None,rate='time'):
     # returns the standard deviation of the subsample
     return target_std
     
+
 
 
 
