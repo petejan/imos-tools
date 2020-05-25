@@ -23,20 +23,46 @@ import oceansdb
 import datetime
 import matplotlib.pyplot as plt
 
-dt = [datetime.datetime(2000,6,21)]
+def get_data():
+    base = datetime.datetime(2000, 1, 1)
+    date_list = [base + datetime.timedelta(days=x*30) for x in range(12)]
 
-doy = [(x - datetime.datetime(x.year, 1, 1)).total_seconds()/3600/24 for x in dt]
-depth = np.arange(0, 5000, 1)
+    doy = [(x - datetime.datetime(x.year, 1, 1)).total_seconds()/3600/24 for x in date_list]
+    depth = np.arange(0.5, 5000, 10) # WOA only goes to 2000m (?), WOA-18 goes to full ocean, need to check oceansdb
 
-#print (depth)
+    #print (depth)
 
-db = oceansdb.CARS()
+    db = oceansdb.WOA(dbname='WOA18')
 
-t = db['sea_water_salinity'].extract(var='mean', doy=doy, depth=depth, lat=-47, lon=142.5)
+    t_std = np.zeros([len(doy), len(depth)])
+    t_mean = np.zeros([len(doy), len(depth)])
 
-#print(t)
+    i = 0
+    for doy in date_list:
+        t = db['sea_water_temperature'].extract(doy=doy, depth=depth, lat=-47, lon=142.5)
+        #print(t)
+        #t_mean[i][:] = t['mean']
+        #t_std[i][:] = t['std_dev']
+        t_mean[i][:] = t['t_mn']
+        t_std[i][:] = t['t_sd']
 
-plt.plot(t['mean'], depth)
-plt.gca().invert_yaxis()
-plt.grid(True)
-plt.show()
+        i += 1
+
+    return t_mean, t_std, depth
+
+def plot():
+    t_mean, t_std, depth = get_data()
+
+    #print(t_mean)
+
+    plt.plot(np.mean(t_mean, axis=0), depth)
+    plt.plot(np.max(t_mean, axis=0) + 3*np.max(t_std, axis=0), depth)
+    plt.plot(np.min(t_mean, axis=0) - 3*np.max(t_std, axis=0), depth)
+
+
+if __name__ == "__main__":
+    plot()
+
+    plt.gca().invert_yaxis()
+    plt.grid(True)
+    plt.show()
