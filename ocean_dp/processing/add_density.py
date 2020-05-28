@@ -57,8 +57,10 @@ def add_density(netCDFfile):
     # calculates density
     density = gsw.rho(SA, CT, p)
     
-
+    # generates a new variable 'DENSITY' in the netcdf
     ncVarOut = ds.createVariable("DENSITY", "f4", ("TIME",), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
+    
+    # assigns the calculated densities to the DENSITY variable, sets the units as kg/m^3, and comments on the variable's origin
     ncVarOut[:] = density
     ncVarOut.units = "kg/m^3"
     ncVarOut.comment = "calculated using gsw-python https://teos-10.github.io/GSW-Python/index.html"
