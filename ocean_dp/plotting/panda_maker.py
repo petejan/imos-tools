@@ -121,7 +121,7 @@ def panda_maker(dir_spec,var_list,qc_lim=2):
                         
                 nc.close()
                 
-    total_df = total_df.reset_index()
+    total_df = total_df.reset_index(drop=True)
                 
                 
     return total_df
