@@ -20,7 +20,7 @@ from dateutil import parser
 from datetime import datetime as dt
 from datetime import timedelta 
 import numpy as np
-
+import glob
 import pandas as pd
 
 # import two netcdf
@@ -29,9 +29,9 @@ nc1 = Dataset('IMOS_ABOS-SOTS_COPST_20180801_SOFS_FV00_SOFS-7.5-2018-SBE37SMP-OD
 nc2 = Dataset('IMOS_ABOS-SOTS_T_20180801_SOFS_FV00_SOFS-7.5-2018-Starmon-mini-4048-45m_END-20190331_C-20200401.nc',mode='r')
 
 # convert their time and temp data into dataframes
-df1 = pd.DataFrame({'TIME':np.array(nc1.variables['TIME'][:]),'TEMP_200':np.array(nc1.variables['TEMP'][:])})
+df1 = pd.DataFrame({'TIME':np.array(nc1.variables['TIME'][:]),'TEMP_'+str(nc1.variables['NOMINAL_DEPTH'][0]):np.array(nc1.variables['TEMP'][:])})
 
-df2 = pd.DataFrame({'TIME':np.array(nc2.variables['TIME'][:]),'TEMP_45':np.array(nc2.variables['TEMP'][:])})
+df2 = pd.DataFrame({'TIME':np.array(nc2.variables['TIME'][:]),'TEMP_'+str(nc2.variables['NOMINAL_DEPTH'][0]):np.array(nc2.variables['TEMP'][:])})
 
 # convert the times from days since 01-01-1950 to a datetime object
 df1['TIME']=pd.to_timedelta(df1['TIME'],unit='D')+dt(1950,1,1)
@@ -59,7 +59,37 @@ df2.index = df2.index + pd.Timedelta('30 min')
 total_df = pd.concat([df1,df2], join='outer', axis=1)
 
 
+files = glob.glob('*FV00*.nc')
 
+var_name = 'TEMP'
+
+def panda_combine(files,var_name):
+    
+    total_df = pd.DataFrame({'A' : []})
+    
+    # make a sorting index for columns from nominal depths
+    
+    for cur_file in files:
+        
+        cur_nc = Dataset(cur_file,mode='r')
+        
+        cur_df = pd.DataFrame({'TIME':np.array(cur_nc.variables['TIME'][:]),var_name+'_'+str(cur_nc.variables['NOMINAL_DEPTH'][0]):np.array(cur_nc.variables[var_name][:])})
+
+        cur_df['TIME']=pd.to_timedelta(cur_df['TIME'],unit='D')+dt(1950,1,1)
+            
+        cur_df = cur_df.set_index('TIME')
+        
+        cur_df = cur_df.resample('H',base=0.5).mean()
+        
+        cur_df.index = cur_df.index + pd.Timedelta('30 min')
+        
+        total_df = pd.concat([total_df,cur_df], join='outer', axis=1)
+        
+        print(cur_file)
+        
+        print(len(total_df))
+            
+    return total_df
 
 
 
