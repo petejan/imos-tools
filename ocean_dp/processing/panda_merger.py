@@ -20,14 +20,7 @@ from dateutil import parser
 from datetime import datetime as dt
 from datetime import timedelta 
 import numpy as np
-import argparse
-import glob
-import pytz
-import os
-import matplotlib.pyplot as plt
-from matplotlib import colors
-from matplotlib.ticker import PercentFormatter
-from sigfig import round
+
 import pandas as pd
 
 # import two netcdf
