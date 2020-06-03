@@ -28,23 +28,26 @@ def get_data():
     date_list = [base + datetime.timedelta(days=x*30) for x in range(12)]
 
     doy = [(x - datetime.datetime(x.year, 1, 1)).total_seconds()/3600/24 for x in date_list]
-    depth = np.arange(0.5, 5000, 10) # WOA only goes to 2000m (?), WOA-18 goes to full ocean, need to check oceansdb
+    depth = np.arange(2000, 5000, 1) # WOA only goes to 2000m (?), WOA-18 goes to full ocean, need to check oceansdb
 
     #print (depth)
 
-    db = oceansdb.WOA(dbname='WOA18')
+    #db = oceansdb.WOA(dbname='WOA18')
+    db = oceansdb.CARS()
 
     t_std = np.zeros([len(doy), len(depth)])
     t_mean = np.zeros([len(doy), len(depth)])
 
     i = 0
     for doy in date_list:
-        t = db['sea_water_temperature'].extract(doy=doy, depth=depth, lat=-47, lon=142.5)
-        #print(t)
+        t = db['sea_water_salinity'].extract(doy=doy, depth=depth, lat=-46.8, lon=141.5)
+        print(t)
         #t_mean[i][:] = t['mean']
         #t_std[i][:] = t['std_dev']
-        t_mean[i][:] = t['t_mn']
-        t_std[i][:] = t['t_sd']
+        t_mean[i][:] = t['mn']
+        #t_std[i][:] = t['sd']
+
+        plt.plot(t['mn'], depth)
 
         i += 1
 
@@ -55,7 +58,7 @@ def plot():
 
     #print(t_mean)
 
-    plt.plot(np.mean(t_mean, axis=0), depth)
+
     #plt.plot(np.max(t_mean, axis=0) + 3*np.max(t_std, axis=0), depth)
     #plt.plot(np.min(t_mean, axis=0) - 3*np.max(t_std, axis=0), depth)
 

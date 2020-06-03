@@ -90,7 +90,7 @@ def add(netCDFfile, metadatafiles):
                         if len(dict1['time_deployment']) > 0:
                             if time_end < parser.parse(dict1['time_deployment'], ignoretz=True, dayfirst=True):
                                 match = False
-                                print("Time end before deployment ", time_end, dict1['time_deployment'])
+                                #print("Time end before deployment ", time_end, dict1['time_deployment'])
                     if 'time_recovery' in dict1:
                         if len(dict1['time_recovery']) > 0:
                             if time_start > parser.parse(dict1['time_recovery'], ignoretz=True, dayfirst=True):

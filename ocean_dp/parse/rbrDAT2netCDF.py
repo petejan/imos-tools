@@ -24,6 +24,7 @@ from netCDF4 import date2num, num2date
 from netCDF4 import Dataset
 import numpy as np
 from dateutil import parser
+import os
 
 # parsers need to output
 #  instrument
@@ -80,6 +81,7 @@ unitMap["C"] = "degrees_Celsius"
 
 first_line_expr  = r"^RBR\s*(\S*)\s*\S*\s*(\S*)"
 data_hdr_expr    = r"^.*Temp.*Pres.*$"
+pres_hdr_expr    = r"^.*Pres.*$"
 host_time_expr   = r"Host time\s*(.*)"
 
 def parse(file):
@@ -129,25 +131,39 @@ def parse(file):
                     name.append({'var_name': 'PRES', 'unit':'dbar', 'col':3})
 
                     hdr = False
+                else:
+                    matchObj = re.match(pres_hdr_expr, line)
+                    if matchObj:
+                        data_split = line.split()
+
+                        print('data header', data_split)
+
+                        # TODO: extract these from the data_split variable, and the channel expression
+
+                        name.append({'var_name': 'PRES', 'unit': 'dbar', 'col': 2})
+
+                        hdr = False
             else:
 
                 lineSplit = line.split()
                 if len(lineSplit) == 0:
                     break
                 #print(lineSplit)
-                splitVarNo = 0
+
                 d = np.zeros(len(name))
                 d.fill(np.nan)
 
-                t = parser.parse(lineSplit[0] + ' ' + lineSplit[1], yearfirst = True, dayfirst=True)
+                t = parser.parse(lineSplit[0] + ' ' + lineSplit[1], yearfirst = True, dayfirst=False)
                 ts.append(t)
                 #print("timestamp %s" % t)
 
+                splitVarNo = 0
                 for v in name:
                     #print("{} : {}".format(splitVarNo, v))
                     d[splitVarNo] = float(lineSplit[v['col']])
                     splitVarNo = splitVarNo + 1
                 data.append(d)
+
                 #print(t, d)
                 number_samples_read = number_samples_read + 1
 
@@ -210,7 +226,7 @@ def parse(file):
     ncOut.setncattr("time_coverage_start", num2date(ncTimesOut[0], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
     ncOut.setncattr("time_coverage_end", num2date(ncTimesOut[-1], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
     ncOut.setncattr("date_created", datetime.utcnow().strftime(ncTimeFormat))
-    ncOut.setncattr("history", datetime.utcnow().strftime("%Y-%m-%d") + " created from file " + filepath + " source file created " + file_created)
+    ncOut.setncattr("history", datetime.utcnow().strftime("%Y-%m-%d") + " created from file " + os.path.basename(filepath) + " source file created " + file_created)
 
     ncOut.close()
 

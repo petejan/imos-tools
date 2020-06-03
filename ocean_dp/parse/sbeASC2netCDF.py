@@ -199,12 +199,12 @@ def sbe_asc_parse(files):
 
                 matchObj = re.match(n_samples_expr, line)
                 if matchObj:
-                    print("n_samples_expr:matchObj.group() : ", matchObj.group())
+                    #print("n_samples_expr:matchObj.group() : ", matchObj.group())
                     number_samples = int(matchObj.group(1))
 
                 matchObj = re.match(end_expr, line)
                 if matchObj:
-                    print("end_expr:matchObj.group() : ", matchObj.group())
+                    #print("end_expr:matchObj.group() : ", matchObj.group())
                     hdr = False
 
             else:
@@ -212,20 +212,20 @@ def sbe_asc_parse(files):
                 dataL = True
                 matchObj = re.match(start_time_expr, line)
                 if matchObj:
-                    print("start_time_expr:matchObj.group() : ", matchObj.group())
+                    #print("start_time_expr:matchObj.group() : ", matchObj.group())
                     start_time = parser.parse(matchObj.group(1))
-                    print("start time ", start_time)
+                    #print("start time ", start_time)
                     dataL = False
 
                 matchObj = re.match(sample_int2_expr, line)
                 if matchObj:
-                    print("sample_int2_expr:matchObj.group() : ", matchObj.group())
+                    #print("sample_int2_expr:matchObj.group() : ", matchObj.group())
                     sample_interval = int(matchObj.group(1))
                     dataL = False
 
                 matchObj = re.match(first_sample_expr, line)
                 if matchObj:
-                    print("first_sample_expr:matchObj.group() : ", matchObj.group())
+                    #print("first_sample_expr:matchObj.group() : ", matchObj.group())
                     dataL = False
 
                 if dataL and (line.count(",") > 0):
@@ -298,7 +298,7 @@ def sbe_asc_parse(files):
     ncOut.instrument = 'Sea-Bird Electronics ; ' + instrument_model
     ncOut.instrument_model = instrument_model
     ncOut.instrument_serial_number = instrument_serialnumber
-    ncOut.instrument_sample_interval = sample_interval
+    ncOut.instrument_sample_interval = np.float(sample_interval)
     #ncOut.instrument_model = instrument_model
 
     #     TIME:axis = "T";

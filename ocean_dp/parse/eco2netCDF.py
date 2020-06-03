@@ -99,9 +99,9 @@ def eco_parse(files):
 
     ncOut = Dataset(outputName, 'w', format='NETCDF4')
 
-    ncOut.instrument = "WetLABs ; BBFL2WB"
-    ncOut.instrument_model = "BBFL2WB"
-    ncOut.instrument_serial_number = "902"
+    ncOut.instrument = "WetLABs ; FLNTUS"
+    ncOut.instrument_model = "FLNTUS"
+    ncOut.instrument_serial_number = "4821"
 
     #     TIME:axis = "T";
     #     TIME:calendar = "gregorian";

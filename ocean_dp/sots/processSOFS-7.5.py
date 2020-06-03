@@ -25,7 +25,7 @@ import ocean_dp.qc.select_in_water
 import ocean_dp.qc.add_qc_flags
 import ocean_dp.qc.global_range
 import ocean_dp.aggregation.copyDataset
-import ocean_dp.processing.pressure_interpolator
+import ocean_dp.processing.pressure_interpolator_new
 import ocean_dp.processing.agg_to_bin
 
 import glob
@@ -117,14 +117,14 @@ for fn in file_qc:
 pres_file = ocean_dp.aggregation.copyDataset.aggregate(file_glob, ['PRES'])
 
 # TODO: only run interpolator on files that don't contain pressure, or at least don't add IP to every filename
-interp_file = ocean_dp.processing.pressure_interpolator.pressure_interpolator(file_glob, pres_file)
+interp_file = ocean_dp.processing.pressure_interpolator_new.pressure_interpolator(file_glob, pres_file)
 
 temp_agg_file = ocean_dp.aggregation.copyDataset.aggregate(interp_file, ['TEMP', 'PRES'])
 
 # now bin the aggregate file
-
-#bin_file = ocean_dp.processing.agg_to_bin.agg_to_bin(temp_agg_file)
-
+temp_agg_files = glob.glob(os.path.join(path, "IMOS*Aggregate-TEMP*.nc"))
+for fn in temp_agg_files:
+    bin_file = ocean_dp.processing.agg_to_bin.agg_to_bin(fn)
 
 print(process.memory_info().rss)  # in bytes
 

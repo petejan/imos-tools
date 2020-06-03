@@ -23,7 +23,7 @@ import ocean_dp.processing.eco_parcount_2_par
 import ocean_dp.qc.add_qc_flags
 import ocean_dp.qc.in_out_water
 import ocean_dp.qc.global_range
-import ocean_dp.qc.climate_range
+import ocean_dp.qc.par_climate_range
 import ocean_dp.qc.par_nearest_qc
 
 import glob

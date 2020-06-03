@@ -55,14 +55,14 @@ def plot_var(pp, time, pres, v, label, cmap):
     ax1.xaxis.set_major_locator(locator)
     ax1.xaxis.set_major_formatter(formatter)
 
-    sc = plt.scatter(time, pres, c=v, cmap=cmap)
+    sc = plt.scatter(time, pres, c=v, cmap=cmap, alpha=0.8, s=2)
     plt.ylim(100, 0)
     plt.xlim(time[0], time[-1])
     fig1.colorbar(sc)
 
     plt.xlabel('date-time')
     plt.ylabel('pressure (dbar)')
-    plt.title('prawler ' + label + ' profile')
+    plt.title('Palm Passage PRAWLER ' + label + ' profile')
 
     #plt.show()
     pp.savefig(fig1, papertype='a4')
@@ -71,6 +71,8 @@ def plot_var(pp, time, pres, v, label, cmap):
 
 def plot(file):
     nc = Dataset(file)
+
+    print(matplotlib.rcParams['lines.markersize'])
 
     # get time variable
     time_var = nc.variables['TIME']

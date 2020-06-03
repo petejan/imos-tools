@@ -29,17 +29,29 @@ def add_psal(netCDFfile):
 
     var_temp = ds.variables["TEMP"]
     var_cndc = ds.variables["CNDC"]
-    var_pres = ds.variables["PRES"]
+    comment = ""
+    try:
+        var_pres = ds.variables["PRES"]
+    except KeyError:
+        var_pres = ds.variables["NOMINAL_DEPTH"]
+        comment = ", using nominal depth " + str(var_pres[:])
 
     t = var_temp[:]
     C = var_cndc[:] * 10
     p = var_pres[:]
     psal = gsw.SP_from_C(C, t, p)
 
-    ncVarOut = ds.createVariable("PSAL", "f4", ("TIME",), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
+    if "PSAL" in ds.variables:
+        ncVarOut = ds.variables["PSAL"]
+    else:
+        ncVarOut = ds.createVariable("PSAL", "f4", ("TIME",), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
     ncVarOut[:] = psal
     ncVarOut.units = "1"
-    ncVarOut.comment = "calculated using gsw-python https://teos-10.github.io/GSW-Python/index.html"
+    ncVarOut.standard_name = "sea_water_practical_salinity"
+    ncVarOut.long_name = "sea_water_practical_salinity"
+    ncVarOut.valid_max = np.float32(40)
+    ncVarOut.valid_min = np.float32(-1)
+    ncVarOut.comment = "calculated using gsw-python https://teos-10.github.io/GSW-Python/index.html" + comment
 
     # update the history attribute
     try:

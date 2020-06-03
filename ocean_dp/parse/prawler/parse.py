@@ -239,8 +239,6 @@ def parse(files):
     nc_var_out[:] = [l['latitude'] for l in locations]
     nc_var_out.units = 'degrees_North'
     nc_var_out = ncOut.createVariable("TPOS", "d", ("POS"), fill_value=np.nan, zlib=True)
-    nc_var_out[:] = [l['latitude'] for l in locations]
-    nc_var_out.units = 'days since 1950-01-01 00:00:00 UTC'
     nc_var_out.long_name = "position time"
     nc_var_out.units = "days since 1950-01-01 00:00:00 UTC"
     nc_var_out.calendar = "gregorian"

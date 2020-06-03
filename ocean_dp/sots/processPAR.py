@@ -11,7 +11,7 @@ import ocean_dp.processing.add_incoming_radiation
 import ocean_dp.qc.add_qc_flags
 import ocean_dp.qc.in_out_water
 import ocean_dp.qc.global_range
-import ocean_dp.qc.climate_range
+import ocean_dp.qc.par_climate_range
 import ocean_dp.qc.par_nearest_qc
 
 import psutil
@@ -53,7 +53,7 @@ print('step 9 global range, pbad 4500')
 ocean_dp.qc.global_range.global_range(fv01_files, 'PAR', max=4500, min=-1.7)
 
 print('step 10 climate qc')
-ocean_dp.qc.climate_range.climate_range(fv01_files, "PAR")
+ocean_dp.qc.par_climate_range.climate_range(fv01_files, "PAR")
 #
 # #print('step 11 nearest')
 # #ocean_dp.qc.par_nearest_qc.add_qc(fv01_files)

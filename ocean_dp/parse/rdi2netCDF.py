@@ -176,129 +176,141 @@ def rdi_parse(files):
         while data:
             # print("hdr ", data)
             if data == b'\x7f\x7f':
+                sum = 0
+                for i in data:
+                    sum += i
 
                 data = binary_file.read(2)
                 (ensemble_len,) = struct.unpack("<H", data)
 
+                for i in data:
+                    sum += i
+
                 #print("length ", ensemble_len)
                 ensemble = binary_file.read(ensemble_len-4)
+                for i in ensemble:
+                    sum += i
 
-                cksum = binary_file.read(2)
-                #print("checksum ", cksum)
+                sum = sum % 65536
+                (cksum,) = struct.unpack("<H", binary_file.read(2))
+                #print("checksum ", cksum, sum)
 
-                header = struct.unpack(header_decoder["unpack"], ensemble[0:2])
-                header_decoded = dict(zip(header_decoder['keys'], header))
-                #print("header ", header_decoded)
+                if cksum == sum:
+                    header = struct.unpack(header_decoder["unpack"], ensemble[0:2])
+                    header_decoded = dict(zip(header_decoder['keys'], header))
+                    #print("header ", header_decoded)
 
-                n = 2
-                addrs = [0 for x in range(0, header_decoded["dataTypes"])]
-                for i in range(0, header_decoded["dataTypes"]):
-                    addr_data = ensemble[n:n+2]
-                    addrs[i] = struct.unpack("<H", addr_data)[0]
-                    #print("addr ", addrs[i])
-                    n += + 2
+                    n = 2
+                    addrs = [0 for x in range(0, header_decoded["dataTypes"])]
+                    for i in range(0, header_decoded["dataTypes"]):
+                        addr_data = ensemble[n:n+2]
+                        addrs[i] = struct.unpack("<H", addr_data)[0]
+                        #print("addr ", addrs[i])
+                        n += + 2
 
-                while n < (ensemble_len - 4):
-                    data = ensemble[n:n+2]
-                    n += 2
-                    #print("data hdr ", data)
-                    try:
-                        if data == b'\x00\x00':  # fixed header
-                            data = ensemble[n:n+57]
-                            n += 57
-                            fixed = struct.unpack(fixed_decoder["unpack"], data)
-                            fixed_decoded = dict(zip(fixed_decoder['keys'], fixed))
-                            #print("fixed ", fixed_decoded)
+                    while n < (ensemble_len - 4):
+                        data = ensemble[n:n+2]
+                        n += 2
+                        #print("data hdr ", data)
+                        try:
+                            if data == b'\x00\x00':  # fixed header
+                                data = ensemble[n:n+57]
+                                n += 57
+                                fixed = struct.unpack(fixed_decoder["unpack"], data)
+                                fixed_decoded = dict(zip(fixed_decoder['keys'], fixed))
+                                #print("fixed ", fixed_decoded)
 
-                            num_cells = fixed_decoded['num_cells']
-                            num_beams = fixed_decoded['num_beam']
+                                num_cells = fixed_decoded['num_cells']
+                                num_beams = fixed_decoded['num_beam']
 
-                            inst_system = fixed_decoded['sysConfig'] & 0x7
-                            inst_system_text = inst_system_decoder[inst_system][0]
-                            #print("system ", inst_system_text)
+                                inst_system = fixed_decoded['sysConfig'] & 0x7
+                                inst_system_text = inst_system_decoder[inst_system][0]
+                                #print("system ", inst_system_text)
 
-                        elif data == b'\x80\x00':  # variable header
-                            data = ensemble[n:n+63]
-                            n += 63
-                            variable = struct.unpack(variable_decoder["unpack"], data)
-                            variable_decoded = dict(zip(variable_decoder['keys'], variable))
-                            #print("variable header ", variable_decoded)
+                            elif data == b'\x80\x00':  # variable header
+                                data = ensemble[n:n+63]
+                                n += 63
+                                variable = struct.unpack(variable_decoder["unpack"], data)
+                                variable_decoded = dict(zip(variable_decoder['keys'], variable))
+                                #print("variable header ", variable_decoded)
 
-                            ts = datetime.datetime(year=variable_decoded['rtc_cen']*100 + variable_decoded['rtc_year'],
-                                                   month=variable_decoded['rtc_month'], day=variable_decoded['rtc_day'],
-                                                   hour=variable_decoded['rtc_hour'], minute=variable_decoded['rtc_min'],
-                                                   second=variable_decoded['rtc_sec'],
-                                                   microsecond=variable_decoded['rtc_hsec']*1000*10)
+                                ts = datetime.datetime(year=variable_decoded['rtc_cen']*100 + variable_decoded['rtc_year'],
+                                                       month=variable_decoded['rtc_month'], day=variable_decoded['rtc_day'],
+                                                       hour=variable_decoded['rtc_hour'], minute=variable_decoded['rtc_min'],
+                                                       second=variable_decoded['rtc_sec'],
+                                                       microsecond=variable_decoded['rtc_hsec']*1000*10)
 
-                            #print("ts = ", ts)
-                            if not ts_start:
-                                ts_start = ts
+                                #print("ts = ", ts)
+                                if not ts_start:
+                                    ts_start = ts
 
-                            ncTimesOut[number_ensambles_read] = date2num(ts, calendar=ncTimesOut.calendar, units=ncTimesOut.units)
+                                ncTimesOut[number_ensambles_read] = date2num(ts, calendar=ncTimesOut.calendar, units=ncTimesOut.units)
 
-                            var_head[number_ensambles_read] = variable_decoded['heading']*0.01
-                            var_pitch[number_ensambles_read] = variable_decoded['pitch']*0.01
-                            var_roll[number_ensambles_read] = variable_decoded['roll']*0.01
-                            var_temp[number_ensambles_read] = variable_decoded['temperature']*0.01
+                                var_head[number_ensambles_read] = variable_decoded['heading']*0.01
+                                var_pitch[number_ensambles_read] = variable_decoded['pitch']*0.01
+                                var_roll[number_ensambles_read] = variable_decoded['roll']*0.01
+                                var_temp[number_ensambles_read] = variable_decoded['temperature']*0.01
 
-                            var_press[number_ensambles_read] = variable_decoded['pressure']/1000
-                            var_press_v[number_ensambles_read] = variable_decoded['press_variance']/1000
-                            var_txv[number_ensambles_read] = variable_decoded['adc1']*volt_scale_system[inst_system][0]/1000000
-                            var_txi[number_ensambles_read] = variable_decoded['adc0']*volt_scale_system[inst_system][1]/1000000
-                            var_sspeed[number_ensambles_read] = variable_decoded['speed_of_sound']
+                                var_press[number_ensambles_read] = variable_decoded['pressure']/1000
+                                var_press_v[number_ensambles_read] = variable_decoded['press_variance']/1000
+                                var_txv[number_ensambles_read] = variable_decoded['adc1']*volt_scale_system[inst_system][0]/1000000
+                                var_txi[number_ensambles_read] = variable_decoded['adc0']*volt_scale_system[inst_system][1]/1000000
+                                var_sspeed[number_ensambles_read] = variable_decoded['speed_of_sound']
 
-                        if data == b'\x00\x01':  # velocity data
-                            data = ensemble[n:n+(num_beams*2)*num_cells]
-                            velocity = np.array(struct.unpack("<%dh" % (num_beams*num_cells), data))
-                            #print("velocity shape ", velocity.shape)
-                            v = velocity.reshape([num_cells, num_beams])
+                            if data == b'\x00\x01':  # velocity data
+                                data = ensemble[n:n+(num_beams*2)*num_cells]
+                                velocity = np.array(struct.unpack("<%dh" % (num_beams*num_cells), data))
+                                #print("velocity shape ", velocity.shape)
+                                v = velocity.reshape([num_cells, num_beams])
 
-                            var_vel1[number_ensambles_read, :] = v[:, 0] / 1000
-                            var_vel2[number_ensambles_read, :] = v[:, 1] / 1000
-                            var_vel3[number_ensambles_read, :] = v[:, 2] / 1000
-                            var_vel4[number_ensambles_read, :] = v[:, 3] / 1000
+                                var_vel1[number_ensambles_read, :] = v[:, 0] / 1000
+                                var_vel2[number_ensambles_read, :] = v[:, 1] / 1000
+                                var_vel3[number_ensambles_read, :] = v[:, 2] / 1000
+                                var_vel4[number_ensambles_read, :] = v[:, 3] / 1000
 
-                            #print("var vel shape ", var_vel1.shape)
-                            n += len(data)
-                        elif data == b'\x00\x02':  # correlation mag
-                            data = ensemble[n:n+num_beams*num_cells]
-                            np_corr = np.array(struct.unpack("<%db" % (num_beams*num_cells), data)).reshape([num_cells, num_beams])
-                            var_corr1[number_ensambles_read, :] = np_corr[:, 0]
-                            var_corr2[number_ensambles_read, :] = np_corr[:, 1]
-                            var_corr3[number_ensambles_read, :] = np_corr[:, 2]
-                            var_corr4[number_ensambles_read, :] = np_corr[:, 3]
-                            n += len(data)
-                        elif data == b'\x00\x03':  # echo intensity
-                            data = ensemble[n:n+num_beams*num_cells]
-                            np_echo_int = np.array(struct.unpack("<%db" % (num_beams*num_cells), data)).reshape([num_cells, num_beams])
-                            var_echo_int1[number_ensambles_read, :] = np_echo_int[:, 0] * 0.45
-                            var_echo_int2[number_ensambles_read, :] = np_echo_int[:, 1] * 0.45
-                            var_echo_int3[number_ensambles_read, :] = np_echo_int[:, 2] * 0.45
-                            var_echo_int4[number_ensambles_read, :] = np_echo_int[:, 3] * 0.45
-                            n += len(data)
-                        elif data == b'\x00\x04':  # percent good
-                            data = ensemble[n:n+num_beams*num_cells]
-                            np_pg = np.array(struct.unpack("<%db" % (4*num_cells), data)).reshape([num_cells, 4])
-                            var_per_good1[number_ensambles_read, :] = np_pg[:, 0]
-                            var_per_good2[number_ensambles_read, :] = np_pg[:, 1]
-                            var_per_good3[number_ensambles_read, :] = np_pg[:, 2]
-                            var_per_good4[number_ensambles_read, :] = np_pg[:, 3]
-                            n += len(data)
-                        elif data == b'\x00\x05':  # status data
-                            data = ensemble[n:n+num_beams*num_cells]
-                            np_status = np.array(struct.unpack("<%db" % (num_beams*num_cells), data)).reshape([num_cells, num_beams])
-                            var_status1[number_ensambles_read, :] = np_status[:, 0]
-                            var_status2[number_ensambles_read, :] = np_status[:, 1]
-                            var_status3[number_ensambles_read, :] = np_status[:, 2]
-                            var_status4[number_ensambles_read, :] = np_status[:, 3]
-                            n += len(data)
-                    except struct.error:
-                        print('file parse error, maybe truncated, building file anyway')
-                        pass
+                                #print("var vel shape ", var_vel1.shape)
+                                n += len(data)
+                            elif data == b'\x00\x02':  # correlation mag
+                                data = ensemble[n:n+num_beams*num_cells]
+                                np_corr = np.array(struct.unpack("<%db" % (num_beams*num_cells), data)).reshape([num_cells, num_beams])
+                                #print('size corr', len(np_corr))
+                                if len(np_corr) > 0:
+                                    var_corr1[number_ensambles_read, :] = np_corr[:, 0]
+                                    var_corr2[number_ensambles_read, :] = np_corr[:, 1]
+                                    var_corr3[number_ensambles_read, :] = np_corr[:, 2]
+                                    var_corr4[number_ensambles_read, :] = np_corr[:, 3]
+                                n += len(data)
+                            elif data == b'\x00\x03':  # echo intensity
+                                data = ensemble[n:n+num_beams*num_cells]
+                                np_echo_int = np.array(struct.unpack("<%db" % (num_beams*num_cells), data)).reshape([num_cells, num_beams])
+                                var_echo_int1[number_ensambles_read, :] = np_echo_int[:, 0] * 0.45
+                                var_echo_int2[number_ensambles_read, :] = np_echo_int[:, 1] * 0.45
+                                var_echo_int3[number_ensambles_read, :] = np_echo_int[:, 2] * 0.45
+                                var_echo_int4[number_ensambles_read, :] = np_echo_int[:, 3] * 0.45
+                                n += len(data)
+                            elif data == b'\x00\x04':  # percent good
+                                data = ensemble[n:n+num_beams*num_cells]
+                                np_pg = np.array(struct.unpack("<%db" % (4*num_cells), data)).reshape([num_cells, 4])
+                                var_per_good1[number_ensambles_read, :] = np_pg[:, 0]
+                                var_per_good2[number_ensambles_read, :] = np_pg[:, 1]
+                                var_per_good3[number_ensambles_read, :] = np_pg[:, 2]
+                                var_per_good4[number_ensambles_read, :] = np_pg[:, 3]
+                                n += len(data)
+                            elif data == b'\x00\x05':  # status data
+                                data = ensemble[n:n+num_beams*num_cells]
+                                np_status = np.array(struct.unpack("<%db" % (num_beams*num_cells), data)).reshape([num_cells, num_beams])
+                                var_status1[number_ensambles_read, :] = np_status[:, 0]
+                                var_status2[number_ensambles_read, :] = np_status[:, 1]
+                                var_status3[number_ensambles_read, :] = np_status[:, 2]
+                                var_status4[number_ensambles_read, :] = np_status[:, 3]
+                                n += len(data)
+                        except struct.error:
+                            print('file parse error, maybe truncated, building file anyway')
+                            pass
 
-                if number_ensambles_read % 1000 == 0:
-                    print("number ensambles read ", number_ensambles_read)
-                number_ensambles_read += 1
+                    if number_ensambles_read % 1000 == 0:
+                        print("number ensambles read ", number_ensambles_read)
+                    number_ensambles_read += 1
 
             data = binary_file.read(2)
 

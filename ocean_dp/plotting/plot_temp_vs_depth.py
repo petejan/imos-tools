@@ -82,9 +82,7 @@ def do_plot(fn, ax = None, fig = None):
     try:
         msk = DS.TEMP_quality_control_io < 2
     except AttributeError:
-        pass
-
-    msk = DS.TEMP_quality_control < 2
+        msk = DS.TEMP_quality_control < 2
 
     #print(DS.TEMP.data)
     print(DS.NOMINAL_DEPTH.data)
@@ -93,11 +91,11 @@ def do_plot(fn, ax = None, fig = None):
 
     summary = (float(DS.NOMINAL_DEPTH.data), stats.describe(temp_data_msk))
 
-    #density_scatter(temp_data_msk, nd*np.ones(len(temp_data_msk)), bins=100, ax=ax, fig=fig)
+    density_scatter(temp_data_msk, nd*np.ones(len(temp_data_msk)), bins=100, ax=ax, fig=fig)
 
-    diff_temp = np.diff(temp_data_msk)
-    nd_s = nd*np.ones(len(diff_temp))
-    density_scatter(diff_temp, nd_s, bins=100, ax=ax, fig=fig)
+    #diff_temp = np.diff(temp_data_msk)
+    #nd_s = nd*np.ones(len(diff_temp))
+    #density_scatter(diff_temp, nd_s, bins=100, ax=ax, fig=fig)
 
     # Calculate the point density
     # xy = np.vstack([nd_s, diff_temp])
@@ -133,7 +131,7 @@ if __name__ == "__main__":
         print('file path : ', fp)
         nc_files = ocean_dp.file_name.find_file_with.find_files_pattern(fp)
         temp_files = ocean_dp.file_name.find_file_with.find_variable(nc_files, 'TEMP')
-        temp_files = ocean_dp.file_name.find_file_with.find_variable(temp_files, 'PRES')
+        #temp_files = ocean_dp.file_name.find_file_with.find_variable(temp_files, 'PRES')
 
         print('temp_files files:')
         for f in temp_files:
