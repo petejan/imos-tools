@@ -34,94 +34,45 @@ print(df.columns)
 conn = psycopg2.connect(host="localhost", database="IMOS-DEPLOY", user="pete", password="password")
 cur = conn.cursor()
 
+count_link_notes = 0
+count_detail_notes = 0
+
 # loop over all points, inserting them into the database
 for i, row in df.iterrows():
     # print(j)
     #print(row)
 
-    if isinstance(row.description, str):
-        t = (int(row.il_id[2:]), 'description', row.description)
+    for col in ['description', 'sample_regime', 'variable', 'storage', 'preparation', 'mounting', 'calibration', 'Parameters_measured', 'Manufacturer_URL', 'Model_Numbers', 'Manufacturer_precisions', 'Data', 'Subsection']:
 
-        print(t)
+        if isinstance(row[col], str):
+            t = (int(row.il_id[2:]), col.lower(), row[col])
 
-        try:
-            cur.execute("INSERT INTO cmditemlinknotes VALUES (nextval('cmditemlinknotessequence'), %s, %s, %s)", t)
-        except psycopg2.errors.UniqueViolation:
-            print("duplicate entry ", t)
+            print('cmditemlinknotes', t)
+            try:
+                cur.execute("INSERT INTO cmditemlinknotes VALUES (nextval('cmditemlinknotessequence'), %s, %s, %s)", t)
+                count_link_notes += 1
+            except psycopg2.errors.UniqueViolation:
+                print("cmditemlinknotes duplicate entry ", t)
 
-    if isinstance(row.preperation, str):
-        t = (int(row.il_id[2:]), 'preperation', row.preperation)
-
-        print(t)
-
-        try:
-            cur.execute("INSERT INTO cmditemlinknotes VALUES (nextval('cmditemlinknotessequence'), %s, %s, %s)", t)
-        except psycopg2.errors.UniqueViolation:
-            print("duplicate entry ", t)
-
-    if isinstance(row.mounting, str):
-        t = (int(row.il_id[2:]), 'mounting', row.mounting)
-
-        print(t)
-
-        try:
-            cur.execute("INSERT INTO cmditemlinknotes VALUES (nextval('cmditemlinknotessequence'), %s, %s, %s)", t)
-        except psycopg2.errors.UniqueViolation:
-            print("duplicate entry ", t)
-
-    if isinstance(row.calibration, str):
-        t = (int(row.il_id[2:]), 'calibration', row.calibration)
-
-        print(t)
-
-        try:
-            cur.execute("INSERT INTO cmditemlinknotes VALUES (nextval('cmditemlinknotessequence'), %s, %s, %s)", t)
-        except psycopg2.errors.UniqueViolation:
-            print("duplicate entry ", t)
-
-    if isinstance(row.storage, str):
-        t = (int(row.il_id[2:]), 'storage', row.storage)
-
-        print(t)
-
-        try:
-            cur.execute("INSERT INTO cmditemlinknotes VALUES (nextval('cmditemlinknotessequence'), %s, %s, %s)", t)
-        except psycopg2.errors.UniqueViolation:
-            print("duplicate entry ", t)
-
-    if isinstance(row.sample_regime, str):
-        t = (int(row.il_id[2:]), 'sample_regime', row.sample_regime)
-
-        print(t)
-
-        try:
-            cur.execute("INSERT INTO cmditemlinknotes VALUES (nextval('cmditemlinknotessequence'), %s, %s, %s)", t)
-        except psycopg2.errors.UniqueViolation:
-            print("duplicate entry ", t)
-        conn.commit()
-
-    if isinstance(row.variable, str):
-        t = (int(row.il_id[2:]), 'variable', row.variable)
-
-        print(t)
-
-        try:
-            cur.execute("INSERT INTO cmditemlinknotes VALUES (nextval('cmditemlinknotessequence'), %s, %s, %s)", t)
-        except psycopg2.errors.UniqueViolation:
-            print("duplicate entry ", t)
         conn.commit()
 
     if isinstance(row.l22_code, str):
-        t = (int(row.id_id[2:]), 'l22_code', row.l22_code)
+        code = row.l22_code
+        if not code.startswith("SDN"):
+            code = 'SDN:L22::' + code
+        t = (int(row.id_id[2:]), 'l22_code', code)
 
-        print(t)
+        #print(t)
 
         try:
             cur.execute("INSERT INTO cmditemdetailnotes VALUES (nextval('cmditemdetailsnotessequence'), %s, %s, %s)", t)
+            count_detail_notes += 1
         except psycopg2.errors.UniqueViolation:
-            print("duplicate entry ", t)
+            print("cmditemdetailnotes duplicate entry ", t)
 
         conn.commit()
 
 conn.close()
 
+print('count of item detail notes', count_detail_notes)
+print('count of link notes', count_link_notes)
