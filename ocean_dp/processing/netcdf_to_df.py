@@ -17,7 +17,8 @@ from netCDF4 import Dataset, num2date
 import pandas as pd
 import numpy as np
 from datetime import datetime as dt
-
+import glob
+import re
 
 # =============================================================================
 # Returns a list of the time series variables in a IMOS format 
@@ -54,6 +55,7 @@ def netcdf_to_df(target_file):
     # store deployment times in attributes
     df.attrs['time_deployment_start'] = nc.time_deployment_start
     df.attrs['time_deployment_end'] = nc.time_deployment_end
+    df.attrs['nominal_depth'] = nc.variables['NOMINAL_DEPTH'][0]
     
     # extract the column names
     col_names = list(df.columns)
@@ -71,6 +73,8 @@ def netcdf_to_df(target_file):
 # =============================================================================
         
 def combine_df(target_dfs):
+    
+    total_df = pd.DataFrame({'dummy' : []})
     
     # for each of the dataframes in the list provided
     for cur_df in target_dfs:
@@ -91,8 +95,11 @@ def combine_df(target_dfs):
         # trim the df to only include in water data
         df = df.drop(df[(df.index < start_time) | (df.index > end_time)].index)
         
+        # remove data with bad qc instead of setting to nan later in process, let resample do the work?
+        # but what if psal is bad but temp is good?? Need to think on this.
+        
         # resamples using the max method, to create a df of the correct dimensions to fill
-        df_to_fill = df.resample('H',base=0.5).max()
+        df_to_fill = df.resample('H',base=0.5).min()
         
         
         # gets list of column names
@@ -105,7 +112,9 @@ def combine_df(target_dfs):
         for cur_col in col_names_no_qc:
             
             # sets the value of non qc data to nan if the corresponding qc value is not satisfactory (0,1,2,7 at the moment)
-            df.loc[(df[cur_col+'_quality_control'] > 2) & (df[cur_col+'_quality_control'] != 7), cur_col] = np.nan
+            #df.loc[(df[cur_col+'_quality_control'] > 2) & (df[cur_col+'_quality_control'] != 7), cur_col] = np.nan
+            # CAUSING UNEXPECTED NANS - FIX
+            df.loc[df[cur_col+'_quality_control'].isin([3,4,6,9]) , cur_col] = np.nan
             
             # extracts the time series data
             dS = pd.Series(df[cur_col])
@@ -116,7 +125,8 @@ def combine_df(target_dfs):
             dS_1s[:] = 1
             
             # resamples the series, interpoling linearly
-            dS_resampled = dS.resample('H',base=0.5).interpolate()
+            dS_resampled = dS.resample('H',base=0.5).interpolate(method='index',axis=0,limit=1000000)
+
             
             # count how many data points are in each shoulder bin
             dS_bin_counts = dS_1s.resample('H',base=0.5).sum()
@@ -130,8 +140,44 @@ def combine_df(target_dfs):
         # shift the timestamps to the middle of the hour sampling period
         df_to_fill.index = df_to_fill.index + pd.Timedelta('30 min')
         
-
+        total_df = pd.concat([total_df,df_to_fill], join='outer', axis=1)
         
+        print(cur_df)
+        
+        print(len(total_df))
+        
+    total_df.drop(['dummy'],axis=1,inplace=True)
+    
+    return total_df
+
+
+# =============================================================================
+# 
+# =============================================================================
+        
+def depth_from_file(file_in):
+    
+    result = int(re.findall(r'(?<=-)\w+(?=m_END)', file_in)[0])
+    
+    return result
+
+# =============================================================================
+# 
+# =============================================================================
+
+netcdfs = glob.glob('*FV01*.nc')
+
+netcdfs = sorted(netcdfs,key=depth_from_file)
+
+df_list = list()
+
+for cur_netcdf in netcdfs:
+    
+    df = netcdf_to_df(cur_netcdf)
+    
+    df_list.append(df)
+    
+
         
         
 

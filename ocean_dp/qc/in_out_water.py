@@ -27,89 +27,89 @@ import os
 # flag out of water as QC value 6 (not_deployed), with wise leave as 0
 
 
-def in_out_water(netCDFfile, var_name=None):
+def in_out_water(fn, var_name=None):
 
     out_file = []
 
-    for fn in netCDFfile:
-        ds = Dataset(fn, 'a')
 
-        nc_vars = ds.variables
-        to_add = []
-        if var_name:
-            to_add.append(var_name)
-        else:
-            for v in nc_vars:
-                if "TIME" in nc_vars[v].dimensions:
-                    #print (vars[v].dimensions)
-                    if v != 'TIME':
-                        to_add.append(v)
-            # remove any anx variables from the list
-            for v in nc_vars:
-                if 'ancillary_variables' in nc_vars[v].ncattrs():
-                    remove = nc_vars[v].getncattr('ancillary_variables').split(' ')
-                    print("remove ", remove)
-                    for r in remove:
-                        to_add.remove(r)
+    ds = Dataset(fn, 'a')
 
-        time_var = nc_vars["TIME"]
-        time = num2date(time_var[:], units=time_var.units, calendar=time_var.calendar)
+    nc_vars = ds.variables
+    to_add = []
+    if var_name:
+        to_add.append(var_name)
+    else:
+        for v in nc_vars:
+            if "TIME" in nc_vars[v].dimensions:
+                #print (vars[v].dimensions)
+                if v != 'TIME':
+                    to_add.append(v)
+        # remove any anx variables from the list
+        for v in nc_vars:
+            if 'ancillary_variables' in nc_vars[v].ncattrs():
+                remove = nc_vars[v].getncattr('ancillary_variables').split(' ')
+                print("remove ", remove)
+                for r in remove:
+                    to_add.remove(r)
 
-        time_deploy = parser.parse(ds.time_deployment_start, ignoretz=True)
-        time_recovery = parser.parse(ds.time_deployment_end, ignoretz=True)
+    time_var = nc_vars["TIME"]
+    time = num2date(time_var[:], units=time_var.units, calendar=time_var.calendar)
 
-        print('file', fn)
-        print('deployment time', time_deploy)
+    time_deploy = parser.parse(ds.time_deployment_start, ignoretz=True)
+    time_recovery = parser.parse(ds.time_deployment_end, ignoretz=True)
 
-        print('var to add', to_add)
+    print('file', fn)
+    print('deployment time', time_deploy)
 
-        # create a mask for the time range
-        mask = (time <= time_deploy) | (time >= time_recovery)
+    print('var to add', to_add)
 
-        for v in to_add:
-            print("var", v, ' dimensions ', nc_vars[v].dimensions)
+    # create a mask for the time range
+    mask = (time <= time_deploy) | (time >= time_recovery)
 
-            ncVarOut = nc_vars[v + "_quality_control"]
-            ncVarOut[mask] = 6
+    for v in to_add:
+        print("var", v, ' dimensions ', nc_vars[v].dimensions)
 
-            # create a qc variable just for this test flags
-            if v + "_quality_control_io" in ds.variables:
-                ncVarOut = ds.variables[v + "_quality_control_io"]
-                ncVarOut[:] = 0
-            else:
-                ncVarOut = ds.createVariable(v + "_quality_control_io", "i1", nc_vars[v].dimensions, fill_value=99, zlib=True)  # fill_value=0 otherwise defaults to max
-                nc_vars[v].ancillary_variables = nc_vars[v].ancillary_variables + " " + v + "_quality_control_io"
+        ncVarOut = nc_vars[v + "_quality_control"]
+        ncVarOut[mask] = 6
 
+        # create a qc variable just for this test flags
+        if v + "_quality_control_io" in ds.variables:
+            ncVarOut = ds.variables[v + "_quality_control_io"]
             ncVarOut[:] = 0
-            ncVarOut.long_name = "quality flag for " + nc_vars[v].long_name
-            try:
-                ncVarOut.standard_name = nc_vars[v].standard_name + " status_flag"
-            except AttributeError:
-                pass
+        else:
+            ncVarOut = ds.createVariable(v + "_quality_control_io", "i1", nc_vars[v].dimensions, fill_value=99, zlib=True)  # fill_value=0 otherwise defaults to max
+            nc_vars[v].ancillary_variables = nc_vars[v].ancillary_variables + " " + v + "_quality_control_io"
 
-            ncVarOut.quality_control_conventions = "IMOS standard flags"
-            ncVarOut.flag_values = np.array([0, 1, 2, 3, 4, 6, 7, 9], dtype=np.int8)
-            ncVarOut.flag_meanings = 'unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value'
-            ncVarOut.comment = 'data flagged not deployed (6) when out of water'
-
-            ncVarOut[mask] = 6
-            # calculate the number of points marked as bad_data
-            marked = np.zeros_like(ncVarOut)
-            marked[mask] = 1
-            count = sum(marked)
-
-        ds.file_version = "Level 1 - Quality Controlled Data"
-        # update the history attribute
+        ncVarOut[:] = 0
+        ncVarOut.long_name = "quality flag for " + nc_vars[v].long_name
         try:
-            hist = ds.history + "\n"
+            ncVarOut.standard_name = nc_vars[v].standard_name + " status_flag"
         except AttributeError:
-            hist = ""
+            pass
 
-        ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + ' :  ' + ' marked ' + str(int(count)))
+        ncVarOut.quality_control_conventions = "IMOS standard flags"
+        ncVarOut.flag_values = np.array([0, 1, 2, 3, 4, 6, 7, 9], dtype=np.int8)
+        ncVarOut.flag_meanings = 'unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value'
+        ncVarOut.comment = 'data flagged not deployed (6) when out of water'
 
-        ds.close()
+        ncVarOut[mask] = 6
+        # calculate the number of points marked as bad_data
+        marked = np.zeros_like(ncVarOut)
+        marked[mask] = 1
+        count = sum(marked)
 
-        out_file.append(fn)
+    ds.file_version = "Level 1 - Quality Controlled Data"
+    # update the history attribute
+    try:
+        hist = ds.history + "\n"
+    except AttributeError:
+        hist = ""
+
+    ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + ' :  ' + ' marked ' + str(int(count)))
+
+    ds.close()
+
+    out_file.append(fn)
 
     return out_file
 

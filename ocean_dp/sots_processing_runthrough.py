@@ -62,6 +62,11 @@ copyDataset.aggregate(pres_files,'PRES')
 # Run pressure_interpolator.py
 fv01_pres_interp_files = pressure_interpolator.pressure_interpolator(netCDFfiles=fv01_files,agg=glob.glob('*IMOS_ABOS-SOTS*Aggregate*.nc')[0])
 
+# delete the defunct FV01 files
+for ncfile in fv01_files:
+    
+    os.remove(ncfile)
+
 # Global range test
 for ncfile in fv01_pres_interp_files:
     

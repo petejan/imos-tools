@@ -106,6 +106,13 @@ def qc_checker(nc,target_vars_in=[]):
                 
                 # The qc process has succeeded 
                 qc_behaving = True
+                
+                # sets all data with a qc value of 0 to have a qc value of 1, having passed all the tests
+                nc.variables[current_var+"_quality_control"][qc_global_data==0] = 1
+                
+                now=datetime.utcnow()
+                
+                nc.history += ' ' + now.strftime("%Y%m%d:") + 'passed qc_checker, all qc=0 set to qc=1'
     
     # Returns true if qc has succeeded, false if not
     return qc_behaving
