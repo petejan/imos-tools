@@ -44,6 +44,7 @@ from dateutil import parser
 nameMap = {}
 nameMap["TIMEK"] = "TIME"
 nameMap["TIMEJ"] = "TIME"
+nameMap["TIMEJV2"] = "TIME"
 nameMap["TV290C"] = "TEMP"
 nameMap["T090C"] = "TEMP"
 nameMap["COND0SM"] = "CNDC"
@@ -103,298 +104,303 @@ cast_exp = r"\* cast\s+(.*$)"
 
 def parse(files):
 
-    filepath = files[0]
+    output_names = []
 
-    hdr = True
-    sensor = False
-    dataLine = 0
-    name = []
-    text = []
-    number_samples_read = 0
-    nVars = 0
+    for filepath in files:
 
-    use_eqn = None
-    eqn = None
-    cal_param = None
-    cal_sensor = None
-    cal_tags = []
-    cast = None
+        hdr = True
+        sensor = False
+        dataLine = 0
+        name = []
+        text = []
+        number_samples_read = 0
+        nVars = 0
 
-    with open(filepath, 'r', errors='ignore') as fp:
-        line = fp.readline()
-        matchObj = re.match(first_line_expr, line)
-        #if not matchObj:
-        #    print("Not a Sea Bird CNV file !")
-        #    return None
+        use_eqn = None
+        eqn = None
+        cal_param = None
+        cal_sensor = None
+        cal_tags = []
+        cast = None
 
-        cnt = 1
-        while line:
-            #print("Line {}: {} : {}".format(cnt, dataLine, line.strip()))
-
-            if hdr:
-                if sensor:
-                    tmatchObj = re.match(tag, line)
-                    if tmatchObj:
-                        #print("sensor_tag:matchObj.group() : ", tmatchObj.group())
-                        #print("sensor_tag:matchObj.group(1) : ", tmatchObj.group(1))
-                        #print("sensor_tag:matchObj.group(2) : ", tmatchObj.group(2))
-                        cal_param = tmatchObj.group(1)
-                        cal_value = tmatchObj.group(2)
-
-                    smatchObj = re.match(sensor_type, line)
-                    if smatchObj:
-                        #print("sensor_type:matchObj.group() : ", smatchObj.group())
-                        #print("sensor_type:matchObj.group(1) : ", smatchObj.group(1))
-                        #print("sensor_type:matchObj.group(2) : ", smatchObj.group(2))
-                        cal_sensor = smatchObj.group(1)
-
-                    if cal_param and cal_sensor and tmatchObj:
-                        add_cal_tag = False
-                        if not use_eqn:
-                            add_cal_tag = True
-                        elif use_eqn == eqn:
-                            add_cal_tag = True
-
-                        if add_cal_tag:
-                            if cal_param != 'SerialNumber' and cal_param != 'CalibrationDate' and cal_param != 'SensorName':
-                                cal_value = float(cal_value)
-
-                            cal_tags.append((cal_sensor, cal_param, cal_value))
-                            #print("calibration type %s param %s value %s" % (cal_sensor, cal_param, cal_value))
-
-                matchObj = re.match(sensor_start, line)
-                if matchObj:
-                    #print("sensor_start:matchObj.group() : ", matchObj.group())
-                    #print("sensor_start:matchObj.group(1) : ", matchObj.group(1))
-                    sensor = True
-                    use_eqn = None
-                    cal_param = None
-                    cal_sensor = None
-
-                matchObj = re.match(sensor_end, line)
-                if matchObj:
-                    #print("sensor_end:matchObj.group() : ", matchObj.group())
-                    #print("sensor_end:matchObj.group(1) : ", matchObj.group(1))
-                    sensor = False
-
-                matchObj = re.match(cast_exp, line)
-                if matchObj:
-                    #print("cast_exp:matchObj.group() : ", matchObj.group())
-                    #print("cast_exp:matchObj.group(1) : ", matchObj.group(1))
-                    cast = matchObj.group(1)
-
-                matchObj = re.match(use_expr, line)
-                if matchObj:
-                    #print("use_expr:matchObj.group() : ", matchObj.group())
-                    #print("use_expr:matchObj.group(1) : ", matchObj.group(1))
-                    #print("use_expr:matchObj.group(2) : ", matchObj.group(2))
-                    use_eqn = matchObj.group(2)
-
-                matchObj = re.match(startTimeExpr, line)
-                if matchObj:
-                    print("start_time_expr:matchObj.group() : ", matchObj.group())
-                    start_time = parser.parse(matchObj.group(1))
-                    print("start time ", start_time)
-
-                matchObj = re.match(equa_group, line)
-                if matchObj:
-                    #print("equa_group:matchObj.group() : ", matchObj.group())
-                    #print("equa_group:matchObj.group(1) : ", matchObj.group(1))
-                    #print("equa_group:matchObj.group(2) : ", matchObj.group(2))
-                    eqn = matchObj.group(2)
-
-                matchObj = re.match(instr_exp, line)
-                if matchObj:
-                    #print("instr_exp:matchObj.group() : ", matchObj.group())
-                    #print("instr_exp:matchObj.group(1) : ", matchObj.group(1))
-                    instrument_model = matchObj.group(1)
-
-                matchObj = re.match(hardware_expr, line)
-                if matchObj:
-                    #print("hardware_expr:matchObj.group() : ", matchObj.group())
-                    #print("hardware_expr:matchObj.group(1) : ", matchObj.group(1))
-                    #print("hardware_expr:matchObj.group(2) : ", matchObj.group(2))
-                    instrument_model = matchObj.group(1)
-                    instrument_serialnumber = matchObj.group(2)
-
-                matchObj = re.match(sn_expr, line)
-                if matchObj:
-                    #print("sn_expr:matchObj.group() : ", matchObj.group())
-                    print("sn_expr:matchObj.group(1) : ", matchObj.group(1))
-                    instrument_serialnumber = matchObj.group(1)
-
-                matchObj = re.match(sampleExpr, line)
-                if matchObj:
-                    #print("sampleExpr:matchObj.group() : ", matchObj.group())
-                    #print("sampleExpr:matchObj.group(1) : ", matchObj.group(1))
-                    sample_interval = int(matchObj.group(1))
-
-                matchObj = re.match(intervalExpr, line)
-                if matchObj:
-                    #print("intervalExpr:matchObj.group() : ", matchObj.group())
-                    #print("intervalExpr:matchObj.group(1) : ", matchObj.group(1))
-                    #print("intervalExpr:matchObj.group(1) : ", matchObj.group(2))
-                    sample_interval = int(matchObj.group(2))
-
-                matchObj = re.match(nvalues_expr, line)
-                if matchObj:
-                    #print("nvalues_expr:matchObj.group() : ", matchObj.group())
-                    print("nvalues_expr:matchObj.group(1) : ", matchObj.group(1))
-                    number_samples = int(matchObj.group(1))
-
-                matchObj = re.match(name_expr, line)
-                if matchObj:
-                    #print("name_expr:matchObj.group() : ", matchObj.group())
-                    #print("name_expr:matchObj.group(1) : ", matchObj.group(1))
-                    #print("name_expr:matchObj.group(2) : ", matchObj.group(2))
-                    #print("name_expr:matchObj.group(3) : ", matchObj.group(3))
-                    nameN = int(matchObj.group(1))
-                    comment = matchObj.group(3)
-                    unitObj = re.match(r".*\[((.*), )?(.*)\]", comment)
-                    #print("unit match ", unitObj, comment)
-                    unit = None
-                    if unitObj:
-                        unit = unitObj.group(3)
-                        try:
-                            unit = unitMap[unit]
-                        except KeyError:
-                            pass
-                        #print("unit:unitObj.group(3) : ", unit)
-
-                    # construct a var name from the sea bird short name
-                    varName = matchObj.group(2)
-                    varName = re.sub(r'[-/]', '', varName).upper()
-
-                    ncVarName = varName
-                    if varName in nameMap:
-                        #print('name map ', nameMap[varName])
-                        ncVarName = nameMap[varName]
-                    if ncVarName:
-                        name.insert(nVars, {'sbe-name' : varName, 'col': nameN, 'var_name': ncVarName, 'comment': matchObj.group(3), 'unit': unit})
-                        nVars = nVars + 1
-                    print("name {} : {} ncName {}".format(nameN, varName, ncVarName))
-
-                matchObj = re.match(end_expr, line)
-                if matchObj:
-                    hdr = False
-                    nVariables = len(name)
-                    if nVariables < 1:
-                        print('No Variables, exiting')
-                        exit(-1)
-
-                    data = np.zeros((number_samples, nVariables))
-                    data.fill(np.nan)
-            else:
-                lineSplit = line.split()
-                #print(data)
-                splitVarNo = 0
-                try:
-                    for v in name:
-                        #print("{} : {}".format(i, v))
-                        data[number_samples_read][splitVarNo] = float(lineSplit[v['col']])
-                        splitVarNo = splitVarNo + 1
-                    number_samples_read = number_samples_read + 1
-                except ValueError:
-                    #print("bad line")
-                    pass
-
-                dataLine = dataLine + 1
-
+        with open(filepath, 'r', errors='ignore') as fp:
             line = fp.readline()
-            cnt += 1
+            matchObj = re.match(first_line_expr, line)
+            #if not matchObj:
+            #    print("Not a Sea Bird CNV file !")
+            #    return None
 
-    if nVariables < 1:
-        print('No Variables, exiting')
-        exit(-1)
+            cnt = 1
+            while line:
+                #print("Line {}: {} : {}".format(cnt, dataLine, line.strip()))
 
-    # trim data to what was read
-    odata = data[:number_samples_read]
-    print("nSamples %d samplesRead %d nVariables %d data shape %s read %s" % (number_samples, number_samples_read, nVariables, data.shape, odata.shape))
+                if hdr:
+                    if sensor:
+                        tmatchObj = re.match(tag, line)
+                        if tmatchObj:
+                            #print("sensor_tag:matchObj.group() : ", tmatchObj.group())
+                            #print("sensor_tag:matchObj.group(1) : ", tmatchObj.group(1))
+                            #print("sensor_tag:matchObj.group(2) : ", tmatchObj.group(2))
+                            cal_param = tmatchObj.group(1)
+                            cal_value = tmatchObj.group(2)
 
-    #
-    # build the netCDF file
-    #
+                        smatchObj = re.match(sensor_type, line)
+                        if smatchObj:
+                            #print("sensor_type:matchObj.group() : ", smatchObj.group())
+                            #print("sensor_type:matchObj.group(1) : ", smatchObj.group(1))
+                            #print("sensor_type:matchObj.group(2) : ", smatchObj.group(2))
+                            cal_sensor = smatchObj.group(1)
 
-    ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
+                        if cal_param and cal_sensor and tmatchObj:
+                            add_cal_tag = False
+                            if not use_eqn:
+                                add_cal_tag = True
+                            elif use_eqn == eqn:
+                                add_cal_tag = True
 
-    outputName = filepath + ".nc"
+                            if add_cal_tag:
+                                if cal_param != 'SerialNumber' and cal_param != 'CalibrationDate' and cal_param != 'SensorName':
+                                    cal_value = float(cal_value)
 
-    print("output file : %s" % outputName)
+                                cal_tags.append((cal_sensor, cal_param, cal_value))
+                                #print("calibration type %s param %s value %s" % (cal_sensor, cal_param, cal_value))
 
-    ncOut = Dataset(outputName, 'w', format='NETCDF4')
+                    matchObj = re.match(sensor_start, line)
+                    if matchObj:
+                        #print("sensor_start:matchObj.group() : ", matchObj.group())
+                        #print("sensor_start:matchObj.group(1) : ", matchObj.group(1))
+                        sensor = True
+                        use_eqn = None
+                        cal_param = None
+                        cal_sensor = None
 
-    ncOut.instrument = 'Sea-Bird Electronics ; ' + instrument_model
-    ncOut.instrument_model = instrument_model
-    ncOut.instrument_serial_number = instrument_serialnumber
-    #ncOut.instrument_model = instrument_model
-    if cast:
-        ncOut.instrument_cast = cast
+                    matchObj = re.match(sensor_end, line)
+                    if matchObj:
+                        #print("sensor_end:matchObj.group() : ", matchObj.group())
+                        #print("sensor_end:matchObj.group(1) : ", matchObj.group(1))
+                        sensor = False
 
-    #     TIME:axis = "T";
-    #     TIME:calendar = "gregorian";
-    #     TIME:long_name = "time";
-    #     TIME:units = "days since 1950-01-01 00:00:00 UTC";
+                    matchObj = re.match(cast_exp, line)
+                    if matchObj:
+                        #print("cast_exp:matchObj.group() : ", matchObj.group())
+                        #print("cast_exp:matchObj.group(1) : ", matchObj.group(1))
+                        cast = matchObj.group(1)
 
-    tDim = ncOut.createDimension("TIME", number_samples_read)
-    ncTimesOut = ncOut.createVariable("TIME", "d", ("TIME",), zlib=True)
-    ncTimesOut.long_name = "time"
-    ncTimesOut.units = "days since 1950-01-01 00:00:00 UTC"
-    ncTimesOut.calendar = "gregorian"
-    ncTimesOut.axis = "T"
+                    matchObj = re.match(use_expr, line)
+                    if matchObj:
+                        #print("use_expr:matchObj.group() : ", matchObj.group())
+                        #print("use_expr:matchObj.group(1) : ", matchObj.group(1))
+                        #print("use_expr:matchObj.group(2) : ", matchObj.group(2))
+                        use_eqn = matchObj.group(2)
 
-    t_epoc = date2num(datetime(2000, 1, 1), calendar=ncTimesOut.calendar, units=ncTimesOut.units)
+                    matchObj = re.match(startTimeExpr, line)
+                    if matchObj:
+                        print("start_time_expr:matchObj.group() : ", matchObj.group())
+                        start_time = parser.parse(matchObj.group(1))
+                        print("start time ", start_time)
 
-    # for each variable in the data file, create a netCDF variable
-    i = 0
-    for v in name:
-        print("Variable %s : unit %s" % (v['var_name'], v['unit']))
-        varName = v['var_name']
-        if varName == 'TIME':
-            #print(data[:, v['col']])
-            if (v['unit'] == 'julian days') | (v['sbe-name'] == 'TIMEJ'):
-                t_epoc = date2num(start_time, calendar=ncTimesOut.calendar, units=ncTimesOut.units)
-                ncTimesOut[:] = (odata[:, v['col']] + t_epoc)
-                print("julian days time ", odata[0, v['col']], start_time, ncTimesOut[0])
+                    matchObj = re.match(equa_group, line)
+                    if matchObj:
+                        #print("equa_group:matchObj.group() : ", matchObj.group())
+                        #print("equa_group:matchObj.group(1) : ", matchObj.group(1))
+                        #print("equa_group:matchObj.group(2) : ", matchObj.group(2))
+                        eqn = matchObj.group(2)
+
+                    matchObj = re.match(instr_exp, line)
+                    if matchObj:
+                        #print("instr_exp:matchObj.group() : ", matchObj.group())
+                        #print("instr_exp:matchObj.group(1) : ", matchObj.group(1))
+                        instrument_model = matchObj.group(1)
+
+                    matchObj = re.match(hardware_expr, line)
+                    if matchObj:
+                        #print("hardware_expr:matchObj.group() : ", matchObj.group())
+                        #print("hardware_expr:matchObj.group(1) : ", matchObj.group(1))
+                        #print("hardware_expr:matchObj.group(2) : ", matchObj.group(2))
+                        instrument_model = matchObj.group(1)
+                        instrument_serialnumber = matchObj.group(2)
+
+                    matchObj = re.match(sn_expr, line)
+                    if matchObj:
+                        #print("sn_expr:matchObj.group() : ", matchObj.group())
+                        print("sn_expr:matchObj.group(1) : ", matchObj.group(1))
+                        instrument_serialnumber = matchObj.group(1)
+
+                    matchObj = re.match(sampleExpr, line)
+                    if matchObj:
+                        #print("sampleExpr:matchObj.group() : ", matchObj.group())
+                        #print("sampleExpr:matchObj.group(1) : ", matchObj.group(1))
+                        sample_interval = int(matchObj.group(1))
+
+                    matchObj = re.match(intervalExpr, line)
+                    if matchObj:
+                        #print("intervalExpr:matchObj.group() : ", matchObj.group())
+                        #print("intervalExpr:matchObj.group(1) : ", matchObj.group(1))
+                        #print("intervalExpr:matchObj.group(1) : ", matchObj.group(2))
+                        sample_interval = int(matchObj.group(2))
+
+                    matchObj = re.match(nvalues_expr, line)
+                    if matchObj:
+                        #print("nvalues_expr:matchObj.group() : ", matchObj.group())
+                        print("nvalues_expr:matchObj.group(1) : ", matchObj.group(1))
+                        number_samples = int(matchObj.group(1))
+
+                    matchObj = re.match(name_expr, line)
+                    if matchObj:
+                        #print("name_expr:matchObj.group() : ", matchObj.group())
+                        #print("name_expr:matchObj.group(1) : ", matchObj.group(1))
+                        #print("name_expr:matchObj.group(2) : ", matchObj.group(2))
+                        #print("name_expr:matchObj.group(3) : ", matchObj.group(3))
+                        nameN = int(matchObj.group(1))
+                        comment = matchObj.group(3)
+                        unitObj = re.match(r".*\[((.*), )?(.*)\]", comment)
+                        #print("unit match ", unitObj, comment)
+                        unit = None
+                        if unitObj:
+                            unit = unitObj.group(3)
+                            try:
+                                unit = unitMap[unit]
+                            except KeyError:
+                                pass
+                            #print("unit:unitObj.group(3) : ", unit)
+
+                        # construct a var name from the sea bird short name
+                        varName = matchObj.group(2)
+                        varName = re.sub(r'[-/]', '', varName).upper()
+
+                        ncVarName = varName
+                        if varName in nameMap:
+                            #print('name map ', nameMap[varName])
+                            ncVarName = nameMap[varName]
+                        if ncVarName:
+                            name.insert(nVars, {'sbe-name' : varName, 'col': nameN, 'var_name': ncVarName, 'comment': matchObj.group(3), 'unit': unit})
+                            nVars = nVars + 1
+                        print("name {} : {} ncName {}".format(nameN, varName, ncVarName))
+
+                    matchObj = re.match(end_expr, line)
+                    if matchObj:
+                        hdr = False
+                        nVariables = len(name)
+                        if nVariables < 1:
+                            print('No Variables, exiting')
+                            exit(-1)
+
+                        data = np.zeros((number_samples, nVariables))
+                        data.fill(np.nan)
+                else:
+                    lineSplit = line.split()
+                    #print(data)
+                    splitVarNo = 0
+                    try:
+                        for v in name:
+                            #print("{} : {}".format(i, v))
+                            data[number_samples_read][splitVarNo] = float(lineSplit[v['col']])
+                            splitVarNo = splitVarNo + 1
+                        number_samples_read = number_samples_read + 1
+                    except ValueError:
+                        #print("bad line")
+                        pass
+
+                    dataLine = dataLine + 1
+
+                line = fp.readline()
+                cnt += 1
+
+        if nVariables < 1:
+            print('No Variables, exiting')
+            exit(-1)
+
+        # trim data to what was read
+        odata = data[:number_samples_read]
+        print("nSamples %d samplesRead %d nVariables %d data shape %s read %s" % (number_samples, number_samples_read, nVariables, data.shape, odata.shape))
+
+        #
+        # build the netCDF file
+        #
+
+        ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
+
+        outputName = filepath + ".nc"
+
+        print("output file : %s" % outputName)
+
+        ncOut = Dataset(outputName, 'w', format='NETCDF4')
+
+        ncOut.instrument = 'Sea-Bird Electronics ; ' + instrument_model
+        ncOut.instrument_model = instrument_model
+        ncOut.instrument_serial_number = instrument_serialnumber
+        #ncOut.instrument_model = instrument_model
+        if cast:
+            ncOut.instrument_cast = cast
+
+        #     TIME:axis = "T";
+        #     TIME:calendar = "gregorian";
+        #     TIME:long_name = "time";
+        #     TIME:units = "days since 1950-01-01 00:00:00 UTC";
+
+        tDim = ncOut.createDimension("TIME", number_samples_read)
+        ncTimesOut = ncOut.createVariable("TIME", "d", ("TIME",), zlib=True)
+        ncTimesOut.long_name = "time"
+        ncTimesOut.units = "days since 1950-01-01 00:00:00 UTC"
+        ncTimesOut.calendar = "gregorian"
+        ncTimesOut.axis = "T"
+
+        t_epoc = date2num(datetime(2000, 1, 1), calendar=ncTimesOut.calendar, units=ncTimesOut.units)
+
+        # for each variable in the data file, create a netCDF variable
+        i = 0
+        for v in name:
+            print("Variable %s : unit %s" % (v['var_name'], v['unit']))
+            varName = v['var_name']
+            if varName == 'TIME':
+                #print(data[:, v['col']])
+                if (v['unit'] == 'julian days') | (v['sbe-name'] == 'TIMEJ'):
+                    t_epoc_start = datetime(start_time.year, 1, 1)
+                    t_epoc = date2num(t_epoc_start, calendar=ncTimesOut.calendar, units=ncTimesOut.units)
+                    ncTimesOut[:] = (odata[:, v['col']] + t_epoc)
+                    print("julian days time ", odata[0, v['col']], start_time, ncTimesOut[0])
+                else:
+                    print("time is seconds")
+                    ncTimesOut[:] = (odata[:, v['col']]/ 3600 / 24) + t_epoc
             else:
-                print("time is seconds")
-                ncTimesOut[:] = (odata[:, v['col']]/ 3600 / 24) + t_epoc
-        else:
-            ncVarOut = ncOut.createVariable(varName, "f4", ("TIME",), fill_value=np.nan, zlib=True) # fill_value=nan otherwise defaults to max
-            ncVarOut.comment = v['comment']
-            if v['unit']:
-                ncVarOut.units = v['unit']
+                ncVarOut = ncOut.createVariable(varName, "f4", ("TIME",), fill_value=np.nan, zlib=True) # fill_value=nan otherwise defaults to max
+                ncVarOut.comment = v['comment']
+                if v['unit']:
+                    ncVarOut.units = v['unit']
 
-            # add any relevant calibration information to variables, bit of a hard coded hack
-            for c in cal_tags:
-                add = False
-                if varName == 'TEMP' and c[0] == 'TemperatureSensor':
-                    add = True
-                if varName == 'DOX2' and c[0] == 'OxygenSensor':
-                    add = True
-                if varName == 'PRES' and c[0] == 'PressureSensor':
-                    add = True
-                if varName == 'CNDC' and c[0] == 'ConductivitySensor':
-                    add = True
+                # add any relevant calibration information to variables, bit of a hard coded hack
+                for c in cal_tags:
+                    add = False
+                    if varName == 'TEMP' and c[0] == 'TemperatureSensor':
+                        add = True
+                    if varName == 'DOX2' and c[0] == 'OxygenSensor':
+                        add = True
+                    if varName == 'PRES' and c[0] == 'PressureSensor':
+                        add = True
+                    if varName == 'CNDC' and c[0] == 'ConductivitySensor':
+                        add = True
 
-                if add:
-                    ncVarOut.setncattr('calibration_' + c[1], c[2])
+                    if add:
+                        ncVarOut.setncattr('calibration_' + c[1], c[2])
 
-            #print("Create Variable %s : %s" % (ncVarOut, data[v[0]]))
-            ncVarOut[:] = odata[:, v['col']]
+                #print("Create Variable %s : %s" % (ncVarOut, data[v[0]]))
+                ncVarOut[:] = odata[:, v['col']]
 
-        i = i + 1
+            i = i + 1
 
-    # add timespan attributes
-    ncOut.setncattr("time_coverage_start", num2date(ncTimesOut[0], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
-    ncOut.setncattr("time_coverage_end", num2date(ncTimesOut[-1], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
+        # add timespan attributes
+        ncOut.setncattr("time_coverage_start", num2date(ncTimesOut[0], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
+        ncOut.setncattr("time_coverage_end", num2date(ncTimesOut[-1], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
 
-    # add creating and history entry
-    ncOut.setncattr("date_created", datetime.utcnow().strftime(ncTimeFormat))
-    ncOut.setncattr("history", datetime.utcnow().strftime("%Y-%m-%d") + " created from file " + os.path.basename(filepath))
+        # add creating and history entry
+        ncOut.setncattr("date_created", datetime.utcnow().strftime(ncTimeFormat))
+        ncOut.setncattr("history", datetime.utcnow().strftime("%Y-%m-%d") + " created from file " + os.path.basename(filepath))
 
-    ncOut.close()
+        ncOut.close()
 
-    return outputName
+        output_names.append(outputName)
+
+    return output_names
 
 
 if __name__ == "__main__":
