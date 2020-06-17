@@ -92,25 +92,25 @@ decode.append({'key': 'year', 'var_name': None, 'units': None, 'scale': 1, 'offs
 decode.append({'key': 'record', 'var_name': None, 'units': None, 'scale': 1, 'offset': 0, 'unpack': 'H'})
 decode.append({'key': 'mux_param', 'var_name': None, 'units': None, 'scale': 1, 'offset': 0, 'unpack': 'B'})
 
-decode.append({'key': 'we', 'var_name': None, 'units': 'm/s', 'scale': 100, 'offset': 0, 'unpack': 'h'})
-decode.append({'key': 'wn', 'var_name': None, 'units': 'm/s', 'scale': 100, 'offset': 0, 'unpack': 'h'})
+decode.append({'key': 'we', 'var_name': 'WIND_E', 'units': 'm/s', 'scale': 100, 'offset': 0, 'unpack': 'h'})
+decode.append({'key': 'wn', 'var_name': 'WIND_N', 'units': 'm/s', 'scale': 100, 'offset': 0, 'unpack': 'h'})
 decode.append({'key': 'wsavg', 'var_name': 'WSPD', 'units': 'm/s', 'scale': 100, 'offset': 0, 'unpack': 'H'})
 decode.append({'key': 'wsmax', 'var_name': 'WSPD_MAX', 'units': 'm/s', 'scale': 100, 'offset': 0, 'unpack': 'H'})
 decode.append({'key': 'wsmin', 'var_name': 'WSPD_MIN', 'units': 'm/s', 'scale': 100, 'offset': 0, 'unpack': 'H'})
 decode.append({'key': 'vdavg', 'var_name': 'WDIR', 'units': 'degree', 'scale': 10, 'offset': 0, 'unpack': 'h'})
 decode.append({'key': 'compass', 'var_name': None, 'units': 'degree', 'scale': 10, 'offset': 0, 'unpack': 'h'})
 
-decode.append({'key': 'bp', 'var_name': None, 'units': 'mbar', 'scale': 100, 'offset': 900, 'unpack': 'H'})
+decode.append({'key': 'bp', 'var_name': 'A_PRES', 'units': 'mbar', 'scale': 100, 'offset': 900, 'unpack': 'H'})
 
 decode.append({'key': 'rh', 'var_name': 'RELH', 'units': 'percent', 'scale': 100, 'offset': 0, 'unpack': 'h'})
 decode.append({'key': 'th', 'var_name': 'ATMP', 'units': 'degrees_Celsius', 'scale': 1000, 'offset': -20, 'unpack': 'H'})
 
-decode.append({'key': 'sr', 'var_name': None, 'units': 'W/m^2', 'scale': 10, 'offset': 0, 'unpack': 'h'})
+decode.append({'key': 'sr', 'var_name': 'SWR', 'units': 'W/m^2', 'scale': 10, 'offset': 0, 'unpack': 'h'})
 
 decode.append({'key': 'dome', 'var_name': None, 'units': 'degrees_kelvin', 'scale': 100, 'offset': 0, 'unpack': 'H'})
 decode.append({'key': 'body', 'var_name': None, 'units': 'degrees_kelvin', 'scale': 100, 'offset': 0, 'unpack': 'H'})
 decode.append({'key': 'tpile', 'var_name': None, 'units': 'uV', 'scale': 10, 'offset': 0, 'unpack': 'h'})
-decode.append({'key': 'lwflux', 'var_name': None, 'units': 'W/m^2', 'scale': 10, 'offset': 0, 'unpack': 'h'})
+decode.append({'key': 'lwflux', 'var_name': 'LWR', 'units': 'W/m^2', 'scale': 10, 'offset': 0, 'unpack': 'h'})
 
 decode.append({'key': 'prlev', 'var_name': None, 'units': 'mm', 'scale': 100, 'offset': 0, 'unpack': 'h'})
 
@@ -133,111 +133,117 @@ decode.append({'key': 'used', 'var_name': None, 'units': None, 'scale': 1, 'offs
 
 
 def parse(files):
-    filepath = files[0]
-    ts_start = None
+    output_files = []
 
-    number_samples_read = 0
+    for filepath in files:
+        ts_start = None
 
-    # create the netCDF file
-    outputName = filepath + ".nc"
+        number_samples_read = 0
 
-    print("output file : %s" % outputName)
+        # create the netCDF file
+        outputName = filepath + ".nc"
 
-    ncOut = Dataset(outputName, 'w', format='NETCDF4')
+        print("output file : %s" % outputName)
 
-    # add time var_nameiable
+        ncOut = Dataset(outputName, 'w', format='NETCDF4')
 
-    #     TIME:axis = "T";
-    #     TIME:calendar = "gregorian";
-    #     TIME:long_name = "time";
-    #     TIME:units = "days since 1950-01-01 00:00:00 UTC";
+        # add time var_nameiable
 
-    tDim = ncOut.createDimension("TIME")
-    ncTimesOut = ncOut.createVariable("TIME", "d", ("TIME",), zlib=True)
-    ncTimesOut.long_name = "time"
-    ncTimesOut.units = "days since 1950-01-01 00:00:00 UTC"
-    ncTimesOut.calendar = "gregorian"
-    ncTimesOut.axis = "T"
+        #     TIME:axis = "T";
+        #     TIME:calendar = "gregorian";
+        #     TIME:long_name = "time";
+        #     TIME:units = "days since 1950-01-01 00:00:00 UTC";
 
-    # create decoder dictonary
-    decoder = {'unpack': '>', 'keys': []}
-    for x in decode:
-        decoder['unpack'] += x['unpack']
-        decoder['keys'].append(x['key'])
-    metadata = dict(zip(decoder['keys'], decode))
+        tDim = ncOut.createDimension("TIME")
+        ncTimesOut = ncOut.createVariable("TIME", "d", ("TIME",), zlib=True)
+        ncTimesOut.long_name = "time"
+        ncTimesOut.units = "days since 1950-01-01 00:00:00 UTC"
+        ncTimesOut.calendar = "gregorian"
+        ncTimesOut.axis = "T"
 
-    # create a variable for the matadata with variables not None
-    for x in metadata:
-        metadata[x]['var'] = None
-        if metadata[x]['var_name']:
-            new_var = ncOut.createVariable(metadata[x]['var_name'], "f4", ("TIME",), zlib=True)
-            new_var.units = metadata[x]['units']
-            metadata[x]['var'] = new_var
+        # create decoder dictonary
+        decoder = {'unpack': '>', 'keys': []}
+        for x in decode:
+            decoder['unpack'] += x['unpack']
+            decoder['keys'].append(x['key'])
+        metadata = dict(zip(decoder['keys'], decode))
 
-    # loop over file, adding data to netCDF file for each timestamp
-    ts = None
-    with open(filepath, "rb") as binary_file:
-        data = binary_file.read(64)
-        while data:
+        # create a variable for the matadata with variables not None
+        for x in metadata:
+            metadata[x]['var'] = None
+            if metadata[x]['var_name']:
+                new_var = ncOut.createVariable(metadata[x]['var_name'], "f4", ("TIME",), zlib=True)
+                new_var.units = metadata[x]['units']
+                metadata[x]['var'] = new_var
 
-            data = struct.unpack(decoder['unpack'], data)
-            #print(data)
-            data_scaled = []
-            for i in range(0, len(data)):
-                data_scaled.append((data[i] / decode[i]['scale']) + decode[i]['offset'])
-                #print('data', i, decode[i]['key'], data[i], 'scale', decode[i]['scale'], 'offset', decode[i]['offset'], data_scaled[i])
-
-            data_decoded = dict(zip(decoder['keys'], data_scaled))
-
-            # check that this record is a used record
-            if data_decoded['used'] == 42405:
-
-                # decode the time
-                ts = datetime.datetime(int(data_decoded['year']), int(data_decoded['mon']), int(data_decoded['day']),
-                                       int(data_decoded['hour']), int(data_decoded['min']), 0)
-
-                #print(ts, "data", data_decoded)
-
-                # keep the first timestamp
-                if ts_start is None:
-                    ts_start = ts
-
-                # save data to netCDF file
-                ncTimesOut[number_samples_read] = date2num(ts, calendar=ncTimesOut.calendar, units=ncTimesOut.units)
-                for x in data_decoded:
-                    #print(x, data_decoded[x], metadata[x])
-                    if metadata[x]['var_name']:
-                        metadata[x]['var'][number_samples_read] = data_decoded[x]
-
-                # keep sample number
-                number_samples_read = number_samples_read + 1
-
-                # some user feedback
-                if number_samples_read % 1000 == 0:
-                    print(number_samples_read, ts, "data", data_decoded)
-
+        # loop over file, adding data to netCDF file for each timestamp
+        ts = None
+        with open(filepath, "rb") as binary_file:
             data = binary_file.read(64)
+            while data:
 
-    print("file start time ", ts_start)
+                data = struct.unpack(decoder['unpack'], data)
+                #print(data)
+                data_scaled = []
+                for i in range(0, len(data)):
+                    data_scaled.append((data[i] / decode[i]['scale']) + decode[i]['offset'])
+                    #print('data', i, decode[i]['key'], data[i], 'scale', decode[i]['scale'], 'offset', decode[i]['offset'], data_scaled[i])
 
-    # add global attributes
-    instrument_model = 'ASIMET LOG53'
-    instrument_serialnumber = os.path.basename(filepath)
+                data_decoded = dict(zip(decoder['keys'], data_scaled))
 
-    ncOut.instrument = 'WHOI ; ' + instrument_model
-    ncOut.instrument_model = instrument_model
-    ncOut.instrument_serial_number = instrument_serialnumber
+                # check that this record is a used record
+                if data_decoded['used'] == 42405:
 
-    ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
+                    # decode the time
+                    ts = datetime.datetime(int(data_decoded['year']), int(data_decoded['mon']), int(data_decoded['day']),
+                                           int(data_decoded['hour']), int(data_decoded['min']), 0)
 
-    ncOut.setncattr("time_coverage_start", ts_start.strftime(ncTimeFormat))
-    ncOut.setncattr("time_coverage_end", ts.strftime(ncTimeFormat))
+                    #print(ts, "data", data_decoded)
 
-    # add creating and history entry
-    ncOut.setncattr("date_created", datetime.datetime.utcnow().strftime(ncTimeFormat))
-    ncOut.setncattr("history", datetime.datetime.utcnow().strftime("%Y-%m-%d") + " created from file " + os.path.basename(filepath))
+                    # keep the first timestamp
+                    if ts_start is None:
+                        ts_start = ts
 
-    return outputName
+                    # save data to netCDF file
+                    ncTimesOut[number_samples_read] = date2num(ts, calendar=ncTimesOut.calendar, units=ncTimesOut.units)
+                    for x in data_decoded:
+                        #print(x, data_decoded[x], metadata[x])
+                        if metadata[x]['var_name']:
+                            metadata[x]['var'][number_samples_read] = data_decoded[x]
+
+                    # keep sample number
+                    number_samples_read = number_samples_read + 1
+
+                    # some user feedback
+                    if number_samples_read % 1000 == 0:
+                        print(number_samples_read, ts, "data", data_decoded)
+
+                data = binary_file.read(64)
+
+        print("file start time ", ts_start)
+
+        # add global attributes
+        instrument_model = 'ASIMET LOG53'
+        instrument_serialnumber = os.path.basename(filepath)
+
+        ncOut.instrument = 'WHOI ; ' + instrument_model
+        ncOut.instrument_model = instrument_model
+        ncOut.instrument_serial_number = instrument_serialnumber
+
+        ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
+
+        ncOut.setncattr("time_coverage_start", ts_start.strftime(ncTimeFormat))
+        ncOut.setncattr("time_coverage_end", ts.strftime(ncTimeFormat))
+
+        # add creating and history entry
+        ncOut.setncattr("date_created", datetime.datetime.utcnow().strftime(ncTimeFormat))
+        ncOut.setncattr("history", datetime.datetime.utcnow().strftime("%Y-%m-%d") + " created from file " + os.path.basename(filepath))
+
+        ncOut.close()
+
+        output_files.append(outputName)
+
+    return output_files
 
 
 if __name__ == "__main__":

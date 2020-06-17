@@ -74,44 +74,58 @@ def smooth(files):
         d = np.arange(d0, dend, 1/24)
         d_dt = num2date(d, units=var_time.units)
 
-
-        # variable to smooth
-        var_psal = ds.variables["PSAL"]
-
-        psal = var_psal[msk]
-
-        print(var_psal[msk])
-
-        loess = Loess.Loess(np.array(time_masked), np.array(psal))
-
-        y = [loess.estimate(x, window=int(window), use_matrix=False, degree=1) for x in d]
-
-        print(t0, t1)
-
-        #y = loess.estimate(t_msk, window=7, use_matrix=False, degree=1)
-
-        #print(y)
-
+        # output data to new file
         ds_new = Dataset(fn_new, 'w')
+
+        #  copy global vars
         attr_dict = {}
         for a in ds.ncattrs():
             attr_dict[a] = ds.getncattr(a)
         ds_new.setncatts(attr_dict)
 
+        #  copy dimension
         ds_new.createDimension(ds.dimensions['TIME'].name, len(d_dt))
 
+        #  create new time
         time_var = ds_new.createVariable('TIME', 'f8', 'TIME', fill_value=np.NaN, zlib=True)
-        attr_dict = {}
-        for a in var_time.ncattrs():
-            attr_dict[a] = var_time.getncattr(a)
-        time_var.setncatts(attr_dict)
 
-        time_var[:] = d
+        # variable to smooth
 
-        psal_var = ds_new.createVariable('PSAL', 'f4', 'TIME', fill_value=np.NaN, zlib=True)
-        psal_var[:] = y
+        for smooth_var in ['TEMP', 'PSAL', 'PRES']:
 
-        ds_new.history += '\n' + now.strftime("%Y-%m-%d : ") + 'resampled data created from ' + filepath
+            var_to_smooth_in = ds.variables[smooth_var]
+
+            smooth_in = var_to_smooth_in[msk]
+
+            print(var_to_smooth_in[msk])
+
+            # do the smoothing
+            loess = Loess.Loess(np.array(time_masked), np.array(smooth_in))
+            y = [loess.estimate(x, window=int(window), use_matrix=False, degree=1) for x in d]
+
+            print(t0, t1)
+
+            #y = loess.estimate(t_msk, window=7, use_matrix=False, degree=1)
+
+            #print(y)
+
+            #   copy times attributes
+            attr_dict = {}
+            for a in var_time.ncattrs():
+                attr_dict[a] = var_time.getncattr(a)
+            time_var.setncatts(attr_dict)
+            time_var[:] = d
+
+            #  create output variables
+            var_smooth_out = ds_new.createVariable(smooth_var, 'f4', 'TIME', fill_value=np.NaN, zlib=True)
+            attr_dict = {}
+            for a in var_to_smooth_in.ncattrs():
+                attr_dict[a] = var_to_smooth_in.getncattr(a)
+            var_smooth_out.setncatts(attr_dict)
+            var_smooth_out[:] = y
+
+        #  create history
+        ds_new.history += '\n' + now.strftime("%Y-%m-%d : ") + 'resampled data created from ' + os.path.basename(filepath)
 
         ds_new.close()
 

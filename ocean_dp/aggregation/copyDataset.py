@@ -1,3 +1,4 @@
+import os
 import re
 from datetime import datetime, timedelta
 from netCDF4 import num2date, date2num
@@ -95,9 +96,7 @@ def aggregate(files, varNames):
     #
 
     dsTime = Dataset(files_to_process[0], mode="r")
-
     ncTime = dsTime.get_variables_by_attributes(standard_name='time')
-
     dates = num2date(maTimeAll[idx].compressed(), units=ncTime[0].units, calendar=ncTime[0].calendar)
 
     #
@@ -108,29 +107,31 @@ def aggregate(files, varNames):
     # IMOS_<Facility-Code>_<Data-Code>_<Start-date>_<Platform-Code>_FV<File-Version>_ <Product-Type>_END-<End-date>_C-<Creation_date>_<PARTX>.nc
 
     # TODO: what to do with <Data-Code> with a reduced number of variables
-
-    splitPath = files_to_process[0].split("/")
-    splitParts = splitPath[-1].split("_") # get the last path item (the file nanme), split by _
-
-    tStartMaksed = num2date(maTimeAll[idx].compressed()[0], units=ncTime[0].units, calendar=ncTime[0].calendar)
-    tEndMaksed = num2date(maTimeAll[idx].compressed()[-1], units=ncTime[0].units, calendar=ncTime[0].calendar)
-
-    fileProductTypeSplit = splitParts[6].split("-")
-    fileProductType = fileProductTypeSplit[0]
-
-    # could use the global attribute site_code for the product type
-
-    fileTimeFormat = "%Y%m%d"
     ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
 
-    outputName = splitParts[0] + "_" + splitParts[1] + "_" + splitParts[2] \
-                 + "_" + tStartMaksed.strftime(fileTimeFormat) \
-                 + "_" + splitParts[4] \
-                 + "_" + "FV02" \
-                 + "_" + fileProductType + "-Aggregate-" + varNames[0] \
-                 + "_END-" + tEndMaksed.strftime(fileTimeFormat) \
-                 + "_C-" + datetime.utcnow().strftime(fileTimeFormat) \
-                 + ".nc"
+    file_name = os.path.basename(files_to_process[0])
+    if file_name.startswith('IMOS'):
+        splitParts = file_name.split("_") # get the last path item (the file nanme), split by _
+
+        tStartMaksed = num2date(maTimeAll[idx].compressed()[0], units=ncTime[0].units, calendar=ncTime[0].calendar)
+        tEndMaksed = num2date(maTimeAll[idx].compressed()[-1], units=ncTime[0].units, calendar=ncTime[0].calendar)
+
+        fileProductTypeSplit = splitParts[6].split("-")
+        fileProductType = fileProductTypeSplit[0]
+
+        # could use the global attribute site_code for the product type
+
+        fileTimeFormat = "%Y%m%d"
+        outputName = splitParts[0] + "_" + splitParts[1] + "_" + splitParts[2] \
+                     + "_" + tStartMaksed.strftime(fileTimeFormat) \
+                     + "_" + splitParts[4] \
+                     + "_" + "FV02" \
+                     + "_" + fileProductType + "-Aggregate-" + varNames[0] \
+                     + "_END-" + tEndMaksed.strftime(fileTimeFormat) \
+                     + "_C-" + datetime.utcnow().strftime(fileTimeFormat) \
+                     + ".nc"
+    else:
+        outputName = '_'.join(varNames) + '-Aggregate.nc'
 
     print("output file : %s" % outputName)
 
