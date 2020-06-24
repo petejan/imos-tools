@@ -13,6 +13,8 @@ import numpy as np
 def smooth(files):
     output_names = []
 
+    now = datetime.utcnow()
+
     for filepath in files:
 
         fn_new = filepath
@@ -27,14 +29,13 @@ def smooth(files):
             fn_split[6] = fn_split[6] + "-Smooth"
 
             # Change the creation date in the filename to today
-            now = datetime.utcnow()
-
             fn_split[8] = now.strftime("C-%Y%m%d.nc")
             fn_new = os.path.join(dirname, "_".join(fn_split))
 
         # Add the new file name to the list of new file names
         output_names.append(fn_new)
 
+        print()
         print("output", fn_new)
 
         ds = Dataset(filepath, 'r')
@@ -59,14 +60,13 @@ def smooth(files):
         sample_rate = np.round(24*3600*(tend-t0)/len(time_masked))
         print('dt ', (t1 - t0)*24*3600, 'sec, sample_rate', sample_rate)
 
-        # fine number of samples to make 5 hrs of data
+        # fine number of samples to make 3 hrs of data
         i = 0
-        while time_masked[i] < (t0 + 5/24):
+        while time_masked[i] < (t0 + 3/24):
             i = i + 1
 
-        #window = 5 * 3600 / sample_rate
-        window = i
-        print('5 hr in samples', window)
+        window = np.max([i, 3])
+        print('window (points)', window)
 
         # create a new time array to sample to
         d0 = np.ceil(t0*24) / 24
@@ -91,7 +91,12 @@ def smooth(files):
 
         # variable to smooth
 
-        for smooth_var in ['TEMP', 'PSAL', 'PRES']:
+        degree = 3
+        in_vars = set([x for x in ds.variables])
+        # print('input file vars', in_vars)
+        z = in_vars.intersection(['TEMP', 'PSAL', 'DOX2'])
+        print ('vars to smooth', z)
+        for smooth_var in z:
 
             var_to_smooth_in = ds.variables[smooth_var]
 
@@ -101,7 +106,7 @@ def smooth(files):
 
             # do the smoothing
             loess = Loess.Loess(np.array(time_masked), np.array(smooth_in))
-            y = [loess.estimate(x, window=int(window), use_matrix=False, degree=1) for x in d]
+            y = [loess.estimate(x, window=int(window), use_matrix=False, degree=degree) for x in d]
 
             print(t0, t1)
 
@@ -125,7 +130,7 @@ def smooth(files):
             var_smooth_out[:] = y
 
         #  create history
-        ds_new.history += '\n' + now.strftime("%Y-%m-%d : ") + 'resampled data created from ' + os.path.basename(filepath)
+        ds_new.history += '\n' + now.strftime("%Y-%m-%d : ") + 'resampled data created from ' + os.path.basename(filepath) + ' window=' + str(window) + ' degree=' + str(degree)
 
         ds_new.close()
 
