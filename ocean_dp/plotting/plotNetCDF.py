@@ -337,7 +337,7 @@ for path_file in sys.argv[1:len(sys.argv)]:
         if date_time_start:
             plt.xlim(date_time_start, date_time_end)
 
-        plt.text(0.0, -0.08, 'QC=2 (pgood) blue; QC=3 (pbad) yellow; QC=4 (bad) red; QC=4,6,9 no line', fontsize=8, horizontalalignment='left', verticalalignment='center', transform = ax.transAxes)
+        plt.text(0.0, -0.08, 'QC=2 (pgood) large blue; QC=3 (pbad) yellow; QC=4 (bad) red; QC=4,6,9 no line', fontsize=8, horizontalalignment='left', verticalalignment='center', transform = ax.transAxes)
 
         # plt.savefig(plot + '.pdf')
         pp.savefig(fig, papertype='a4')
