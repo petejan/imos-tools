@@ -272,7 +272,7 @@ for path_file in sys.argv[1:len(sys.argv)]:
         # mark qc>2 with yellow dot, qc>3 with red dot
         if len(dt_time) < 200:
             qc_m = np.ma.masked_where(qc != 2, var)
-            ax.plot(dt_time, qc_m, 'bo')
+            ax.plot(dt_time, qc_m, 'co')
             qc_m = np.ma.masked_where(qc != 3, var)
             ax.plot(dt_time, qc_m, 'yo')
         qc_m = np.ma.masked_where(qc != 4, var)
@@ -337,7 +337,7 @@ for path_file in sys.argv[1:len(sys.argv)]:
         if date_time_start:
             plt.xlim(date_time_start, date_time_end)
 
-        plt.text(0.0, -0.08, 'QC=2 (pgood) large blue; QC=3 (pbad) yellow; QC=4 (bad) red; QC=4,6,9 no line', fontsize=8, horizontalalignment='left', verticalalignment='center', transform = ax.transAxes)
+        plt.text(0.0, -0.08, 'QC=2 (pgood) cyan; QC=3 (pbad) yellow; QC=4 (bad) red; QC=4,6,9 no line', fontsize=8, horizontalalignment='left', verticalalignment='center', transform = ax.transAxes)
 
         # plt.savefig(plot + '.pdf')
         pp.savefig(fig, papertype='a4')
