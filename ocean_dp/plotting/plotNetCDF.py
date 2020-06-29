@@ -270,9 +270,12 @@ for path_file in sys.argv[1:len(sys.argv)]:
         pl = ax.plot(dt_time, qc_m, plot_marks)
 
         # mark qc>2 with yellow dot, qc>3 with red dot
-        qc_m = np.ma.masked_where((qc <= 2) | (qc == 8), var)
-        ax.plot(dt_time, qc_m, 'yo')
-        qc_m = np.ma.masked_where((qc <= 3) | (qc == 8), var)
+        if len(dt_time) < 200:
+            qc_m = np.ma.masked_where(qc != 2, var)
+            ax.plot(dt_time, qc_m, 'bo')
+            qc_m = np.ma.masked_where(qc != 3, var)
+            ax.plot(dt_time, qc_m, 'yo')
+        qc_m = np.ma.masked_where(qc != 4, var)
         ax.plot(dt_time, qc_m, 'ro')
 
         # shrink the plot some
@@ -333,6 +336,8 @@ for path_file in sys.argv[1:len(sys.argv)]:
 
         if date_time_start:
             plt.xlim(date_time_start, date_time_end)
+
+        plt.text(0.0, -0.08, 'QC=2 (pgood) blue; QC=3 (pbad) yellow; QC=4 (bad) red; QC=4,6,9 no line', fontsize=8, horizontalalignment='left', verticalalignment='center', transform = ax.transAxes)
 
         # plt.savefig(plot + '.pdf')
         pp.savefig(fig, papertype='a4')
