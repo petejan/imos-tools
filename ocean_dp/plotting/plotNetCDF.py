@@ -239,7 +239,11 @@ for path_file in sys.argv[1:len(sys.argv)]:
         marg = (mx - mi) * 0.1
         print("max ", mx, " min ", mi)
 
-        plt.ylim([mi - marg, mx + marg])
+        if len(qc_m.compressed()) == len(qc_m):
+            plt.ylim([mi - marg, mx + marg])
+        elif len(qc_m.compressed()) > 0:
+            plt.ylim([mi - 10*marg, mx + 10*marg])
+            print('expanding range, because of bad data')
 
         # create a legend entry made from serial_number and depth
         if hasattr(plot_var, 'sensor_serial_number'):
@@ -337,7 +341,7 @@ for path_file in sys.argv[1:len(sys.argv)]:
         if date_time_start:
             plt.xlim(date_time_start, date_time_end)
 
-        plt.text(0.0, -0.08, 'QC=2 (pgood) cyan; QC=3 (pbad) yellow; QC=4 (bad) red; QC=4,6,9 no line', fontsize=8, horizontalalignment='left', verticalalignment='center', transform = ax.transAxes)
+        plt.text(0.0, -0.08, 'cyan: QC=2 (pgood); yellow : QC=3 (pbad); red : QC=4 (bad); QC=4,6,9 no line', fontsize=8, horizontalalignment='left', verticalalignment='center', transform = ax.transAxes)
 
         # plt.savefig(plot + '.pdf')
         pp.savefig(fig, papertype='a4')
