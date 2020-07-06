@@ -18,10 +18,8 @@
 
 from netCDF4 import Dataset
 import sys
-from datetime import datetime
 import os
-import numpy as np
-
+from datetime import datetime
 
 def rename(netCDFfiles):
 
@@ -32,23 +30,17 @@ def rename(netCDFfiles):
 
         ds = Dataset(netCDFfile, 'a')
 
-        ds_variables = ds.variables
-
-        deployment = ds.deployment_code
         instrument = ds.instrument_model
         instrument_sn = ds.instrument_serial_number
-
-        nominal_depth = ds.variables["NOMINAL_DEPTH"][:]
+        start_date = datetime.strptime(ds.getncattr('time_coverage_start'), '%Y-%m-%dT%H:%M:%SZ')
 
         ds.close()
 
-        new_name = deployment+'-'+instrument+'-'+instrument_sn + ".nc"
+        new_name = instrument + '_' + instrument_sn + '_' + start_date.strftime('%Y-%m-%d') + ".nc"
 
         folder = os.path.dirname(netCDFfile)
 
         new_name = folder + '/' + new_name.replace(" ", "-")
-
-        print(new_name)
 
         # rename the file, maybe should be copy
 

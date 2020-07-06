@@ -47,6 +47,7 @@ nameMap["TIMEJ"] = "TIME"
 nameMap["TIMEJV2"] = "TIME"
 nameMap["TV290C"] = "TEMP"
 nameMap["T090C"] = "TEMP"
+nameMap["T090"] = "TEMP"
 nameMap["COND0SM"] = "CNDC"
 nameMap["C0SM"] = "CNDC"
 nameMap["COND0USCM"] = "CNDC"
@@ -95,6 +96,8 @@ tag = r".*<(.+?)>(.+)<\/\1>|.*<(.+=.*)>"
 
 instr_exp = r"\* Sea-Bird.?(\S+)"
 sn_expr = r"\* SBE\s+\S+\s+V\s+\S+\s+SERIAL NO. (\S*)"
+sn2_6_expr = r"\* Temperature SN = (\S*)"
+
 cast_exp = r"\* cast\s+(.*$)"
 
 
@@ -122,6 +125,8 @@ def parse(files):
         cal_sensor = None
         cal_tags = []
         cast = None
+        instrument_serialnumber = None
+        instrument_model = None
 
         with open(filepath, 'r', errors='ignore') as fp:
             line = fp.readline()
@@ -226,6 +231,12 @@ def parse(files):
                         print("sn_expr:matchObj.group(1) : ", matchObj.group(1))
                         instrument_serialnumber = matchObj.group(1)
 
+                    matchObj = re.match(sn2_6_expr, line)
+                    if matchObj:
+                        #print("sn2_6_expr:matchObj.group() : ", matchObj.group())
+                        print("sn2_6_expr:matchObj.group(1) : ", matchObj.group(1))
+                        instrument_serialnumber = matchObj.group(1)
+
                     matchObj = re.match(sampleExpr, line)
                     if matchObj:
                         #print("sampleExpr:matchObj.group() : ", matchObj.group())
@@ -328,8 +339,8 @@ def parse(files):
 
         ncOut.instrument = 'Sea-Bird Electronics ; ' + instrument_model
         ncOut.instrument_model = instrument_model
-        ncOut.instrument_serial_number = instrument_serialnumber
-        #ncOut.instrument_model = instrument_model
+        if instrument_serialnumber:
+            ncOut.instrument_serial_number = instrument_serialnumber
         if cast:
             ncOut.instrument_cast = cast
 
@@ -356,8 +367,8 @@ def parse(files):
                 #print(data[:, v['col']])
                 if (v['unit'] == 'julian days') | (v['sbe-name'] == 'TIMEJ'):
                     t_epoc_start = datetime(start_time.year, 1, 1)
-                    t_epoc = date2num(t_epoc_start, calendar=ncTimesOut.calendar, units=ncTimesOut.units)
-                    ncTimesOut[:] = (odata[:, v['col']] + t_epoc)
+                    t_epoc_jd = date2num(t_epoc_start, calendar=ncTimesOut.calendar, units=ncTimesOut.units)
+                    ncTimesOut[:] = (odata[:, v['col']] + t_epoc_jd)
                     print("julian days time ", odata[0, v['col']], start_time, ncTimesOut[0])
                 else:
                     print("time is seconds")

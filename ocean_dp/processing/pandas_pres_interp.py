@@ -29,6 +29,7 @@ from datetime import datetime
 plot = False
 write_file = True
 
+
 # pressure interpolator, from a aggregate pressure file interpolate the pressure to a target instrument
 def interpolator(target_files=None, pres_file=None):
 
@@ -168,24 +169,24 @@ def interpolator(target_files=None, pres_file=None):
             interp_ds = Dataset(fn_new, 'a')
 
             # Create the PRES and PRES_quality_control variables, and their attributes
-            if 'PRES' in interp_ds.variables:
-                pres_var = interp_ds['PRES']
+            if 'depth' in interp_ds.variables:
+                pres_var = interp_ds['depth']
             else:
-                pres_var = interp_ds.createVariable('PRES', 'f4', interp_ds.variables['TIME'].dimensions, fill_value = np.nan, zlib=True)
+                pres_var = interp_ds.createVariable('depth', 'f4', interp_ds.variables['TIME'].dimensions, fill_value=np.nan, zlib=True)
             pres_var.setncattr('standard_name', 'sea_water_pressure_due_to_sea_water')
             pres_var.setncattr('long_name', 'sea_water_pressure_due_to_sea_water')
             pres_var.setncattr('units', 'dbar')
             pres_var.setncattr('coordinates', 'TIME LATITUDE LONGITUDE NOMINAL_DEPTH')
             pres_var.setncattr('valid_max', np.float32(12000))
             pres_var.setncattr('valid_min', np.float32(-15))
-            pres_var.ancillary_variables = "PRES_quality_control"
+            pres_var.ancillary_variables = "depth_quality_control"
             pres_var.setncattr('comments', 'interpolated from surounding pressure sensors on mooring')
             pres_var[interp_msk] = interp_pres_target[interp_msk]
 
-            if 'PRES_quality_control' in interp_ds.variables:
-                pres_qc_var = interp_ds['PRES_quality_control']
+            if 'depth_quality_control' in interp_ds.variables:
+                pres_qc_var = interp_ds['depth_quality_control']
             else:
-                pres_qc_var = interp_ds.createVariable('PRES_quality_control', 'i1', interp_ds.variables['TIME'].dimensions, fill_value=99, zlib=True)
+                pres_qc_var = interp_ds.createVariable('depth_quality_control', 'i1', interp_ds.variables['TIME'].dimensions, fill_value=99, zlib=True)
             pres_qc_var.long_name = "quality_code for sea_water_pressure_due_to_sea_water"
             pres_qc_var.standard_name = "sea_water_pressure_due_to_sea_water status_flag"
             pres_qc_var.quality_control_conventions = "IMOS standard flags"

@@ -94,7 +94,7 @@ def smooth(files):
         degree = 3
         in_vars = set([x for x in ds.variables])
         # print('input file vars', in_vars)
-        z = in_vars.intersection(['TEMP', 'PSAL', 'DOX2'])
+        z = in_vars.intersection(['TEMP', 'PSAL', 'DENSITY', 'DOX2'])
         print ('vars to smooth', z)
         for smooth_var in z:
 

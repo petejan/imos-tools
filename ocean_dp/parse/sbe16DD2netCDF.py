@@ -38,6 +38,8 @@ from dateutil import parser
 #
 # convert time to netCDF cf-timeformat (double days since 1950-01-01 00:00:00 UTC)
 
+sn_expr = r"SBE\s+\S+\s+V\s+\S+\s+SERIAL NO. (\S*)"
+
 #   8.7883,  3.65110,   31.803, 2.4296, 2.9464, 0.1280, 0.0789, 4.7138, 1.5351, 101297400,  8.629, 30 Sep 2009 00:00:43
 
 var_temp = {'name': 'TEMP', 'attributes': {'units' : 'degrees_Celsius', 'instrument_uncertainty' : np.float32(0.005)}}
@@ -56,10 +58,9 @@ var_psal = {'name': 'PSAL', 'attributes': {'units' : '1'}}
 var_names11 = [var_temp, var_cndc, var_pres, var_volt1, var_volt2, var_volt3, var_volt4, var_volt5, var_volt6, var_tgp, var_tgtd]
 var_names12 = [var_temp, var_cndc, var_pres, var_volt1, var_volt2, var_volt3, var_volt4, var_volt5, var_volt6, var_tgp, var_tgtd, var_psal]
 
-#
+
 # parse the file
 # we don't get the serial number from the download files, so get it from the input arguments
-
 def parse(sn, filepath):
 
     dataLine = 0
@@ -79,6 +80,11 @@ def parse(sn, filepath):
 
         while line:
             #print("Line {}: {} : {}".format(cnt, dataLine, line.strip()))
+            matchObj = re.match(sn_expr, line)
+            if matchObj:
+                # print("sn_expr:matchObj.group() : ", matchObj.group())
+                print("sn_expr:matchObj.group(1) : ", matchObj.group(1))
+                instrument_serialnumber = "0160" + matchObj.group(1)
 
             line_split = line.split(',')
 
