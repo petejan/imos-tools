@@ -8,6 +8,7 @@ import shutil
 
 import ocean_dp.parse.sbeASC2netCDF
 import ocean_dp.parse.rbr2netCDF
+import ocean_dp.parse.rbrDAT2netCDF
 import ocean_dp.parse.sbeCNV2netCDF
 import ocean_dp.parse.vemco2netCDF
 import ocean_dp.parse.starmon2netCDF
@@ -64,6 +65,12 @@ rbr_files = glob.glob(os.path.join(path, "*_eng.txt"))
 for fn in rbr_files:
     print ('rbr files', fn)
     filename = ocean_dp.parse.rbr2netCDF.parse([fn])
+    file_names.append((fn, filename))
+
+rbr_files = glob.glob(os.path.join(path, "RBR*.dat"))
+for fn in rbr_files:
+    print ('rbr files', fn)
+    filename = ocean_dp.parse.rbrDAT2netCDF.parse([fn])
     file_names.append((fn, filename))
 
 vemco_files = glob.glob(os.path.join(path, "[A]*.000"))

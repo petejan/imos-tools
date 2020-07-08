@@ -6,8 +6,8 @@ if __name__ == '__main__':
     #path='ABOS/DA'
     #path='ABOS/DA/EAC2000/Temperature'
     #path='ABOS/DA/EAC2000/CTD_timeseries'
-    path='ANMN/NRS/NRSKAI'
-    #path='ABOS/SOTS'
+    #path='ANMN/NRS/NRSKAI'
+    path='ABOS/SOTS'
     #path='ABOS/SOTS/2016'
 
     if len(sys.argv) > 1:
@@ -21,7 +21,7 @@ if __name__ == '__main__':
     crawl_path = 'http://thredds.aodn.org.au/thredds/catalog/IMOS/' + path + '/catalog.xml'
     #crawl_path='http://thredds.aodn.org.au/thredds/catalog/IMOS/ANMN/NRS/NRSKAI/Biogeochem_profiles/catalog.html'
 
-    c = Crawl(crawl_path, select=['.*FV01'], skip=skips)
+    c = Crawl(crawl_path, select=['.*SAZ.*2020'], skip=skips)
 
     #c = Crawl('http://dods.ndbc.noaa.gov/thredds/catalog/oceansites/DATA/IMOS-EAC/catalog.xml', select=['.*'])
     #c = Crawl('http://dods.ndbc.noaa.gov/thredds/catalog/oceansites/DATA/IMOS-ITF/catalog.xml', select=['.*'])

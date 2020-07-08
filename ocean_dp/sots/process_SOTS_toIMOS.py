@@ -33,7 +33,7 @@ else:
 for fn in ncFiles:
     print ("processing " , fn)
     filename = ocean_dp.attribution.addAttributes.add(fn,
-                                                      ['metadata/pulse-saz-sots.metadata.csv',
+                                                      ['metadata/pulse-saz-sofs-flux.metadata.csv',
                                                        'metadata/imos.metadata.csv',
                                                        'metadata/sots.metadata.csv',
                                                        'metadata/sofs.metadata.csv',

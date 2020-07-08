@@ -39,6 +39,7 @@ from dateutil import parser
 # convert time to netCDF cf-timeformat (double days since 1950-01-01 00:00:00 UTC)
 
 sn_expr = r"SBE\s+\S+\s+V\s+\S+\s+SERIAL NO. (\S*)"
+hw_expr = r"<HardwareData DeviceType = '(\S*)' SerialNumber = '(\S*)'>"
 
 #   8.7883,  3.65110,   31.803, 2.4296, 2.9464, 0.1280, 0.0789, 4.7138, 1.5351, 101297400,  8.629, 30 Sep 2009 00:00:43
 
@@ -85,6 +86,13 @@ def parse(sn, filepath):
                 # print("sn_expr:matchObj.group() : ", matchObj.group())
                 print("sn_expr:matchObj.group(1) : ", matchObj.group(1))
                 instrument_serialnumber = "0160" + matchObj.group(1)
+            matchObj = re.match(hw_expr, line)
+            if matchObj:
+                # print("sn_expr:matchObj.group() : ", matchObj.group())
+                print("sn_expr:matchObj.group(1) : ", matchObj.group(1))
+                print("sn_expr:matchObj.group(2) : ", matchObj.group(2))
+                instrument_model = matchObj.group(1)
+                instrument_serialnumber = matchObj.group(2)
 
             line_split = line.split(',')
 

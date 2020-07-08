@@ -265,7 +265,7 @@ for path_file in sys.argv[1:len(sys.argv)]:
                 sn = nc.getncattr('instrument_serial_number').split('; ')
             else:
                 sn = 'not found'
-                sn = chartostring(nc.variables["instrument_type"][:])
+                sn = chartostring(nc.variables["instrument_id"][:])
 
             print(" sn ", sn)
 
@@ -292,13 +292,15 @@ for path_file in sys.argv[1:len(sys.argv)]:
             #print(qc_m)
 
             pl.extend(ax.plot(dt_time_msk, qc_m, plot_marks, label=leg[idx-1]))
+            #pl.extend(ax.plot(dt_time_msk, qc_m, plot_marks))
             #print(" plot list ", pl)
 
             # mark qc>2 with yellow dot, qc>3 with red dot
-            qc_m = np.ma.masked_where((qc_idx <= 2) | (qc_idx == 8), var_idx)
-            ax.plot(dt_time_msk, qc_m, 'yo')
-            qc_m = np.ma.masked_where((qc_idx <= 3) | (qc_idx == 8), var_idx)
-            ax.plot(dt_time_msk, qc_m, 'ro')
+            qc_m = np.ma.masked_where(qc != 2, var)
+            ax.plot(dt_time, qc_m, 'co')
+            qc_m = np.ma.masked_where(qc != 3, var)
+            ax.plot(dt_time, qc_m, 'yo')
+            qc_m = np.ma.masked_where(qc != 4, var)
 
             # add deployment/instrument/standard name as title
 
@@ -361,7 +363,9 @@ for path_file in sys.argv[1:len(sys.argv)]:
         #plt.legend(iter(pl), leg, loc='lower center', bbox_to_anchor=(0.5, -0.05), ncol=5)
 
         #plt.legend(iter(pl), leg, bbox_to_anchor=(0.0, -0.2, 1.0, -0.15), loc=3, ncol=6, mode="expand", borderaxespad=0.0, fontsize='x-small')
-        plt.legend(handles=pl, bbox_to_anchor=(0.0, -0.2, 1.0, -0.15), loc=3, ncol=1, mode="expand", borderaxespad=0.0, fontsize='x-small')
+        #plt.legend(handles=pl, bbox_to_anchor=(0.0, -0.2, 1.0, -0.15), loc=3, ncol=1, mode="expand", borderaxespad=0.0, fontsize='x-small')
+
+        plt.text(0.0, -0.08, 'cyan: QC=2 (pgood); yellow : QC=3 (pbad); red : QC=4 (bad); QC=4,6,9 no line', fontsize=8, horizontalalignment='left', verticalalignment='center', transform = ax.transAxes)
 
         # plt.savefig(plot + '.pdf')
         pp.savefig(fig, papertype='a4')
