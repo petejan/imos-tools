@@ -30,25 +30,19 @@ GLOBAL,,,Minilog-T,6100,27/9/09,18/3/10,,,,deployment_code,str,Pulse-6-2009
 GLOBAL,,,Minilog-T,6101,27/9/09,18/3/10,,,,deployment_code,str,Pulse-6-2009
 GLOBAL,,,ECO-PAR,135,27/9/09,18/3/10,,,,deployment_code,str,Pulse-6-2009
 GLOBAL,,,FLNTUS,1215,27/9/09,18/3/10,,,,deployment_code,str,Pulse-6-2009
-,,,,,,,,,,,,
 VAR,LATITUDE,Pulse-6-2009,,,27/9/09,18/3/10,LATITUDE,(),(),,float64,-46.3224
 VAR,LONGITUDE,Pulse-6-2009,,,27/9/09,18/3/10,LONGITUDE,(),(),,float64,140.6776
-,,,,,,,,,,,,
 GLOBAL,,Pulse-6-2009,,,27/9/09,18/3/10,,,,site_nominal_depth,float64,4300
 GLOBAL,,Pulse-6-2009,,,27/9/09,18/3/10,,,,time_deployment_start,str,2009-09-28T00:00:00Z
 GLOBAL,,Pulse-6-2009,,,27/9/09,18/3/10,,,,time_deployment_end,str,2010-03-18T02:05:00Z
 GLOBAL,,Pulse-6-2009,,,,,,,,voyage_deployment,str,http://www.cmar.csiro.au/data/trawler/survey_details.cfm?survey=SS2009_V04
 GLOBAL,,Pulse-6-2009,,,,,,,,voyage_recovery,str,http://www.cmar.csiro.au/data/trawler/survey_details.cfm?survey=SS2010_V02
-,,,,,,,,,,,,
 VAR_ATT,TIME,Pulse-6-2009,MDS-MKVL,200341,,,,,,comment_scale_offset,str,1.0 -0.04166666666667
 VAR_ATT,PAR,Pulse-6-2009,MDS-MKVL,200341,,,,,,long_name,str,omnidirectional photosynthetic spherical photon flux in air
-,,,,,,,,,,,,
 VAR_ATT,PAR,Pulse-6-2009,MDS-MKVL,200341,,,,,,comment_scale_offset,str,0.7985 0
 VAR_ATT,PAR,Pulse-6-2009,MDS-MKVL,200664,,,,,,comment_scale_offset,str,0.8860 0.8175
 VAR_ATT,PAR,Pulse-6-2009,MDS-MKVL,200665,,,,,,comment_scale_offset,str,0.7564 0
-,,,,,,,,,,,,
 VAR_ATT,TIME,Pulse-6-2009,MDS-MKVL,200665,,,,,,comment_scale_offset,str,1.0 -0.4166666666667
-,,,,,,,,,,,,
 VAR_ATT,VOLT2,Pulse-6-2009,SBE16plusV2,01606331,,,,,,comment_attached_instrument,str,Wet-LABS ; PARS-134
 VAR_ATT,VOLT2,Pulse-6-2009,SBE16plusV2,01606331,,,,,,calibration_PAR_Im,float64,1.3589
 VAR_ATT,VOLT2,Pulse-6-2009,SBE16plusV2,01606331,,,,,,calibration_PAR_analog_A1,float64,0.8902
@@ -56,7 +50,6 @@ VAR_ATT,VOLT2,Pulse-6-2009,SBE16plusV2,01606331,,,,,,calibration_PAR_analog_A0,f
 VAR_ATT,VOLT2,Pulse-6-2009,SBE16plusV2,01606331,,,,,,calibration_PAR_date,str,"Mar. 27, 2009"
 VAR_ATT,VOLT2,Pulse-6-2009,SBE16plusV2,01606331,,,,,,calibration_PAR_facility,str,Wet-LABS
 VAR_ATT,VOLT2,Pulse-6-2009,SBE16plusV2,01606331,,,,,,calibration_PAR_SN,str,PARS-134
-,,,,,,,,,,,,
 VAR,NOMINAL_DEPTH,Pulse-6-2009,Optode 3975,1161,27/9/09,18/3/10,NOMINAL_DEPTH,(),(),,float64,37.5
 VAR,NOMINAL_DEPTH,Pulse-6-2009,MDS-MKVL,200341,27/9/09,18/3/10,NOMINAL_DEPTH,(),(),,float64,-0.1
 VAR,NOMINAL_DEPTH,Pulse-6-2009,MDS-MKVL,200664,27/9/09,18/3/10,NOMINAL_DEPTH,(),(),,float64,27
@@ -122,21 +115,17 @@ GLOBAL,,,Minilog-TD,6101,9/9/10,18/4/11,,,,deployment_code,str,Pulse-7-2010
 GLOBAL,,,ECO-PAR,135,9/9/10,18/4/11,,,,deployment_code,str,Pulse-7-2010
 GLOBAL,,,ECO-PARS,PAR-135,9/9/10,18/4/11,,,,deployment_code,str,Pulse-7-2010
 GLOBAL,,,FLNTUS,1215,9/9/10,18/4/11,,,,deployment_code,str,Pulse-7-2010
-,,,,,,,,,,,,
 VAR,LATITUDE,Pulse-7-2010,,,9/9/10,18/4/11,LATITUDE,(),(),,float64,-46.93473333
 VAR,LONGITUDE,Pulse-7-2010,,,9/9/10,18/4/11,LONGITUDE,(),(),,float64,142.2582667
-,,,,,,,,,,,,
 GLOBAL,,Pulse-7-2010,,,9/9/10,18/4/11,,,,site_nominal_depth,float64,4300
 GLOBAL,,Pulse-7-2010,,,9/9/10,18/4/11,,,,time_deployment_start,str,2010-09-12T00:00:00Z
 GLOBAL,,Pulse-7-2010,,,9/9/10,18/4/11,,,,time_deployment_end,str,2011-04-17T20:00:00Z
 GLOBAL,,Pulse-7-2010,,,,,,,,voyage_deployment,str,http://www.cmar.csiro.au/data/trawler/survey_details.cfm?survey=SS2010_V07
 GLOBAL,,Pulse-7-2010,,,,,,,,voyage_recovery,str,http://www.cmar.csiro.au/data/trawler/survey_details.cfm?survey=SS2011_V03
-,,,,,,,,,,,,
 VAR_ATT,PAR,Pulse-7-2010,MDS-MKVL,200341,,,,,,long_name,str,omnidirectional photosynthetic spherical photon flux in air
 VAR_ATT,PAR,Pulse-7-2010,MDS-MKVL,200341,,,,,,coeff,str,"-1.05325996875763,1.05326104164124,0,0,"
 VAR_ATT,PAR,Pulse-7-2010,MDS-MKVL,200664,,,,,,coeff,str,"-0.817469000816345,0.817468822002411,0,0,"
 VAR_ATT,PAR,Pulse-7-2010,MDS-MKVL,200665,,,,,,coeff,str,"-1.13689994812012,1.13689994812012,0,0,"
-,,,,,,,,,,,,
 VAR_ATT,V1,Pulse-7-2010,SBE16plusV2,01606331,,,,,,comment_attached_instrument,str,Wet-LABS ; PARS-135
 VAR_ATT,V1,Pulse-7-2010,SBE16plusV2,01606331,,,,,,calibration_PAR_Im,float64,1.3589
 VAR_ATT,V1,Pulse-7-2010,SBE16plusV2,01606331,,,,,,calibration_PAR_analog_A1,float64,0.8946
@@ -144,7 +133,6 @@ VAR_ATT,V1,Pulse-7-2010,SBE16plusV2,01606331,,,,,,calibration_PAR_analog_A0,floa
 VAR_ATT,V1,Pulse-7-2010,SBE16plusV2,01606331,,,,,,calibration_PAR_date,str,"Mar. 27, 2009"
 VAR_ATT,V1,Pulse-7-2010,SBE16plusV2,01606331,,,,,,calibration_PAR_facility,str,Wet-LABS
 VAR_ATT,V1,Pulse-7-2010,SBE16plusV2,01606331,,,,,,calibration_PAR_SN,str,PARS-135
-,,,,,,,,,,,,
 VAR_ATT,PAR_COUNT,Pulse-7-2010,ECO-PARS,PAR-135,,,,,,comment_attached_instrument,str,Wet-LABS ; PARS-135
 VAR_ATT,PAR_COUNT,Pulse-7-2010,ECO-PARS,PAR-135,,,,,,calibration_PAR_Im,float64,1.3589
 VAR_ATT,PAR_COUNT,Pulse-7-2010,ECO-PARS,PAR-135,,,,,,calibration_PAR_digital_A1,float64,2943.4639
@@ -152,7 +140,6 @@ VAR_ATT,PAR_COUNT,Pulse-7-2010,ECO-PARS,PAR-135,,,,,,calibration_PAR_digital_A0,
 VAR_ATT,PAR_COUNT,Pulse-7-2010,ECO-PARS,PAR-135,,,,,,calibration_PAR_date,str,"Mar. 27, 2009"
 VAR_ATT,PAR_COUNT,Pulse-7-2010,ECO-PARS,PAR-135,,,,,,calibration_PAR_facility,str,Wet-LABS
 VAR_ATT,PAR_COUNT,Pulse-7-2010,ECO-PARS,PAR-135,,,,,,calibration_PAR_SN,str,PARS-135
-,,,,,,,,,,,,
 VAR,NOMINAL_DEPTH,Pulse-7-2010,Optode 3975,1161,9/9/10,18/4/11,NOMINAL_DEPTH,(),(),,float64,31.1
 VAR,NOMINAL_DEPTH,Pulse-7-2010,MDS-MKVL,200341,9/9/10,18/4/11,NOMINAL_DEPTH,(),(),,float64,0
 VAR,NOMINAL_DEPTH,Pulse-7-2010,MDS-MKVL,200664,9/9/10,18/4/11,NOMINAL_DEPTH,(),(),,float64,27
@@ -227,20 +214,16 @@ GLOBAL,,,Minilog-T,6101,2/8/11,19/7/12,,,,deployment_code,str,Pulse-8-2011
 GLOBAL,,,ECO-PAR,134,2/8/11,19/7/12,,,,deployment_code,str,Pulse-8-2011
 GLOBAL,,,FLNTUS,1215,2/8/11,19/7/12,,,,deployment_code,str,Pulse-8-2011
 GLOBAL,,,ECO-PARS,PARS-134,2/8/11,19/7/12,,,,deployment_code,str,Pulse-8-2011
-,,,,,,,,,,,,
 VAR,LATITUDE,Pulse-8-2011,,,2/8/11,19/7/12,LATITUDE,(),(),,float64,-46.92954
 VAR,LONGITUDE,Pulse-8-2011,,,2/8/11,19/7/12,LONGITUDE,(),(),,float64,142.21466
-,,,,,,,,,,,,
 GLOBAL,,Pulse-8-2011,,,2/8/11,19/7/12,,,,site_nominal_depth,float64,4300
 GLOBAL,,Pulse-8-2011,,,2/8/11,19/7/12,,,,time_deployment_start,str,2011-08-04T01:00:00Z
 GLOBAL,,Pulse-8-2011,,,2/8/11,19/7/12,,,,time_deployment_end,str,2012-07-19T21:46:00Z
 GLOBAL,,Pulse-8-2011,,,,,,,,voyage_deployment,str,http://www.cmar.csiro.au/data/trawler/survey_details.cfm?survey=SS2011_V03
 GLOBAL,,Pulse-8-2011,,,,,,,,voyage_recovery,str,http://www.cmar.csiro.au/data/trawler/survey_details.cfm?survey=SS2012_V03
-,,,,,,,,,,,,
 VAR_ATT,TIME,Pulse-8-2011,MDS-MKVL,200341,,,,,,comment_scale_offset,str,1.0 -0.41666666666667
 VAR_ATT,TIME,Pulse-8-2011,MDS-MKVL,200664,,,,,,comment_scale_offset,str,1.0 -0.41666666666667
 VAR_ATT,TIME,Pulse-8-2011,MDS-MKVL,200665,,,,,,comment_scale_offset,str,1.0 -0.41666666666667
-,,,,,,,,,,,,
 VAR,NOMINAL_DEPTH,Pulse-8-2011,Optode 3975C,1419,2/8/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,34
 VAR,NOMINAL_DEPTH,Pulse-8-2011,MDS-MKVL,200341,2/8/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,50
 VAR,NOMINAL_DEPTH,Pulse-8-2011,MDS-MKVL,200664,2/8/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,27
@@ -280,12 +263,10 @@ VAR,NOMINAL_DEPTH,Pulse-8-2011,Minilog-TD,6100,2/8/11,19/7/12,NOMINAL_DEPTH,(),(
 VAR,NOMINAL_DEPTH,Pulse-8-2011,Minilog-TD,6101,2/8/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,160
 VAR,NOMINAL_DEPTH,Pulse-8-2011,ECO-PAR,134,2/8/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,33.8
 VAR,NOMINAL_DEPTH,Pulse-8-2011,FLNTUS,1215,2/8/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,34
-,,,,,,,,,,,,
 VAR_ATT,PAR,Pulse-8-2011,MDS-MKVL,200341,,,,,,long_name,str,omnidirectional photosynthetic spherical photon flux in air
 VAR_ATT,PAR,Pulse-8-2011,MDS-MKVL,200341,,,,,,coeff,str,"-1.05325996875763,1.05326104164124,0,0,"
 VAR_ATT,PAR,Pulse-8-2011,MDS-MKVL,200664,,,,,,coeff,str,"-0.817469000816345,0.817468822002411,0,0,"
 VAR_ATT,PAR,Pulse-8-2011,MDS-MKVL,200665,,,,,,coeff,str,"-1.13689994812012,1.13689994812012,0,0,"
-,,,,,,,,,,,,
 VAR_ATT,VOLT2,Pulse-8-2011,SBE16plusV2,01606331,,,,,,comment_attached_instrument,str,Wet-LABS ; PARS-134
 VAR_ATT,VOLT2,Pulse-8-2011,SBE16plusV2,01606331,,,,,,calibration_PAR_Im,float64,1.3589
 VAR_ATT,VOLT2,Pulse-8-2011,SBE16plusV2,01606331,,,,,,calibration_PAR_analog_A1,float64,0.8902
@@ -293,7 +274,6 @@ VAR_ATT,VOLT2,Pulse-8-2011,SBE16plusV2,01606331,,,,,,calibration_PAR_analog_A0,f
 VAR_ATT,VOLT2,Pulse-8-2011,SBE16plusV2,01606331,,,,,,calibration_PAR_date,str,"Mar. 27, 2009"
 VAR_ATT,VOLT2,Pulse-8-2011,SBE16plusV2,01606331,,,,,,calibration_PAR_facility,str,Wet-LABS
 VAR_ATT,VOLT2,Pulse-8-2011,SBE16plusV2,01606331,,,,,,calibration_PAR_SN,str,PARS-134
-,,,,,,,,,,,,
 VAR_ATT,PAR_COUNT,Pulse-8-2011,ECO-PARS,PAR-134,,,,,,comment_attached_instrument,str,Wet-LABS ; PARS-134
 VAR_ATT,PAR_COUNT,Pulse-8-2011,ECO-PARS,PAR-134,,,,,,calibration_PAR_Im,float64,1.3589
 VAR_ATT,PAR_COUNT,Pulse-8-2011,ECO-PARS,PAR-134,,,,,,calibration_PAR_digital_A1,float64,2923.6435
@@ -301,7 +281,6 @@ VAR_ATT,PAR_COUNT,Pulse-8-2011,ECO-PARS,PAR-134,,,,,,calibration_PAR_digital_A0,
 VAR_ATT,PAR_COUNT,Pulse-8-2011,ECO-PARS,PAR-134,,,,,,calibration_PAR_date,str,"Mar. 27, 2009"
 VAR_ATT,PAR_COUNT,Pulse-8-2011,ECO-PARS,PAR-134,,,,,,calibration_PAR_facility,str,Wet-LABS
 VAR_ATT,PAR_COUNT,Pulse-8-2011,ECO-PARS,PAR-134,,,,,,calibration_PAR_SN,str,PARS-134
-,,,,,,,,,,,,
 VAR,NOMINAL_DEPTH,Pulse-8-2011,ECO-PARS,PARS-134,2/8/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,33.8
 GLOBAL,,,Optode 3975C,1158,17/7/12,5/5/13,,,,deployment_code,str,Pulse-9-2012
 GLOBAL,,,Mooring,Mix Layer Depth,17/7/12,5/5/13,,,,deployment_code,str,Pulse-9-2012
@@ -340,16 +319,13 @@ GLOBAL,,,Minilog-II-T,353263,17/7/12,5/5/13,,,,deployment_code,str,Pulse-9-2012
 GLOBAL,,,ECO-PAR,135,17/7/12,5/5/13,,,,deployment_code,str,Pulse-9-2012
 GLOBAL,,,FLNTUS,1596,17/7/12,5/5/13,,,,deployment_code,str,Pulse-9-2012
 GLOBAL,,,ECO-PARS,PARS-135,17/7/12,5/5/13,,,,deployment_code,str,Pulse-9-2012
-,,,,,,,,,,,,
 VAR,LATITUDE,Pulse-9-2012,,,17/7/12,5/5/13,LATITUDE,(),(),,float64,-46.84932
 VAR,LONGITUDE,Pulse-9-2012,,,17/7/12,5/5/13,LONGITUDE,(),(),,float64,142.39855
-,,,,,,,,,,,,
 GLOBAL,,Pulse-9-2012,,,17/7/12,5/5/13,,,,site_nominal_depth,float64,4300
 GLOBAL,,Pulse-9-2012,,,17/7/12,5/5/13,,,,time_deployment_start,str,2012-07-17T07:00:00Z
 GLOBAL,,Pulse-9-2012,,,17/7/12,5/5/13,,,,time_deployment_end,str,2013-05-05T01:15:00Z
 GLOBAL,,Pulse-9-2012,,,,,,,,voyage_deployment,str,http://www.cmar.csiro.au/data/trawler/survey_details.cfm?survey=SS2012_V03
 GLOBAL,,Pulse-9-2012,,,,,,,,voyage_recovery,str,http://www.cmar.csiro.au/data/trawler/survey_details.cfm?survey=SS2013_V03
-,,,,,,,,,,,,
 VAR,NOMINAL_DEPTH,Pulse-9-2012,Optode 3975C,1158,17/7/12,5/5/13,NOMINAL_DEPTH,(),(),,float64,38.5
 VAR,NOMINAL_DEPTH,Pulse-9-2012,Mooring,Mix Layer Depth,17/7/12,5/5/13,NOMINAL_DEPTH,(),(),,float64,0
 VAR,NOMINAL_DEPTH,Pulse-9-2012,Mooring,Pulse 9 July 2012,17/7/12,5/5/13,NOMINAL_DEPTH,(),(),,float64,0
@@ -386,7 +362,6 @@ VAR,NOMINAL_DEPTH,Pulse-9-2012,Minilog-II-T,353262,17/7/12,5/5/13,NOMINAL_DEPTH,
 VAR,NOMINAL_DEPTH,Pulse-9-2012,Minilog-II-T,353263,17/7/12,5/5/13,NOMINAL_DEPTH,(),(),,float64,160
 VAR,NOMINAL_DEPTH,Pulse-9-2012,ECO-PAR,135,17/7/12,5/5/13,NOMINAL_DEPTH,(),(),,float64,38.5
 VAR,NOMINAL_DEPTH,Pulse-9-2012,FLNTUS,1596,17/7/12,5/5/13,NOMINAL_DEPTH,(),(),,float64,38.5
-,,,,,,,,,,,,
 VAR_ATT,PAR_COUNT,Pulse-9-2012,ECO-PARS,PAR-135,,,,,,comment_attached_instrument,str,Wet-LABS ; PARS-135
 VAR_ATT,PAR_COUNT,Pulse-9-2012,ECO-PARS,PAR-135,,,,,,calibration_PAR_Im,float64,1.3589
 VAR_ATT,PAR_COUNT,Pulse-9-2012,ECO-PARS,PAR-135,,,,,,calibration_PAR_digital_A1,float64,2943.4639
@@ -394,7 +369,6 @@ VAR_ATT,PAR_COUNT,Pulse-9-2012,ECO-PARS,PAR-135,,,,,,calibration_PAR_digital_A0,
 VAR_ATT,PAR_COUNT,Pulse-9-2012,ECO-PARS,PAR-135,,,,,,calibration_PAR_date,str,"Mar. 27, 2009"
 VAR_ATT,PAR_COUNT,Pulse-9-2012,ECO-PARS,PAR-135,,,,,,calibration_PAR_facility,str,Wet-LABS
 VAR_ATT,PAR_COUNT,Pulse-9-2012,ECO-PARS,PAR-135,,,,,,calibration_PAR_SN,str,PARS-135
-,,,,,,,,,,,,
 VAR,NOMINAL_DEPTH,Pulse-9-2012,ECO-PARS,PAR-135,2/8/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,38
 GLOBAL,,,Optode 3975C,1420,7/5/13,13/10/13,,,,deployment_code,str,Pulse-10-2013
 GLOBAL,,,DEFI-L,082V023,7/5/13,13/10/13,,,,deployment_code,str,Pulse-10-2013
@@ -447,20 +421,16 @@ GLOBAL,,,ECO-PAR,134,7/5/13,13/10/13,,,,deployment_code,str,Pulse-10-2013
 GLOBAL,,,FLNTUS,1186,7/5/13,13/10/13,,,,deployment_code,str,Pulse-10-2013
 GLOBAL,,,ECO-PARS,unknown,7/5/13,13/10/13,,,,deployment_code,str,Pulse-10-2013
 GLOBAL,,,ECO-PARS,unknown,7/5/13,13/10/13,,,,instrument_serial_number,str,PAR-134
-,,,,,,,,,,,,
 VAR,LATITUDE,Pulse-10-2013,,,7/5/13,13/10/13,LATITUDE,(),(),,float64,-46.9378
 VAR,LONGITUDE,Pulse-10-2013,,,7/5/13,13/10/13,LONGITUDE,(),(),,float64,142.2847
-,,,,,,,,,,,,
 VAR_ATT,PAR,Pulse-10-2013,MDS-MKVL,200341,,,,,,long_name,str,omnidirectional photosynthetic spherical photon flux in air
 VAR_ATT,PAR,Pulse-10-2013,MDS-MKVL,200341,,,,,,coeff,str,"-1.05325996875763,1.05326104164124,0,0,"
 VAR_ATT,PAR,Pulse-10-2013,MDS-MKVL,200665,,,,,,coeff,str,"-1.13689994812012,1.13689994812012,0,0,"
-,,,,,,,,,,,,
 GLOBAL,,Pulse-10-2013,,,7/5/13,13/10/13,,,,site_nominal_depth,float64,4300
 GLOBAL,,Pulse-10-2013,,,7/5/13,13/10/13,,,,time_deployment_start,str,2013-05-07T08:39:16Z
 GLOBAL,,Pulse-10-2013,,,7/5/13,13/10/13,,,,time_deployment_end,str,2013-10-13T20:05:43Z
 GLOBAL,,Pulse-10-2013,,,,,,,,voyage_deployment,str,http://www.cmar.csiro.au/data/trawler/survey_details.cfm?survey=SS2013_V03
 GLOBAL,,Pulse-10-2013,,,,,,,,voyage_recovery,str,http://www.cmar.csiro.au/data/trawler/survey_details.cfm?survey=SS2013_V06
-,,,,,,,,,,,,
 VAR,NOMINAL_DEPTH,Pulse-10-2013,Optode 3975C,1420,7/5/13,13/10/13,NOMINAL_DEPTH,(),(),,float64,28
 VAR,NOMINAL_DEPTH,Pulse-10-2013,DEFI-L,082V023,7/5/13,13/10/13,NOMINAL_DEPTH,(),(),,float64,49
 VAR,NOMINAL_DEPTH,Pulse-10-2013,MDS-MKVL,200341,7/5/13,13/10/13,NOMINAL_DEPTH,(),(),,float64,0
@@ -510,7 +480,6 @@ VAR,NOMINAL_DEPTH,Pulse-10-2013,Minilog-II-T,354211,7/5/13,13/10/13,NOMINAL_DEPT
 VAR,NOMINAL_DEPTH,Pulse-10-2013,Minilog-II-T,354212,7/5/13,13/10/13,NOMINAL_DEPTH,(),(),,float64,480
 VAR,NOMINAL_DEPTH,Pulse-10-2013,ECO-PAR,134,7/5/13,13/10/13,NOMINAL_DEPTH,(),(),,float64,28
 VAR,NOMINAL_DEPTH,Pulse-10-2013,FLNTUS,1186,7/5/13,13/10/13,NOMINAL_DEPTH,(),(),,float64,28
-,,,,,,,,,,,,
 VAR_ATT,PAR_COUNT,Pulse-10-2013,ECO-PARS,unknown,,,,,,comment_attached_instrument,str,Wet-LABS ; PARS-134
 VAR_ATT,PAR_COUNT,Pulse-10-2013,ECO-PARS,unknown,,,,,,calibration_PAR_Im,float64,1.3589
 VAR_ATT,PAR_COUNT,Pulse-10-2013,ECO-PARS,unknown,,,,,,calibration_PAR_digital_A1,float64,2923.6435
@@ -518,7 +487,6 @@ VAR_ATT,PAR_COUNT,Pulse-10-2013,ECO-PARS,unknown,,,,,,calibration_PAR_digital_A0
 VAR_ATT,PAR_COUNT,Pulse-10-2013,ECO-PARS,unknown,,,,,,calibration_PAR_date,str,"Mar. 27, 2009"
 VAR_ATT,PAR_COUNT,Pulse-10-2013,ECO-PARS,unknown,,,,,,calibration_PAR_facility,str,Wet-LABS
 VAR_ATT,PAR_COUNT,Pulse-10-2013,ECO-PARS,unknown,,,,,,calibration_PAR_SN,str,PARS-134
-,,,,,,,,,,,,
 VAR,NOMINAL_DEPTH,Pulse-10-2013,ECO-PARS,unknown,7/5/13,13/10/13,NOMINAL_DEPTH,(),(),,float64,27.8
 GLOBAL,,,Optode 3975C,1420,20/3/15,14/4/16,,,,deployment_code,str,Pulse-11-2015
 GLOBAL,,,DEFI-L,082V022,20/3/15,14/4/16,,,,deployment_code,str,Pulse-11-2015
@@ -570,16 +538,13 @@ GLOBAL,,,Minilog-II-T,354211,20/3/15,14/4/16,,,,deployment_code,str,Pulse-11-201
 GLOBAL,,,Minilog-II-T,354212,20/3/15,14/4/16,,,,deployment_code,str,Pulse-11-2015
 GLOBAL,,,ECO-PAR,134,20/3/15,14/4/16,,,,deployment_code,str,Pulse-11-2015
 GLOBAL,,,FLNTUS,1186,20/3/15,14/4/16,,,,deployment_code,str,Pulse-11-2015
-,,,,,,,,,,,,
 VAR,LATITUDE,Pulse-11-2015,,,20/3/15,14/4/16,LATITUDE,(),(),,float64,-46.94032
 VAR,LONGITUDE,Pulse-11-2015,,,20/3/15,14/4/16,LONGITUDE,(),(),,float64,142.32612
-,,,,,,,,,,,,
 GLOBAL,,Pulse-11-2015,,,20/3/15,14/4/16,,,,site_nominal_depth,float64,4300
 GLOBAL,,Pulse-11-2015,,,20/3/15,14/4/16,,,,time_deployment_start,str,2015-03-25T10:59:14Z
 GLOBAL,,Pulse-11-2015,,,20/3/15,14/4/16,,,,time_deployment_end,str,2016-03-19T21:03:26Z
 GLOBAL,,Pulse-11-2015,,,,,,,,voyage_deployment,str,http://www.cmar.csiro.au/data/trawler/survey_details.cfm?survey=IN2015_V01
 GLOBAL,,Pulse-11-2015,,,,,,,,voyage_recovery,str,http://www.cmar.csiro.au/data/trawler/survey_details.cfm?survey=IN2016_V02
-,,,,,,,,,,,,
 VAR,NOMINAL_DEPTH,Pulse-11-2015,Optode 3975C,1420,20/3/15,14/4/16,NOMINAL_DEPTH,(),(),,float64,28
 VAR,NOMINAL_DEPTH,Pulse-11-2015,DEFI-L,082V022,20/3/15,14/4/16,NOMINAL_DEPTH,(),(),,float64,49
 VAR,NOMINAL_DEPTH,Pulse-11-2015,MDS-MKVL,200341,20/3/15,14/4/16,NOMINAL_DEPTH,(),(),,float64,0
@@ -630,7 +595,6 @@ VAR,NOMINAL_DEPTH,Pulse-11-2015,Minilog-II-T,354211,20/3/15,14/4/16,NOMINAL_DEPT
 VAR,NOMINAL_DEPTH,Pulse-11-2015,Minilog-II-T,354212,20/3/15,14/4/16,NOMINAL_DEPTH,(),(),,float64,480
 VAR,NOMINAL_DEPTH,Pulse-11-2015,ECO-PAR,134,20/3/15,14/4/16,NOMINAL_DEPTH,(),(),,float64,28
 VAR,NOMINAL_DEPTH,Pulse-11-2015,FLNTUS,1186,20/3/15,14/4/16,NOMINAL_DEPTH,(),(),,float64,28
-,,,,,,,,,,,,
 VAR_ATT,V1,Pulse-11-2015,SBE16plusV2,01606330,,,,,,comment_attached_instrument,str,Wet-LABS ; PARS-134
 VAR_ATT,V1,Pulse-11-2015,SBE16plusV2,01606330,,,,,,calibration_PAR_Im,float64,1.3589
 VAR_ATT,V1,Pulse-11-2015,SBE16plusV2,01606330,,,,,,calibration_PAR_analog_A1,float64,0.8902
@@ -644,7 +608,7 @@ GLOBAL,,,ACR8242XS,29300,2009-09-28,2010-09-09,,"","",deployment_code,str,"SAZ47
 GLOBAL,,,PARFLUX Mark78H-21,12419-03,2009-09-28,2010-09-09,,"","",deployment_code,str,"SAZ47-12-2009"
 GLOBAL,,,PARFLUX Mark78H-21 Frame,12419-01,2009-09-28,2010-09-09,,"","",deployment_code,str,"SAZ47-12-2009"
 GLOBAL,,,PARFLUX Mark78H-21 Frame,12419-02,2009-09-28,2010-09-09,,"","",deployment_code,str,"SAZ47-12-2009"
-GLOBAL,,,DR1050P,13294,2009-09-28,2010-09-09,,"","",deployment_code,str,"SAZ47-12-2009"
+GLOBAL,,,DR1050,013294,2009-09-28,2010-09-09,,"","",deployment_code,str,"SAZ47-12-2009"
 GLOBAL,,,TDR-2050,14785,2009-09-28,2010-09-09,,"","",deployment_code,str,"SAZ47-12-2009"
 GLOBAL,,,Indented Rotating Sphere Trap,IRS-1,2009-09-28,2010-09-09,,"","",deployment_code,str,"SAZ47-12-2009"
 
@@ -652,7 +616,7 @@ VAR,LATITUDE,SAZ47-12-2009,,,2009-09-28,2010-09-09,LATITUDE,"()","()",,float64,"
 VAR,LONGITUDE,SAZ47-12-2009,,,2009-09-28,2010-09-09,LONGITUDE,"()","()",,float64,"141.6569500000"
 
 GLOBAL,,SAZ47-12-2009,,,2009-09-28,2010-09-09,,"","",site_nominal_depth,float64,"4500.00"
-GLOBAL,,SAZ47-12-2009,,,2009-09-28,2010-09-09,,"","",time_deployment_start,str,"2009-09-28T16:17:00Z"
+GLOBAL,,SAZ47-12-2009,,,2009-09-28,2010-09-09,,"","",time_deployment_start,str,"2009-09-29T17:00:00Z"
 GLOBAL,,SAZ47-12-2009,,,2009-09-28,2010-09-09,,"","",time_deployment_end,str,"2010-09-09T20:44:00Z"
 
 VAR,NOMINAL_DEPTH,SAZ47-12-2009,RCM8,7773,2009-09-28,2010-09-09,NOMINAL_DEPTH,"()","()",,float64,"1200.00"
@@ -661,7 +625,7 @@ VAR,NOMINAL_DEPTH,SAZ47-12-2009,ACR8242XS,29300,2009-09-28,2010-09-09,NOMINAL_DE
 VAR,NOMINAL_DEPTH,SAZ47-12-2009,PARFLUX Mark78H-21,12419-03,2009-09-28,2010-09-09,NOMINAL_DEPTH,"()","()",,float64,"3800.00"
 VAR,NOMINAL_DEPTH,SAZ47-12-2009,PARFLUX Mark78H-21 Frame,12419-01,2009-09-28,2010-09-09,NOMINAL_DEPTH,"()","()",,float64,"1000.00"
 VAR,NOMINAL_DEPTH,SAZ47-12-2009,PARFLUX Mark78H-21 Frame,12419-02,2009-09-28,2010-09-09,NOMINAL_DEPTH,"()","()",,float64,"2000.00"
-VAR,NOMINAL_DEPTH,SAZ47-12-2009,DR1050P,13294,2009-09-28,2010-09-09,NOMINAL_DEPTH,"()","()",,float64,"3800.00"
+VAR,NOMINAL_DEPTH,SAZ47-12-2009,DR1050,013294,2009-09-28,2010-09-09,NOMINAL_DEPTH,"()","()",,float64,"3800.00"
 VAR,NOMINAL_DEPTH,SAZ47-12-2009,TDR-2050,14785,2009-09-28,2010-09-09,NOMINAL_DEPTH,"()","()",,float64,"1000.00"
 VAR,NOMINAL_DEPTH,SAZ47-12-2009,Indented Rotating Sphere Trap,IRS-1,2009-09-28,2010-09-09,NOMINAL_DEPTH,"()","()",,float64,"1000.00"
 
@@ -671,7 +635,7 @@ GLOBAL,,,PARFLUX Mark78H-21,11640-01,2010-09-12,2011-08-04,,"","",deployment_cod
 GLOBAL,,,PARFLUX Mark78H-21,11649-01,2010-09-12,2011-08-04,,"","",deployment_code,str,"SAZ47-13-2010"
 GLOBAL,,,PARFLUX Mark78H-21,11741-01,2010-09-12,2011-08-04,,"","",deployment_code,str,"SAZ47-13-2010"
 GLOBAL,,,Aquadopp DW 2Mhz,A6L-1277 (AQD 1414),2010-09-12,2011-08-04,,"","",deployment_code,str,"SAZ47-13-2010"
-GLOBAL,,,DR1050P,13294,2010-09-12,2011-08-04,,"","",deployment_code,str,"SAZ47-13-2010"
+GLOBAL,,,DR1050,013294,2010-09-12,2011-08-04,,"","",deployment_code,str,"SAZ47-13-2010"
 GLOBAL,,,TDR-2050,14785,2010-09-12,2011-08-04,,"","",deployment_code,str,"SAZ47-13-2010"
 
 VAR,LATITUDE,SAZ47-13-2010,,,2010-09-12,2011-08-04,LATITUDE,"()","()",,float64,"-46.8304000000"
@@ -687,7 +651,7 @@ VAR,NOMINAL_DEPTH,SAZ47-13-2010,PARFLUX Mark78H-21,11640-01,2010-09-12,2011-08-0
 VAR,NOMINAL_DEPTH,SAZ47-13-2010,PARFLUX Mark78H-21,11649-01,2010-09-12,2011-08-04,NOMINAL_DEPTH,"()","()",,float64,"2000.00"
 VAR,NOMINAL_DEPTH,SAZ47-13-2010,PARFLUX Mark78H-21,11741-01,2010-09-12,2011-08-04,NOMINAL_DEPTH,"()","()",,float64,"1000.00"
 VAR,NOMINAL_DEPTH,SAZ47-13-2010,Aquadopp DW 2Mhz,A6L-1277 (AQD 1414),2010-09-12,2011-08-04,NOMINAL_DEPTH,"()","()",,float64,"1100.00"
-VAR,NOMINAL_DEPTH,SAZ47-13-2010,DR1050P,13294,2010-09-12,2011-08-04,NOMINAL_DEPTH,"()","()",,float64,"3900.00"
+VAR,NOMINAL_DEPTH,SAZ47-13-2010,DR1050,013294,2010-09-12,2011-08-04,NOMINAL_DEPTH,"()","()",,float64,"3900.00"
 VAR,NOMINAL_DEPTH,SAZ47-13-2010,TDR-2050,14785,2010-09-12,2011-08-04,NOMINAL_DEPTH,"()","()",,float64,"1000.00"
 
 GLOBAL,,,Mooring,SAZ 14 August 2011,2011-08-04,2012-07-19,,"","",deployment_code,str,"SAZ47-14-2011"
@@ -980,8 +944,8 @@ GLOBAL,,,Minilog-T,4843,17/3/10,20/4/11,,,,deployment_code,str,SOFS-1-2010
 GLOBAL,,,Minilog-T,6097,17/3/10,20/4/11,,,,deployment_code,str,SOFS-1-2010
 GLOBAL,,,Minilog-T,6099,17/3/10,20/4/11,,,,deployment_code,str,SOFS-1-2010
 GLOBAL,,,FLNTUS,1186,17/3/10,20/4/11,,,,deployment_code,str,SOFS-1-2010
-GLOBAL,,,ASIMET,L22,17/3/10,20/4/11,,,,deployment_code,str,SOFS-1-2010
-GLOBAL,,,ASIMET,L23,17/3/10,20/4/11,,,,deployment_code,str,SOFS-1-2010
+GLOBAL,,,ASIMET LOG53,L22,17/3/10,20/4/11,,,,deployment_code,str,SOFS-1-2010
+GLOBAL,,,ASIMET LOG53,L23,17/3/10,20/4/11,,,,deployment_code,str,SOFS-1-2010
 GLOBAL,,,BPR,226,17/3/10,20/4/11,,,,deployment_code,str,SOFS-1-2010
 GLOBAL,,,BPR,227,17/3/10,20/4/11,,,,deployment_code,str,SOFS-1-2010
 GLOBAL,,,HRH,242,17/3/10,20/4/11,,,,deployment_code,str,SOFS-1-2010
@@ -998,17 +962,14 @@ GLOBAL,,,SWND,213,17/3/10,20/4/11,,,,deployment_code,str,SOFS-1-2010
 GLOBAL,,,SWND,214,17/3/10,20/4/11,,,,deployment_code,str,SOFS-1-2010
 GLOBAL,,,SWR,235,17/3/10,20/4/11,,,,deployment_code,str,SOFS-1-2010
 GLOBAL,,,SWR,236,17/3/10,20/4/11,,,,deployment_code,str,SOFS-1-2010
-,,,,,,,,,,,,
 VAR,LATITUDE,SOFS-1-2010,,,17/3/10,20/4/11,LATITUDE,(),(),,float64,-46.72295
 VAR,LONGITUDE,SOFS-1-2010,,,17/3/10,20/4/11,LONGITUDE,(),(),,float64,141.9535167
-,,,,,,,,,,,,
 GLOBAL,,SOFS-1-2010,,,17/3/10,20/4/11,,,,site_nominal_depth,float64,4624
 GLOBAL,,SOFS-1-2010,,,17/3/10,20/4/11,,,,time_deployment_start,str,2010-03-18T00:00:00Z
 GLOBAL,,SOFS-1-2010,,,17/3/10,20/4/11,,,,time_deployment_end,str,2011-04-20T04:00:00Z
 GLOBAL,,SOFS-1-2010,,,,,,,,voyage_deployment,str,http://www.cmar.csiro.au/data/trawler/survey_details.cfm?survey=SS2010_V02
 GLOBAL,,SOFS-1-2010,,,,,,,,voyage_recovery,str,http://www.cmar.csiro.au/data/trawler/survey_details.cfm?survey=SS2011_V01
 GLOBAL,,SOFS-1-2010,,,,,,,,comment_recovery,str,Broke mooring 2011-03-02
-,,,,,,,,,,,,
 GLOBAL,,SOFS-1-2010,LI-190SA,unknown,17/3/10,20/4/11,,,,instrument_serial_number,str,Q40966
 VAR_ATT,PAR,SOFS-1-2010,LI-190SA,unknown,17/3/10,20/4/11,,,,calibration_date,str,"May 21, 2009"
 VAR_ATT,PAR,SOFS-1-2010,LI-190SA,unknown,17/3/10,20/4/11,,,,calibration_units,str,umol s-1 m-2 per uamp
@@ -1020,7 +981,6 @@ VAR_ATT,PAR,SOFS-1-2010,LI-190SA,unknown,17/3/10,20/4/11,,,,comment_scaling_issu
 VAR_ATT,PAR,SOFS-1-2010,LI-190SA,unknown,17/3/10,20/4/11,,,,standard_name,str,downwelling_photosynthetic_photon_flux_in_air
 VAR_ATT,PAR,SOFS-1-2010,LI-190SA,unknown,17/3/10,20/4/11,,,,long_name,str,downwelling_photosynthetic_photon_flux_in_air
 VAR_ATT,PAR,SOFS-1-2010,LI-190SA,unknown,17/3/10,20/4/11,,,,units,str,umol/m^2/s
-,,,,,,,,,,,,
 VAR,NOMINAL_DEPTH,SOFS-1-2010,DCS,197,17/3/10,20/4/11,NOMINAL_DEPTH,(),(),,float64,30
 VAR,NOMINAL_DEPTH,SOFS-1-2010,DCS,212,17/3/10,20/4/11,NOMINAL_DEPTH,(),(),,float64,200
 VAR,NOMINAL_DEPTH,SOFS-1-2010,Optode 3975C,1157,17/3/10,20/4/11,NOMINAL_DEPTH,(),(),,float64,1.2
@@ -1058,8 +1018,8 @@ VAR,NOMINAL_DEPTH,SOFS-1-2010,Minilog-T,4843,17/3/10,20/4/11,NOMINAL_DEPTH,(),()
 VAR,NOMINAL_DEPTH,SOFS-1-2010,Minilog-T,6097,17/3/10,20/4/11,NOMINAL_DEPTH,(),(),,float64,10
 VAR,NOMINAL_DEPTH,SOFS-1-2010,Minilog-T,6099,17/3/10,20/4/11,NOMINAL_DEPTH,(),(),,float64,75
 VAR,NOMINAL_DEPTH,SOFS-1-2010,FLNTUS,1186,17/3/10,20/4/11,NOMINAL_DEPTH,(),(),,float64,1.2
-VAR,NOMINAL_DEPTH,SOFS-1-2010,ASIMET,L22,17/3/10,20/4/11,NOMINAL_DEPTH,(),(),,float64,0
-VAR,NOMINAL_DEPTH,SOFS-1-2010,ASIMET,L23,17/3/10,20/4/11,NOMINAL_DEPTH,(),(),,float64,0
+VAR,NOMINAL_DEPTH,SOFS-1-2010,ASIMET LOG53,L22,17/3/10,20/4/11,NOMINAL_DEPTH,(),(),,float64,0
+VAR,NOMINAL_DEPTH,SOFS-1-2010,ASIMET LOG53,L23,17/3/10,20/4/11,NOMINAL_DEPTH,(),(),,float64,0
 VAR,NOMINAL_DEPTH,SOFS-1-2010,BPR,226,17/3/10,20/4/11,NOMINAL_DEPTH,(),(),,float64,-2.37
 VAR,NOMINAL_DEPTH,SOFS-1-2010,BPR,227,17/3/10,20/4/11,NOMINAL_DEPTH,(),(),,float64,-2.37
 VAR,NOMINAL_DEPTH,SOFS-1-2010,HRH,242,17/3/10,20/4/11,NOMINAL_DEPTH,(),(),,float64,-2.37
@@ -1116,8 +1076,8 @@ GLOBAL,,,Minilog-TD,4843,24/11/11,19/7/12,,,,deployment_code,str,SOFS-2-2011
 GLOBAL,,,Minilog-T,6097,24/11/11,19/7/12,,,,deployment_code,str,SOFS-2-2011
 GLOBAL,,,Minilog-TD,6099,24/11/11,19/7/12,,,,deployment_code,str,SOFS-2-2011
 GLOBAL,,,FLNTUS,1186,24/11/11,19/7/12,,,,deployment_code,str,SOFS-2-2011
-GLOBAL,,,ASIMET,L22,24/11/11,19/7/12,,,,deployment_code,str,SOFS-2-2011
-GLOBAL,,,ASIMET,L23,24/11/11,19/7/12,,,,deployment_code,str,SOFS-2-2011
+GLOBAL,,,ASIMET LOG53,L22,24/11/11,19/7/12,,,,deployment_code,str,SOFS-2-2011
+GLOBAL,,,ASIMET LOG53,L23,24/11/11,19/7/12,,,,deployment_code,str,SOFS-2-2011
 GLOBAL,,,BPR,226,24/11/11,19/7/12,,,,deployment_code,str,SOFS-2-2011
 GLOBAL,,,BPR,227,24/11/11,19/7/12,,,,deployment_code,str,SOFS-2-2011
 GLOBAL,,,HRH,242,24/11/11,19/7/12,,,,deployment_code,str,SOFS-2-2011
@@ -1137,16 +1097,13 @@ GLOBAL,,,SWND,215,24/11/11,19/7/12,,,,deployment_code,str,SOFS-2-2011
 GLOBAL,,,SWR,235,24/11/11,19/7/12,,,,deployment_code,str,SOFS-2-2011
 GLOBAL,,,SWR,236,24/11/11,19/7/12,,,,deployment_code,str,SOFS-2-2011
 GLOBAL,,,Sable,3.00E+14,24/11/11,19/7/12,,,,deployment_code,str,SOFS-2-2011
-,,,,,,,,,,,,
 VAR,LATITUDE,SOFS-2-2011,,,24/11/11,19/7/12,LATITUDE,(),(),,float64,-46.77187
 VAR,LONGITUDE,SOFS-2-2011,,,24/11/11,19/7/12,LONGITUDE,(),(),,float64,141.98687
-,,,,,,,,,,,,
 GLOBAL,,SOFS-2-2011,,,24/11/11,19/7/12,,,,site_nominal_depth,float64,4624
 GLOBAL,,SOFS-2-2011,,,24/11/11,19/7/12,,,,time_deployment_start,str,2011-11-25T00:00:00Z
 GLOBAL,,SOFS-2-2011,,,24/11/11,19/7/12,,,,time_deployment_end,str,2012-07-22T23:00:00Z
 GLOBAL,,SOFS-2-2011,,,,,,,,voyage_deployment,str,http://www.cmar.csiro.au/data/trawler/survey_details.cfm?survey=SS2011_V03
 GLOBAL,,SOFS-2-2011,,,,,,,,voyage_recovery,str,http://www.cmar.csiro.au/data/trawler/survey_details.cfm?survey=SS2012_V03
-,,,,,,,,,,,,
 GLOBAL,,SOFS-2-2011,LI-190SA,unknown,24/11/11,19/7/12,,,,instrument_serial_number,str,Q40966
 VAR_ATT,PAR,SOFS-2-2011,LI-190SA,unknown,24/11/11,19/7/12,,,,calibration_date,str,"May 21, 2009"
 VAR_ATT,PAR,SOFS-2-2011,LI-190SA,unknown,24/11/11,19/7/12,,,,calibration_units,str,umol s-1 m-2 per uamp
@@ -1157,7 +1114,6 @@ VAR_ATT,PAR,SOFS-2-2011,LI-190SA,unknown,24/11/11,19/7/12,,,,comment_scale_offse
 VAR_ATT,PAR,SOFS-2-2011,LI-190SA,unknown,24/11/11,19/7/12,,,,standard_name,str,downwelling_photosynthetic_photon_flux_in_air
 VAR_ATT,PAR,SOFS-2-2011,LI-190SA,unknown,24/11/11,19/7/12,,,,long_name,str,downwelling_photosynthetic_photon_flux_in_air
 VAR_ATT,PAR,SOFS-2-2011,LI-190SA,unknown,24/11/11,19/7/12,,,,units,str,umol/m^2/s
-,,,,,,,,,,,,
 VAR,NOMINAL_DEPTH,SOFS-2-2011,MF-AWCP,55046,24/11/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,30
 VAR,NOMINAL_DEPTH,SOFS-2-2011,Optode 3975C,1157,24/11/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,1.5
 VAR,NOMINAL_DEPTH,SOFS-2-2011,MDS-MKV/L,201316,24/11/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,20
@@ -1198,8 +1154,8 @@ VAR,NOMINAL_DEPTH,SOFS-2-2011,Minilog-TD,4843,24/11/11,19/7/12,NOMINAL_DEPTH,(),
 VAR,NOMINAL_DEPTH,SOFS-2-2011,Minilog-T,6097,24/11/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,10
 VAR,NOMINAL_DEPTH,SOFS-2-2011,Minilog-TD,6099,24/11/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,75
 VAR,NOMINAL_DEPTH,SOFS-2-2011,FLNTUS,1186,24/11/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,1.5
-VAR,NOMINAL_DEPTH,SOFS-2-2011,ASIMET,L22,24/11/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,0
-VAR,NOMINAL_DEPTH,SOFS-2-2011,ASIMET,L23,24/11/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,0
+VAR,NOMINAL_DEPTH,SOFS-2-2011,ASIMET LOG53,L22,24/11/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,0
+VAR,NOMINAL_DEPTH,SOFS-2-2011,ASIMET LOG53,L23,24/11/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,0
 VAR,NOMINAL_DEPTH,SOFS-2-2011,BPR,226,24/11/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,-2.83
 VAR,NOMINAL_DEPTH,SOFS-2-2011,BPR,227,24/11/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,-2.83
 VAR,NOMINAL_DEPTH,SOFS-2-2011,HRH,242,24/11/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,-2.83
@@ -1267,8 +1223,8 @@ GLOBAL,,,Minilog-II-T,353297,19/7/12,2/1/13,,,,deployment_code,str,SOFS-3-2012
 GLOBAL,,,Minilog-II-T,353298,19/7/12,2/1/13,,,,deployment_code,str,SOFS-3-2012
 GLOBAL,,,Minilog-II-T,353299,19/7/12,2/1/13,,,,deployment_code,str,SOFS-3-2012
 GLOBAL,,,FLNTUS,1802,19/7/12,2/1/13,,,,deployment_code,str,SOFS-3-2012
-GLOBAL,,,ASIMET,L25,19/7/12,2/1/13,,,,deployment_code,str,SOFS-3-2012
-GLOBAL,,,ASIMET,L26,19/7/12,2/1/13,,,,deployment_code,str,SOFS-3-2012
+GLOBAL,,,ASIMET LOG53,L25,19/7/12,2/1/13,,,,deployment_code,str,SOFS-3-2012
+GLOBAL,,,ASIMET LOG53,L26,19/7/12,2/1/13,,,,deployment_code,str,SOFS-3-2012
 GLOBAL,,,BPR,231,19/7/12,2/1/13,,,,deployment_code,str,SOFS-3-2012
 GLOBAL,,,BPR,232,19/7/12,2/1/13,,,,deployment_code,str,SOFS-3-2012
 GLOBAL,,,HRH,254,19/7/12,2/1/13,,,,deployment_code,str,SOFS-3-2012
@@ -1285,17 +1241,14 @@ GLOBAL,,,SWR,240,19/7/12,2/1/13,,,,deployment_code,str,SOFS-3-2012
 GLOBAL,,,SWR,241,19/7/12,2/1/13,,,,deployment_code,str,SOFS-3-2012
 GLOBAL,,,KILO,3.00E+14,19/7/12,2/1/13,,,,deployment_code,str,SOFS-3-2012
 GLOBAL,,,MELO,3.00E+14,19/7/12,2/1/13,,,,deployment_code,str,SOFS-3-2012
-,,,,,,,,,,,,
 VAR,LATITUDE,SOFS-3-2012,,,19/7/12,2/1/13,LATITUDE,(),(),,float64,-46.66442
 VAR,LONGITUDE,SOFS-3-2012,,,19/7/12,2/1/13,LONGITUDE,(),(),,float64,142.06278
-,,,,,,,,,,,,
 GLOBAL,,SOFS-3-2012,,,19/7/12,2/1/13,,,,site_nominal_depth,float64,4624
 GLOBAL,,SOFS-3-2012,,,19/7/12,2/1/13,,,,time_deployment_start,str,2012-07-14T08:00:00Z
 GLOBAL,,SOFS-3-2012,,,19/7/12,2/1/13,,,,time_deployment_end,str,2013-01-02T00:00:00Z
 GLOBAL,,SOFS-3-2012,,,,,,,,voyage_deployment,str,http://www.cmar.csiro.au/data/trawler/survey_details.cfm?survey=SS2012_V03
 GLOBAL,,SOFS-3-2012,,,,,,,,voyage_recovery_bottom,str,http://www.cmar.csiro.au/data/trawler/survey_details.cfm?survey=SS2013_V03
 GLOBAL,,SOFS-3-2012,,,,,,,,voyage_recovery_top,str,"RV Mirai MR12-05, 2 January 2013"
-,,,,,,,,,,,,
 GLOBAL,,SOFS-3-2012,LI-190SA,unknown,19/7/12,2/1/13,,,,instrument_serial_number,str,Q40966
 VAR_ATT,PAR,SOFS-3-2012,LI-190SA,unknown,19/7/12,2/1/13,,,,calibration_date,str,"May 21, 2009"
 VAR_ATT,PAR,SOFS-3-2012,LI-190SA,unknown,19/7/12,2/1/13,,,,calibration_units,str,umol s-1 m-2 per uamp
@@ -1306,7 +1259,6 @@ VAR_ATT,PAR,SOFS-3-2012,LI-190SA,unknown,19/7/12,2/1/13,,,,comment_scale_offset,
 VAR_ATT,PAR,SOFS-3-2012,LI-190SA,unknown,19/7/12,2/1/13,,,,standard_name,str,downwelling_photosynthetic_photon_flux_in_air
 VAR_ATT,PAR,SOFS-3-2012,LI-190SA,unknown,19/7/12,2/1/13,,,,long_name,str,downwelling_photosynthetic_photon_flux_in_air
 VAR_ATT,PAR,SOFS-3-2012,LI-190SA,unknown,19/7/12,2/1/13,,,,units,str,umol/m^2/s
-,,,,,,,,,,,,
 VAR,NOMINAL_DEPTH,SOFS-3-2012,MF-AZFP,55052,19/7/12,2/1/13,NOMINAL_DEPTH,(),(),,float64,30
 VAR,NOMINAL_DEPTH,SOFS-3-2012,Optode 3975C,1420,19/7/12,2/1/13,NOMINAL_DEPTH,(),(),,float64,2
 VAR,NOMINAL_DEPTH,SOFS-3-2012,Data Logger,2,19/7/12,2/1/13,NOMINAL_DEPTH,(),(),,float64,0
@@ -1355,8 +1307,8 @@ VAR,NOMINAL_DEPTH,SOFS-3-2012,Minilog-II-T,353297,19/7/12,2/1/13,NOMINAL_DEPTH,(
 VAR,NOMINAL_DEPTH,SOFS-3-2012,Minilog-II-T,353298,19/7/12,2/1/13,NOMINAL_DEPTH,(),(),,float64,440
 VAR,NOMINAL_DEPTH,SOFS-3-2012,Minilog-II-T,353299,19/7/12,2/1/13,NOMINAL_DEPTH,(),(),,float64,480
 VAR,NOMINAL_DEPTH,SOFS-3-2012,FLNTUS,1802,19/7/12,2/1/13,NOMINAL_DEPTH,(),(),,float64,2
-VAR,NOMINAL_DEPTH,SOFS-3-2012,ASIMET,L25,19/7/12,2/1/13,NOMINAL_DEPTH,(),(),,float64,0
-VAR,NOMINAL_DEPTH,SOFS-3-2012,ASIMET,L26,19/7/12,2/1/13,NOMINAL_DEPTH,(),(),,float64,0
+VAR,NOMINAL_DEPTH,SOFS-3-2012,ASIMET LOG53,L25,19/7/12,2/1/13,NOMINAL_DEPTH,(),(),,float64,0
+VAR,NOMINAL_DEPTH,SOFS-3-2012,ASIMET LOG53,L26,19/7/12,2/1/13,NOMINAL_DEPTH,(),(),,float64,0
 VAR,NOMINAL_DEPTH,SOFS-3-2012,BPR,231,19/7/12,2/1/13,NOMINAL_DEPTH,(),(),,float64,-2.8
 VAR,NOMINAL_DEPTH,SOFS-3-2012,BPR,232,19/7/12,2/1/13,NOMINAL_DEPTH,(),(),,float64,-2.8
 VAR,NOMINAL_DEPTH,SOFS-3-2012,HRH,254,19/7/12,2/1/13,NOMINAL_DEPTH,(),(),,float64,-2.8
@@ -1422,8 +1374,8 @@ GLOBAL,,,Minilog-II-T,353297,26/4/13,13/10/13,,,,deployment_code,str,SOFS-4-2013
 GLOBAL,,,Minilog-II-T,353298,26/4/13,13/10/13,,,,deployment_code,str,SOFS-4-2013
 GLOBAL,,,Minilog-II-T,353299,26/4/13,13/10/13,,,,deployment_code,str,SOFS-4-2013
 GLOBAL,,,FLNTUS,1802,26/4/13,13/10/13,,,,deployment_code,str,SOFS-4-2013
-GLOBAL,,,ASIMET,L22,26/4/13,13/10/13,,,,deployment_code,str,SOFS-4-2013
-GLOBAL,,,ASIMET,L23,26/4/13,13/10/13,,,,deployment_code,str,SOFS-4-2013
+GLOBAL,,,ASIMET LOG53,L22,26/4/13,13/10/13,,,,deployment_code,str,SOFS-4-2013
+GLOBAL,,,ASIMET LOG53,L23,26/4/13,13/10/13,,,,deployment_code,str,SOFS-4-2013
 GLOBAL,,,BPR,226,26/4/13,13/10/13,,,,deployment_code,str,SOFS-4-2013
 GLOBAL,,,BPR,227,26/4/13,13/10/13,,,,deployment_code,str,SOFS-4-2013
 GLOBAL,,,HRH,242,26/4/13,13/10/13,,,,deployment_code,str,SOFS-4-2013
@@ -1443,16 +1395,13 @@ GLOBAL,,,SWND,214,26/4/13,13/10/13,,,,deployment_code,str,SOFS-4-2013
 GLOBAL,,,SWND,228,26/4/13,13/10/13,,,,deployment_code,str,SOFS-4-2013
 GLOBAL,,,SWR,235,26/4/13,13/10/13,,,,deployment_code,str,SOFS-4-2013
 GLOBAL,,,SWR,236,26/4/13,13/10/13,,,,deployment_code,str,SOFS-4-2013
-,,,,,,,,,,,,
 VAR,LATITUDE,SOFS-4-2013,,,26/4/13,13/10/13,LATITUDE,(),(),,float64,-46.77725
 VAR,LONGITUDE,SOFS-4-2013,,,26/4/13,13/10/13,LONGITUDE,(),(),,float64,141.99289
-,,,,,,,,,,,,
 GLOBAL,,SOFS-4-2013,,,26/4/13,13/10/13,,,,site_nominal_depth,float64,4624
 GLOBAL,,SOFS-4-2013,,,26/4/13,13/10/13,,,,time_deployment_start,str,2013-05-01T09:00:00Z
 GLOBAL,,SOFS-4-2013,,,26/4/13,13/10/13,,,,time_deployment_end,str,2013-10-14T19:54:45Z
 GLOBAL,,SOFS-4-2013,,,,,,,,voyage_deployment,str,http://www.cmar.csiro.au/data/trawler/survey_details.cfm?survey=SS2013_V03
 GLOBAL,,SOFS-4-2013,,,,,,,,voyage_recovery,str,http://www.cmar.csiro.au/data/trawler/survey_details.cfm?survey=SS2013_V06
-,,,,,,,,,,,,
 GLOBAL,,SOFS-4-2013,LI-190SA,unknown,26/4/13,13/10/13,,,,instrument_serial_number,str,Q47470
 VAR_ATT,PAR,SOFS-4-2013,LI-190SA,unknown,26/4/13,13/10/13,,,,calibration_date,str,"March 02, 2012"
 VAR_ATT,PAR,SOFS-4-2013,LI-190SA,unknown,26/4/13,13/10/13,,,,calibration_units,str,umol s-1 m-2 per uamp
@@ -1463,7 +1412,6 @@ VAR_ATT,PAR,SOFS-4-2013,LI-190SA,unknown,26/4/13,13/10/13,,,,comment_scale_offse
 VAR_ATT,PAR,SOFS-4-2013,LI-190SA,unknown,26/4/13,13/10/13,,,,standard_name,str,downwelling_photosynthetic_photon_flux_in_air
 VAR_ATT,PAR,SOFS-4-2013,LI-190SA,unknown,26/4/13,13/10/13,,,,long_name,str,downwelling_photosynthetic_photon_flux_in_air
 VAR_ATT,PAR,SOFS-4-2013,LI-190SA,unknown,26/4/13,13/10/13,,,,units,str,umol/m^2/s
-,,,,,,,,,,,,
 VAR,NOMINAL_DEPTH,SOFS-4-2013,MF-AZFP,55046,26/4/13,13/10/13,NOMINAL_DEPTH,(),(),,float64,30
 VAR,NOMINAL_DEPTH,SOFS-4-2013,Optode 3975C,1157,26/4/13,13/10/13,NOMINAL_DEPTH,(),(),,float64,1.01
 VAR,NOMINAL_DEPTH,SOFS-4-2013,MDS-MKV/L,201316,26/4/13,13/10/13,NOMINAL_DEPTH,(),(),,float64,10
@@ -1513,8 +1461,8 @@ VAR,NOMINAL_DEPTH,SOFS-4-2013,Minilog-II-T,353297,26/4/13,13/10/13,NOMINAL_DEPTH
 VAR,NOMINAL_DEPTH,SOFS-4-2013,Minilog-II-T,353298,26/4/13,13/10/13,NOMINAL_DEPTH,(),(),,float64,440
 VAR,NOMINAL_DEPTH,SOFS-4-2013,Minilog-II-T,353299,26/4/13,13/10/13,NOMINAL_DEPTH,(),(),,float64,480
 VAR,NOMINAL_DEPTH,SOFS-4-2013,FLNTUS,1802,26/4/13,13/10/13,NOMINAL_DEPTH,(),(),,float64,1.01
-VAR,NOMINAL_DEPTH,SOFS-4-2013,ASIMET,L22,26/4/13,13/10/13,NOMINAL_DEPTH,(),(),,float64,0
-VAR,NOMINAL_DEPTH,SOFS-4-2013,ASIMET,L23,26/4/13,13/10/13,NOMINAL_DEPTH,(),(),,float64,0
+VAR,NOMINAL_DEPTH,SOFS-4-2013,ASIMET LOG53,L22,26/4/13,13/10/13,NOMINAL_DEPTH,(),(),,float64,0
+VAR,NOMINAL_DEPTH,SOFS-4-2013,ASIMET LOG53,L23,26/4/13,13/10/13,NOMINAL_DEPTH,(),(),,float64,0
 VAR,NOMINAL_DEPTH,SOFS-4-2013,BPR,226,26/4/13,13/10/13,NOMINAL_DEPTH,(),(),,float64,-1.8
 VAR,NOMINAL_DEPTH,SOFS-4-2013,BPR,227,26/4/13,13/10/13,NOMINAL_DEPTH,(),(),,float64,-1.8
 VAR,NOMINAL_DEPTH,SOFS-4-2013,HRH,242,26/4/13,13/10/13,NOMINAL_DEPTH,(),(),,float64,-1.8
@@ -1597,8 +1545,8 @@ GLOBAL,,,Minilog-II-T,353297,20/3/15,14/4/16,,,,deployment_code,str,SOFS-5-2015
 GLOBAL,,,Minilog-II-T,353298,20/3/15,14/4/16,,,,deployment_code,str,SOFS-5-2015
 GLOBAL,,,Minilog-II-T,353299,20/3/15,14/4/16,,,,deployment_code,str,SOFS-5-2015
 GLOBAL,,,FLNTUS,1802,20/3/15,14/4/16,,,,deployment_code,str,SOFS-5-2015
-GLOBAL,,,ASIMET,L23,20/3/15,14/4/16,,,,deployment_code,str,SOFS-5-2015
-GLOBAL,,,ASIMET,L26,20/3/15,14/4/16,,,,deployment_code,str,SOFS-5-2015
+GLOBAL,,,ASIMET LOG53,L23,20/3/15,14/4/16,,,,deployment_code,str,SOFS-5-2015
+GLOBAL,,,ASIMET LOG53,L26,20/3/15,14/4/16,,,,deployment_code,str,SOFS-5-2015
 GLOBAL,,,BPR,231,20/3/15,14/4/16,,,,deployment_code,str,SOFS-5-2015
 GLOBAL,,,BPR,232,20/3/15,14/4/16,,,,deployment_code,str,SOFS-5-2015
 GLOBAL,,,HRH,245,20/3/15,14/4/16,,,,deployment_code,str,SOFS-5-2015
@@ -1617,16 +1565,13 @@ GLOBAL,,,SWND,214,20/3/15,14/4/16,,,,deployment_code,str,SOFS-5-2015
 GLOBAL,,,SWR,235,20/3/15,14/4/16,,,,deployment_code,str,SOFS-5-2015
 GLOBAL,,,SWR,241,20/3/15,14/4/16,,,,deployment_code,str,SOFS-5-2015
 GLOBAL,,,MELO,3.00E+14,20/3/15,14/4/16,,,,deployment_code,str,SOFS-5-2015
-,,,,,,,,,,,,
 VAR,LATITUDE,SOFS-5-2015,,,20/3/15,14/4/16,LATITUDE,(),(),,float64,-46.66653
 VAR,LONGITUDE,SOFS-5-2015,,,20/3/15,14/4/16,LONGITUDE,(),(),,float64,142.07324
-,,,,,,,,,,,,
 GLOBAL,,SOFS-5-2015,,,20/3/15,14/4/16,,,,site_nominal_depth,float64,4624
 GLOBAL,,SOFS-5-2015,,,20/3/15,14/4/16,,,,time_deployment_start,str,2015-03-24T02:34:34Z
 GLOBAL,,SOFS-5-2015,,,20/3/15,14/4/16,,,,time_deployment_end,str,2016-04-13T20:17:19Z
 GLOBAL,,SOFS-5-2015,,,,,,,,voyage_deployment,str,http://www.cmar.csiro.au/data/trawler/survey_details.cfm?survey=IN2015_V01
 GLOBAL,,SOFS-5-2015,,,,,,,,voyage_recovery,str,http://www.cmar.csiro.au/data/trawler/survey_details.cfm?survey=IN2016_V02
-,,,,,,,,,,,,
 GLOBAL,,SOFS-5-2015,LI-190SA,unknown,20/3/15,14/4/16,,,,instrument_serial_number,str,Q47470
 VAR_ATT,PAR,SOFS-5-2015,LI-190SA,unknown,20/3/15,14/4/16,,,,calibration_date,str,"March 02, 2012"
 VAR_ATT,PAR,SOFS-5-2015,LI-190SA,unknown,20/3/15,14/4/16,,,,calibration_units,str,umol s-1 m-2 per uamp
@@ -1637,7 +1582,6 @@ VAR_ATT,PAR,SOFS-5-2015,LI-190SA,unknown,20/3/15,14/4/16,,,,comment_scale_offset
 VAR_ATT,PAR,SOFS-5-2015,LI-190SA,unknown,20/3/15,14/4/16,,,,standard_name,str,downwelling_photosynthetic_photon_flux_in_air
 VAR_ATT,PAR,SOFS-5-2015,LI-190SA,unknown,20/3/15,14/4/16,,,,long_name,str,downwelling_photosynthetic_photon_flux_in_air
 VAR_ATT,PAR,SOFS-5-2015,LI-190SA,unknown,20/3/15,14/4/16,,,,units,str,umol/m^2/s
-,,,,,,,,,,,,
 VAR,NOMINAL_DEPTH,SOFS-5-2015,MF-AZFP,55046,20/3/15,14/4/16,NOMINAL_DEPTH,(),(),,float64,30
 VAR,NOMINAL_DEPTH,SOFS-5-2015,DCS,197,20/3/15,14/4/16,NOMINAL_DEPTH,(),(),,float64,200
 VAR,NOMINAL_DEPTH,SOFS-5-2015,DCS,212,20/3/15,14/4/16,NOMINAL_DEPTH,(),(),,float64,800
@@ -1701,8 +1645,8 @@ VAR,NOMINAL_DEPTH,SOFS-5-2015,Minilog-II-T,353297,20/3/15,14/4/16,NOMINAL_DEPTH,
 VAR,NOMINAL_DEPTH,SOFS-5-2015,Minilog-II-T,353298,20/3/15,14/4/16,NOMINAL_DEPTH,(),(),,float64,440
 VAR,NOMINAL_DEPTH,SOFS-5-2015,Minilog-II-T,353299,20/3/15,14/4/16,NOMINAL_DEPTH,(),(),,float64,480
 VAR,NOMINAL_DEPTH,SOFS-5-2015,FLNTUS,1802,20/3/15,14/4/16,NOMINAL_DEPTH,(),(),,float64,1.01
-VAR,NOMINAL_DEPTH,SOFS-5-2015,ASIMET,L23,20/3/15,14/4/16,NOMINAL_DEPTH,(),(),,float64,0
-VAR,NOMINAL_DEPTH,SOFS-5-2015,ASIMET,L26,20/3/15,14/4/16,NOMINAL_DEPTH,(),(),,float64,0
+VAR,NOMINAL_DEPTH,SOFS-5-2015,ASIMET LOG53,L23,20/3/15,14/4/16,NOMINAL_DEPTH,(),(),,float64,0
+VAR,NOMINAL_DEPTH,SOFS-5-2015,ASIMET LOG53,L26,20/3/15,14/4/16,NOMINAL_DEPTH,(),(),,float64,0
 VAR,NOMINAL_DEPTH,SOFS-5-2015,BPR,231,20/3/15,14/4/16,NOMINAL_DEPTH,(),(),,float64,-2
 VAR,NOMINAL_DEPTH,SOFS-5-2015,BPR,232,20/3/15,14/4/16,NOMINAL_DEPTH,(),(),,float64,-2
 VAR,NOMINAL_DEPTH,SOFS-5-2015,HRH,245,20/3/15,14/4/16,NOMINAL_DEPTH,(),(),,float64,-1.83
@@ -1743,9 +1687,7 @@ GLOBAL,,,Vector,VEC-13630  (VEC-5008),20/3/17,8/11/17,,,,deployment_code,str,SOF
 GLOBAL,,,Vector,VEC-5037  (VEC-8227),20/3/17,8/11/17,,,,deployment_code,str,SOFS-6-2017
 GLOBAL,,,SUNA - V2,829,20/3/17,8/11/17,,,,deployment_code,str,SOFS-6-2017
 GLOBAL,,,SBE37SM-RS485,03710136,20/3/17,8/11/17,,,,deployment_code,str,SOFS-6-2017
-GLOBAL,,,SBE37SM-RS485,03710136,20/3/16,8/11/16,,,,deployment_code,str,SOFS-6-2017
 GLOBAL,,,SBE37SM-RS485,03708764,20/3/17,8/11/17,,,,deployment_code,str,SOFS-6-2017
-GLOBAL,,,SBE37SM-RS485,03708764,20/3/16,8/11/16,,,,deployment_code,str,SOFS-6-2017
 GLOBAL,,,SBE37SMP-ODO-RS232,3714700,20/3/17,8/11/17,,,,deployment_code,str,SOFS-6-2017
 GLOBAL,,,SBE37SMP-ODO-RS232,3709513,20/3/17,8/11/17,,,,deployment_code,str,SOFS-6-2017
 GLOBAL,,,SBE37SMP-ODO-RS232,3709514,20/3/17,8/11/17,,,,deployment_code,str,SOFS-6-2017
@@ -1779,8 +1721,8 @@ GLOBAL,,,Minilog-II-T,354210,20/3/17,8/11/17,,,,deployment_code,str,SOFS-6-2017
 GLOBAL,,,Minilog-II-T,354211,20/3/17,8/11/17,,,,deployment_code,str,SOFS-6-2017
 GLOBAL,,,Minilog-II-T,354212,20/3/17,8/11/17,,,,deployment_code,str,SOFS-6-2017
 GLOBAL,,,FLNTUS,1802,20/3/17,8/11/17,,,,deployment_code,str,SOFS-6-2017
-GLOBAL,,,ASIMET,L22,20/3/17,8/11/17,,,,deployment_code,str,SOFS-6-2017
-GLOBAL,,,ASIMET,L25,20/3/17,8/11/17,,,,deployment_code,str,SOFS-6-2017
+GLOBAL,,,ASIMET LOG53,L22,20/3/17,8/11/17,,,,deployment_code,str,SOFS-6-2017
+GLOBAL,,,ASIMET LOG53,L25,20/3/17,8/11/17,,,,deployment_code,str,SOFS-6-2017
 GLOBAL,,,BPR,231,20/3/17,8/11/17,,,,deployment_code,str,SOFS-6-2017
 GLOBAL,,,BPR,232,20/3/17,8/11/17,,,,deployment_code,str,SOFS-6-2017
 GLOBAL,,,HRH,245,20/3/17,8/11/17,,,,deployment_code,str,SOFS-6-2017
@@ -1800,10 +1742,8 @@ GLOBAL,,,SWR,245,20/3/17,8/11/17,,,,deployment_code,str,SOFS-6-2017
 GLOBAL,,,KILO,3.00E+14,20/3/17,8/11/17,,,,deployment_code,str,SOFS-6-2017
 GLOBAL,,,MELO,3.00E+14,20/3/17,8/11/17,,,,deployment_code,str,SOFS-6-2017
 GLOBAL,,,LI-190SA,unknown,20/3/17,8/11/17,,,,deployment_code,str,SOFS-6-2017
-,,,,,,,,,,,,
 VAR,LATITUDE,SOFS-6-2017,,,,,LATITUDE,(),(),,float64,-46.02652
 VAR,LONGITUDE,SOFS-6-2017,,,,,LONGITUDE,(),(),,float64,142.12901
-,,,,,,,,,,,,
 GLOBAL,,SOFS-6-2017,,,,,,,,site_nominal_depth,float64,4624
 GLOBAL,,SOFS-6-2017,,,,,,,,time_deployment_start,str,2017-03-19T22:00:00Z
 GLOBAL,,SOFS-6-2017,,,,,,,,time_deployment_end,str,2017-11-01T22:00:00Z
@@ -1811,9 +1751,6 @@ GLOBAL,,SOFS-6-2017,,,,,,,,voyage_deployment,str,http://www.cmar.csiro.au/data/t
 GLOBAL,,SOFS-6-2017,,,,,,,,voyage_recovery_bottom,str,http://www.cmar.csiro.au/data/trawler/survey_details.cfm?survey=IN2019_V02
 GLOBAL,,SOFS-6-2017,,,,,,,,voyage_recovery_top,str,Pacific Crest 2017-11-08
 
-VAR_ATT,TIME,SOFS-6-2017,SBE37SM-RS485,03710136,20/3/16,8/11/16,,,,comment_scale_offset,str,"1 365"
-VAR_ATT,TIME,SOFS-6-2017,SBE37SM-RS485,03708764,20/3/16,8/11/16,,,,comment_scale_offset,str,"1 365"
-,,,,,,,,,,,,
 VAR,NOMINAL_DEPTH,SOFS-6-2017,LI-190SA,unknown,20/3/17,8/11/17,NOMINAL_DEPTH,(),(),,float64,-1.8
 GLOBAL,,SOFS-6-2017,LI-190SA,unknown,20/3/17,8/11/17,,,,instrument_serial_number,str,Q47470
 VAR_ATT,PAR,SOFS-6-2017,LI-190SA,unknown,20/3/17,8/11/17,,,,calibration_date,str,"March 02, 2012"
@@ -1825,7 +1762,6 @@ VAR_ATT,PAR,SOFS-6-2017,LI-190SA,unknown,20/3/17,8/11/17,,,,comment_scale_offset
 VAR_ATT,PAR,SOFS-6-2017,LI-190SA,unknown,20/3/17,8/11/17,,,,standard_name,str,downwelling_photosynthetic_photon_flux_in_air
 VAR_ATT,PAR,SOFS-6-2017,LI-190SA,unknown,20/3/17,8/11/17,,,,long_name,str,downwelling_photosynthetic_photon_flux_in_air
 VAR_ATT,PAR,SOFS-6-2017,LI-190SA,unknown,20/3/17,8/11/17,,,,units,str,umol/m^2/s
-,,,,,,,,,,,,
 VAR,NOMINAL_DEPTH,SOFS-6-2017,MF-AZFP,55052,20/3/17,8/11/17,NOMINAL_DEPTH,(),(),,float64,0
 VAR,NOMINAL_DEPTH,SOFS-6-2017,Optode 3975C,1158,20/3/17,8/11/17,NOMINAL_DEPTH,(),(),,float64,1
 VAR,NOMINAL_DEPTH,SOFS-6-2017,DEFI-L,082V022,20/3/17,8/11/17,NOMINAL_DEPTH,(),(),,float64,50
@@ -1848,9 +1784,7 @@ VAR,NOMINAL_DEPTH,SOFS-6-2017,Vector,VEC-13630  (VEC-5008),20/3/17,8/11/17,NOMIN
 VAR,NOMINAL_DEPTH,SOFS-6-2017,Vector,VEC-5037  (VEC-8227),20/3/17,8/11/17,NOMINAL_DEPTH,(),(),,float64,30
 VAR,NOMINAL_DEPTH,SOFS-6-2017,SUNA - V2,829,20/3/17,8/11/17,NOMINAL_DEPTH,(),(),,float64,1
 VAR,NOMINAL_DEPTH,SOFS-6-2017,SBE37SM-RS485,03710136,20/3/17,8/11/17,NOMINAL_DEPTH,(),(),,float64,1
-VAR,NOMINAL_DEPTH,SOFS-6-2017,SBE37SM-RS485,03710136,20/3/16,8/11/16,NOMINAL_DEPTH,(),(),,float64,1
 VAR,NOMINAL_DEPTH,SOFS-6-2017,SBE37SM-RS485,03708764,20/3/17,8/11/17,NOMINAL_DEPTH,(),(),,float64,1
-VAR,NOMINAL_DEPTH,SOFS-6-2017,SBE37SM-RS485,03708764,20/3/16,8/11/16,NOMINAL_DEPTH,(),(),,float64,1
 VAR,NOMINAL_DEPTH,SOFS-6-2017,SBE37SMP-ODO-RS232,3714700,20/3/17,8/11/17,NOMINAL_DEPTH,(),(),,float64,500
 VAR,NOMINAL_DEPTH,SOFS-6-2017,SBE37SMP-ODO-RS232,3709513,20/3/17,8/11/17,NOMINAL_DEPTH,(),(),,float64,125
 VAR,NOMINAL_DEPTH,SOFS-6-2017,SBE37SMP-ODO-RS232,3709514,20/3/17,8/11/17,NOMINAL_DEPTH,(),(),,float64,200
@@ -1884,8 +1818,8 @@ VAR,NOMINAL_DEPTH,SOFS-6-2017,Minilog-II-T,354210,20/3/17,8/11/17,NOMINAL_DEPTH,
 VAR,NOMINAL_DEPTH,SOFS-6-2017,Minilog-II-T,354211,20/3/17,8/11/17,NOMINAL_DEPTH,(),(),,float64,320
 VAR,NOMINAL_DEPTH,SOFS-6-2017,Minilog-II-T,354212,20/3/17,8/11/17,NOMINAL_DEPTH,(),(),,float64,360
 VAR,NOMINAL_DEPTH,SOFS-6-2017,FLNTUS,1802,20/3/17,8/11/17,NOMINAL_DEPTH,(),(),,float64,1
-VAR,NOMINAL_DEPTH,SOFS-6-2017,ASIMET,L22,20/3/17,8/11/17,NOMINAL_DEPTH,(),(),,float64,0
-VAR,NOMINAL_DEPTH,SOFS-6-2017,ASIMET,L25,20/3/17,8/11/17,NOMINAL_DEPTH,(),(),,float64,0
+VAR,NOMINAL_DEPTH,SOFS-6-2017,ASIMET LOG53,L22,20/3/17,8/11/17,NOMINAL_DEPTH,(),(),,float64,0
+VAR,NOMINAL_DEPTH,SOFS-6-2017,ASIMET LOG53,L25,20/3/17,8/11/17,NOMINAL_DEPTH,(),(),,float64,0
 VAR,NOMINAL_DEPTH,SOFS-6-2017,BPR,231,20/3/17,8/11/17,NOMINAL_DEPTH,(),(),,float64,-2
 VAR,NOMINAL_DEPTH,SOFS-6-2017,BPR,232,20/3/17,8/11/17,NOMINAL_DEPTH,(),(),,float64,-2
 VAR,NOMINAL_DEPTH,SOFS-6-2017,HRH,245,20/3/17,8/11/17,NOMINAL_DEPTH,(),(),,float64,-2
@@ -1971,8 +1905,8 @@ GLOBAL,,,gpswaves,7,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
 GLOBAL,,,ECO-PARSB,419,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
 GLOBAL,,,FLNTUS,1186,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
 GLOBAL,,,FLNTUS,1802,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,ASIMET,L22,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,ASIMET,L23,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,ASIMET LOG53,L22,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,ASIMET LOG53,L23,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
 GLOBAL,,,BPR,227,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
 GLOBAL,,,BPR,276,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
 GLOBAL,,,HRH,255,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
@@ -1990,18 +1924,14 @@ GLOBAL,,,SWR,241,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
 GLOBAL,,,SWR,355,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
 GLOBAL,,,KILO,3.00E+14,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
 GLOBAL,,,LI-190SA,unknown,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-,,,,,,,,,,,,
 VAR,LATITUDE,SOFS-7-2018,,,6/03/2018,16/03/2018,LATITUDE,(),(),,float64,-47.0111
 VAR,LONGITUDE,SOFS-7-2018,,,6/03/2018,16/03/2018,LONGITUDE,(),(),,float64,142.2135
-,,,,,,,,,,,,
 GLOBAL,,SOFS-7-2018,,,6/03/2018,16/03/2018,,,,site_nominal_depth,float64,4624
 GLOBAL,,SOFS-7-2018,,,6/03/2018,16/03/2018,,,,time_deployment_start,str,2018-03-06T10:00:00Z
 GLOBAL,,SOFS-7-2018,,,6/03/2018,16/03/2018,,,,time_deployment_end,str,2018-03-16T22:00:51Z
 GLOBAL,,SOFS-7-2018,,,,,,,,voyage_deployment,str,http://www.cmar.csiro.au/data/trawler/survey_details.cfm?survey=IN2018_V02
 GLOBAL,,SOFS-7-2018,,,,,,,,voyage_recovery,str,http://www.cmar.csiro.au/data/trawler/survey_details.cfm?survey=IN2018_V02
-,,,,,,,,,,,,
 GLOBAL,,SOFS-7-2018,ECO-PARS,unknown,6/03/2018,16/03/2018,,,,instrument_serial_number,str,PARSB-419
-,,,,,,,,,,,,
 VAR_ATT,PAR_COUNT,SOFS-7-2018,ECO-PARS,unknown,,,,,,comment_attached_instrument,str,Wet-LABS ; PARS-419
 VAR_ATT,PAR_COUNT,SOFS-7-2018,ECO-PARS,unknown,,,,,,calibration_PAR_Im,float64,1.3589
 VAR_ATT,PAR_COUNT,SOFS-7-2018,ECO-PARS,unknown,,,,,,calibration_PAR_digital_A1,float64,2923
@@ -2009,9 +1939,7 @@ VAR_ATT,PAR_COUNT,SOFS-7-2018,ECO-PARS,unknown,,,,,,calibration_PAR_digital_A0,f
 VAR_ATT,PAR_COUNT,SOFS-7-2018,ECO-PARS,unknown,,,,,,calibration_PAR_date,str,9/5/2014
 VAR_ATT,PAR_COUNT,SOFS-7-2018,ECO-PARS,unknown,,,,,,calibration_PAR_facility,str,Satlantic
 VAR_ATT,PAR_COUNT,SOFS-7-2018,ECO-PARS,unknown,,,,,,calibration_PAR_SN,str,PARSB-419
-,,,,,,,,,,,,
 VAR,NOMINAL_DEPTH,SOFS-7-2018,ECO-PARS,unknown,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,30
-,,,,,,,,,,,,
 VAR,NOMINAL_DEPTH,SOFS-7-2018,LI-190SA,unknown,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,-1.8
 GLOBAL,,SOFS-7-2018,LI-190SA,unknown,6/03/2018,16/03/2018,,,,instrument_serial_number,str,Q47470
 VAR_ATT,PAR,SOFS-7-2018,LI-190SA,unknown,6/03/2018,16/03/2018,,,,calibration_date,str,"March 02, 2012"
@@ -2023,8 +1951,6 @@ VAR_ATT,PAR,SOFS-7-2018,LI-190SA,unknown,6/03/2018,16/03/2018,,,,comment_scale_o
 VAR_ATT,PAR,SOFS-7-2018,LI-190SA,unknown,6/03/2018,16/03/2018,,,,standard_name,str,downwelling_photosynthetic_photon_flux_in_air
 VAR_ATT,PAR,SOFS-7-2018,LI-190SA,unknown,6/03/2018,16/03/2018,,,,long_name,str,downwelling_photosynthetic_photon_flux_in_air
 VAR_ATT,PAR,SOFS-7-2018,LI-190SA,unknown,6/03/2018,16/03/2018,,,,units,str,umol/m^2/s
-,,,,,,,,,,,,
-,,,,,,,,,,,,
 VAR,NOMINAL_DEPTH,SOFS-7-2018,MF-AZFP,55046,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,0
 VAR,NOMINAL_DEPTH,SOFS-7-2018,Optode 3975C,1420,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,1
 VAR,NOMINAL_DEPTH,SOFS-7-2018,DEFI-L,082V024,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,50
@@ -2092,8 +2018,8 @@ VAR,NOMINAL_DEPTH,SOFS-7-2018,gpswaves,7,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(
 VAR,NOMINAL_DEPTH,SOFS-7-2018,ECO-PARSB,419,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,30
 VAR,NOMINAL_DEPTH,SOFS-7-2018,FLNTUS,1186,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,30
 VAR,NOMINAL_DEPTH,SOFS-7-2018,FLNTUS,1802,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,0
-VAR,NOMINAL_DEPTH,SOFS-7-2018,ASIMET,L22,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,0
-VAR,NOMINAL_DEPTH,SOFS-7-2018,ASIMET,L23,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,0
+VAR,NOMINAL_DEPTH,SOFS-7-2018,ASIMET LOG53,L22,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,0
+VAR,NOMINAL_DEPTH,SOFS-7-2018,ASIMET LOG53,L23,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,0
 VAR,NOMINAL_DEPTH,SOFS-7-2018,BPR,227,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,-2
 VAR,NOMINAL_DEPTH,SOFS-7-2018,BPR,276,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,-2
 VAR,NOMINAL_DEPTH,SOFS-7-2018,HRH,255,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,-2
@@ -2189,8 +2115,8 @@ GLOBAL,,,gpswaves,7,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
 GLOBAL,,,ECO-PARS,unknown,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
 GLOBAL,,,FLNTUS,1186,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
 GLOBAL,,,FLNTUS,1802,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,ASIMET,L22,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,ASIMET,L23,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,ASIMET LOG53,L22,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,ASIMET LOG53,L23,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
 GLOBAL,,,BPR,227,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
 GLOBAL,,,BPR,276,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
 GLOBAL,,,HRH,363,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
@@ -2208,16 +2134,13 @@ GLOBAL,,,SWR,241,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
 GLOBAL,,,SWR,355,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
 GLOBAL,,,KILO,3.00E+14,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
 GLOBAL,,,LI-190SA,unknown,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-,,,,,,,,,,,,
 VAR,LATITUDE,SOFS-7.5-2018,,,23/8/18,10/4/19,LATITUDE,(),(),,float64,-47.02274
 VAR,LONGITUDE,SOFS-7.5-2018,,,23/8/18,10/4/19,LONGITUDE,(),(),,float64,142.23341
-,,,,,,,,,,,,
 GLOBAL,,SOFS-7.5-2018,,,23/8/18,10/4/19,,,,site_nominal_depth,float64,4624
 GLOBAL,,SOFS-7.5-2018,,,23/8/18,10/4/19,,,,time_deployment_start,str,2018-08-22T13:17:54Z
 GLOBAL,,SOFS-7.5-2018,,,23/8/18,10/4/19,,,,time_deployment_end,str,2019-03-22T21:40:39Z
 GLOBAL,,SOFS-7.5-2018,,,,,,,,voyage_deployment,str,http://www.cmar.csiro.au/data/trawler/survey_details.cfm?survey=IN2018_V07
 GLOBAL,,SOFS-7.5-2018,,,,,,,,voyage_recovery,str,http://www.cmar.csiro.au/data/trawler/survey_details.cfm?survey=IN2019_V02
-,,,,,,,,,,,,
 GLOBAL,,SOFS-7.5-2018,LI-190SA,unknown,23/8/18,10/4/19,,,,instrument_serial_number,str,Q47470
 VAR_ATT,PAR,SOFS-7.5-2018,LI-190SA,unknown,23/8/18,10/4/19,,,,calibration_date,str,"March 02, 2012"
 VAR_ATT,PAR,SOFS-7.5-2018,LI-190SA,unknown,23/8/18,10/4/19,,,,calibration_units,str,umol s-1 m-2 per uamp
@@ -2228,9 +2151,7 @@ VAR_ATT,PAR,SOFS-7.5-2018,LI-190SA,unknown,23/8/18,10/4/19,,,,comment_scale_offs
 VAR_ATT,PAR,SOFS-7.5-2018,LI-190SA,unknown,23/8/18,10/4/19,,,,standard_name,str,downwelling_photosynthetic_photon_flux_in_air
 VAR_ATT,PAR,SOFS-7.5-2018,LI-190SA,unknown,23/8/18,10/4/19,,,,long_name,str,downwelling_photosynthetic_photon_flux_in_air
 VAR_ATT,PAR,SOFS-7.5-2018,LI-190SA,unknown,23/8/18,10/4/19,,,,units,str,umol/m^2/s
-,,,,,,,,,,,,
 GLOBAL,,SOFS-7.5-2018,ECO-PARS,unknown,23/8/18,10/4/19,,,,instrument_serial_number,str,PARSB-419
-,,,,,,,,,,,,
 VAR_ATT,PAR_COUNT,SOFS-7.5-2018,ECO-PARS,unknown,,,,,,comment_attached_instrument,str,Wet-LABS ; PARS-419
 VAR_ATT,PAR_COUNT,SOFS-7.5-2018,ECO-PARS,unknown,,,,,,calibration_PAR_Im,float64,1.3589
 VAR_ATT,PAR_COUNT,SOFS-7.5-2018,ECO-PARS,unknown,,,,,,calibration_PAR_digital_A1,float64,2923
@@ -2238,7 +2159,6 @@ VAR_ATT,PAR_COUNT,SOFS-7.5-2018,ECO-PARS,unknown,,,,,,calibration_PAR_digital_A0
 VAR_ATT,PAR_COUNT,SOFS-7.5-2018,ECO-PARS,unknown,,,,,,calibration_PAR_date,str,9/5/2014
 VAR_ATT,PAR_COUNT,SOFS-7.5-2018,ECO-PARS,unknown,,,,,,calibration_PAR_facility,str,Satlantic
 VAR_ATT,PAR_COUNT,SOFS-7.5-2018,ECO-PARS,unknown,,,,,,calibration_PAR_SN,str,PARSB-419
-,,,,,,,,,,,,
 VAR,NOMINAL_DEPTH,SOFS-7.5-2018,Optode 3975C,1420,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,1
 VAR,NOMINAL_DEPTH,SOFS-7.5-2018,TM Sampler,2,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,1.1
 VAR,NOMINAL_DEPTH,SOFS-7.5-2018,TM Sampler,3,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,1.1
@@ -2318,8 +2238,8 @@ VAR,NOMINAL_DEPTH,SOFS-7.5-2018,gpswaves,7,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,
 VAR,NOMINAL_DEPTH,SOFS-7.5-2018,ECO-PARS,unknown,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,30
 VAR,NOMINAL_DEPTH,SOFS-7.5-2018,FLNTUS,1186,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,30
 VAR,NOMINAL_DEPTH,SOFS-7.5-2018,FLNTUS,1802,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,0
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,ASIMET,L22,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,0
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,ASIMET,L23,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,0
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,ASIMET LOG53,L22,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,0
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,ASIMET LOG53,L23,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,0
 VAR,NOMINAL_DEPTH,SOFS-7.5-2018,BPR,227,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,-2
 VAR,NOMINAL_DEPTH,SOFS-7.5-2018,BPR,276,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,-2
 VAR,NOMINAL_DEPTH,SOFS-7.5-2018,HRH,363,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,-2
@@ -2400,8 +2320,8 @@ GLOBAL,,,Minilog-II-T,354224,18/3/16,30/6/16,,,,deployment_code,str,FluxPulse-1-
 GLOBAL,,,ECO-PAR,135,18/3/16,30/6/16,,,,deployment_code,str,FluxPulse-1-2016
 GLOBAL,,,FLNTUS,1215,18/3/16,30/6/16,,,,deployment_code,str,FluxPulse-1-2016
 GLOBAL,,,FLNTUS,1596,18/3/16,30/6/16,,,,deployment_code,str,FluxPulse-1-2016
-GLOBAL,,,ASIMET,L22,18/3/16,30/6/16,,,,deployment_code,str,FluxPulse-1-2016
-GLOBAL,,,ASIMET,L25,18/3/16,30/6/16,,,,deployment_code,str,FluxPulse-1-2016
+GLOBAL,,,ASIMET LOG53,L22,18/3/16,30/6/16,,,,deployment_code,str,FluxPulse-1-2016
+GLOBAL,,,ASIMET LOG53,L25,18/3/16,30/6/16,,,,deployment_code,str,FluxPulse-1-2016
 GLOBAL,,,BPR,226,18/3/16,30/6/16,,,,deployment_code,str,FluxPulse-1-2016
 GLOBAL,,,BPR,236,18/3/16,30/6/16,,,,deployment_code,str,FluxPulse-1-2016
 GLOBAL,,,HRH,242,18/3/16,30/6/16,,,,deployment_code,str,FluxPulse-1-2016
@@ -2418,17 +2338,14 @@ GLOBAL,,,SWND,228,18/3/16,30/6/16,,,,deployment_code,str,FluxPulse-1-2016
 GLOBAL,,,SWR,236,18/3/16,30/6/16,,,,deployment_code,str,FluxPulse-1-2016
 GLOBAL,,,SWR,245,18/3/16,30/6/16,,,,deployment_code,str,FluxPulse-1-2016
 GLOBAL,,,Sable,3.00E+14,18/3/16,30/6/16,,,,deployment_code,str,FluxPulse-1-2016
-,,,,,,,,,,,,
 VAR,LATITUDE,FluxPulse-1-2016,,,18/3/16,30/6/16,LATITUDE,(),(),,float64,-46.72399
 VAR,LONGITUDE,FluxPulse-1-2016,,,18/3/16,30/6/16,LONGITUDE,(),(),,float64,141.92972
-,,,,,,,,,,,,
 GLOBAL,,FluxPulse-1-2016,,,18/3/16,30/6/16,,,,site_nominal_depth,float64,4624
 GLOBAL,,FluxPulse-1-2016,,,18/3/16,30/6/16,,,,time_deployment_start,str,2016-03-16T13:03:18Z
 GLOBAL,,FluxPulse-1-2016,,,18/3/16,30/6/16,,,,time_deployment_end,str,2016-06-23T01:00:00Z
 GLOBAL,,FluxPulse-1-2016,,,,,,,,voyage_deployment,str,http://www.cmar.csiro.au/data/trawler/survey_details.cfm?survey=IN2016_V02
 GLOBAL,,FluxPulse-1-2016,,,,,,,,voyage_recovery_bottom,str,not recovered
 GLOBAL,,FluxPulse-1-2016,,,,,,,,voyage_recovery_top,str,Pacific Crest 2016-06-23
-,,,,,,,,,,,,
 GLOBAL,,FluxPulse-1-2016,LI-190SA,unknown,18/3/16,30/6/16,,,,instrument_serial_number,str,Q40966
 VAR_ATT,PAR,FluxPulse-1-2016,LI-190SA,unknown,18/3/16,30/6/16,,,,calibration_date,str,"May 21, 2009"
 VAR_ATT,PAR,FluxPulse-1-2016,LI-190SA,unknown,18/3/16,30/6/16,,,,calibration_units,str,umol s-1 m-2 per uamp
@@ -2439,7 +2356,6 @@ VAR_ATT,PAR,FluxPulse-1-2016,LI-190SA,unknown,18/3/16,30/6/16,,,,comment_scale_o
 VAR_ATT,PAR,FluxPulse-1-2016,LI-190SA,unknown,18/3/16,30/6/16,,,,standard_name,str,downwelling_photosynthetic_photon_flux_in_air
 VAR_ATT,PAR,FluxPulse-1-2016,LI-190SA,unknown,18/3/16,30/6/16,,,,long_name,str,downwelling_photosynthetic_photon_flux_in_air
 VAR_ATT,PAR,FluxPulse-1-2016,LI-190SA,unknown,18/3/16,30/6/16,,,,units,str,umol/m^2/s
-,,,,,,,,,,,,
 VAR,NOMINAL_DEPTH,FluxPulse-1-2016,Optode 3975,1161,18/3/16,30/6/16,NOMINAL_DEPTH,(),(),,float64,30
 VAR,NOMINAL_DEPTH,FluxPulse-1-2016,Optode 3975C,1157,18/3/16,30/6/16,NOMINAL_DEPTH,(),(),,float64,1.01
 VAR,NOMINAL_DEPTH,FluxPulse-1-2016,DEFI-L,082V023,18/3/16,30/6/16,NOMINAL_DEPTH,(),(),,float64,10
@@ -2503,8 +2419,8 @@ VAR,NOMINAL_DEPTH,FluxPulse-1-2016,Minilog-II-T,354224,18/3/16,30/6/16,NOMINAL_D
 VAR,NOMINAL_DEPTH,FluxPulse-1-2016,ECO-PAR,135,18/3/16,30/6/16,NOMINAL_DEPTH,(),(),,float64,30
 VAR,NOMINAL_DEPTH,FluxPulse-1-2016,FLNTUS,1215,18/3/16,30/6/16,NOMINAL_DEPTH,(),(),,float64,1.1
 VAR,NOMINAL_DEPTH,FluxPulse-1-2016,FLNTUS,1596,18/3/16,30/6/16,NOMINAL_DEPTH,(),(),,float64,30
-VAR,NOMINAL_DEPTH,FluxPulse-1-2016,ASIMET,L22,18/3/16,30/6/16,NOMINAL_DEPTH,(),(),,float64,0
-VAR,NOMINAL_DEPTH,FluxPulse-1-2016,ASIMET,L25,18/3/16,30/6/16,NOMINAL_DEPTH,(),(),,float64,0
+VAR,NOMINAL_DEPTH,FluxPulse-1-2016,ASIMET LOG53,L22,18/3/16,30/6/16,NOMINAL_DEPTH,(),(),,float64,0
+VAR,NOMINAL_DEPTH,FluxPulse-1-2016,ASIMET LOG53,L25,18/3/16,30/6/16,NOMINAL_DEPTH,(),(),,float64,0
 VAR,NOMINAL_DEPTH,FluxPulse-1-2016,BPR,226,18/3/16,30/6/16,NOMINAL_DEPTH,(),(),,float64,-1.8
 VAR,NOMINAL_DEPTH,FluxPulse-1-2016,BPR,236,18/3/16,30/6/16,NOMINAL_DEPTH,(),(),,float64,-1.8
 VAR,NOMINAL_DEPTH,FluxPulse-1-2016,HRH,242,18/3/16,30/6/16,NOMINAL_DEPTH,(),(),,float64,-1.8
@@ -2521,3 +2437,16 @@ VAR,NOMINAL_DEPTH,FluxPulse-1-2016,SWND,228,18/3/16,30/6/16,NOMINAL_DEPTH,(),(),
 VAR,NOMINAL_DEPTH,FluxPulse-1-2016,SWR,236,18/3/16,30/6/16,NOMINAL_DEPTH,(),(),,float64,-2.2
 VAR,NOMINAL_DEPTH,FluxPulse-1-2016,SWR,245,18/3/16,30/6/16,NOMINAL_DEPTH,(),(),,float64,-2.5
 VAR,NOMINAL_DEPTH,FluxPulse-1-2016,Sable,3.00E+14,18/3/16,30/6/16,NOMINAL_DEPTH,(),(),,float64,1.1
+
+GLOBAL,,,DR-1050,13294,2008-09-28,2009-09-09,,"","",deployment_code,str,"SAZ47-11-2008"
+GLOBAL,,,TDR-2050,14785,2008-09-28,2009-09-09,,"","",deployment_code,str,"SAZ47-11-2008"
+
+GLOBAL,,SAZ47-11-2008,,,2008-09-28,2009-09-09,,"","",site_nominal_depth,float64,"3636.00"
+GLOBAL,,SAZ47-11-2008,,,2008-09-28,2009-09-09,,"","",time_deployment_start,str,"2008-10-04T01:00:00Z"
+GLOBAL,,SAZ47-11-2008,,,2008-09-28,2009-09-09,,"","",time_deployment_end,str,"2009-09-23T00:00:00Z"
+
+VAR,NOMINAL_DEPTH,SAZ47-11-2008,DR-1050,13294,2008-09-28,2009-09-09,NOMINAL_DEPTH,"()","()",,float64,"2850.00"
+VAR,NOMINAL_DEPTH,SAZ47-11-2008,TDR-2050,14785,2008-09-28,2009-09-09,NOMINAL_DEPTH,"()","()",,float64,"1000.00"
+
+VAR,LATITUDE,SAZ47-11-2008,,,2008-09-28,2009-09-09,LATITUDE,"()","()",,float64,"-44.7924"
+VAR,LONGITUDE,SAZ47-11-2008,,,2008-09-28,2009-09-09,LONGITUDE,"()","()",,float64,"145.6392"

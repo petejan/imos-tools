@@ -25,55 +25,19 @@ sys.path.extend(['.'])
 
 import glob
 import os
-import ocean_dp.qc.select_in_water
 import ocean_dp.qc.add_qc_flags
-import ocean_dp.qc.global_range
-import ocean_dp.aggregation.copyDataset
-import ocean_dp.processing.pressure_interpolator_new
-import ocean_dp.processing.agg_to_bin
+import ocean_dp.qc.in_out_water
 
-path = sys.argv[1] + "/"
+# for each of the new files, process them
+if os.path.isfile(sys.argv[1]):
+    ncFiles = [sys.argv[1]]
+else:
+    path = sys.argv[1] + "/"
+    ncFiles = glob.glob(os.path.join(path, '*.nc'))
+    print ('file path : ', path)
 
-print ('file path : ', path)
+for fn in ncFiles:
+    print ("processing " , fn)
 
-print('trim')
-
-file_trim = []
-
-FV00_files = glob.glob(os.path.join(path, "IMOS*FV00*.nc"))
-for fn in FV00_files:
-    nv = ocean_dp.qc.select_in_water.select_in_water([fn])
-    file_trim.extend(nv)
-    print(nv[0])
-
-print('add qc')
-
-file_qc = []
-for fn in file_trim:
-    nv = ocean_dp.qc.add_qc_flags.add_qc([fn])
-    file_qc.extend(nv)
-    print(nv[0])
-
-print('global range')
-
-file_glob = []
-for fn in file_qc:
-    nv = ocean_dp.qc.global_range.global_range(fn, 'TEMP', 40, -2)
-    file_glob.append(nv)
-    print(nv)
-
-pres_file = ocean_dp.aggregation.copyDataset.aggregate(file_glob, ['PRES'])
-
-# TODO: only run interpolator on files that don't contain pressure, or at least don't add IP to every filename
-interp_file = ocean_dp.processing.pressure_interpolator_new.pressure_interpolator(file_glob, pres_file)
-
-temp_agg_file = ocean_dp.aggregation.copyDataset.aggregate(interp_file, ['TEMP', 'PRES'])
-
-# now bin the aggregate file
-
-bin_file = ocean_dp.processing.agg_to_bin.agg_to_bin(temp_agg_file)
-
-
-
-
-
+    ocean_dp.qc.add_qc_flags.add_qc([fn], 'TEMP')
+    ocean_dp.qc.in_out_water.in_out_water([fn], 'TEMP')

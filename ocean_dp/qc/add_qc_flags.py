@@ -32,6 +32,9 @@ def add_qc(netCDFfile, var_name=None):
 
     new_name = []  # list of new file names
 
+    # Change the creation date in the filename to today
+    now = datetime.utcnow()
+
     # loop over all file names given
     for fn in netCDFfile:
 
@@ -45,9 +48,6 @@ def add_qc(netCDFfile, var_name=None):
             # 0    1         2   3        4    5    6                                    7            8
             # rename the file FV00 to FV01
             fn_split[5] = 'FV01'
-
-            # Change the creation date in the filename to today
-            now = datetime.utcnow()
 
             fn_split[8] = now.strftime("C-%Y%m%d.nc")
             fn_new = os.path.join(dirname, "_".join(fn_split))
@@ -89,28 +89,29 @@ def add_qc(netCDFfile, var_name=None):
 
         # for each variable, add a new ancillary variable <VAR>_quality_control to each which has 'TIME' as a dimension
         for v in to_add:
-            if "TIME" in nc_vars[v].dimensions:
-                print("time dim ", v)
+            if v in nc_vars:
+                if "TIME" in nc_vars[v].dimensions:
+                    print("time dim ", v)
 
-                # only add if the quality_control variable does not exist
-                if v+"_quality_control" not in ds.variables:
-                    print("adding : ", (v+"_quality_control"))
-                    ncVarOut = ds.createVariable(v +"_quality_control", "i1", nc_vars[v].dimensions, fill_value=99, zlib=True)  # fill_value=99 otherwise defaults to max, imos-toolbox uses 99
-                    ncVarOut[:] = np.zeros(nc_vars[v].shape)
+                    # only add if the quality_control variable does not exist
+                    if v+"_quality_control" not in ds.variables:
+                        print("adding : ", (v+"_quality_control"))
+                        ncVarOut = ds.createVariable(v +"_quality_control", "i1", nc_vars[v].dimensions, fill_value=99, zlib=True)  # fill_value=99 otherwise defaults to max, imos-toolbox uses 99
+                        ncVarOut[:] = np.zeros(nc_vars[v].shape)
 
-                    ncVarOut.long_name = "quality flag for " + nc_vars[v].long_name
-                    if 'standard_name' in nc_vars[v].ncattrs():
-                        ncVarOut.standard_name = nc_vars[v].standard_name + " status_flag"
+                        ncVarOut.long_name = "quality flag for " + nc_vars[v].long_name
+                        if 'standard_name' in nc_vars[v].ncattrs():
+                            ncVarOut.standard_name = nc_vars[v].standard_name + " status_flag"
 
-                    ncVarOut.quality_control_conventions = "IMOS standard flags"
-                    ncVarOut.flag_values = np.array([0, 1, 2, 3, 4, 6, 7, 9], dtype=np.int8)
-                    ncVarOut.flag_meanings = 'unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value'
-                    ncVarOut.comment = 'maximum of all flags'
+                        ncVarOut.quality_control_conventions = "IMOS standard flags"
+                        ncVarOut.flag_values = np.array([0, 1, 2, 3, 4, 6, 7, 9], dtype=np.int8)
+                        ncVarOut.flag_meanings = 'unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value'
+                        ncVarOut.comment = 'maximum of all flags'
 
-                    nc_vars[v].ancillary_variables = v + "_quality_control"
-                else:
-                    ncVarOut = ds.variables[v+"_quality_control"]
-                    ncVarOut[:] = np.zeros(nc_vars[v].shape)
+                        nc_vars[v].ancillary_variables = v + "_quality_control"
+                    else:
+                        ncVarOut = ds.variables[v+"_quality_control"]
+                        ncVarOut[:] = np.zeros(nc_vars[v].shape)
 
         # update the global attributes
         ds.file_version = "Level 1 - Quality Controlled Data"

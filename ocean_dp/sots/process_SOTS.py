@@ -14,6 +14,7 @@ import ocean_dp.parse.vemco2netCDF
 import ocean_dp.parse.starmon2netCDF
 import ocean_dp.parse.sbe37DD2netCDF
 import ocean_dp.parse.sbe16DD2netCDF
+import ocean_dp.parse.asimet_lgr2netCDF
 
 import ocean_dp.attribution.addAttributes
 import ocean_dp.attribution.add_geospatial_attributes
@@ -95,6 +96,12 @@ oddi_files = glob.glob(os.path.join(path, "*T*.DAT"))
 for fn in oddi_files:
     print ('oddi files', fn)
     filename = ocean_dp.parse.starmon2netCDF.parse([fn])
+    file_names.append((fn, filename))
+
+asimet_files = glob.glob(os.path.join(path, "*L*.DAT"))
+for fn in oddi_files:
+    print ('asimet_files files', fn)
+    filename = ocean_dp.parse.asimet_lgr2netCDF.parse([fn])
     file_names.append((fn, filename))
 
 print('files processed')

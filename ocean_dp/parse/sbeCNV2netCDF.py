@@ -68,6 +68,7 @@ nameMap["FLAG"] = None  # don't keep this variable
 unitMap = {}
 unitMap["PSU"] = "1"
 unitMap["deg C"] = "degrees_Celsius"
+unitMap["ITS-90, deg C"] = "degrees_Celsius"
 unitMap["db"] = "dbar"
 
 # search expressions within file
@@ -75,7 +76,7 @@ unitMap["db"] = "dbar"
 first_line_expr = r"\* Sea-Bird (.*) Data File:"
 
 hardware_expr = r"\* <HardwareData DeviceType='(\S+)' SerialNumber='(\S+)'>"
-name_expr = r"# name (\d+) = (.*): *(.*)"
+name_expr = r"# name (\d+) = (.*): *([^\[]*\[([^]]*)\].*)"
 end_expr = r"\*END\*"
 sampleExpr = r"\* sample interval = (\d+) seconds"
 startTimeExpr = r"# start_time = ([^\[]*)"
@@ -264,15 +265,12 @@ def parse(files):
                         #print("name_expr:matchObj.group(3) : ", matchObj.group(3))
                         nameN = int(matchObj.group(1))
                         comment = matchObj.group(3)
-                        unitObj = re.match(r".*\[((.*), )?(.*)\]", comment)
+                        unit = matchObj.group(4)
                         #print("unit match ", unitObj, comment)
-                        unit = None
-                        if unitObj:
-                            unit = unitObj.group(3)
-                            try:
-                                unit = unitMap[unit]
-                            except KeyError:
-                                pass
+                        try:
+                            unit = unitMap[unit]
+                        except KeyError:
+                            pass
                             #print("unit:unitObj.group(3) : ", unit)
 
                         # construct a var name from the sea bird short name

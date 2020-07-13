@@ -9,6 +9,7 @@ import ocean_dp.attribution.add_geospatial_attributes
 import ocean_dp.file_name.site_instrument
 import ocean_dp.attribution.format_attributes
 import ocean_dp.file_name.imosNetCDFfileName
+import ocean_dp.processing.apply_scale_offset_attributes
 
 import glob
 
@@ -32,6 +33,11 @@ else:
 
 for fn in ncFiles:
     print ("processing " , fn)
+
+    # need to apply any timeoffset first
+    filename = ocean_dp.attribution.addAttributes.add(fn, ['metadata/pulse-saz-sofs-flux-timeoffset.metadata.csv'])
+    filename = ocean_dp.processing.apply_scale_offset_attributes.apply_scale_offset(fn)
+
     filename = ocean_dp.attribution.addAttributes.add(fn,
                                                       ['metadata/pulse-saz-sofs-flux.metadata.csv',
                                                        'metadata/imos.metadata.csv',

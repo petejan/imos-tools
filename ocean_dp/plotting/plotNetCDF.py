@@ -193,6 +193,7 @@ for path_file in sys.argv[1:len(sys.argv)]:
             text += nc_attr + ' : ' + str(attrVal) + '\n'
 
         qc = 0
+        has_qc = False
         if hasattr(plot_var, 'ancillary_variables'):
             qc_var_names = plot_var.getncattr('ancillary_variables')
             for qc_var_name in qc_var_names.split(' '):
@@ -208,6 +209,7 @@ for path_file in sys.argv[1:len(sys.argv)]:
                         text += nc_attr + ' : ' + str(qc_var.getncattr(nc_attr)) + '\n'
 
                     if qc_var_name.endswith("quality_control"):
+                        has_qc = True
                         qc = nc.variables[qc_var_name][:]
 
                         if plot_var.dimensions[0] != 'TIME':
@@ -239,7 +241,13 @@ for path_file in sys.argv[1:len(sys.argv)]:
         marg = (mx - mi) * 0.1
         print("max ", mx, " min ", mi)
 
-        if len(qc_m.compressed()) == len(qc_m):
+        print(len(qc_m.compressed()), qc_m)
+        len_qc = 1
+        try: # because qc_m can be a float sometimes not an array
+            len_qc = len(qc_m)
+        except:
+            pass
+        if len(qc_m.compressed()) == len_qc:
             plt.ylim([mi - marg, mx + marg])
         elif len(qc_m.compressed()) > 0:
             plt.ylim([mi - 10*marg, mx + 10*marg])
@@ -341,7 +349,8 @@ for path_file in sys.argv[1:len(sys.argv)]:
         if date_time_start:
             plt.xlim(date_time_start, date_time_end)
 
-        plt.text(0.0, -0.08, 'cyan: QC=2 (pgood); yellow : QC=3 (pbad); red : QC=4 (bad); QC=4,6,9 no line', fontsize=8, horizontalalignment='left', verticalalignment='center', transform = ax.transAxes)
+        if has_qc:
+            plt.text(0.0, -0.08, 'cyan: QC=2 (pgood); yellow : QC=3 (pbad); red : QC=4 (bad); QC=4,6,9 no line', fontsize=8, horizontalalignment='left', verticalalignment='center', transform = ax.transAxes)
 
         # plt.savefig(plot + '.pdf')
         pp.savefig(fig, papertype='a4')

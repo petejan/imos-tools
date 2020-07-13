@@ -1,0 +1,12 @@
+rec_type, var_name, deployment_code, model, serial_number, time_deployment, time_recovery, variable_name, variable_dims, variable_shape, attribute_name, type, value
+VAR_ATT,TIME,Pulse-6-2009,MDS-MKVL,200341,,,,,,comment_scale_offset,str,1.0 -0.04166666666667
+VAR_ATT,TIME,Pulse-6-2009,MDS-MKVL,200665,,,,,,comment_scale_offset,str,1.0 -0.4166666666667
+VAR_ATT,TIME,Pulse-8-2011,MDS-MKVL,200341,,,,,,comment_scale_offset,str,1.0 -0.41666666666667
+VAR_ATT,TIME,Pulse-8-2011,MDS-MKVL,200664,,,,,,comment_scale_offset,str,1.0 -0.41666666666667
+VAR_ATT,TIME,Pulse-8-2011,MDS-MKVL,200665,,,,,,comment_scale_offset,str,1.0 -0.41666666666667
+
+VAR_ATT,TIME,,SBE37SM-RS485,03710136,20/3/16,8/11/16,,,,comment_scale_offset,str,"1 366"
+VAR_ATT,TIME,,SBE37SM-RS485,03708764,20/3/16,8/11/16,,,,comment_scale_offset,str,"1 366"
+VAR_ATT,TIME,,SBE37SM-RS485,03708764,20/3/16,8/11/16,,,,comment_scale_offset,str,"1 366"
+
+VAR_ATT,TIME,,SBE37,1778,2013-05-05,2015-03-27,,,,comment_scale_offset,str,"1 -1"

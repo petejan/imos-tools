@@ -15,7 +15,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
-
+import re
 import sys
 
 import datetime
@@ -155,7 +155,7 @@ def parse(files):
         #     TIME:units = "days since 1950-01-01 00:00:00 UTC";
 
         tDim = ncOut.createDimension("TIME")
-        ncTimesOut = ncOut.createVariable("TIME", "d", ("TIME",), zlib=True)
+        ncTimesOut = ncOut.createVariable("TIME", "d", ("TIME",), zlib=False)
         ncTimesOut.long_name = "time"
         ncTimesOut.units = "days since 1950-01-01 00:00:00 UTC"
         ncTimesOut.calendar = "gregorian"
@@ -172,7 +172,7 @@ def parse(files):
         for x in metadata:
             metadata[x]['var'] = None
             if metadata[x]['var_name']:
-                new_var = ncOut.createVariable(metadata[x]['var_name'], "f4", ("TIME",), zlib=True)
+                new_var = ncOut.createVariable(metadata[x]['var_name'], "f4", ("TIME",), zlib=False)
                 new_var.units = metadata[x]['units']
                 metadata[x]['var'] = new_var
 
@@ -224,7 +224,8 @@ def parse(files):
 
         # add global attributes
         instrument_model = 'ASIMET LOG53'
-        instrument_serialnumber = os.path.basename(filepath)
+        matchObj = re.match('.*L.*(\d\d).*RAW', os.path.basename(filepath))
+        instrument_serialnumber = 'L' + matchObj.group(1)
 
         ncOut.instrument = 'WHOI ; ' + instrument_model
         ncOut.instrument_model = instrument_model
