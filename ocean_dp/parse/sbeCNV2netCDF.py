@@ -76,7 +76,7 @@ unitMap["db"] = "dbar"
 first_line_expr = r"\* Sea-Bird (.*) Data File:"
 
 hardware_expr = r"\* <HardwareData DeviceType='(\S+)' SerialNumber='(\S+)'>"
-name_expr = r"# name (\d+) = (.*): *([^\[]*\[([^]]*)\].*)"
+name_expr = r"# name (\d+) = (.*):\s*(.*)"
 end_expr = r"\*END\*"
 sampleExpr = r"\* sample interval = (\d+) seconds"
 startTimeExpr = r"# start_time = ([^\[]*)"
@@ -265,7 +265,12 @@ def parse(files):
                         #print("name_expr:matchObj.group(3) : ", matchObj.group(3))
                         nameN = int(matchObj.group(1))
                         comment = matchObj.group(3)
-                        unit = matchObj.group(4)
+
+                        unitObj = re.match(r'# name \d+ = .*:\s*[^\[]*\[([^]]*)\]', line)
+                        unit = None
+                        if unitObj:
+                            unit = unitObj.group(1)
+
                         #print("unit match ", unitObj, comment)
                         try:
                             unit = unitMap[unit]
@@ -282,7 +287,7 @@ def parse(files):
                             #print('name map ', nameMap[varName])
                             ncVarName = nameMap[varName]
                         if ncVarName:
-                            name.insert(nVars, {'sbe-name' : varName, 'col': nameN, 'var_name': ncVarName, 'comment': matchObj.group(3), 'unit': unit})
+                            name.insert(nVars, {'sbe-name' : varName, 'col': nameN, 'var_name': ncVarName, 'comment': comment, 'unit': unit})
                             nVars = nVars + 1
                         print("name {} : {} ncName {}".format(nameN, varName, ncVarName))
 

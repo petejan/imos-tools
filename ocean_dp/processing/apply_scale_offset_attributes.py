@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-from netCDF4 import Dataset
+from netCDF4 import Dataset, num2date
 import sys
 import gsw
 import numpy as np
@@ -24,6 +24,7 @@ from datetime import datetime
 
 # add OXSOL to a data file with TEMP, PSAL, PRES variables, many assumptions are made about the input file
 
+ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
 
 def apply_scale_offset(netCDFfile):
     ds = Dataset(netCDFfile, 'a')
@@ -31,6 +32,7 @@ def apply_scale_offset(netCDFfile):
     scale_vars = ds.get_variables_by_attributes(comment_scale_offset=lambda v: v is not None)
 
     for v in scale_vars:
+        print ("var : ", v)
         t = v[:]
         t.mask = False
 
@@ -50,6 +52,12 @@ def apply_scale_offset(netCDFfile):
             hist = ""
 
         ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " : scale, offset variable " + v.name + "")
+
+        if v.name == 'TIME':
+            # update timespan attributes
+            ds.setncattr("time_coverage_start", num2date(v[0], units=v.units, calendar=v.calendar).strftime(ncTimeFormat))
+            ds.setncattr("time_coverage_end", num2date(v[-1], units=v.units, calendar=v.calendar).strftime(ncTimeFormat))
+
 
     ds.close()
 
