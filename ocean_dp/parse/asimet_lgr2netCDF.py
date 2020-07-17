@@ -179,10 +179,10 @@ def parse(files):
         # loop over file, adding data to netCDF file for each timestamp
         ts = None
         with open(filepath, "rb") as binary_file:
-            data = binary_file.read(64)
-            while data:
+            data_raw = binary_file.read(64)
+            while data_raw:
 
-                data = struct.unpack(decoder['unpack'], data)
+                data = struct.unpack(decoder['unpack'], data_raw)
                 #print(data)
                 data_scaled = []
                 for i in range(0, len(data)):
@@ -203,6 +203,7 @@ def parse(files):
                     # keep the first timestamp
                     if ts_start is None:
                         ts_start = ts
+                        print('start time', ts_start)
 
                     # save data to netCDF file
                     ncTimesOut[number_samples_read] = date2num(ts, calendar=ncTimesOut.calendar, units=ncTimesOut.units)
@@ -218,7 +219,7 @@ def parse(files):
                     if number_samples_read % 1000 == 0:
                         print(number_samples_read, ts, "data", data_decoded)
 
-                data = binary_file.read(64)
+                data_raw = binary_file.read(64)
 
         print("file start time ", ts_start)
 

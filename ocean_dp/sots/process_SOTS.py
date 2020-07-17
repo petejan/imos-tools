@@ -98,11 +98,11 @@ for fn in oddi_files:
     filename = ocean_dp.parse.starmon2netCDF.parse([fn])
     file_names.append((fn, filename))
 
-asimet_files = glob.glob(os.path.join(path, "*L*.DAT"))
-for fn in oddi_files:
+asimet_files = glob.glob(os.path.join(path, "*L*.RAW"))
+for fn in asimet_files:
     print ('asimet_files files', fn)
     filename = ocean_dp.parse.asimet_lgr2netCDF.parse([fn])
-    file_names.append((fn, filename))
+    file_names.append((fn, filename[0]))
 
 print('files processed')
 for f in file_names:

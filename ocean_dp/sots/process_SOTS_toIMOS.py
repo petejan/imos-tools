@@ -35,20 +35,24 @@ for fn in ncFiles:
     print ("processing " , fn)
 
     # need to apply any timeoffset first
-    filename = ocean_dp.attribution.addAttributes.add(fn, ['metadata/pulse-saz-sofs-flux-timeoffset.metadata.csv'])
-    filename = ocean_dp.processing.apply_scale_offset_attributes.apply_scale_offset(fn)
+    try:
+        filename = ocean_dp.attribution.addAttributes.add(fn, ['metadata/pulse-saz-sofs-flux-timeoffset.metadata.csv'])
+        filename = ocean_dp.processing.apply_scale_offset_attributes.apply_scale_offset(fn)
 
-    filename = ocean_dp.attribution.addAttributes.add(fn,
-                                                      ['metadata/pulse-saz-sofs-flux.metadata.csv',
-                                                       'metadata/imos.metadata.csv',
-                                                       'metadata/sots.metadata.csv',
-                                                       'metadata/sofs.metadata.csv',
-                                                       'metadata/variable.metadata.csv'])
+        filename = ocean_dp.attribution.addAttributes.add(fn,
+                                                          ['metadata/pulse-saz-sofs-flux.metadata.csv',
+                                                           'metadata/imos.metadata.csv',
+                                                           'metadata/sots.metadata.csv',
+                                                           'metadata/sofs.metadata.csv',
+                                                           'metadata/variable.metadata.csv'])
 
-    filename = ocean_dp.attribution.add_geospatial_attributes.add_spatial_attr(filename)
-    filename = ocean_dp.attribution.format_attributes.format_attributes(filename)
+        filename = ocean_dp.attribution.add_geospatial_attributes.add_spatial_attr(filename)
+        filename = ocean_dp.attribution.format_attributes.format_attributes(filename)
 
-    print('step 2 (attributes) filename : ', filename)
+        print('step 2 (attributes) filename : ', filename)
+    except RuntimeError:
+        print('problem with file', fn)
+        pass
 
     #filename = ocean_dp.file_name.imosNetCDFfileName.rename(filename)
     #print('step 3 imos name : ', filename)
