@@ -203,18 +203,24 @@ for v in varList:
     # rename the _quality_control variables _QC
     varnameOut = re.sub("_quality_control", "_QC", v)
 
-    ncVariableOut = ncOut.createVariable(varnameOut, varList[v].dtype, varDims)
+    fill = None
+    try:
+        fill = varList[v].fill_value
+    except:
+        pass
+    ncVariableOut = ncOut.createVariable(varnameOut, varList[v].dtype, varDims, fill_value=fill)
     print("netCDF variable out shape", ncVariableOut.shape, "dims", varDims)
     # copy the variable attributes
     # this is ends up as the super set of all files
     for a in varList[v].ncattrs():
-        print("%s Attribute %s = %s" % (varnameOut, a, varList[v].getncattr(a)))
-        attValue = varList[v].getncattr(a)
+        if a != '_FillValue':
+            print("%s Attribute %s = %s" % (varnameOut, a, varList[v].getncattr(a)))
+            attValue = varList[v].getncattr(a)
 
-        # Could restrict this just to the ancillary_variables attribute
-        if isinstance(attValue, str):
-            attValue = re.sub("_quality_control", "_QC", varList[v].getncattr(a))
-        ncVariableOut.setncattr(a, attValue)
+            # Could restrict this just to the ancillary_variables attribute
+            if isinstance(attValue, str):
+                attValue = re.sub("_quality_control", "_QC", varList[v].getncattr(a))
+            ncVariableOut.setncattr(a, attValue)
 
     ncVariableOut[:] = var_out
 
