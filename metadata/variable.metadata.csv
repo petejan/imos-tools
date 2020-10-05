@@ -30,11 +30,18 @@ VAR_ATT,PSAL,,,,,,,,,long_name,str,sea_water_practical_salinity
 VAR_ATT,PSAL,,,,,,,,,standard_name,str,sea_water_practical_salinity
 VAR_ATT,PSAL,,,,,,,,,valid_max,float32,41
 VAR_ATT,PSAL,,,,,,,,,valid_min,float32,2
-,,,,,,,,,,,,
+
 VAR_ATT,PAR,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
 VAR_ATT,PAR,,,,,,,,,valid_max,float32,10000
 VAR_ATT,PAR,,,,,,,,,valid_min,float32,-2
-,,,,,,,,,,,,
+
+VAR_ATT,DENSITY,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,DENSITY,,,,,,,,,units,str,kg/m^3
+VAR_ATT,DENSITY,,,,,,,,,long_name,str,sea_water_density
+VAR_ATT,DENSITY,,,,,,,,,standard_name,str,sea_water_density
+VAR_ATT,DENSITY,,,,,,,,,valid_max,float32,1200
+VAR_ATT,DENSITY,,,,,,,,,valid_min,float32,0
+
 VAR_ATT,LATITUDE,,,,,,,,,axis,str,Y
 VAR_ATT,LATITUDE,,,,,,,,,long_name,str,latitude
 VAR_ATT,LATITUDE,,,,,,,,,reference_datum,str,WGS84 geographic coordinate system

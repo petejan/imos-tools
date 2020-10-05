@@ -14,7 +14,6 @@ import ocean_dp.file_name.find_file_with
 import ocean_dp.attribution.format_attributes
 import ocean_dp.file_name.imosNetCDFfileName
 import ocean_dp.processing.pandas_pres_interp
-import ocean_dp.processing.add_incoming_radiation
 import ocean_dp.processing.apply_scale_offset_attributes
 import ocean_dp.processing.extract_SBE16_PAR
 import ocean_dp.qc.add_qc_flags
@@ -82,14 +81,6 @@ sbe16_file = ocean_dp.processing.extract_SBE16_PAR.extract([os.path.join(path, '
 new_name = os.path.join(path, "../netCDF", os.path.basename(sbe16_file[0]))
 print("new name", sbe16_file[0], new_name)
 os.rename(sbe16_file[0], new_name)
-
-pulse_files = ocean_dp.file_name.find_file_with.find_files_pattern(os.path.join(path, "../netCDF", "IMOS*FV00*.nc"))
-p6 = ocean_dp.file_name.find_file_with.find_global(pulse_files, 'deployment_code', 'Pulse-6-2009')
-print('p6 files:')
-for f in p6:
-    print(f)
-
-ocean_dp.processing.add_incoming_radiation.add_solar(p6)
 
 print(process.memory_info().rss)  # in bytes
 

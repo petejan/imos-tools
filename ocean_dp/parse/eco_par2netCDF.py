@@ -93,6 +93,7 @@ def eco_parse(files):
     instrument_ave_setting = None
     instrument_date = None
     instrument_time = None
+    ts_last = datetime(1900,1,1);
 
     with open(filepath, 'r', errors='ignore') as fp:
         line = fp.readline()
@@ -123,6 +124,9 @@ def eco_parse(files):
 
                     t = line_split[0] + " " + line_split[1]
                     ts = datetime.strptime(t, "%m/%d/%y %H:%M:%S")
+                    if ts == ts_last: # sometimes we end up with the same timestamp
+                        ts = ts + timedelta(seconds=0.9)
+                    ts_last = ts
                     time.append(ts)
                     value.append(float(line_split[2]))
                     number_samples += 1
@@ -175,6 +179,9 @@ def eco_parse(files):
 
     ncVarOut = ncOut.createVariable('PAR_COUNT', "f4", ("TIME",), zlib=True)
     ncVarOut.sensor_SeaVoX_L22_code = 'SDN:L22::TOOL0676'
+    ncVarOut.units = '1'
+    ncVarOut.long_name = 'par raw counts'
+    ncVarOut.coordinates = 'TIME LATITUDE LONGITUDE NOMINAL_DEPTH'
     ncVarOut[:] = value
 
     # add timespan attributes

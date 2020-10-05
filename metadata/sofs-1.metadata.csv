@@ -73,8 +73,8 @@ VAR_ATT,PAR,SOFS-1-2010,LI-190SA,unknown,17/3/10,20/4/11,,,,calibration_multipli
 VAR_ATT,PAR,SOFS-1-2010,LI-190SA,unknown,17/3/10,20/4/11,,,,calibration_resistor,str,604
 VAR_ATT,PAR,SOFS-1-2010,LI-190SA,unknown,17/3/10,20/4/11,,,,comment_scale_offset,str,0.26447 0
 VAR_ATT,PAR,SOFS-1-2010,LI-190SA,unknown,17/3/10,20/4/11,,,,comment_scaling_issue,str,"unknown scaling, due to missing resistor on data logging to convert current to voltage"
-VAR_ATT,PAR,SOFS-1-2010,LI-190SA,unknown,17/3/10,20/4/11,,,,standard_name,str,downwelling_photosynthetic_photon_flux_in_air
-VAR_ATT,PAR,SOFS-1-2010,LI-190SA,unknown,17/3/10,20/4/11,,,,long_name,str,downwelling_photosynthetic_photon_flux_in_air
+VAR_ATT,PAR,SOFS-1-2010,LI-190SA,unknown,17/3/10,20/4/11,,,,standard_name,str,surface_downwelling_photosynthetic_photon_flux_in_air
+VAR_ATT,PAR,SOFS-1-2010,LI-190SA,unknown,17/3/10,20/4/11,,,,long_name,str,surface_downwelling_photosynthetic_photon_flux_in_air
 VAR_ATT,PAR,SOFS-1-2010,LI-190SA,unknown,17/3/10,20/4/11,,,,units,str,umol/m^2/s
 ,,,,,,,,,,,,
 VAR,NOMINAL_DEPTH,SOFS-1-2010,DCS,197,17/3/10,20/4/11,NOMINAL_DEPTH,(),(),,float64,30

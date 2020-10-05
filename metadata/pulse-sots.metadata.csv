@@ -774,8 +774,8 @@ VAR_ATT,PAR,SOFS-1-2010,LI-190SA,unknown,17/3/10,20/4/11,,,,calibration_multipli
 VAR_ATT,PAR,SOFS-1-2010,LI-190SA,unknown,17/3/10,20/4/11,,,,calibration_resistor,str,604
 VAR_ATT,PAR,SOFS-1-2010,LI-190SA,unknown,17/3/10,20/4/11,,,,comment_scale_offset,str,0.26447 0
 VAR_ATT,PAR,SOFS-1-2010,LI-190SA,unknown,17/3/10,20/4/11,,,,comment_scaling_issue,str,"unknown scaling, due to missing resistor on data logging to convert current to voltage"
-VAR_ATT,PAR,SOFS-1-2010,LI-190SA,unknown,17/3/10,20/4/11,,,,standard_name,str,downwelling_photosynthetic_photon_flux_in_air
-VAR_ATT,PAR,SOFS-1-2010,LI-190SA,unknown,17/3/10,20/4/11,,,,long_name,str,downwelling_photosynthetic_photon_flux_in_air
+VAR_ATT,PAR,SOFS-1-2010,LI-190SA,unknown,17/3/10,20/4/11,,,,standard_name,str,surface_downwelling_photosynthetic_photon_flux_in_air
+VAR_ATT,PAR,SOFS-1-2010,LI-190SA,unknown,17/3/10,20/4/11,,,,long_name,str,surface_downwelling_photosynthetic_photon_flux_in_air
 VAR_ATT,PAR,SOFS-1-2010,LI-190SA,unknown,17/3/10,20/4/11,,,,units,str,umol/m^2/s
 ,,,,,,,,,,,,
 VAR,NOMINAL_DEPTH,SOFS-1-2010,DCS,197,17/3/10,20/4/11,NOMINAL_DEPTH,(),(),,float64,30
@@ -911,8 +911,8 @@ VAR_ATT,PAR,SOFS-2-2011,LI-190SA,unknown,24/11/11,19/7/12,,,,calibration_constan
 VAR_ATT,PAR,SOFS-2-2011,LI-190SA,unknown,24/11/11,19/7/12,,,,calibration_multiplier,str,-159.74
 VAR_ATT,PAR,SOFS-2-2011,LI-190SA,unknown,24/11/11,19/7/12,,,,calibration_resistor,str,604
 VAR_ATT,PAR,SOFS-2-2011,LI-190SA,unknown,24/11/11,19/7/12,,,,comment_scale_offset,str,264.47 0
-VAR_ATT,PAR,SOFS-2-2011,LI-190SA,unknown,24/11/11,19/7/12,,,,standard_name,str,downwelling_photosynthetic_photon_flux_in_air
-VAR_ATT,PAR,SOFS-2-2011,LI-190SA,unknown,24/11/11,19/7/12,,,,long_name,str,downwelling_photosynthetic_photon_flux_in_air
+VAR_ATT,PAR,SOFS-2-2011,LI-190SA,unknown,24/11/11,19/7/12,,,,standard_name,str,surface_downwelling_photosynthetic_photon_flux_in_air
+VAR_ATT,PAR,SOFS-2-2011,LI-190SA,unknown,24/11/11,19/7/12,,,,long_name,str,surface_downwelling_photosynthetic_photon_flux_in_air
 VAR_ATT,PAR,SOFS-2-2011,LI-190SA,unknown,24/11/11,19/7/12,,,,units,str,umol/m^2/s
 ,,,,,,,,,,,,
 VAR,NOMINAL_DEPTH,SOFS-2-2011,MF-AWCP,55046,24/11/11,19/7/12,NOMINAL_DEPTH,(),(),,float64,30
@@ -1060,8 +1060,8 @@ VAR_ATT,PAR,SOFS-3-2012,LI-190SA,unknown,19/7/12,2/1/13,,,,calibration_constant,
 VAR_ATT,PAR,SOFS-3-2012,LI-190SA,unknown,19/7/12,2/1/13,,,,calibration_multiplier,str,-159.74
 VAR_ATT,PAR,SOFS-3-2012,LI-190SA,unknown,19/7/12,2/1/13,,,,calibration_resistor,str,604
 VAR_ATT,PAR,SOFS-3-2012,LI-190SA,unknown,19/7/12,2/1/13,,,,comment_scale_offset,str,-264.47 0
-VAR_ATT,PAR,SOFS-3-2012,LI-190SA,unknown,19/7/12,2/1/13,,,,standard_name,str,downwelling_photosynthetic_photon_flux_in_air
-VAR_ATT,PAR,SOFS-3-2012,LI-190SA,unknown,19/7/12,2/1/13,,,,long_name,str,downwelling_photosynthetic_photon_flux_in_air
+VAR_ATT,PAR,SOFS-3-2012,LI-190SA,unknown,19/7/12,2/1/13,,,,standard_name,str,surface_downwelling_photosynthetic_photon_flux_in_air
+VAR_ATT,PAR,SOFS-3-2012,LI-190SA,unknown,19/7/12,2/1/13,,,,long_name,str,surface_downwelling_photosynthetic_photon_flux_in_air
 VAR_ATT,PAR,SOFS-3-2012,LI-190SA,unknown,19/7/12,2/1/13,,,,units,str,umol/m^2/s
 ,,,,,,,,,,,,
 VAR,NOMINAL_DEPTH,SOFS-3-2012,MF-AZFP,55052,19/7/12,2/1/13,NOMINAL_DEPTH,(),(),,float64,30
@@ -1257,8 +1257,8 @@ VAR_ATT,PAR,SOFS-4-2013,LI-190SA,unknown,26/4/13,13/10/13,,,,calibration_constan
 VAR_ATT,PAR,SOFS-4-2013,LI-190SA,unknown,26/4/13,13/10/13,,,,calibration_multiplier,str,-122.04
 VAR_ATT,PAR,SOFS-4-2013,LI-190SA,unknown,26/4/13,13/10/13,,,,calibration_resistor,str,604
 VAR_ATT,PAR,SOFS-4-2013,LI-190SA,unknown,26/4/13,13/10/13,,,,comment_scale_offset,str,202.05 0
-VAR_ATT,PAR,SOFS-4-2013,LI-190SA,unknown,26/4/13,13/10/13,,,,standard_name,str,downwelling_photosynthetic_photon_flux_in_air
-VAR_ATT,PAR,SOFS-4-2013,LI-190SA,unknown,26/4/13,13/10/13,,,,long_name,str,downwelling_photosynthetic_photon_flux_in_air
+VAR_ATT,PAR,SOFS-4-2013,LI-190SA,unknown,26/4/13,13/10/13,,,,standard_name,str,surface_downwelling_photosynthetic_photon_flux_in_air
+VAR_ATT,PAR,SOFS-4-2013,LI-190SA,unknown,26/4/13,13/10/13,,,,long_name,str,surface_downwelling_photosynthetic_photon_flux_in_air
 VAR_ATT,PAR,SOFS-4-2013,LI-190SA,unknown,26/4/13,13/10/13,,,,units,str,umol/m^2/s
 ,,,,,,,,,,,,
 VAR,NOMINAL_DEPTH,SOFS-4-2013,MF-AZFP,55046,26/4/13,13/10/13,NOMINAL_DEPTH,(),(),,float64,30
@@ -1471,8 +1471,8 @@ VAR_ATT,PAR,SOFS-5-2015,LI-190SA,unknown,20/3/15,14/4/16,,,,calibration_constant
 VAR_ATT,PAR,SOFS-5-2015,LI-190SA,unknown,20/3/15,14/4/16,,,,calibration_multiplier,str,-122.04
 VAR_ATT,PAR,SOFS-5-2015,LI-190SA,unknown,20/3/15,14/4/16,,,,calibration_resistor,str,604
 VAR_ATT,PAR,SOFS-5-2015,LI-190SA,unknown,20/3/15,14/4/16,,,,comment_scale_offset,str,202.05 0
-VAR_ATT,PAR,SOFS-5-2015,LI-190SA,unknown,20/3/15,14/4/16,,,,standard_name,str,downwelling_photosynthetic_photon_flux_in_air
-VAR_ATT,PAR,SOFS-5-2015,LI-190SA,unknown,20/3/15,14/4/16,,,,long_name,str,downwelling_photosynthetic_photon_flux_in_air
+VAR_ATT,PAR,SOFS-5-2015,LI-190SA,unknown,20/3/15,14/4/16,,,,standard_name,str,surface_downwelling_photosynthetic_photon_flux_in_air
+VAR_ATT,PAR,SOFS-5-2015,LI-190SA,unknown,20/3/15,14/4/16,,,,long_name,str,surface_downwelling_photosynthetic_photon_flux_in_air
 VAR_ATT,PAR,SOFS-5-2015,LI-190SA,unknown,20/3/15,14/4/16,,,,units,str,umol/m^2/s
 ,,,,,,,,,,,,
 VAR,NOMINAL_DEPTH,SOFS-5-2015,MF-AZFP,55046,20/3/15,14/4/16,NOMINAL_DEPTH,(),(),,float64,30
@@ -1699,8 +1699,8 @@ VAR_ATT,PAR,SOFS-6-2017,LI-190SA,unknown,20/3/17,8/11/17,,,,calibration_constant
 VAR_ATT,PAR,SOFS-6-2017,LI-190SA,unknown,20/3/17,8/11/17,,,,calibration_multiplier,str,-122.04
 VAR_ATT,PAR,SOFS-6-2017,LI-190SA,unknown,20/3/17,8/11/17,,,,calibration_resistor,str,604
 VAR_ATT,PAR,SOFS-6-2017,LI-190SA,unknown,20/3/17,8/11/17,,,,comment_scale_offset,str,202.05 0
-VAR_ATT,PAR,SOFS-6-2017,LI-190SA,unknown,20/3/17,8/11/17,,,,standard_name,str,downwelling_photosynthetic_photon_flux_in_air
-VAR_ATT,PAR,SOFS-6-2017,LI-190SA,unknown,20/3/17,8/11/17,,,,long_name,str,downwelling_photosynthetic_photon_flux_in_air
+VAR_ATT,PAR,SOFS-6-2017,LI-190SA,unknown,20/3/17,8/11/17,,,,standard_name,str,surface_downwelling_photosynthetic_photon_flux_in_air
+VAR_ATT,PAR,SOFS-6-2017,LI-190SA,unknown,20/3/17,8/11/17,,,,long_name,str,surface_downwelling_photosynthetic_photon_flux_in_air
 VAR_ATT,PAR,SOFS-6-2017,LI-190SA,unknown,20/3/17,8/11/17,,,,units,str,umol/m^2/s
 ,,,,,,,,,,,,
 VAR,NOMINAL_DEPTH,SOFS-6-2017,MF-AZFP,55052,20/3/17,8/11/17,NOMINAL_DEPTH,(),(),,float64,0
@@ -1940,8 +1940,8 @@ VAR_ATT,PAR,SOFS-7-2018,LI-190SA,unknown,6/03/2018,16/03/2018,,,,calibration_con
 VAR_ATT,PAR,SOFS-7-2018,LI-190SA,unknown,6/03/2018,16/03/2018,,,,calibration_multiplier,str,-122.04
 VAR_ATT,PAR,SOFS-7-2018,LI-190SA,unknown,6/03/2018,16/03/2018,,,,calibration_resistor,str,604
 VAR_ATT,PAR,SOFS-7-2018,LI-190SA,unknown,6/03/2018,16/03/2018,,,,comment_scale_offset,str,202.05 0
-VAR_ATT,PAR,SOFS-7-2018,LI-190SA,unknown,6/03/2018,16/03/2018,,,,standard_name,str,downwelling_photosynthetic_photon_flux_in_air
-VAR_ATT,PAR,SOFS-7-2018,LI-190SA,unknown,6/03/2018,16/03/2018,,,,long_name,str,downwelling_photosynthetic_photon_flux_in_air
+VAR_ATT,PAR,SOFS-7-2018,LI-190SA,unknown,6/03/2018,16/03/2018,,,,standard_name,str,surface_downwelling_photosynthetic_photon_flux_in_air
+VAR_ATT,PAR,SOFS-7-2018,LI-190SA,unknown,6/03/2018,16/03/2018,,,,long_name,str,surface_downwelling_photosynthetic_photon_flux_in_air
 VAR_ATT,PAR,SOFS-7-2018,LI-190SA,unknown,6/03/2018,16/03/2018,,,,units,str,umol/m^2/s
 ,,,,,,,,,,,,
 ,,,,,,,,,,,,
@@ -2145,8 +2145,8 @@ VAR_ATT,PAR,SOFS-7.5-2018,LI-190SA,unknown,23/8/18,10/4/19,,,,calibration_consta
 VAR_ATT,PAR,SOFS-7.5-2018,LI-190SA,unknown,23/8/18,10/4/19,,,,calibration_multiplier,str,-122.04
 VAR_ATT,PAR,SOFS-7.5-2018,LI-190SA,unknown,23/8/18,10/4/19,,,,calibration_resistor,str,604
 VAR_ATT,PAR,SOFS-7.5-2018,LI-190SA,unknown,23/8/18,10/4/19,,,,comment_scale_offset,str,202.05 0
-VAR_ATT,PAR,SOFS-7.5-2018,LI-190SA,unknown,23/8/18,10/4/19,,,,standard_name,str,downwelling_photosynthetic_photon_flux_in_air
-VAR_ATT,PAR,SOFS-7.5-2018,LI-190SA,unknown,23/8/18,10/4/19,,,,long_name,str,downwelling_photosynthetic_photon_flux_in_air
+VAR_ATT,PAR,SOFS-7.5-2018,LI-190SA,unknown,23/8/18,10/4/19,,,,standard_name,str,surface_downwelling_photosynthetic_photon_flux_in_air
+VAR_ATT,PAR,SOFS-7.5-2018,LI-190SA,unknown,23/8/18,10/4/19,,,,long_name,str,surface_downwelling_photosynthetic_photon_flux_in_air
 VAR_ATT,PAR,SOFS-7.5-2018,LI-190SA,unknown,23/8/18,10/4/19,,,,units,str,umol/m^2/s
 ,,,,,,,,,,,,
 GLOBAL,,SOFS-7.5-2018,ECO-PARS,unknown,23/8/18,10/4/19,,,,instrument_serial_number,str,PARSB-419

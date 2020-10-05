@@ -189,7 +189,8 @@ def parse(file):
     ncOut.instrument_serial_number = instrument_serial_number
 
     for s in settings:
-        ncOut.setncattr("comment_file_settings_" + s[0], s[1])
+        if (len(s[1])) > 0:
+            ncOut.setncattr("comment_file_settings_" + s[0], s[1])
 
     #     TIME:axis = "T";
     #     TIME:calendar = "gregorian";

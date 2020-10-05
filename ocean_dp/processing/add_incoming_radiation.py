@@ -58,7 +58,21 @@ def add_solar(netCDFfiles):
 
         lat = ds.variables['LATITUDE'][:]
         lon = ds.variables['LONGITUDE'][:]
-        ndepth = ds.variables['NOMINAL_DEPTH'][:]
+        ndepth = None
+        try:
+            ndepth = ds.variables['NOMINAL_DEPTH'][:]
+        except KeyError:
+            pass
+        if ndepth is None:
+            try:
+                ndepth = ds.variables['DEPTH'][:]
+            except KeyError:
+                pass
+        if ndepth is None:
+            try:
+                ndepth = ds.variables['DEPTH_CPHL'][0]
+            except KeyError:
+                pass
 
         print('lat ', lat, ' lon ', lon)
 

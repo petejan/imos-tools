@@ -27,6 +27,7 @@ from datetime import datetime
 
 # flag 4 (bad) when out of global range
 
+create_sub_qc = True
 
 def global_range(netCDFfiles, variable, max, min, qc_value=4):
 
@@ -56,30 +57,33 @@ def global_range(netCDFfiles, variable, max, min, qc_value=4):
         mask = ((var_data > max) | (var_data < min))
         print('mask data ', mask)
 
-        # create a qc variable just for this test flags
-        if nc_var.name + "_quality_control_gr" in ds.variables:
-            ncVarOut = ds.variables[nc_var.name + "_quality_control_gr"]
-        else:
-            ncVarOut = ds.createVariable(nc_var.name + "_quality_control_gr", "i1", nc_var.dimensions, fill_value=99, zlib=True)  # fill_value=0 otherwise defaults to max
-            ncVarOut[:] = np.zeros(nc_var.shape)
-            ncVarOut.long_name = "quality flag for " + nc_var.long_name
-            try:
-                ncVarOut.standard_name = nc_var.standard_name + " status_flag"
-            except AttributeError:
-                pass
-
-            ncVarOut.flag_values = np.array([0, 1, 2, 3, 4, 6, 7, 9], dtype=np.int8)
-            ncVarOut.quality_control_conventions = "IMOS standard flags"
-            ncVarOut.flag_meanings = 'unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value'
-            # add new variable to list of aux variables
-            nc_var.ancillary_variables = nc_var.ancillary_variables + " " + nc_var.name + "_quality_control_gr"
-            ncVarOut.comment = 'Test 4. gross range test'
-
         new_qc_flags = np.ones(nc_var.shape)
         new_qc_flags[mask] = qc_value
 
-        # store new flags
-        ncVarOut[:] = new_qc_flags
+        if create_sub_qc:
+            # create a qc variable just for this test flags
+            if nc_var.name + "_quality_control_gr" in ds.variables:
+                ncVarOut = ds.variables[nc_var.name + "_quality_control_gr"]
+            else:
+                ncVarOut = ds.createVariable(nc_var.name + "_quality_control_gr", "i1", nc_var.dimensions, fill_value=99, zlib=True)  # fill_value=0 otherwise defaults to max
+                ncVarOut[:] = np.zeros(nc_var.shape)
+
+                if 'long_name' in nc_var.ncattrs():
+                    ncVarOut.long_name = "global_range flag for " + nc_var.long_name
+                #if 'standard_name' in nc_var.ncattrs():
+                #    ncVarOut.standard_name = nc_var.standard_name + " global_range_flag"
+
+                #ncVarOut.flag_values = np.array([0, 1, 2, 3, 4, 6, 7, 9], dtype=np.int8)
+                #ncVarOut.quality_control_conventions = "IMOS standard flags"
+                #ncVarOut.flag_meanings = 'unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value'
+                # add new variable to list of aux variables
+                ncVarOut.units = "1"
+
+                nc_var.ancillary_variables = nc_var.ancillary_variables + " " + nc_var.name + "_quality_control_gr"
+                ncVarOut.comment = 'Test 4. gross range test'
+
+            # store new flags
+            ncVarOut[:] = new_qc_flags
 
         # update the existing qc-flags
         existing_qc_flags = np.max([existing_qc_flags, new_qc_flags], axis=0)

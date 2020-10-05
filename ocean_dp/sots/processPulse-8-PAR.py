@@ -15,7 +15,6 @@ import ocean_dp.file_name.find_file_with
 import ocean_dp.attribution.format_attributes
 import ocean_dp.file_name.imosNetCDFfileName
 import ocean_dp.processing.pandas_pres_interp
-import ocean_dp.processing.add_incoming_radiation
 import ocean_dp.processing.apply_scale_offset_attributes
 import ocean_dp.processing.extract_SBE16_PAR
 import ocean_dp.processing.eco_parcount_2_par
@@ -28,12 +27,8 @@ import ocean_dp.qc.par_nearest_qc
 
 import glob
 
-import psutil
 import os
 import sys
-
-process = psutil.Process(os.getpid())
-print(process.memory_info().rss)  # in bytes
 
 path = sys.argv[1] + "/"
 
@@ -88,9 +83,6 @@ for fn in new_names:
 #     filenames = ocean_dp.processing.pandas_pres_interp.interpolator([filename], os.path.join(path, 'IMOS_ABOS-SOTS_CPT_20110729_SOFS_FV02_Pulse-Aggregate-PRES_END-20120806_C-20200427.nc'))
 #     print('step 4 pressure interpolator : ', filename)
 #
-#     filename = ocean_dp.processing.add_incoming_radiation.add_solar(filenames)
-#     print('step 5 add incoming radiation : ', filename)
-#
 pulse_8_files = ocean_dp.file_name.find_file_with.find_files_pattern(os.path.join(path, "../netCDF/IMOS*.nc"))
 pulse_8_files = ocean_dp.file_name.find_file_with.find_global(pulse_8_files, 'deployment_code', 'Pulse-8-2011')
 # print('pulse-8 files')
@@ -131,6 +123,3 @@ ocean_dp.processing.eco_parcount_2_par.cal(eco_par)
 #
 # print('step 11 nearest')
 # ocean_dp.qc.par_nearest_qc.add_qc(fv01_files)
-
-print(process.memory_info().rss)  # in bytes
-

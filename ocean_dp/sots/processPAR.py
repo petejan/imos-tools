@@ -14,12 +14,8 @@ import ocean_dp.qc.global_range
 import ocean_dp.qc.par_climate_range
 import ocean_dp.qc.par_nearest_qc
 
-import psutil
 import os
 import sys
-
-process = psutil.Process(os.getpid())
-print(process.memory_info().rss)  # in bytes
 
 path = sys.argv[1] + "/"
 
@@ -27,7 +23,6 @@ print ('file path : ', path)
 
 pulse_files = ocean_dp.file_name.find_file_with.find_files_pattern(os.path.join(path, "IMOS*FV00*.nc"))
 par_files = ocean_dp.file_name.find_file_with.find_variable(pulse_files, 'PAR')
-epar_files = ocean_dp.file_name.find_file_with.find_variable(par_files, 'ePAR')
 
 print('PAR files:')
 for f in par_files:
@@ -43,6 +38,8 @@ print('FV01 files:')
 for f in fv01_files:
     print(f)
 
+ocean_dp.processing.add_incoming_radiation.add_solar(fv01_files)
+
 print('step 4 in/out water')
 ocean_dp.qc.in_out_water.in_out_water(fv01_files, "PAR")
 
@@ -50,10 +47,11 @@ print('step 8 global range')
 ocean_dp.qc.global_range.global_range(fv01_files, 'PAR', max=10000, min=-1.7)
 
 print('step 9 global range, pbad 4500')
-ocean_dp.qc.global_range.global_range(fv01_files, 'PAR', max=4500, min=-1.7)
+ocean_dp.qc.global_range.global_range(fv01_files, 'PAR', max=4500, min=-1.7, qc_value=3)
 
 print('step 10 climate qc')
 ocean_dp.qc.par_climate_range.climate_range(fv01_files, "PAR")
+
 #
 # #print('step 11 nearest')
 # #ocean_dp.qc.par_nearest_qc.add_qc(fv01_files)

@@ -98,21 +98,22 @@ def cal(netCDFfiles):
         new_var.standard_name = 'downwelling_photosynthetic_photon_flux_in_sea_water'
         new_var.long_name = 'downwelling_photosynthetic_photon_flux_in_sea_water'
         new_var.units = 'umol/m2/s'
+        new_var.coordinates = 'TIME LATITUDE LONGITUDE NOMINAL_DEPTH'
         new_var.comment_sensor_type = 'cosine sensor, with integrated anti-fouling Bio-wiper'
         new_var.sensor_SeaVoX_L22_code = 'SDN:L22::TOOL0676'
 
-        new_var.ancillary_variables = "PAR_quality_control"
-
-        new_var = ds.createVariable('PAR_quality_control', 'i1', counts.dimensions, fill_value=np.int8(99), zlib=True)
-        print(new_var)
-        if 'PAR_COUNT_quality_control' in ds_in.variables:
-            new_var[:] = ds_in.variables['PAR_COUNT_quality_control'][:]
-            for va in ds_in.variables['PAR_COUNT_quality_control'].ncattrs():
-                if va not in ('_FillValue'):
-                    new_var.setncattr(va, ds_in.variables['PAR_COUNT_quality_control'].getncattr(va))
-        else:
-            new_var[:] = 0
-        new_var.long_name = 'quality_code for downwelling_photosynthetic_photon_flux_in_sea_water'
+        # new_var.ancillary_variables = "PAR_quality_control"
+        #
+        # new_var = ds.createVariable('PAR_quality_control', 'i1', counts.dimensions, fill_value=np.int8(99), zlib=True)
+        # print(new_var)
+        # if 'PAR_COUNT_quality_control' in ds_in.variables:
+        #     new_var[:] = ds_in.variables['PAR_COUNT_quality_control'][:]
+        #     for va in ds_in.variables['PAR_COUNT_quality_control'].ncattrs():
+        #         if va not in ('_FillValue'):
+        #             new_var.setncattr(va, ds_in.variables['PAR_COUNT_quality_control'].getncattr(va))
+        # else:
+        #     new_var[:] = 0
+        # new_var.long_name = 'quality_code for downwelling_photosynthetic_photon_flux_in_sea_water'
 
         ds_in.close()
 

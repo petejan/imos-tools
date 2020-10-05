@@ -114,8 +114,8 @@ VAR_ATT,PAR,SOFS-7.5-2018,LI-190SA,unknown,23/8/18,10/4/19,,,,calibration_consta
 VAR_ATT,PAR,SOFS-7.5-2018,LI-190SA,unknown,23/8/18,10/4/19,,,,calibration_multiplier,str,-122.04
 VAR_ATT,PAR,SOFS-7.5-2018,LI-190SA,unknown,23/8/18,10/4/19,,,,calibration_resistor,str,604
 VAR_ATT,PAR,SOFS-7.5-2018,LI-190SA,unknown,23/8/18,10/4/19,,,,comment_scale_offset,str,202.05 0
-VAR_ATT,PAR,SOFS-7.5-2018,LI-190SA,unknown,23/8/18,10/4/19,,,,standard_name,str,downwelling_photosynthetic_photon_flux_in_air
-VAR_ATT,PAR,SOFS-7.5-2018,LI-190SA,unknown,23/8/18,10/4/19,,,,long_name,str,downwelling_photosynthetic_photon_flux_in_air
+VAR_ATT,PAR,SOFS-7.5-2018,LI-190SA,unknown,23/8/18,10/4/19,,,,standard_name,str,surface_downwelling_photosynthetic_photon_flux_in_air
+VAR_ATT,PAR,SOFS-7.5-2018,LI-190SA,unknown,23/8/18,10/4/19,,,,long_name,str,surface_downwelling_photosynthetic_photon_flux_in_air
 VAR_ATT,PAR,SOFS-7.5-2018,LI-190SA,unknown,23/8/18,10/4/19,,,,units,str,umol/m^2/s
 ,,,,,,,,,,,,
 GLOBAL,,SOFS-7.5-2018,ECO-PARS,unknown,23/8/18,10/4/19,,,,instrument_serial_number,str,PARSB-419

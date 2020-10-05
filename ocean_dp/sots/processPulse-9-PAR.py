@@ -15,7 +15,6 @@ import ocean_dp.file_name.find_file_with
 import ocean_dp.attribution.format_attributes
 import ocean_dp.file_name.imosNetCDFfileName
 import ocean_dp.processing.pandas_pres_interp
-import ocean_dp.processing.add_incoming_radiation
 import ocean_dp.processing.apply_scale_offset_attributes
 import ocean_dp.processing.extract_SBE16_PAR
 import ocean_dp.processing.eco_parcount_2_par

@@ -99,8 +99,8 @@ VAR_ATT,PAR,SOFS-5-2015,LI-190SA,unknown,20/3/15,14/4/16,,,,calibration_constant
 VAR_ATT,PAR,SOFS-5-2015,LI-190SA,unknown,20/3/15,14/4/16,,,,calibration_multiplier,str,-122.04
 VAR_ATT,PAR,SOFS-5-2015,LI-190SA,unknown,20/3/15,14/4/16,,,,calibration_resistor,str,604
 VAR_ATT,PAR,SOFS-5-2015,LI-190SA,unknown,20/3/15,14/4/16,,,,comment_scale_offset,str,202.05 0
-VAR_ATT,PAR,SOFS-5-2015,LI-190SA,unknown,20/3/15,14/4/16,,,,standard_name,str,downwelling_photosynthetic_photon_flux_in_air
-VAR_ATT,PAR,SOFS-5-2015,LI-190SA,unknown,20/3/15,14/4/16,,,,long_name,str,downwelling_photosynthetic_photon_flux_in_air
+VAR_ATT,PAR,SOFS-5-2015,LI-190SA,unknown,20/3/15,14/4/16,,,,standard_name,str,surface_downwelling_photosynthetic_photon_flux_in_air
+VAR_ATT,PAR,SOFS-5-2015,LI-190SA,unknown,20/3/15,14/4/16,,,,long_name,str,surface_downwelling_photosynthetic_photon_flux_in_air
 VAR_ATT,PAR,SOFS-5-2015,LI-190SA,unknown,20/3/15,14/4/16,,,,units,str,umol/m^2/s
 ,,,,,,,,,,,,
 VAR,NOMINAL_DEPTH,SOFS-5-2015,MF-AZFP,55046,20/3/15,14/4/16,NOMINAL_DEPTH,(),(),,float64,30

@@ -80,13 +80,15 @@ def maunal(netCDFfile, var_name=None, after_str=None, flag=4, reason='None'):
 
             ncVarOut[:] = 0
 
-            ncVarOut.long_name = "quality flag for " + nc_vars[v].long_name
-            if 'standard_name' in nc_vars[v].ncattrs():
-                ncVarOut.standard_name = nc_vars[v].standard_name + " status_flag"
+            if 'long_name' in nc_vars[v].ncattrs():
+                ncVarOut.long_name = "manual flag for " + nc_vars[v].long_name
+            #if 'standard_name' in nc_vars[v].ncattrs():
+            #    ncVarOut.standard_name = nc_vars[v].standard_name + " manual flag"
 
-            ncVarOut.quality_control_conventions = "IMOS standard flags"
-            ncVarOut.flag_values = np.array([0, 1, 2, 3, 4, 6, 7, 9], dtype=np.int8)
-            ncVarOut.flag_meanings = 'unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value'
+            #ncVarOut.quality_control_conventions = "IMOS standard flags"
+            #ncVarOut.flag_values = np.array([0, 1, 2, 3, 4, 6, 7, 9], dtype=np.int8)
+            #ncVarOut.flag_meanings = 'unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value'
+            ncVarOut.units = "1"
             ncVarOut.comment = 'manual by date, after ' + after.strftime("%Y-%m-%d")
 
             new_qc_flags = np.zeros(var_qc.shape)
@@ -112,7 +114,11 @@ def maunal(netCDFfile, var_name=None, after_str=None, flag=4, reason='None'):
             hist = ds.history + "\n"
         except AttributeError:
             hist = ""
-        ds.setncattr("history", hist + datetime.utcnow().strftime("%Y-%m-%d") + " " + var_name + " manual QC, marked " + str(int(count)) + ", after " + after.strftime("%Y-%m-%d %H:%M:%S"))
+        if var_name:
+            ds.setncattr("history", hist + datetime.utcnow().strftime("%Y-%m-%d") + " " + var_name + " manual QC, marked " + str(int(count)) + ", after " + after.strftime("%Y-%m-%d %H:%M:%S"))
+        else:
+            ds.setncattr("history", hist + datetime.utcnow().strftime("%Y-%m-%d") + " manual QC, marked " + str(int(count)) + ", after " + after.strftime("%Y-%m-%d %H:%M:%S"))
+
         if reason:
             ds.setncattr("history", ds.history + ' ' + reason)
 

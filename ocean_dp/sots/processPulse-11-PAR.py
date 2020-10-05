@@ -16,7 +16,6 @@ import ocean_dp.file_name.find_file_with
 import ocean_dp.attribution.format_attributes
 import ocean_dp.file_name.imosNetCDFfileName
 import ocean_dp.processing.pandas_pres_interp
-import ocean_dp.processing.add_incoming_radiation
 import ocean_dp.processing.apply_scale_offset_attributes
 import ocean_dp.processing.extract_SBE16_PAR
 import ocean_dp.processing.eco_parcount_2_par
@@ -29,12 +28,8 @@ import ocean_dp.qc.par_nearest_qc
 
 import glob
 
-import psutil
 import os
 import sys
-
-process = psutil.Process(os.getpid())
-print(process.memory_info().rss)  # in bytes
 
 path = sys.argv[1] + "/"
 
@@ -103,16 +98,3 @@ eco_par = ocean_dp.file_name.find_file_with.find_global(pulse_files, 'instrument
 print("eco par", eco_par)
 eco_fn = ocean_dp.processing.eco_parcount_2_par.cal(eco_par)
 pulse_files.extend(eco_fn)
-
-pulse_files = ocean_dp.file_name.find_file_with.find_files_pattern(os.path.join(path, "../netCDF", "IMOS*FV00*.nc"))
-p11 = ocean_dp.file_name.find_file_with.find_global(pulse_files, 'deployment_code', 'Pulse-11-2015')
-p11 = ocean_dp.file_name.find_file_with.find_variable(p11, 'PAR')
-print('p11 files:')
-for f in p11:
-    print(f)
-
-ocean_dp.processing.add_incoming_radiation.add_solar(p11)
-
-
-print(process.memory_info().rss)  # in bytes
-

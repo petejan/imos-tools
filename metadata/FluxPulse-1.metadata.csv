@@ -98,8 +98,8 @@ VAR_ATT,PAR,FluxPulse-1-2016,LI-190SA,unknown,18/3/16,30/6/16,,,,calibration_con
 VAR_ATT,PAR,FluxPulse-1-2016,LI-190SA,unknown,18/3/16,30/6/16,,,,calibration_multiplier,str,-159.74
 VAR_ATT,PAR,FluxPulse-1-2016,LI-190SA,unknown,18/3/16,30/6/16,,,,calibration_resistor,str,604
 VAR_ATT,PAR,FluxPulse-1-2016,LI-190SA,unknown,18/3/16,30/6/16,,,,comment_scale_offset,str,264.47 0
-VAR_ATT,PAR,FluxPulse-1-2016,LI-190SA,unknown,18/3/16,30/6/16,,,,standard_name,str,downwelling_photosynthetic_photon_flux_in_air
-VAR_ATT,PAR,FluxPulse-1-2016,LI-190SA,unknown,18/3/16,30/6/16,,,,long_name,str,downwelling_photosynthetic_photon_flux_in_air
+VAR_ATT,PAR,FluxPulse-1-2016,LI-190SA,unknown,18/3/16,30/6/16,,,,standard_name,str,surface_downwelling_photosynthetic_photon_flux_in_air
+VAR_ATT,PAR,FluxPulse-1-2016,LI-190SA,unknown,18/3/16,30/6/16,,,,long_name,str,surface_downwelling_photosynthetic_photon_flux_in_air
 VAR_ATT,PAR,FluxPulse-1-2016,LI-190SA,unknown,18/3/16,30/6/16,,,,units,str,umol/m^2/s
 ,,,,,,,,,,,,
 VAR,NOMINAL_DEPTH,FluxPulse-1-2016,Optode 3975,1161,18/3/16,30/6/16,NOMINAL_DEPTH,(),(),,float64,30

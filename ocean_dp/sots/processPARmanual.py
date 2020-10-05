@@ -7,12 +7,8 @@ sys.path.extend(['.'])
 import ocean_dp.file_name.find_file_with
 import ocean_dp.qc.manual_by_date
 
-import psutil
 import os
 import sys
-
-process = psutil.Process(os.getpid())
-print(process.memory_info().rss)  # in bytes
 
 path = sys.argv[1] + "/"
 

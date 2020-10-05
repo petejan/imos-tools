@@ -65,7 +65,6 @@ for fn in new_names:
 
     filename = ocean_dp.attribution.add_geospatial_attributes.add_spatial_attr(filename)
     filename = ocean_dp.attribution.format_attributes.format_attributes(filename)
-    filename = ocean_dp.processing.apply_scale_offset_attributes.apply_scale_offset(filename)
 
     print('step 2 (attributes) filename : ', filename)
 

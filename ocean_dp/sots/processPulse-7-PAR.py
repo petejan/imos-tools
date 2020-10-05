@@ -15,7 +15,6 @@ import ocean_dp.file_name.find_file_with
 import ocean_dp.attribution.format_attributes
 import ocean_dp.file_name.imosNetCDFfileName
 import ocean_dp.processing.pandas_pres_interp
-import ocean_dp.processing.add_incoming_radiation
 import ocean_dp.processing.apply_scale_offset_attributes
 import ocean_dp.processing.extract_SBE16_PAR
 import ocean_dp.processing.eco_parcount_2_par
@@ -84,12 +83,6 @@ for fn in new_names:
 
     filename = ocean_dp.file_name.imosNetCDFfileName.rename(filename)
     print('step 3 imos name : ', filename)
-
-    # filenames = ocean_dp.processing.pandas_pres_interp.interpolator([filename], os.path.join(path, 'IMOS_ABOS-SOTS_CFPST_20100817_SOFS_FV02_Pulse-Aggregate-PRES_END-20110430_C-20200428.nc'))
-    # print('step 4 pressure interpolator : ', filename)
-    #
-    # filename = ocean_dp.processing.add_incoming_radiation.add_solar(filenames)
-    # print('step 5 add incoming radiation : ', filename)
 
 print('step ECO-PAR cal')
 pulse_files = glob.glob(os.path.join(path, "../netCDF/IMOS*.nc"))
