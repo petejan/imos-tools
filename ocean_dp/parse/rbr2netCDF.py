@@ -186,7 +186,7 @@ def parse(file):
                 d = np.zeros(len(name))
                 d.fill(np.nan)
 
-                t = parser.parse(lineSplit[0] + ' ' + lineSplit[1], yearfirst = True, dayfirst=True)
+                t = parser.parse(lineSplit[0] + ' ' + lineSplit[1], yearfirst = True, dayfirst=False)
                 ts.append(t)
                 #print("timestamp %s" % t)
 
