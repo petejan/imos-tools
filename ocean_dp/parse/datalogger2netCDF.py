@@ -47,6 +47,21 @@ from collections import namedtuple
 # convert time to netCDF cf-timeformat (double days since 1950-01-01 00:00:00 UTC)
 
 
+def round_time(dt=None, roundTo=3600):
+    """Round a datetime object to any time lapse in seconds
+    dt : datetime.datetime object, default now.
+    roundTo : Closest number of seconds to round to, default 1 hour.
+    Author: Thierry Husson 2012 - Use it as you want but don't blame me.
+    """
+    if dt is None:
+        dt = datetime.now()
+
+    seconds = (dt.replace(tzinfo=None) - dt.min).seconds
+    rounding = (seconds+roundTo/2) // roundTo * roundTo
+
+    return dt + timedelta(0, rounding-seconds, -dt.microsecond)
+
+
 def datalogger(files):
 
     decoder = namedtuple('decode', 'StabQ0 StabQ1 StabQ2 StabQ3 '
@@ -62,7 +77,7 @@ def datalogger(files):
 
     start_data = re.compile(r'(\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2}) \*\*\*\*\*\* START RAW MRU DATA \*\*\*\*\*\*')
     end_data = re.compile(r'(\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2}) \*\*\*\*\*\* END DATA \*\*\*\*\*\*')
-    done = re.compile(r'(\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2}) INFO: \d done time \d+ ,BV=(\S+) ,PT=(\S+) ,OBP=(\S+) ,OT=(\S+) ,CHL=(\S+) ,NTU=(\S+) PAR=(\S+) ,meanAccel=(\S+) ,meanLoad=(\S+)')
+    done_str = re.compile(r'(\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2}) INFO: \d done time \d+ ,BV=(\S+) ,PT=(\S+) ,OBP=(\S+) ,OT=(\S+) ,CHL=(\S+) ,NTU=(\S+) PAR=(\S+) ,meanAccel=(\S+) ,meanLoad=(\S+)')
 
     gps_fix = re.compile(r'(\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2}) INFO : GPS Fix (\d+) Latitude (\S+) Longitude (\S+) sats (\S+) HDOP (\S+)')
 
@@ -82,12 +97,16 @@ def datalogger(files):
 
     dataset = Dataset(outputName, 'w', format='NETCDF4')
 
-    dataset.instrument = "LORD Sensing Microstrain ; 3DM-GX1"
-    dataset.instrument_model = "3DM-GX1"
+    dataset.instrument = "Campbell Scientific; CR1000"
+    dataset.instrument_model = "CR1000"
     dataset.instrument_serial_number = "unknown"
 
+    dataset.instrument_imu = "LORD Sensing Microstrain ; 3DM-GX1"
+    dataset.instrument_imu_model = "3DM-GX1"
+    dataset.instrument_imu_serial_number = "unknown"
+
     time = dataset.createDimension('TIME', None)
-    sample = dataset.createDimension('SAMPLE', 3072)
+    sample_d = dataset.createDimension('SAMPLE', 3072)
 
     f = dataset.createDimension('FREQ', 256)
     v = dataset.createDimension('VECTOR', 3)
@@ -98,6 +117,17 @@ def datalogger(files):
     times.units = 'days since 1950-01-01 00:00:00'
     times.calendar = 'gregorian'
 
+    xpos_var = dataset.createVariable('XPOS', np.float32, ('TIME',), fill_value=np.nan)
+    ypos_var = dataset.createVariable('YPOS', np.float32, ('TIME',), fill_value=np.nan)
+
+    bat_var = dataset.createVariable('vbat', np.float32, ('TIME',), fill_value=np.nan)
+    obp_var = dataset.createVariable('optode_bphase', np.float32, ('TIME',), fill_value=np.nan)
+    otemp_var = dataset.createVariable('optode_temp', np.float32, ('TIME',), fill_value=np.nan)
+    chl_var = dataset.createVariable('CHL', np.float32, ('TIME',), fill_value=np.nan)
+    ntu_var = dataset.createVariable('NTU', np.float32, ('TIME',), fill_value=np.nan)
+    par_var = dataset.createVariable('PAR', np.float32, ('TIME',), fill_value=np.nan)
+    mean_load_var = dataset.createVariable('mean_load', np.float32, ('TIME',), fill_value=np.nan)
+
     accel_var = dataset.createVariable('accel', np.float32, ('TIME', 'SAMPLE', 'VECTOR'), fill_value=np.nan)
     mag_var = dataset.createVariable('mag_field', np.float32, ('TIME', 'SAMPLE', 'VECTOR'), fill_value=np.nan)
     gyro_var = dataset.createVariable('gyro_rate', np.float32, ('TIME', 'SAMPLE', 'VECTOR'), fill_value=np.nan)
@@ -105,18 +135,19 @@ def datalogger(files):
 
     load_var = dataset.createVariable('load', np.float32, ('TIME', 'SAMPLE'), fill_value=np.nan)
 
-    # TODO: should we include the other variables in data logger file, FLNTUS, optode, GPS, panel temp, battery?
-
     # TODO: process the output of this parser into frequency spectra, wave height
 
     # TODO: process all historical data, Pulse, SOFS-1 .... to SOFS-10
 
     ts_start = None
     ts_end = None
-    t_idx = -1
+    t_idx = None
     t0 = 0
     t_last = 0
     samples_red = 0
+    sample = 0
+    times_dict = {}
+    n_times = -1
 
     for file in files:
 
@@ -177,6 +208,8 @@ def datalogger(files):
                             samples_red += 1
                         else:
                             print('bad checksum ', f.tell())
+                    else:
+                        print('short packet', samples_red, sample)
 
                 elif byte[0] > 0x20: # start of string
                     xs = bytearray()
@@ -186,18 +219,15 @@ def datalogger(files):
                     s = xs.decode('ascii')
                     #print('string : ', s)
 
+                    data_time = None
                     # check for start of data
                     matchobj = start_data.match(s)
                     if matchobj:
                         data_time = datetime.strptime(matchobj.group(1), "%Y-%m-%d %H:%M:%S")
                         print('data time ', data_time)
-                        ts_end = data_time
-                        if ts_start is None:
-                            ts_start = data_time
-                        t_idx += 1
+
                         sample = 0
                         samples_red = 0
-                        times[t_idx] = date2num(data_time, units=times.units, calendar=times.calendar)
 
                     # check for end data
                     matchobj = end_data.match(s)
@@ -205,20 +235,59 @@ def datalogger(files):
                         print('end data ', sample, samples_red)
 
                     # check for done
-                    matchobj = done.match(s)
+                    done = None
+                    matchobj = done_str.match(s)
                     if matchobj:
+                        data_time = datetime.strptime(matchobj.group(1), "%Y-%m-%d %H:%M:%S")
+                        print('done time ', data_time)
+                        done = matchobj
                         print('done', s)
 
                     # check for gps fix
+                    gps = None
                     matchobj = gps_fix.match(s)
                     if matchobj:
+                        data_time = datetime.strptime(matchobj.group(1), "%Y-%m-%d %H:%M:%S")
+                        print('gps time ', data_time)
+
+                        gps = matchobj
                         print('gps', s)
+
+                    # update time bounds if we got a time
+                    if data_time:
+                        data_time = round_time(data_time)
+
+                        # check is this time is in the existing times
+                        if data_time in times_dict:
+                            t_idx = times_dict.get(data_time)
+                        else:
+                            n_times += 1
+                            t_idx = n_times
+                            times_dict[data_time] = t_idx
+
+                        # print('got time', data_time, t_idx, n_times)
+                        times[t_idx] = date2num(data_time, units=times.units, calendar=times.calendar)
+                        if gps:
+                            xpos_var[t_idx] = -np.float(gps.group(4))
+                            ypos_var[t_idx] = np.float(gps.group(3))
+                        if done:
+                            bat_var[t_idx] = np.float(done.group(2))
+                            obp_var[t_idx] = np.float(done.group(4))
+                            otemp_var[t_idx] = np.float(done.group(5))
+                            chl_var[t_idx] = np.float(done.group(6))
+                            ntu_var[t_idx] = np.float(done.group(7))
+                            par_var[t_idx] = np.float(done.group(8))
+                            mean_load_var[t_idx] = np.float(done.group(10))
+
+                        # keep time stats, start (first) and end (last), maybe should use min/max
+                        ts_end = data_time
+                        if ts_start is None:
+                            ts_start = data_time
 
                     # check for serial number
                     matchobj = sn.match(s)
                     if matchobj:
-                        dataset.instrument_serial_number = matchobj.group(2)
-
+                        dataset.instrument_imu_serial_number = matchobj.group(2)
                 else:
                     #print('junk ', byte[0])
                     pass
