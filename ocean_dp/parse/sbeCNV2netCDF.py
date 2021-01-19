@@ -20,7 +20,7 @@ import sys
 import re
 import os
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from netCDF4 import num2date, date2num
 from netCDF4 import Dataset
 import numpy as np
@@ -61,6 +61,7 @@ nameMap["SBEOPOXMML"] = "DOX1"
 nameMap["SBEOXTC"] = "DOX_TEMP"
 nameMap["OXSOLMMKG"] = "OXSOL"
 nameMap["DENSITY00"] = "DENSITY"
+nameMap["DEPSM"] = "DEPTH"
 nameMap["FLAG"] = None  # don't keep this variable
 
 # also map units .....
@@ -70,6 +71,8 @@ unitMap["PSU"] = "1"
 unitMap["deg C"] = "degrees_Celsius"
 unitMap["ITS-90, deg C"] = "degrees_Celsius"
 unitMap["db"] = "dbar"
+unitMap["salt water, m"] = "m"
+unitMap["density, kg/m^3"] = "kg/m^3"
 
 # search expressions within file
 
@@ -369,7 +372,7 @@ def parse(files):
             if varName == 'TIME':
                 #print(data[:, v['col']])
                 if (v['unit'] == 'julian days') | (v['sbe-name'] == 'TIMEJ'):
-                    t_epoc_start = datetime(start_time.year, 1, 1)
+                    t_epoc_start = datetime(start_time.year, 1, 1) - timedelta(days=1)
                     t_epoc_jd = date2num(t_epoc_start, calendar=ncTimesOut.calendar, units=ncTimesOut.units)
                     ncTimesOut[:] = (odata[:, v['col']] + t_epoc_jd)
                     print("julian days time ", odata[0, v['col']], start_time, ncTimesOut[0])
