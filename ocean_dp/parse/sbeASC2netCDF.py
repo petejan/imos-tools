@@ -159,6 +159,7 @@ def sbe_asc_parse(files):
     cal_tags = []
     data = None
     no_time = False
+    number_samples = 1
 
     with open(filepath, 'r', errors='ignore') as fp:
         line = fp.readline()
@@ -236,10 +237,10 @@ def sbe_asc_parse(files):
                             nVariables = len(lineSplit)
                         else:
                             nVariables = len(lineSplit) - 2  # 2 for the date and time
-                        data = np.zeros((number_samples, nVariables))
                         print("number variables ", nVariables)
-                        data.fill(np.nan)
                         print("data split number ", len(lineSplit), instrument_model)
+                        data = np.zeros((number_samples, nVariables))
+                        data.fill(np.nan)
                         name.insert(0, {'col': 0, 'var_name': "TEMP", 'comment': None, 'unit': "degrees_Celsius"})
                         try:
                             if instrument_model.index("37") >= 0:

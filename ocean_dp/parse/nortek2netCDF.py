@@ -132,6 +132,11 @@ packet_decoder[113] = {'name': 'Vector With IMU', 'keys': ['EnsCnt', 'AHRSid', '
 packet_decoder[33] = {'name': 'Aquadopp Profiler Velocity Data', 'keys': ['time_bcd', 'error', 'AnaIn1', 'battery', 'soundSpd_Anain2', 'head', 'pitch', 'roll',
                               'presMSB', 'status', 'presLSW', 'temp', 'vel_b1...', 'vel_b2...', 'vel_b3...', 'amp1...', 'amp2...', 'amp3...', 'checksum' ], 'unpack': '<6s7hBBHH{0}h{0}BH'}
 
+packet_decoder[48] = {'name': 'AWAC Wave Data', 'keys': ['pressure', 'distance1', 'anaIn', 'vel1', 'vel2', 'vel3', 'dist1_vel4', 'amp1', 'amp2', 'amp3', 'amp4', 'checksum' ], 'unpack': '<7h4BH'}
+
+packet_decoder[49] = {'name': 'AWAC wave Data Header', 'keys': ['time_bcd', 'NRecords', 'blanking', 'battery', 'sound_speed', 'heading', 'pitch', 'roll', 'minPres', 'maxPres',
+                                                                'temperature', 'cell_size', 'noise1', 'noise2', 'noise3', 'noise4', 'progmagn1', 'progmagn2', 'progmagn3', 'progmagn4', 'spare', 'checksum'], 'unpack': "<6s11H4B4H14sH"}
+
 
 # TODO: how to map the above into netCDF attributes....
 
@@ -231,8 +236,10 @@ def parse_file(filepath):
                         #print(keys_out)
 
                         # decode the packet
+                        #print("packet size", packet_decoder[id]['name'], len(packet))
                         packetDecode = struct.unpack(unpack, packet)
                         d = dict(zip(keys_out, packetDecode))
+
                         #print(packet_decoder[id]['name'])
                         #for k in d:
                         #     print("dict ", k, " = " , d[k])

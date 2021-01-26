@@ -46,7 +46,8 @@ for path_file in sys.argv[1:len(sys.argv)]:
     except AttributeError:  # Attribute doesn't exist
         t_cal = u"gregorian"  # or standard
 
-    dt_time = [num2date(t, units=t_unit, calendar=t_cal, only_use_cftime_datetimes=False) for t in nctime]
+    #dt_time = [num2date(t, units=t_unit, calendar=t_cal, only_use_cftime_datetimes=False) for t in nctime]
+    dt_time = [num2date(t, units=t_unit, calendar=t_cal) for t in nctime]
 
     # work out variables to plot
     nc_vars_to_plot = [var for var in nc.variables]

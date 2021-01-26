@@ -49,7 +49,8 @@ def add_qc(netCDFfile, var_name=None):
             # rename the file FV00 to FV01
             fn_split[5] = 'FV01'
 
-            fn_split[8] = now.strftime("C-%Y%m%d.nc")
+            if len(fn_split) > 8:
+                fn_split[8] = now.strftime("C-%Y%m%d.nc")
             fn_new = os.path.join(dirname, "_".join(fn_split))
 
         # Add the new file name to the list of new file names

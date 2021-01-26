@@ -15,9 +15,9 @@ for path_file in sys.argv[1:len(sys.argv)]:
 
     # put some of the metedata into the header
     f.write('; ' + path_file + '\n')
-    f.write('; time_deployment_start ' + nc.getncattr('time_deployment_start') + '\n')
-    f.write('; time_deployment_end   ' + nc.getncattr('time_deployment_end') + '\n')
-    f.write('; latitude,longitude   ' + str(nc.getncattr('geospatial_lat_min')) + ',' + str(nc.getncattr('geospatial_lon_min')) + '\n')
+    #f.write('; time_deployment_start ' + nc.getncattr('time_deployment_start') + '\n')
+    #f.write('; time_deployment_end   ' + nc.getncattr('time_deployment_end') + '\n')
+    #f.write('; latitude,longitude   ' + str(nc.getncattr('geospatial_lat_min')) + ',' + str(nc.getncattr('geospatial_lon_min')) + '\n')
     f.write('; instrument   ' + nc.getncattr('instrument') + ' ' + nc.getncattr('instrument_serial_number') + '\n')
     f.write('\n')
 
@@ -86,26 +86,26 @@ for path_file in sys.argv[1:len(sys.argv)]:
 
         for process in to_process:
             process_var = nc.variables[process]
-            qc_var = nc.variables[process_var.ancillary_variables]  # get the QC variable
+            #qc_var = nc.variables[process_var.ancillary_variables]  # get the QC variable
 
             var = process_var[:]
-            qc_values = qc_var[:]
-            var.mask = qc_values > 1  # mask out all values not GOOD, or unknown
+            #qc_values = qc_var[:]
+            #var.mask = qc_values > 1  # mask out all values not GOOD, or unknown
             var.fill_value = float('nan')
             shape_len = len(var.shape)
 
-            if process_var.dimensions[0] != 'TIME':
-                var = np.transpose(var)
-                qc_values = np.transpose(qc_values)
+            #if process_var.dimensions[0] != 'TIME':
+            #    var = np.transpose(var)
+            #    qc_values = np.transpose(qc_values)
 
             var = np.squeeze(var)
 
             #line += ',' + str(var[i])
             #print (var[i].shape)
-            if (not var.mask[i].all()) or (len(var[i].shape) > 0):
-                s = np.array2string(var[i], separator=',', prefix='', max_line_width=8192, formatter={'float_kind': lambda x: "%.3f" % x})
-            else:
-                s = 'nan'
+            #if (not var.mask[i].all()) or (len(var[i].shape) > 0):
+            s = np.array2string(var[i], separator=',', prefix='', max_line_width=8192, formatter={'float_kind': lambda x: "%.3f" % x})
+            #else:
+            #    s = 'nan'
             s = s.replace('nan', '')
             s = s.replace('[', '')
             s = s.replace(']', '')

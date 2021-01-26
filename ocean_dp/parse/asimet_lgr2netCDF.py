@@ -19,10 +19,11 @@ import re
 import sys
 
 import datetime
-from netCDF4 import date2num
+from netCDF4 import date2num, num2date
 from netCDF4 import Dataset
 import struct
 import os
+import numpy as np
 
 # /* LOGR 64 byte packed data record structure for storage in FLASH */
 # struct LOGR_record
@@ -100,7 +101,7 @@ decode.append({'key': 'wsmin', 'var_name': 'WSPD_MIN', 'units': 'm/s', 'scale': 
 decode.append({'key': 'vdavg', 'var_name': 'WDIR', 'units': 'degree', 'scale': 10, 'offset': 0, 'unpack': 'h'})
 decode.append({'key': 'compass', 'var_name': None, 'units': 'degree', 'scale': 10, 'offset': 0, 'unpack': 'h'})
 
-decode.append({'key': 'bp', 'var_name': 'A_PRES', 'units': 'mbar', 'scale': 100, 'offset': 900, 'unpack': 'H'})
+decode.append({'key': 'bp', 'var_name': 'AIR_PRES', 'units': 'mbar', 'scale': 100, 'offset': 900, 'unpack': 'H'})
 
 decode.append({'key': 'rh', 'var_name': 'RELH', 'units': 'percent', 'scale': 100, 'offset': 0, 'unpack': 'h'})
 decode.append({'key': 'th', 'var_name': 'ATMP', 'units': 'degrees_Celsius', 'scale': 1000, 'offset': -20, 'unpack': 'H'})
@@ -161,6 +162,21 @@ def parse(files):
         ncTimesOut.calendar = "gregorian"
         ncTimesOut.axis = "T"
 
+        # add global attributes
+        instrument_model = 'ASIMET LOG53'
+        # extract logger SN from file name, from .DAT or .RAW files
+        matchObj = re.match(r'.*L.*(\d\d).*[DR]A[TW]', os.path.basename(filepath))
+        if matchObj:
+            instrument_serialnumber = 'L' + matchObj.group(1)
+        else:
+            instrument_serialnumber = 'unknown'
+
+        ncOut.instrument = 'WHOI ; ' + instrument_model
+        ncOut.instrument_model = instrument_model
+        ncOut.instrument_serial_number = instrument_serialnumber
+
+        ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
+
         # create decoder dictonary
         decoder = {'unpack': '>', 'keys': []}
         for x in decode:
@@ -192,13 +208,13 @@ def parse(files):
                 data_decoded = dict(zip(decoder['keys'], data_scaled))
 
                 # check that this record is a used record
-                if data_decoded['used'] == 42405:
+                if data_decoded['used'] == 42405 and int(data_decoded['year']) < 2100 and int(data_decoded['year']) > 2005:
 
                     # decode the time
                     ts = datetime.datetime(int(data_decoded['year']), int(data_decoded['mon']), int(data_decoded['day']),
                                            int(data_decoded['hour']), int(data_decoded['min']), 0)
 
-                    #print(ts, "data", data_decoded)
+                    # print(ts, "data", data_decoded)
 
                     # keep the first timestamp
                     if ts_start is None:
@@ -221,21 +237,14 @@ def parse(files):
 
                 data_raw = binary_file.read(64)
 
-        print("file start time ", ts_start)
+        print("file first timestamp ", ts_start)
+        print("file last timestamp ", ts)
 
-        # add global attributes
-        instrument_model = 'ASIMET LOG53'
-        matchObj = re.match('.*L.*(\d\d).*RAW', os.path.basename(filepath))
-        instrument_serialnumber = 'L' + matchObj.group(1)
-
-        ncOut.instrument = 'WHOI ; ' + instrument_model
-        ncOut.instrument_model = instrument_model
-        ncOut.instrument_serial_number = instrument_serialnumber
-
-        ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
+        ts_start = num2date(np.min(ncTimesOut[:]), calendar=ncTimesOut.calendar, units=ncTimesOut.units)
+        ts_end = num2date(np.max(ncTimesOut[:]), calendar=ncTimesOut.calendar, units=ncTimesOut.units)
 
         ncOut.setncattr("time_coverage_start", ts_start.strftime(ncTimeFormat))
-        ncOut.setncattr("time_coverage_end", ts.strftime(ncTimeFormat))
+        ncOut.setncattr("time_coverage_end", ts_end.strftime(ncTimeFormat))
 
         # add creating and history entry
         ncOut.setncattr("date_created", datetime.datetime.utcnow().strftime(ncTimeFormat))

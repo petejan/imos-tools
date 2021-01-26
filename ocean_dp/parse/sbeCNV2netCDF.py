@@ -101,6 +101,7 @@ tag = r".*<(.+?)>(.+)<\/\1>|.*<(.+=.*)>"
 instr_exp = r"\* Sea-Bird.?(\S+)"
 sn_expr = r"\* SBE\s+\S+\s+V\s+\S+\s+SERIAL NO. (\S*)"
 sn2_6_expr = r"\* Temperature SN = (\S*)"
+sn39_expr = r"\* SerialNumber: (\S*)"
 
 cast_exp = r"\* cast\s+(.*$)"
 
@@ -239,6 +240,12 @@ def parse(files):
                     if matchObj:
                         #print("sn2_6_expr:matchObj.group() : ", matchObj.group())
                         print("sn2_6_expr:matchObj.group(1) : ", matchObj.group(1))
+                        instrument_serialnumber = matchObj.group(1)
+
+                    matchObj = re.match(sn39_expr, line)
+                    if matchObj:
+                        #print("sn39_expr:matchObj.group() : ", matchObj.group())
+                        print("sn39_expr:matchObj.group(1) : ", matchObj.group(1))
                         instrument_serialnumber = matchObj.group(1)
 
                     matchObj = re.match(sampleExpr, line)

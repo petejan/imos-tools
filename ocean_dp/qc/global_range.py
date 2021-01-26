@@ -36,7 +36,7 @@ def global_range(netCDFfiles, variable, max, min, qc_value=4):
 
         nc_var = ds.variables[variable]
         var_data = nc_var[:]
-        var_data.mask = False
+        #var_data.mask = False
 
         try:
             # find the existing quality_control variable in the auxillary variables list
