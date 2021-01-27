@@ -13,25 +13,16 @@ import ocean_dp.processing.apply_scale_offset_attributes
 
 import glob
 
-import psutil
 import os
 import sys
 
-process = psutil.Process(os.getpid())
-print(process.memory_info().rss)  # in bytes
-
-print('step 1 (parse)')
-
-# for each of the new files, process them
-if os.path.isfile(sys.argv[1]):
-    ncFiles = [sys.argv[1]]
-else:
-    path = sys.argv[1] + "/"
-    ncFiles = glob.glob(os.path.join(path, '*.nc'))
-    print ('file path : ', path)
-
+ncFiles = []
+for f in sys.argv[1:]:
+    ncFiles.extend(glob.glob(f))
 
 for fn in ncFiles:
+    print('step 1 (parse)')
+
     print ("processing " , fn)
 
     # need to apply any timeoffset first
@@ -54,5 +45,5 @@ for fn in ncFiles:
         print('problem with file', fn)
         pass
 
-    #filename = ocean_dp.file_name.imosNetCDFfileName.rename(filename)
-    #print('step 3 imos name : ', filename)
+    filename = ocean_dp.file_name.imosNetCDFfileName.rename(filename)
+    print('step 3 imos name : ', filename)

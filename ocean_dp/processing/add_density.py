@@ -33,10 +33,21 @@ def add_density(netCDFfile):
 
         return "file already contains density"
 
+    if "PSAL" not in ds.variables:
+        print("no salinity")
+
+        return
+
     # extracts the variables from the netcdf
     var_temp = ds.variables["TEMP"]
     var_psal = ds.variables["PSAL"]
-    var_pres = ds.variables["PRES"]
+    pres_var = 'PRES'
+    try:
+        var_pres = ds.variables["PRES"]
+    except KeyError:
+        var_pres = ds.variables["NOMINAL_DEPTH"]
+        pres_var = 'NOMINAL_DEPTH'
+
     var_lon = ds.variables["LONGITUDE"]
     var_lat = ds.variables["LATITUDE"]
 
@@ -75,9 +86,11 @@ def add_density(netCDFfile):
     except AttributeError:
         hist = ""
 
-    ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " : added DENSITY from TEMP, PSAL, PRES, LAT, LON")
+    ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " : added DENSITY from TEMP, PSAL, "+pres_var+", LAT, LON")
 
     ds.close()
+
+    print('added density')
 
 
 if __name__ == "__main__":

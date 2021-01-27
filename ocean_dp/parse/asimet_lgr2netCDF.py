@@ -93,27 +93,27 @@ decode.append({'key': 'year', 'var_name': None, 'units': None, 'scale': 1, 'offs
 decode.append({'key': 'record', 'var_name': None, 'units': None, 'scale': 1, 'offset': 0, 'unpack': 'H'})
 decode.append({'key': 'mux_param', 'var_name': None, 'units': None, 'scale': 1, 'offset': 0, 'unpack': 'B'})
 
-decode.append({'key': 'we', 'var_name': 'WIND_E', 'units': 'm/s', 'scale': 100, 'offset': 0, 'unpack': 'h'})
-decode.append({'key': 'wn', 'var_name': 'WIND_N', 'units': 'm/s', 'scale': 100, 'offset': 0, 'unpack': 'h'})
+decode.append({'key': 'we', 'var_name': 'UWIND', 'units': 'm/s', 'scale': 100, 'offset': 0, 'unpack': 'h'})
+decode.append({'key': 'wn', 'var_name': 'VWIND', 'units': 'm/s', 'scale': 100, 'offset': 0, 'unpack': 'h'})
 decode.append({'key': 'wsavg', 'var_name': 'WSPD', 'units': 'm/s', 'scale': 100, 'offset': 0, 'unpack': 'H'})
 decode.append({'key': 'wsmax', 'var_name': 'WSPD_MAX', 'units': 'm/s', 'scale': 100, 'offset': 0, 'unpack': 'H'})
 decode.append({'key': 'wsmin', 'var_name': 'WSPD_MIN', 'units': 'm/s', 'scale': 100, 'offset': 0, 'unpack': 'H'})
 decode.append({'key': 'vdavg', 'var_name': 'WDIR', 'units': 'degree', 'scale': 10, 'offset': 0, 'unpack': 'h'})
-decode.append({'key': 'compass', 'var_name': None, 'units': 'degree', 'scale': 10, 'offset': 0, 'unpack': 'h'})
+decode.append({'key': 'compass', 'var_name': 'COMPASS', 'units': 'degree', 'scale': 10, 'offset': 0, 'unpack': 'h'})
 
-decode.append({'key': 'bp', 'var_name': 'AIR_PRES', 'units': 'mbar', 'scale': 100, 'offset': 900, 'unpack': 'H'})
+decode.append({'key': 'bp', 'var_name': 'ATMP', 'units': 'mbar', 'scale': 100, 'offset': 900, 'unpack': 'H'})
 
 decode.append({'key': 'rh', 'var_name': 'RELH', 'units': 'percent', 'scale': 100, 'offset': 0, 'unpack': 'h'})
-decode.append({'key': 'th', 'var_name': 'ATMP', 'units': 'degrees_Celsius', 'scale': 1000, 'offset': -20, 'unpack': 'H'})
+decode.append({'key': 'th', 'var_name': 'AIRT', 'units': 'degrees_Celsius', 'scale': 1000, 'offset': -20, 'unpack': 'H'})
 
-decode.append({'key': 'sr', 'var_name': 'SWR', 'units': 'W/m^2', 'scale': 10, 'offset': 0, 'unpack': 'h'})
+decode.append({'key': 'sr', 'var_name': 'SW', 'units': 'W/m^2', 'scale': 10, 'offset': 0, 'unpack': 'h'})
 
-decode.append({'key': 'dome', 'var_name': None, 'units': 'degrees_kelvin', 'scale': 100, 'offset': 0, 'unpack': 'H'})
-decode.append({'key': 'body', 'var_name': None, 'units': 'degrees_kelvin', 'scale': 100, 'offset': 0, 'unpack': 'H'})
-decode.append({'key': 'tpile', 'var_name': None, 'units': 'uV', 'scale': 10, 'offset': 0, 'unpack': 'h'})
-decode.append({'key': 'lwflux', 'var_name': 'LWR', 'units': 'W/m^2', 'scale': 10, 'offset': 0, 'unpack': 'h'})
+decode.append({'key': 'dome', 'var_name': 'TDOME', 'units': 'degrees_kelvin', 'scale': 100, 'offset': 0, 'unpack': 'H'})
+decode.append({'key': 'body', 'var_name': 'TBODY', 'units': 'degrees_kelvin', 'scale': 100, 'offset': 0, 'unpack': 'H'})
+decode.append({'key': 'vpile', 'var_name': 'VPILE', 'units': 'uV', 'scale': 10, 'offset': 0, 'unpack': 'h'})
+decode.append({'key': 'lwflux', 'var_name': 'LW', 'units': 'W/m^2', 'scale': 10, 'offset': 0, 'unpack': 'h'})
 
-decode.append({'key': 'prlev', 'var_name': None, 'units': 'mm', 'scale': 100, 'offset': 0, 'unpack': 'h'})
+decode.append({'key': 'prlev', 'var_name': 'RAIT', 'units': 'mm', 'scale': 100, 'offset': 0, 'unpack': 'h'})
 
 decode.append({'key': 'sct', 'var_name': 'TEMP', 'units': 'degrees_Celsius', 'scale': 1000, 'offset': -5, 'unpack': 'H'})
 decode.append({'key': 'scc', 'var_name': 'CNDC', 'units': 'S/m', 'scale': 10000, 'offset': 0, 'unpack': 'H'})
@@ -155,11 +155,13 @@ def parse(files):
         #     TIME:long_name = "time";
         #     TIME:units = "days since 1950-01-01 00:00:00 UTC";
 
+        t_cal = "gregorian"
+        t_unit = "days since 1950-01-01 00:00:00 UTC"
         tDim = ncOut.createDimension("TIME")
         ncTimesOut = ncOut.createVariable("TIME", "d", ("TIME",), zlib=False)
         ncTimesOut.long_name = "time"
-        ncTimesOut.units = "days since 1950-01-01 00:00:00 UTC"
-        ncTimesOut.calendar = "gregorian"
+        ncTimesOut.units = t_unit
+        ncTimesOut.calendar = t_cal
         ncTimesOut.axis = "T"
 
         # add global attributes
@@ -194,6 +196,7 @@ def parse(files):
 
         # loop over file, adding data to netCDF file for each timestamp
         ts = None
+        last_ts = None
         with open(filepath, "rb") as binary_file:
             data_raw = binary_file.read(64)
             while data_raw:
@@ -208,7 +211,7 @@ def parse(files):
                 data_decoded = dict(zip(decoder['keys'], data_scaled))
 
                 # check that this record is a used record
-                if data_decoded['used'] == 42405 and int(data_decoded['year']) < 2100 and int(data_decoded['year']) > 2005:
+                if data_decoded['used'] == 42405 and int(data_decoded['year']) < 2040 and int(data_decoded['year']) > 2005:
 
                     # decode the time
                     ts = datetime.datetime(int(data_decoded['year']), int(data_decoded['mon']), int(data_decoded['day']),
@@ -222,14 +225,18 @@ def parse(files):
                         print('start time', ts_start)
 
                     # save data to netCDF file
-                    ncTimesOut[number_samples_read] = date2num(ts, calendar=ncTimesOut.calendar, units=ncTimesOut.units)
+                    ncTimesOut[number_samples_read] = date2num(ts, calendar=t_cal, units=t_unit)
                     for x in data_decoded:
                         #print(x, data_decoded[x], metadata[x])
                         if metadata[x]['var_name']:
                             metadata[x]['var'][number_samples_read] = data_decoded[x]
 
-                    # keep sample number
-                    number_samples_read = number_samples_read + 1
+                    # keep sample number, only keep data where time is increasing
+                    if last_ts is None or (ts > last_ts):
+                        number_samples_read = number_samples_read + 1
+                        last_ts = ts
+                    else:
+                        print('non-monotonic time : ', ts)
 
                     # some user feedback
                     if number_samples_read % 1000 == 0:
@@ -240,8 +247,8 @@ def parse(files):
         print("file first timestamp ", ts_start)
         print("file last timestamp ", ts)
 
-        ts_start = num2date(np.min(ncTimesOut[:]), calendar=ncTimesOut.calendar, units=ncTimesOut.units)
-        ts_end = num2date(np.max(ncTimesOut[:]), calendar=ncTimesOut.calendar, units=ncTimesOut.units)
+        ts_start = num2date(np.min(ncTimesOut[:]), calendar=t_cal, units=t_unit)
+        ts_end = num2date(np.max(ncTimesOut[:]), calendar=t_cal, units=t_unit)
 
         ncOut.setncattr("time_coverage_start", ts_start.strftime(ncTimeFormat))
         ncOut.setncattr("time_coverage_end", ts_end.strftime(ncTimeFormat))

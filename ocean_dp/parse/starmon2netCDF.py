@@ -66,204 +66,216 @@ recorder_old_expr = r"#1\s*Recorder:\s*.(.)(\d*)"
 
 
 def parse(file):
+    outputNames = []
 
-    hdr = True
-    dataLine = 0
-    name = []
-    number_samples_read = 0
-    nVars = 0
-    data = []
-    ts = []
+    for filepath in file:
+        hdr = True
+        dataLine = 0
+        name = []
+        number_samples_read = 0
+        nVars = 0
+        data = []
+        ts = []
 
-    filepath = file[0]
+        with open(filepath, 'r', errors='ignore') as fp:
+            line = fp.readline()
+            matchObj1 = re.match(first_line_old_expr, line)
+            matchObj2 = re.match(first_line_expr, line)
+            if not matchObj1 and not matchObj2:
+                print("Not a Starmon-mini DAT file !")
+                return None
 
-    with open(filepath, 'r', errors='ignore') as fp:
-        line = fp.readline()
-        matchObj1 = re.match(first_line_old_expr, line)
-        matchObj2 = re.match(first_line_expr, line)
-        if not matchObj1 and not matchObj2:
-            print("Not a Starmon-mini DAT file !")
-            return None
+            outputName = filepath + ".nc"
 
-        cnt = 1
-        while line:
-            #print("Line {}: {} : {}".format(cnt, dataLine, line.strip()))
-            if hdr:
-                if line[0].isdigit():
-                    hdr = False
-                    print(name)
-                else:
-                    matchObj = re.match(soft_version_expr, line)
-                    if matchObj:
-                        #print("soft_version_expr:matchObj.group() : ", matchObj.group())
-                        #print("soft_version_expr:matchObj.group(1) : ", matchObj.group(1))
-                        software = matchObj.group(1)
+            print("output file : %s" % outputName)
 
-                    matchObj = re.match(first_line_expr, line)
-                    if matchObj:
-                        #print("first_line_expr:matchObj.group() : ", matchObj.group())
-                        #print("first_line_expr:matchObj.group(1) : ", matchObj.group(1))
-                        file_created = matchObj.group(1)
-                    matchObj = re.match(first_line_old_expr, line)
-                    if matchObj:
-                        #print("first_line_old_expr:matchObj.group() : ", matchObj.group())
-                        #print("first_line_old_expr:matchObj.group(1) : ", matchObj.group(1))
-                        file_created = matchObj.group(1)
+            cnt = 1
+            while line:
+                #print("Line {}: {} : {}".format(cnt, dataLine, line.strip()))
+                if hdr:
+                    if line[0].isdigit():
+                        hdr = False
+                        print(name)
+                    else:
+                        matchObj = re.match(soft_version_expr, line)
+                        if matchObj:
+                            #print("soft_version_expr:matchObj.group() : ", matchObj.group())
+                            #print("soft_version_expr:matchObj.group(1) : ", matchObj.group(1))
+                            software = matchObj.group(1)
 
-                    matchObj = re.match(recorder_expr, line)
-                    if matchObj:
-                        #print("recorder_expr:matchObj.group() : ", matchObj.group())
-                        #print("recorder_expr:matchObj.group(1) : ", matchObj.group(1))
-                        #print("recorder_expr:matchObj.group(2) : ", matchObj.group(2))
-                        #print("recorder_expr:matchObj.group(3) : ", matchObj.group(3))
-                        instrument_model = matchObj.group(2)
-                        instrument_serial_number = matchObj.group(3)
+                        matchObj = re.match(first_line_expr, line)
+                        if matchObj:
+                            #print("first_line_expr:matchObj.group() : ", matchObj.group())
+                            #print("first_line_expr:matchObj.group(1) : ", matchObj.group(1))
+                            file_created = matchObj.group(1)
+                        matchObj = re.match(first_line_old_expr, line)
+                        if matchObj:
+                            #print("first_line_old_expr:matchObj.group() : ", matchObj.group())
+                            #print("first_line_old_expr:matchObj.group(1) : ", matchObj.group(1))
+                            file_created = matchObj.group(1)
 
-                    matchObj = re.match(recorder_old_expr, line)
-                    if matchObj:
-                        print("recorder_old_expr:matchObj.group() : ", matchObj.group())
-                        #print("recorder_old_expr:matchObj.group(1) : ", matchObj.group(1))
-                        #print("recorder_old_expr:matchObj.group(2) : ", matchObj.group(2))
-                        instrument_model = matchObj.group(1)
-                        instrument_serial_number = matchObj.group(2)
+                        matchObj = re.match(recorder_expr, line)
+                        if matchObj:
+                            #print("recorder_expr:matchObj.group() : ", matchObj.group())
+                            #print("recorder_expr:matchObj.group(1) : ", matchObj.group(1))
+                            #print("recorder_expr:matchObj.group(2) : ", matchObj.group(2))
+                            #print("recorder_expr:matchObj.group(3) : ", matchObj.group(3))
+                            instrument_model = matchObj.group(2)
+                            instrument_serial_number = matchObj.group(3)
 
-                    matchObj = re.match(series_expr, line)
-                    if matchObj:
-                        print("series_expr:matchObj.group() : ", matchObj.group())
-                        #print("series_expr:matchObj.group(1) : ", matchObj.group(1))
-                        #print("series_expr:matchObj.group(2) : ", matchObj.group(2))
-                        #print("series_expr:matchObj.group(3) : ", matchObj.group(3))
-                        #nameN = matchObj.group(1)
-                        nameN = int(matchObj.group(1)) + 1
-                        ncVarName = matchObj.group(2)
-                        if ncVarName in nameMap:
-                            ncVarName = nameMap[ncVarName]
-                        unit = matchObj.group(3)
-                        if unit in unitMap:
-                            unit = unitMap[unit]
+                        matchObj = re.match(recorder_old_expr, line)
+                        if matchObj:
+                            print("recorder_old_expr:matchObj.group() : ", matchObj.group())
+                            #print("recorder_old_expr:matchObj.group(1) : ", matchObj.group(1))
+                            #print("recorder_old_expr:matchObj.group(2) : ", matchObj.group(2))
+                            instrument_model = matchObj.group(1)
+                            instrument_serial_number = matchObj.group(2)
 
-                        name.insert(nVars, {'col': nameN, 'var_name': ncVarName, 'unit': unit})
+                        matchObj = re.match(series_expr, line)
+                        if matchObj:
+                            print("series_expr:matchObj.group() : ", matchObj.group())
+                            #print("series_expr:matchObj.group(1) : ", matchObj.group(1))
+                            #print("series_expr:matchObj.group(2) : ", matchObj.group(2))
+                            #print("series_expr:matchObj.group(3) : ", matchObj.group(3))
+                            #nameN = matchObj.group(1)
+                            nameN = int(matchObj.group(1)) + 1
+                            ncVarName = matchObj.group(2)
+                            if ncVarName in nameMap:
+                                ncVarName = nameMap[ncVarName]
+                            unit = matchObj.group(3)
+                            if unit in unitMap:
+                                unit = unitMap[unit]
 
-                    matchObj = re.match(channel_expr, line)
-                    if matchObj:
-                        print("channel_expr:matchObj.group() : ", matchObj.group())
-                        #print("channel_expr:matchObj.group(1) : ", matchObj.group(1))
-                        #print("channel_expr:matchObj.group(2) : ", matchObj.group(2))
-                        #print("channel_expr:matchObj.group(3) : ", matchObj.group(3))
-                        nameN = matchObj.group(1)
-                        ncVarName = matchObj.group(2)
-                        if ncVarName in nameMap:
-                            ncVarName = nameMap[ncVarName]
-                        unit = matchObj.group(3)
-                        if unit in unitMap:
-                            unit = unitMap[unit]
+                            name.insert(nVars, {'col': nameN, 'var_name': ncVarName, 'unit': unit})
 
-                        name.insert(nVars, {'col': int(nameN), 'var_name': ncVarName, 'unit': unit})
+                        matchObj = re.match(channel_expr, line)
+                        if matchObj:
+                            print("channel_expr:matchObj.group() : ", matchObj.group())
+                            #print("channel_expr:matchObj.group(1) : ", matchObj.group(1))
+                            #print("channel_expr:matchObj.group(2) : ", matchObj.group(2))
+                            #print("channel_expr:matchObj.group(3) : ", matchObj.group(3))
+                            nameN = matchObj.group(1)
+                            ncVarName = matchObj.group(2)
+                            if ncVarName in nameMap:
+                                ncVarName = nameMap[ncVarName]
+                            unit = matchObj.group(3)
+                            if unit in unitMap:
+                                unit = unitMap[unit]
 
-                    matchObj = re.match(axis_expr, line)
-                    if matchObj:
-                        print("channel_expr:axis_expr.group() : ", matchObj.group())
-                        #print("channel_expr:axis_expr.group(1) : ", matchObj.group(1))
-                        #print("channel_expr:axis_expr.group(2) : ", matchObj.group(2))
-                        #print("channel_expr:axis_expr.group(3) : ", matchObj.group(3))
-                        nameN = int(matchObj.group(1)) + 1
-                        print("axis_expr:nameN ", nameN)
-                        ncVarName = matchObj.group(2)
-                        if ncVarName in nameMap:
-                            ncVarName = nameMap[ncVarName]
-                        unit = matchObj.group(3)
-                        if unit in unitMap:
-                            unit = unitMap[unit]
+                            name.insert(nVars, {'col': int(nameN), 'var_name': ncVarName, 'unit': unit})
 
-                        #name.insert(nVars, {'col': nameN, 'var_name': ncVarName, 'unit': unit})
+                        matchObj = re.match(axis_expr, line)
+                        if matchObj:
+                            print("channel_expr:axis_expr.group() : ", matchObj.group())
+                            #print("channel_expr:axis_expr.group(1) : ", matchObj.group(1))
+                            #print("channel_expr:axis_expr.group(2) : ", matchObj.group(2))
+                            #print("channel_expr:axis_expr.group(3) : ", matchObj.group(3))
+                            nameN = int(matchObj.group(1)) + 1
+                            print("axis_expr:nameN ", nameN)
+                            ncVarName = matchObj.group(2)
+                            if ncVarName in nameMap:
+                                ncVarName = nameMap[ncVarName]
+                            unit = matchObj.group(3)
+                            if unit in unitMap:
+                                unit = unitMap[unit]
 
-            if not hdr:
-                lineSplit = line.strip().split('\t')
-                #print(lineSplit)
-                splitVarNo = 0
-                d = np.zeros(len(name))
-                d.fill(np.nan)
-                t = None
-                try:
-                    t = datetime.strptime(lineSplit[1], '%d/%m/%Y %H:%M:%S')
-                except ValueError:
-                    pass
-                if t is None:
+                            #name.insert(nVars, {'col': nameN, 'var_name': ncVarName, 'unit': unit})
+
+                if not hdr:
+                    lineSplit = line.strip().split('\t')
+                    #print(lineSplit)
+                    splitVarNo = 0
+                    d = np.zeros(len(name))
+                    d.fill(np.nan)
+                    t = None
                     try:
-                        t = datetime.strptime(lineSplit[1], '%d.%m.%y %H:%M:%S')
+                        t = datetime.strptime(lineSplit[1], '%d/%m/%Y %H:%M:%S')
                     except ValueError:
                         pass
-                if t is None:
-                    print("Could not parse time ", lineSplit[1])
-                    return None
+                    if t is None:
+                        try:
+                            t = datetime.strptime(lineSplit[1], '%d.%m.%y %H:%M:%S')
+                        except ValueError:
+                            pass
+                    if t is None:
+                        try:
+                            t = datetime.strptime(lineSplit[1], '%d.%m.%Y %H:%M:%S')
+                        except ValueError:
+                            pass
+                    if t is None:
+                        try:
+                            t = datetime.strptime(lineSplit[1], '%d-%m-%Y %H:%M:%S')
+                        except ValueError:
+                            pass
+                    if t is None:
+                        print("Could not parse time ", lineSplit[1])
+                        return None
 
-                ts.append(t)
-                #print("timestamp %s" % ts)
-                for v in name:
-                    #print("{} : {}".format(splitVarNo, v))
-                    d[splitVarNo] = float(lineSplit[v['col']+1])
-                    splitVarNo = splitVarNo + 1
-                data.append(d)
-                #print(t, d)
-                number_samples_read = number_samples_read + 1
+                    ts.append(t)
+                    #print("timestamp %s" % ts)
+                    for v in name:
+                        #print("{} : {}".format(splitVarNo, v))
+                        d[splitVarNo] = float(lineSplit[v['col']+1])
+                        splitVarNo = splitVarNo + 1
+                    data.append(d)
+                    #print(t, d)
+                    number_samples_read = number_samples_read + 1
 
-                dataLine = dataLine + 1
+                    dataLine = dataLine + 1
 
-            line = fp.readline()
-            cnt += 1
+                line = fp.readline()
+                cnt += 1
 
-    # trim data
-    print("samplesRead %d data shape %s" % (number_samples_read, len(name)))
+        # trim data
+        print("samplesRead %d data shape %s" % (number_samples_read, len(name)))
 
-    #
-    # build the netCDF file
-    #
+        #
+        # build the netCDF file
+        #
 
-    ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
+        ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
 
-    outputName = filepath + ".nc"
+        ncOut = Dataset(outputName, 'w', format='NETCDF4')
 
-    print("output file : %s" % outputName)
+        ncOut.instrument = 'StarODDI ; ' + instrument_model
+        ncOut.instrument_model = instrument_model
+        ncOut.instrument_serial_number = instrument_serial_number
 
-    ncOut = Dataset(outputName, 'w', format='NETCDF4')
+        #     TIME:axis = "T";
+        #     TIME:calendar = "gregorian";
+        #     TIME:long_name = "time";
+        #     TIME:units = "days since 1950-01-01 00:00:00 UTC";
 
-    ncOut.instrument = 'StarODDI ; ' + instrument_model
-    ncOut.instrument_model = instrument_model
-    ncOut.instrument_serial_number = instrument_serial_number
+        tDim = ncOut.createDimension("TIME", number_samples_read)
+        ncTimesOut = ncOut.createVariable("TIME", "d", ("TIME",), zlib=True)
+        ncTimesOut.long_name = "time"
+        ncTimesOut.units = "days since 1950-01-01 00:00:00 UTC"
+        ncTimesOut.calendar = "gregorian"
+        ncTimesOut.axis = "T"
+        ncTimesOut[:] = date2num(ts, units=ncTimesOut.units, calendar=ncTimesOut.calendar)
 
-    #     TIME:axis = "T";
-    #     TIME:calendar = "gregorian";
-    #     TIME:long_name = "time";
-    #     TIME:units = "days since 1950-01-01 00:00:00 UTC";
+        i = 0
+        for v in name:
+            print("Variable %s : unit %s" % (v['var_name'], v['unit']))
+            varName = v['var_name']
+            ncVarOut = ncOut.createVariable(varName, "f4", ("TIME",), fill_value=np.nan, zlib=True) # fill_value=nan otherwise defaults to max
+            if v['unit']:
+                ncVarOut.units = v['unit']
+            ncVarOut[:] = np.array([d[i] for d in data])
 
-    tDim = ncOut.createDimension("TIME", number_samples_read)
-    ncTimesOut = ncOut.createVariable("TIME", "d", ("TIME",), zlib=True)
-    ncTimesOut.long_name = "time"
-    ncTimesOut.units = "days since 1950-01-01 00:00:00 UTC"
-    ncTimesOut.calendar = "gregorian"
-    ncTimesOut.axis = "T"
-    ncTimesOut[:] = date2num(ts, units=ncTimesOut.units, calendar=ncTimesOut.calendar)
+            i += 1
 
-    i = 0
-    for v in name:
-        print("Variable %s : unit %s" % (v['var_name'], v['unit']))
-        varName = v['var_name']
-        ncVarOut = ncOut.createVariable(varName, "f4", ("TIME",), fill_value=np.nan, zlib=True) # fill_value=nan otherwise defaults to max
-        if v['unit']:
-            ncVarOut.units = v['unit']
-        ncVarOut[:] = np.array([d[i] for d in data])
+        ncOut.setncattr("time_coverage_start", num2date(ncTimesOut[0], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
+        ncOut.setncattr("time_coverage_end", num2date(ncTimesOut[-1], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
+        ncOut.setncattr("date_created", datetime.utcnow().strftime(ncTimeFormat))
+        #ncOut.setncattr("history", datetime.utcnow().strftime("%Y-%m-%d") + " created from file " + filepath + " source file created " + file_created + " by software  " + software.replace("\t", " "))
+        ncOut.setncattr("history", datetime.utcnow().strftime("%Y-%m-%d") + " created from file " + filepath + " source file created " + file_created)
 
-        i += 1
+        ncOut.close()
 
-    ncOut.setncattr("time_coverage_start", num2date(ncTimesOut[0], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
-    ncOut.setncattr("time_coverage_end", num2date(ncTimesOut[-1], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
-    ncOut.setncattr("date_created", datetime.utcnow().strftime(ncTimeFormat))
-    #ncOut.setncattr("history", datetime.utcnow().strftime("%Y-%m-%d") + " created from file " + filepath + " source file created " + file_created + " by software  " + software.replace("\t", " "))
-    ncOut.setncattr("history", datetime.utcnow().strftime("%Y-%m-%d") + " created from file " + filepath + " source file created " + file_created)
+        outputNames.append(outputName)
 
-    ncOut.close()
-
-    return outputName
+    return outputNames
 
 
 if __name__ == "__main__":

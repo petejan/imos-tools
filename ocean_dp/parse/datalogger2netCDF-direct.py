@@ -15,7 +15,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
-
+import glob
 import sys
 
 from datetime import datetime, timedelta
@@ -61,7 +61,24 @@ def round_time(dt=None, roundTo=3600):
     return dt + timedelta(0, rounding-seconds, -dt.microsecond)
 
 
+def get_dict_ts(ts, type):
+    done_dict = {'data_time': ts, 'type': type}
+    data_time_hour = round_time(ts)
+    done_dict['data_time_hours'] = data_time_hour
+    done_dict['data_nc_time_hour'] = date2num(data_time_hour, units='days since 1950-01-01 00:00:00', calendar='gregorian')
+
+    return done_dict
+
 def datalogger(files):
+
+    files_to_process = []
+    for f in files:
+        if "*" in f:
+            files_to_process.extend(glob.glob(f))
+        else:
+            files_to_process.append(f)
+
+    #print(files_to_process)
 
     decoder = namedtuple('decode', 'StabQ0 StabQ1 StabQ2 StabQ3 '
                                    'MagFieldX MagFieldY MagFieldZ AccelX AccelY AccelZ '
@@ -90,7 +107,7 @@ def datalogger(files):
 
     ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
 
-    outputName = files[0] + ".nc"
+    outputName = files_to_process[0] + ".nc"
 
     print("output file : %s" % outputName)
     dataset = Dataset(outputName, 'w', format='NETCDF4')
@@ -102,6 +119,10 @@ def datalogger(files):
     dataset.instrument_imu = "LORD Sensing Microstrain ; 3DM-GX1"
     dataset.instrument_imu_model = "3DM-GX1"
     dataset.instrument_imu_serial_number = "unknown"
+
+    dataset.instrument_load = "Sensing Systems ; 10826-3*"
+    dataset.instrument_load_model = "10826-3*"
+    dataset.instrument_load_serial_number = "unknown"
 
     time = dataset.createDimension('TIME', None)
     sample_d = dataset.createDimension('SAMPLE', 3072)
@@ -127,11 +148,19 @@ def datalogger(files):
     samples_red = 0
     sample = 0
     n_times = -1
-    data_dict = {}
-    data_dict['data_time'] = {}
-    data_dict['time_days'] = []
 
-    for file in files:
+    done_list = []
+    gps_list = []
+    imu_list = []
+    done_dict = None
+    imu_dict = None
+    gps_dict = None
+
+    last_imu = False
+
+    for file in files_to_process:
+
+        print('processing ', file)
 
         with open(file, "rb") as f:
             byte = f.read(1)
@@ -139,6 +168,7 @@ def datalogger(files):
                 if byte[0] == 0x0c: # start of IMU stabQ packet
                     packet = f.read(30+4)
                     if len(packet) == 34:
+                        last_imu = False
                         # check the checksum
                         decode_s = struct.unpack('>15H', packet[0:30])
                         cksum = 12
@@ -158,17 +188,17 @@ def datalogger(files):
                             decode = decoder._asdict(decoder._make(decode_scale))
                             #print('decode ', decode)
 
-                            # TODO: check timer if we have missed a sample
                             if sample == 0:
                                 for x in decode.keys():
-                                    data_dict[x] = np.zeros(3072)
-                                data_dict['array'] = 3072
+                                    print(x)
+                                    imu_dict[x] = np.full(3072, np.nan)
+                                imu_dict['array'] = 3072
                                 t0 = decode['Timer']
 
                             sample = int((decode['Timer'] - t0) * 5)
                             # print('time sample ', sample)
                             for x in decode.keys():
-                                data_dict[x][sample] = decode[x]
+                                imu_dict[x][sample] = decode[x]
                             t_last = decode['Timer']
                             sample += 1 # kick along a bit so that next time its not zero
                             samples_red += 1
@@ -178,12 +208,14 @@ def datalogger(files):
                         print('short packet', samples_red, sample)
 
                 elif byte[0] > 0x20: # start of string
-                    data_dict = {}
-
+                    # convert bytes to a string
                     xs = bytearray()
                     while byte[0] != 13:
-                        xs.append(byte[0])
+                        if byte[0] < 128:
+                            xs.append(byte[0])
                         byte = f.read(1)
+                        if not byte:
+                            break
                     s = xs.decode('ascii')
                     #print('string : ', s)
 
@@ -191,115 +223,166 @@ def datalogger(files):
                     # check for start of data
                     matchobj = start_data.match(s)
                     if matchobj:
-                        data_time = datetime.strptime(matchobj.group(1), "%Y-%m-%d %H:%M:%S")
-                        data_dict['data_time'] = data_time
-                        data_dict['type'] = 'imu'
-
-                        print('data time ', data_time)
-
-                        sample = 0
-                        samples_red = 0
+                        imu_dict = get_dict_ts(datetime.strptime(matchobj.group(1), "%Y-%m-%d %H:%M:%S"), 'imu')
+                        last_imu = False
 
                     # check for end data
                     matchobj = end_data.match(s)
                     if matchobj:
                         print('end data ', sample, samples_red)
+                        last_imu = True
 
                     # check for done
                     matchobj = done_str.match(s)
                     if matchobj:
-                        data_time = datetime.strptime(matchobj.group(1), "%Y-%m-%d %H:%M:%S")
-                        data_dict['data_time'] = data_time
-                        data_dict['type'] = 'done'
+                        done_dict = get_dict_ts(datetime.strptime(matchobj.group(1), "%Y-%m-%d %H:%M:%S"), 'done')
 
-                        print('done time ', data_time)
-                        done = matchobj
                         nvp = re.split(",|\ ", matchobj.group(2))
-                        print(nvp)
                         for nv in nvp:
                             if len(nv):
                                 n_v = nv.split("=")
-                                data_dict[n_v[0]] = np.float(n_v[1])
+                                done_dict[n_v[0]] = np.float(n_v[1])
 
                     # check for gps fix
                     matchobj = gps_fix.match(s)
                     if matchobj:
-                        data_time = datetime.strptime(matchobj.group(1), "%Y-%m-%d %H:%M:%S")
-                        data_dict['data_time'] = data_time
-                        data_dict['type'] = 'gps'
+                        gps_dict = get_dict_ts(datetime.strptime(matchobj.group(1), "%Y-%m-%d %H:%M:%S"), 'gps')
 
-                        data_dict['lon'] = -np.float(matchobj.group(4))
-                        data_dict['lat'] = np.float(matchobj.group(3))
-
-                        print('gps time ', data_time)
-
-                        gps = matchobj
-                        print('gps', s)
-
-                    # update time bounds if we got a time
-                    if data_time:
-                        data_time_hour = round_time(data_time)
-                        data_dict['data_time_hours'] = data_time_hour
-                        data_dict['data_nc_time'] = date2num(data_time, units=times.units, calendar=times.calendar)
-
-                        # keep time stats, start (first) and end (last), maybe should use min/max
-                        ts_end = data_time_hour
-                        if ts_start is None:
-                            ts_start = data_time_hour
+                        # the actual data
+                        gps_dict['lon'] = -np.float(matchobj.group(4))
+                        gps_dict['lat'] = np.float(matchobj.group(3))
+                        gps_dict['fix'] = np.float(matchobj.group(2))
 
                     # check for serial number
                     matchobj = sn.match(s)
                     if matchobj:
-                        instrument_imu_serial_number = matchobj.group(2)
-
-                    print('data', s, data_dict)
+                        dataset.instrument_imu_serial_number = matchobj.group(2)
 
                 else:
                     #print('junk ', byte[0])
                     pass
 
                 byte = f.read(1)
+                if gps_dict:
+                    #print('gps dict', gps_dict)
+                    gps_list.append(gps_dict)
+                    gps_dict = None
+                if done_dict:
+                    print('done dict', done_dict)
+                    done_list.append(done_dict)
+                    done_dict = None
 
-    print(data_dict)
-    times[:] = data_dict["data_nc_time"]
+                if (len(byte) == 0) & (imu_dict is not None):
+                    last_imu = True
+                if last_imu and imu_dict:
+                    print('imu_dict dict', imu_dict)
+                    imu_list.append(imu_dict)
+                    imu_dict = None
+                    sample = 0
+                    samples_red = 0
 
-    xpos_var = dataset.createVariable('XPOS', np.float32, ('TIME',), fill_value=np.nan)
-    ypos_var = dataset.createVariable('YPOS', np.float32, ('TIME',), fill_value=np.nan)
+    # done data list
+    time_list = [data['data_nc_time_hour'] for data in done_list]
+    time_list.extend([data['data_nc_time_hour'] for data in gps_list])
+    time_list.extend([data['data_nc_time_hour'] for data in imu_list])
 
-    bat_var = dataset.createVariable('vbat', np.float32, ('TIME',), fill_value=np.nan)
-    obp_var = dataset.createVariable('optode_bphase', np.float32, ('TIME',), fill_value=np.nan)
-    otemp_var = dataset.createVariable('optode_temp', np.float32, ('TIME',), fill_value=np.nan)
-    chl_var = dataset.createVariable('CHL', np.float32, ('TIME',), fill_value=np.nan)
-    ntu_var = dataset.createVariable('NTU', np.float32, ('TIME',), fill_value=np.nan)
-    par_var = dataset.createVariable('PAR', np.float32, ('TIME',), fill_value=np.nan)
-    mean_load_var = dataset.createVariable('mean_load', np.float32, ('TIME',), fill_value=np.nan)
+    tn = np.array(np.unique(time_list))
+    print('times ', tn)
 
-    accel_var = dataset.createVariable('accel', np.float32, ('TIME', 'SAMPLE', 'VECTOR'), fill_value=np.nan)
-    mag_var = dataset.createVariable('mag_field', np.float32, ('TIME', 'SAMPLE', 'VECTOR'), fill_value=np.nan)
-    gyro_var = dataset.createVariable('gyro_rate', np.float32, ('TIME', 'SAMPLE', 'VECTOR'), fill_value=np.nan)
-    quat_var = dataset.createVariable('quaternion', np.float32, ('TIME', 'SAMPLE', 'QUAT'), fill_value=np.nan)
+    times[:] = tn
+    ts_start = num2date(np.min(tn), units='days since 1950-01-01 00:00:00', calendar='gregorian')
+    ts_end = num2date(np.max(tn), units='days since 1950-01-01 00:00:00', calendar='gregorian')
 
-    load_var = dataset.createVariable('load', np.float32, ('TIME', 'SAMPLE'), fill_value=np.nan)
+    # find index IMU data timestamp in timestamps
+    idx = np.zeros(len(done_list), dtype=int)
+    x = 0
+    for i in done_list:
+        idx[x] = np.where(tn == i['data_nc_time_hour'])[0]
+        x += 1
 
-    # save data to netCDF
-    # accel_var[t_idx, sample, 0] = decode['AccelX']
-    # accel_var[t_idx, sample, 1] = decode['AccelY']
-    # accel_var[t_idx, sample, 2] = decode['AccelZ']
-    #
-    # quat_var[t_idx, sample, 0] = decode['StabQ0']
-    # quat_var[t_idx, sample, 1] = decode['StabQ1']
-    # quat_var[t_idx, sample, 2] = decode['StabQ2']
-    # quat_var[t_idx, sample, 3] = decode['StabQ3']
-    #
-    # mag_var[t_idx, sample, 0] = decode['MagFieldX']
-    # mag_var[t_idx, sample, 1] = decode['MagFieldY']
-    # mag_var[t_idx, sample, 2] = decode['MagFieldZ']
-    #
-    # gyro_var[t_idx, sample, 0] = decode['CompAngleRateX']
-    # gyro_var[t_idx, sample, 1] = decode['CompAngleRateY']
-    # gyro_var[t_idx, sample, 2] = decode['CompAngleRateZ']
-    #
-    # load_var[t_idx, sample] = decode['Load']
+    print('done idx :', idx)
+
+    if len(done_list) > 0:
+        for k in done_list[0].keys():
+            print('key: ', k)
+
+        # TODO: adapt to keys found
+        bat_var = dataset.createVariable('vbat', np.float32, ('TIME',), fill_value=np.nan)
+        obp_var = dataset.createVariable('optode_bphase', np.float32, ('TIME',), fill_value=np.nan)
+        otemp_var = dataset.createVariable('optode_temp', np.float32, ('TIME',), fill_value=np.nan)
+        chl_var = dataset.createVariable('CHL', np.float32, ('TIME',), fill_value=np.nan)
+        ntu_var = dataset.createVariable('NTU', np.float32, ('TIME',), fill_value=np.nan)
+        par_var = dataset.createVariable('PAR', np.float32, ('TIME',), fill_value=np.nan)
+        mean_load_var = dataset.createVariable('mean_load', np.float32, ('TIME',), fill_value=np.nan)
+
+        bat_var[idx] = np.array([data['BV'] for data in done_list])
+        obp_var[idx] = np.array([data['OBP'] for data in done_list])
+        otemp_var[idx] = np.array([data['OT'] for data in done_list])
+        chl_var[idx] = np.array([data['CHL'] for data in done_list])
+        ntu_var[idx] = np.array([data['NTU'] for data in done_list])
+        par_var[idx] = np.array([data['PAR'] for data in done_list])
+        mean_load_var[idx] = np.array([data['meanLoad'] for data in done_list])
+
+    # find index IMU data timestamp in timestamps
+    idx = np.zeros(len(gps_list), dtype=int)
+    x = 0
+    for i in gps_list:
+        idx[x] = np.where(tn == i['data_nc_time_hour'])[0]
+        x += 1
+
+    print('gps idx :', idx)
+
+    if len(gps_list) > 0:
+        for k in gps_list[0].keys():
+            print('key: ', k)
+
+        xpos_var = dataset.createVariable('XPOS', np.float32, ('TIME',), fill_value=np.nan)
+        ypos_var = dataset.createVariable('YPOS', np.float32, ('TIME',), fill_value=np.nan)
+
+        xpos_var[idx] = np.array([data['lon'] for data in gps_list])
+        ypos_var[idx] = np.array([data['lat'] for data in gps_list])
+
+    # IMU data
+
+    if len(imu_list) > 0:
+        accel_var = dataset.createVariable('accel', np.float32, ('TIME', 'SAMPLE', 'VECTOR'), fill_value=np.nan)
+        mag_var = dataset.createVariable('mag_field', np.float32, ('TIME', 'SAMPLE', 'VECTOR'), fill_value=np.nan)
+        gyro_var = dataset.createVariable('gyro_rate', np.float32, ('TIME', 'SAMPLE', 'VECTOR'), fill_value=np.nan)
+        quat_var = dataset.createVariable('quaternion', np.float32, ('TIME', 'SAMPLE', 'QUAT'), fill_value=np.nan)
+
+        load_var = dataset.createVariable('load', np.float32, ('TIME', 'SAMPLE'), fill_value=np.nan)
+
+        # find index IMU data timestamp in timestamps
+        idx = np.zeros(len(imu_list), dtype=int)
+        x = 0
+        for i in imu_list:
+            idx[x] = np.where(tn == i['data_nc_time_hour'])[0]
+            x += 1
+
+        print('imu idx :', idx)
+
+        for k in imu_list[0].keys():
+            print('key: ', k)
+
+        # TODO: adapt to keys found
+        accel_var[idx, :, 0] = np.array([data['AccelY'] for data in imu_list])
+        accel_var[idx, :, 1] = np.array([data['AccelY'] for data in imu_list])
+        accel_var[idx, :, 2] = np.array([data['AccelZ'] for data in imu_list])
+
+        quat_var[idx, :, 0] = np.array([data['StabQ0'] for data in imu_list])
+        quat_var[idx, :, 1] = np.array([data['StabQ1'] for data in imu_list])
+        quat_var[idx, :, 2] = np.array([data['StabQ2'] for data in imu_list])
+        quat_var[idx, :, 3] = np.array([data['StabQ3'] for data in imu_list])
+
+        mag_var[idx, :, 0] = np.array([data['MagFieldX'] for data in imu_list])
+        mag_var[idx, :, 1] = np.array([data['MagFieldY'] for data in imu_list])
+        mag_var[idx, :, 2] = np.array([data['MagFieldZ'] for data in imu_list])
+
+        gyro_var[idx, :, 0] = np.array([data['CompAngleRateX'] for data in imu_list])
+        gyro_var[idx, :, 1] = np.array([data['CompAngleRateY'] for data in imu_list])
+        gyro_var[idx, :, 2] = np.array([data['CompAngleRateZ'] for data in imu_list])
+
+        load_var[idx, :] = np.array([data['Load'] for data in imu_list])
 
     dataset.setncattr("time_coverage_start", ts_start.strftime(ncTimeFormat))
     dataset.setncattr("time_coverage_end", ts_end.strftime(ncTimeFormat))

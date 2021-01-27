@@ -27,18 +27,34 @@ from datetime import datetime
 def add_psal(netCDFfile):
     ds = Dataset(netCDFfile, 'a')
 
+    if "PSAL" in ds.variables:
+        print("file already has salinity variable")
+        return
+
+    if "CNDC" not in ds.variables:
+        print("no conductivity")
+        return
+
     var_temp = ds.variables["TEMP"]
     var_cndc = ds.variables["CNDC"]
     comment = ""
     try:
-        var_pres = ds.variables["PRES"]
-    except KeyError:
+        p = 0
+        pres_var = "nominal depth of 0 dbar"
+        comment = ", using nominal depth 0 dbar"
         var_pres = ds.variables["NOMINAL_DEPTH"]
         comment = ", using nominal depth " + str(var_pres[:])
+        pres_var = "NOMINAL_DEPTH"
+        p = var_pres[:]
+        var_pres = ds.variables["PRES"]
+        p = var_pres[:]
+        comment = ""
+        pres_var = "PRES"
+    except KeyError:
+        pass
 
     t = var_temp[:]
     C = var_cndc[:] * 10
-    p = var_pres[:]
     psal = gsw.SP_from_C(C, t, p)
 
     if "PSAL" in ds.variables:
@@ -49,7 +65,7 @@ def add_psal(netCDFfile):
     ncVarOut.units = "1"
     ncVarOut.standard_name = "sea_water_practical_salinity"
     ncVarOut.long_name = "sea_water_practical_salinity"
-    ncVarOut.valid_max = np.float32(40)
+    ncVarOut.valid_max = np.float32(40)  # this is just the limits that the file will hold
     ncVarOut.valid_min = np.float32(-1)
     ncVarOut.comment = "calculated using gsw-python https://teos-10.github.io/GSW-Python/index.html" + comment
 
@@ -59,7 +75,7 @@ def add_psal(netCDFfile):
     except AttributeError:
         hist = ""
 
-    ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " : added PSAL from TEMP, CNDC, PRES")
+    ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " : added PSAL from TEMP, CNDC, " + pres_var)
 
     ds.close()
 

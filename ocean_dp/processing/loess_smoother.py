@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 
 from pyloess import Loess
 import numpy as np
+from scipy import stats
 
 def smooth(files):
     output_names = []
@@ -26,17 +27,16 @@ def smooth(files):
             # IMOS_ABOS-SOTS_CPT_20090922_SOFS_FV01_Pulse-6-2009-SBE37SM-RS232-6962-100m_END-20100323_C-20200227.nc
             # 0    1         2   3        4    5    6                                    7            8
             # rename the file FV00 to FV01
-            fn_split[6] = fn_split[6] + "-Smooth"
+            fn_split[6] = fn_split[6] + "-loess"
 
             # Change the creation date in the filename to today
             fn_split[8] = now.strftime("C-%Y%m%d.nc")
-            fn_new = os.path.join(dirname, "_".join(fn_split))
+            fn_new = os.path.join(dirname, 'smooth', "_".join(fn_split))
 
         # Add the new file name to the list of new file names
         output_names.append(fn_new)
 
-        print()
-        print("output", fn_new)
+        print('output file : ', fn_new)
 
         ds = Dataset(filepath, 'r')
 
@@ -55,20 +55,26 @@ def smooth(files):
 
         t0 = time_masked[0]
         t1 = time_masked[1]
+        # use the mid point sample rate, as it may change at start/end
+        n_mid = np.int(len(time_masked)/2)
+        t_mid0 = time_masked[n_mid]
+        t_mid1 = time_masked[n_mid+1]
         tend = time_masked[-1]
 
         sample_rate = np.round(24*3600*(tend-t0)/len(time_masked))
-        print('dt ', (t1 - t0)*24*3600, 'sec, sample_rate', sample_rate)
+        sample_rate_mid = np.round(24*3600*(t_mid1 - t_mid0))
+        print('dt ', (t1 - t0)*24*3600, 'sec, sample_rate', sample_rate, ' sample rate mid', sample_rate_mid)
 
         # fine number of samples to make 3 hrs of data
-        i = 0
-        while time_masked[i] < (t0 + 3/24):
+        i = n_mid
+        while (time_masked[i] - t_mid0) < 3/24:
             i = i + 1
+        i = i - n_mid
 
         window = np.max([i, 3])
         print('window (points)', window)
 
-        # create a new time array to sample to
+        # create the new time array to sample to
         d0 = np.ceil(t0*24) / 24
         dend = np.floor(tend*24) / 24
         d = np.arange(d0, dend, 1/24)
@@ -77,49 +83,59 @@ def smooth(files):
         # output data to new file
         ds_new = Dataset(fn_new, 'w')
 
-        #  copy global vars
+        #  copy global attributes
         attr_dict = {}
         for a in ds.ncattrs():
             attr_dict[a] = ds.getncattr(a)
         ds_new.setncatts(attr_dict)
+        ds_new.comment_original_file_sample_rate_sec = str(sample_rate_mid)
+        ds_new.date_created = now.strftime("%Y-%m-%dT%H:%M:%SZ")
 
         #  copy dimension
         ds_new.createDimension(ds.dimensions['TIME'].name, len(d_dt))
 
         #  create new time
         time_var = ds_new.createVariable('TIME', 'f8', 'TIME', fill_value=np.NaN, zlib=True)
+        #   copy times attributes and data
+        attr_dict = {}
+        for a in var_time.ncattrs():
+            attr_dict[a] = var_time.getncattr(a)
+        time_var.setncatts(attr_dict)
+        time_var[:] = d
+
+        # copy the NOMINAL_DEPTH, LATITUDE, and LONGITUDE
+        # TODO: check _FillValue
+        varList = ds.variables
+        for v in ['NOMINAL_DEPTH', 'LATITUDE', 'LONGITUDE']:
+            maVariable = ds.variables[v][:]  # get the data
+            varDims = varList[v].dimensions
+
+            ncVariableOut = ds_new.createVariable(v, varList[v].dtype, varDims, zlib=True)
+
+            for a in varList[v].ncattrs():
+                ncVariableOut.setncattr(a, varList[v].getncattr(a))
+
+            ncVariableOut[:] = maVariable  # copy the data
 
         # variable to smooth
-
         degree = 3
         in_vars = set([x for x in ds.variables])
         # print('input file vars', in_vars)
-        z = in_vars.intersection(['TEMP', 'PSAL', 'DENSITY', 'DOX2'])
+        z = in_vars.intersection(['TEMP', 'PSAL', 'DENSITY', 'DOX2', 'PRES'])
         print ('vars to smooth', z)
         for smooth_var in z:
 
             var_to_smooth_in = ds.variables[smooth_var]
 
+            # need to use QC variable as mask also
             smooth_in = var_to_smooth_in[msk]
 
-            print(var_to_smooth_in[msk])
+            print('input data : ', var_to_smooth_in[msk])
 
             # do the smoothing
             loess = Loess.Loess(np.array(time_masked), np.array(smooth_in))
+            #  TODO: can this be vectorised call, instead of for loop
             y = [loess.estimate(x, window=int(window), use_matrix=False, degree=degree) for x in d]
-
-            print(t0, t1)
-
-            #y = loess.estimate(t_msk, window=7, use_matrix=False, degree=1)
-
-            #print(y)
-
-            #   copy times attributes
-            attr_dict = {}
-            for a in var_time.ncattrs():
-                attr_dict[a] = var_time.getncattr(a)
-            time_var.setncatts(attr_dict)
-            time_var[:] = d
 
             #  create output variables
             var_smooth_out = ds_new.createVariable(smooth_var, 'f4', 'TIME', fill_value=np.NaN, zlib=True)

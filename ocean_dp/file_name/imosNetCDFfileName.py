@@ -25,6 +25,7 @@ import numpy as np
 nameCode = {}
 nameCode['PAR'] = "F"
 nameCode['TEMP'] = "T"
+nameCode['AIRT'] = "M"
 nameCode['PSAL'] = "S"
 nameCode['CNDC'] = "C"
 nameCode['PRES'] = "P"

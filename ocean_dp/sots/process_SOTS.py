@@ -24,14 +24,10 @@ import ocean_dp.file_name.imosNetCDFfileName
 
 import glob
 
-import psutil
 import os
 import sys
 
-process = psutil.Process(os.getpid())
-print(process.memory_info().rss)  # in bytes
-
-path = sys.argv[1] + "/*"
+path = sys.argv[1]
 
 print ('file path : ', path)
 
@@ -104,10 +100,16 @@ for fn in asimet_files:
     filename = ocean_dp.parse.asimet_lgr2netCDF.parse([fn])
     file_names.append((fn, filename[0]))
 
+asimet_files = glob.glob(os.path.join(path, "L*.DAT"))
+for fn in asimet_files:
+    print ('asimet_files files', fn)
+    filename = ocean_dp.parse.asimet_lgr2netCDF.parse([fn])
+    file_names.append((fn, filename[0]))
+
 print('files processed')
 for f in file_names:
     print(f)
     if f[1]:
         shutil.move(f[1], os.path.join(sys.argv[1], 'netCDF'))
 
-print(process.memory_info().rss)  # in bytes
+# TODO: add salinity, density to files with CNDC, TEMP, (PRES) without them.....

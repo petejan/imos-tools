@@ -34,7 +34,7 @@ def apply_scale_offset(netCDFfile):
     for v in scale_vars:
         print ("var : ", v)
         t = v[:]
-        t.mask = False
+        #t.mask = False
 
         scale_offset = v.getncattr('comment_scale_offset')
         scale_offset_split = scale_offset.split(' ')
