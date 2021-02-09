@@ -25,12 +25,12 @@ import pytz
 import os
 from datetime import datetime
 
-# flag 4 (bad) when out of global range
+# flag 4 (bad) when spike
 
 create_sub_qc = True
 
 
-def global_range(netCDFfiles, variable, max, min, qc_value=4):
+def spike_test(netCDFfiles, variable, height, qc_value=4):
 
     for netCDFfile in netCDFfiles:
         ds = Dataset(netCDFfile, 'a')
@@ -57,7 +57,9 @@ def global_range(netCDFfiles, variable, max, min, qc_value=4):
         var_data_qc = var_data[data_to_qc_msk]
 
         # this is where the actual QC test is done
-        mask = ((var_data_qc > max) | (var_data_qc < min))
+        mask = np.zeros_like(data_to_qc_msk[data_to_qc_msk])
+        #print('shape msk ', len(mask))
+        mask[1:] = np.diff(var_data_qc) > height
         print('mask data ', mask)
 
         new_qc_flags = np.zeros_like(var_data_qc)
@@ -65,25 +67,20 @@ def global_range(netCDFfiles, variable, max, min, qc_value=4):
 
         if create_sub_qc:
             # create a qc variable just for this test flags
-            if nc_var.name + "_quality_control_gr" in ds.variables:
-                ncVarOut = ds.variables[nc_var.name + "_quality_control_gr"]
+            if nc_var.name + "_quality_control_spk" in ds.variables:
+                ncVarOut = ds.variables[nc_var.name + "_quality_control_spk"]
             else:
-                ncVarOut = ds.createVariable(nc_var.name + "_quality_control_gr", "i1", nc_var.dimensions, fill_value=99, zlib=True)  # fill_value=0 otherwise defaults to max
+                ncVarOut = ds.createVariable(nc_var.name + "_quality_control_spk", "i1", nc_var.dimensions, fill_value=99, zlib=True)  # fill_value=0 otherwise defaults to max
                 ncVarOut[:] = np.zeros(nc_var.shape)
 
                 if 'long_name' in nc_var.ncattrs():
-                    ncVarOut.long_name = "global_range flag for " + nc_var.long_name
-                #if 'standard_name' in nc_var.ncattrs():
-                #    ncVarOut.standard_name = nc_var.standard_name + " global_range_flag"
+                    ncVarOut.long_name = "spike flag for " + nc_var.long_name
 
-                #ncVarOut.flag_values = np.array([0, 1, 2, 3, 4, 6, 7, 9], dtype=np.int8)
-                #ncVarOut.quality_control_conventions = "IMOS standard flags"
-                #ncVarOut.flag_meanings = 'unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value'
-                # add new variable to list of aux variables
                 ncVarOut.units = "1"
 
-                nc_var.ancillary_variables = nc_var.ancillary_variables + " " + nc_var.name + "_quality_control_gr"
-                ncVarOut.comment = 'Test 4. gross range test'
+                # add new variable to list of aux variables
+                nc_var.ancillary_variables = nc_var.ancillary_variables + " " + nc_var.name + "_quality_control_spk"
+                ncVarOut.comment = 'Test 6. spike test'
 
             # store new flags
             ncVarOut[data_to_qc_msk] = new_qc_flags
@@ -112,7 +109,7 @@ def global_range(netCDFfiles, variable, max, min, qc_value=4):
             hist = ds.history + "\n"
         except AttributeError:
             hist = ""
-        ds.setncattr("history", hist + datetime.utcnow().strftime("%Y-%m-%d") + " " + variable + " global range min = " + str(min) + " max = " + str(max) + " marked " + str(int(count)))
+        ds.setncattr("history", hist + datetime.utcnow().strftime("%Y-%m-%d") + " " + variable + " spike height = " + str(height) + " marked " + str(int(count)))
 
         ds.close()
 
@@ -121,8 +118,8 @@ def global_range(netCDFfiles, variable, max, min, qc_value=4):
 
 if __name__ == "__main__":
 
-    # usage is <file_name> <variable_name> <max> <min> <qc value>
-    if len(sys.argv) > 5:
-        global_range([sys.argv[1]], sys.argv[2], max=float(sys.argv[3]), min=float(sys.argv[4]), qc_value=int(sys.argv[5]))
+    # usage is <file_name> <variable_name> <height> <qc value>
+    if len(sys.argv) > 4:
+        spike_test([sys.argv[1]], sys.argv[2], height=float(sys.argv[3]), qc_value=int(sys.argv[4]))
     else:
-        global_range([sys.argv[1]], sys.argv[2], max=float(sys.argv[3]), min=float(sys.argv[4]))
+        spike_test([sys.argv[1]], sys.argv[2], height=float(sys.argv[3]))

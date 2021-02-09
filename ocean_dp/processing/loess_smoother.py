@@ -126,16 +126,21 @@ def smooth(files):
         for smooth_var in z:
 
             var_to_smooth_in = ds.variables[smooth_var]
+            qc = np.zeros_like(var_to_smooth_in)
+            if smooth_var + '_quality_control' in ds.variables:
+                qc = ds.variables[smooth_var + '_quality_control'][:]
 
             # need to use QC variable as mask also
             smooth_in = var_to_smooth_in[msk]
+            #smooth_in[qc[msk] > 2] = np.nan
 
             print('input data : ', var_to_smooth_in[msk])
 
             # do the smoothing
-            loess = Loess.Loess(np.array(time_masked), np.array(smooth_in))
+            loess = Loess.Loess(np.array(time_masked[qc[msk] <= 2]), np.array(smooth_in[qc[msk] <= 2]))
             #  TODO: can this be vectorised call, instead of for loop
             y = [loess.estimate(x, window=int(window), use_matrix=False, degree=degree) for x in d]
+            print('output data : ', y)
 
             #  create output variables
             var_smooth_out = ds_new.createVariable(smooth_var, 'f4', 'TIME', fill_value=np.NaN, zlib=True)

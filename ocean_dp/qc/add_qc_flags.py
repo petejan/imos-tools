@@ -130,7 +130,7 @@ def add_qc(netCDFfile, var_name=None):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) > 2 & sys.argv[1].startswith('-'):
+    if (len(sys.argv) > 2) & sys.argv[1].startswith('-'):
         add_qc(sys.argv[2:], var_name=sys.argv[1][1:])
     else:
         add_qc(sys.argv[1:])
