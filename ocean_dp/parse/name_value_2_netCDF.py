@@ -60,7 +60,7 @@ def parse(file, name):
     raw = []
     ts = []
     settings = []
-    instrument_model = 'LI-190SA'
+    instrument_model = 'CR1000'
     instrument_serial_number = 'unknown'
     sep = ','
 
@@ -82,19 +82,19 @@ def parse(file, name):
             for i in lineSplit[1:]:
                 nv = i.split("=")
                 if len(nv) > 1:
-                    names.append(nv[0].strip(" "))
-                    values.append(nv[1].strip(" "))
+                    try:
+                        values.append(float(nv[1].strip(" ")))
+                        names.append(nv[0].strip(" "))
+                    except ValueError: # bad float value
+                        pass
+
             name_value = dict(zip(names, values))
-            #print(t, name_value)
+            print(t, name_value)
 
             if name in names:
-                try:
-                    data.append(float(name_value[name]))
-                    ts.append(t)
-                    number_samples_read = number_samples_read + 1
-
-                except ValueError:
-                    pass
+                data.append(name_value)
+                ts.append(t)
+                number_samples_read = number_samples_read + 1
 
             line = fp.readline()
 
@@ -138,12 +138,15 @@ def parse(file, name):
     ncTimesOut.axis = "T"
     ncTimesOut[:] = date2num(ts, units=ncTimesOut.units, calendar=ncTimesOut.calendar)
 
-    ncVarOut = ncOut.createVariable(name, "f4", ("TIME",), fill_value=np.nan, zlib=True) # fill_value=nan otherwise defaults to max
-    ncVarOut.long_name = 'PAR sensor Voltage'
-    ncVarOut.units = 'mV'
-    ncVarOut.sensor_SeaVoX_L22_code = 'SDN:L22::TOOL0193'
-    ncVarOut.comment_sensor_type = 'cosine sensor'
-    ncVarOut[:] = data
+    for name in name_value.keys():
+        print(name)
+
+        ncVarOut = ncOut.createVariable(name, "f4", ("TIME",), fill_value=np.nan, zlib=True) # fill_value=nan otherwise defaults to max
+    #ncVarOut.long_name = 'PAR sensor Voltage'
+    #ncVarOut.units = 'mV'
+    #ncVarOut.sensor_SeaVoX_L22_code = 'SDN:L22::TOOL0193'
+    #ncVarOut.comment_sensor_type = 'cosine sensor'
+        ncVarOut[:] = [v[name] for v in data]
 
     #ncVarOut = ncOut.createVariable('PAR_RAW', "f4", ("TIME",), fill_value=np.nan, zlib=True) # fill_value=nan otherwise defaults to max
     #ncVarOut.units = '1'

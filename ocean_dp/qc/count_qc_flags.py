@@ -27,6 +27,7 @@ import struct
 import os
 from scipy import stats
 
+
 def flag_count(netCDFfile):
 
     bins = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 99, 1000]
@@ -95,6 +96,7 @@ def flag_count(netCDFfile):
                 pass
 
         ds.close()
+
 
 if __name__ == "__main__":
     flag_count(sys.argv[1:])

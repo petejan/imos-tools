@@ -21,23 +21,6 @@ def smooth(files):
         fn_new = filepath
         dirname = os.path.dirname(fn_new)
         basename = os.path.basename(fn_new)
-        if basename.startswith("IMOS"):
-            fn_split = basename.split('_')
-
-            # IMOS_ABOS-SOTS_CPT_20090922_SOFS_FV01_Pulse-6-2009-SBE37SM-RS232-6962-100m_END-20100323_C-20200227.nc
-            # 0    1         2   3        4    5    6                                    7            8
-            # rename the file FV00 to FV01
-            fn_split[6] = fn_split[6] + "-loess"
-
-            # Change the creation date in the filename to today
-            fn_split[8] = now.strftime("C-%Y%m%d.nc")
-            fn_new = os.path.join(dirname, 'smooth', "_".join(fn_split))
-
-        # Add the new file name to the list of new file names
-        output_names.append(fn_new)
-
-        print('output file : ', fn_new)
-
         ds = Dataset(filepath, 'r')
 
         # deal with TIME
@@ -79,6 +62,25 @@ def smooth(files):
         dend = np.floor(tend*24) / 24
         d = np.arange(d0, dend, 1/24)
         d_dt = num2date(d, units=var_time.units)
+
+        if basename.startswith("IMOS"):
+            fn_split = basename.split('_')
+
+            # IMOS_ABOS-SOTS_CPT_20090922_SOFS_FV01_Pulse-6-2009-SBE37SM-RS232-6962-100m_END-20100323_C-20200227.nc
+            # 0    1         2   3        4    5    6                                    7            8
+            fn_split[6] = fn_split[6] + "-loess"
+
+            fn_split[3] = d_dt[0].strftime("%Y%m%d")
+            fn_split[7] = d_dt[-1].strftime("END-%Y%m%d")
+
+            # Change the creation date in the filename to today
+            fn_split[8] = now.strftime("C-%Y%m%d.nc")
+            fn_new = os.path.join(dirname, 'smooth', "_".join(fn_split))
+
+        # Add the new file name to the list of new file names
+        output_names.append(fn_new)
+
+        print('output file : ', fn_new)
 
         # output data to new file
         ds_new = Dataset(fn_new, 'w')
@@ -140,7 +142,7 @@ def smooth(files):
             loess = Loess.Loess(np.array(time_masked[qc[msk] <= 2]), np.array(smooth_in[qc[msk] <= 2]))
             #  TODO: can this be vectorised call, instead of for loop
             y = [loess.estimate(x, window=int(window), use_matrix=False, degree=degree) for x in d]
-            print('output data : ', y)
+            print('output data : ', y[0:10])
 
             #  create output variables
             var_smooth_out = ds_new.createVariable(smooth_var, 'f4', 'TIME', fill_value=np.NaN, zlib=True)
@@ -149,6 +151,9 @@ def smooth(files):
                 attr_dict[a] = var_to_smooth_in.getncattr(a)
             var_smooth_out.setncatts(attr_dict)
             var_smooth_out[:] = y
+
+        ds_new.time_coverage_start = d_dt[0].strftime("%Y-%m-%dT%H:%M:%SZ")
+        ds_new.time_coverage_end = d_dt[-1].strftime("%Y-%m-%dT%H:%M:%SZ")
 
         #  create history
         ds_new.history += '\n' + now.strftime("%Y-%m-%d : ") + 'resampled data created from ' + os.path.basename(filepath) + ' window=' + str(window) + ' degree=' + str(degree)

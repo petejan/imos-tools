@@ -60,9 +60,10 @@ def rate_of_change(netCDFfiles, variable, rate, qc_value=4):
         var_data_qc = var_data[data_to_qc_msk]
 
         # this is where the actual QC test is done
-        mask = np.zeros_like(data_to_qc_msk[data_to_qc_msk])
+        mask = np.empty_like(data_to_qc_msk[data_to_qc_msk], dtype=bool)
+        mask[0] = False
         #print('shape msk ', len(mask))
-        mask[1:] = np.diff(var_data_qc)/np.diff(time[data_to_qc_msk]) > rate
+        mask[1:] = np.abs(np.diff(var_data_qc)/np.diff(time[data_to_qc_msk])) > rate
         print('mask data ', mask)
 
         new_qc_flags = np.zeros_like(var_data_qc)

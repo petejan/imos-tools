@@ -57,9 +57,12 @@ def spike_test(netCDFfiles, variable, height, qc_value=4):
         var_data_qc = var_data[data_to_qc_msk]
 
         # this is where the actual QC test is done
-        mask = np.zeros_like(data_to_qc_msk[data_to_qc_msk])
+        mask = np.empty_like(data_to_qc_msk[data_to_qc_msk], dtype=bool)
+        mask[0] = False
+        mask[-1] = False
         #print('shape msk ', len(mask))
-        mask[1:] = np.diff(var_data_qc) > height
+        spk = np.abs(var_data_qc[1:-2] - (var_data_qc[0:-3] + var_data_qc[2:-1]) / 2)
+        mask[1:-2] = spk > height
         print('mask data ', mask)
 
         new_qc_flags = np.zeros_like(var_data_qc)

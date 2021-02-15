@@ -3,7 +3,7 @@ import shutil
 import sys
 import glob
 
-from netCDF4 import Dataset, date2num, num2date
+from netCDF4 import Dataset, date2num, num2date, stringtochar
 
 from datetime import datetime
 import matplotlib.pyplot as plt
@@ -37,6 +37,8 @@ def merge(files):
 
         #  copy dimension
         ds_new.createDimension(ds.dimensions['TIME'].name, len(var_time[:]))
+        ds_new.createDimension('strlen', 20)
+        ds_new.createDimension('deployments', 12)
 
         #  create new time
         time_var = ds_new.createVariable('TIME', 'f8', 'TIME', fill_value=np.NaN, zlib=True)
@@ -75,11 +77,35 @@ def merge(files):
         #  create history
         ds_new.history += '\n' + now.strftime("%Y-%m-%d : ") + 'merged data created from ' + os.path.basename(filepath)
 
+        dep_map = {"unknown" : 0,
+            "SOFS-1-2010" : 1,
+            "SOFS-2-2011" : 2,
+            "SOFS-3-2012" : 3,
+            "SOFS-4-2013" : 4,
+            "SOFS-5-2015" : 5,
+            "FluxPulse-1-2016" : 6,
+            "SOFS-6-2017" : 7,
+            "SOFS-7-2018" : 8,
+            "SOFS-7.5-2018" : 9,
+            "SOFS-8-2019" : 10,
+            "SOFS-9-2020" : 11}
+
         ncFiles = glob.glob(os.path.join('pCO2', 'IMOS*FV01*.nc'))
+        dep_var = ds_new.createVariable("deployment", 'i1', varList['xCO2_SW'].dimensions, zlib=True, fill_value=0)
+
+        dep_name_var = ds_new.createVariable("deployment_name", 'S1', ['deployments', 'strlen'])
+        print(dep_map.keys())
+        datain = np.array(["unknown", "SOFS-1-2010", "SOFS-2-2011", "SOFS-3-2012", "SOFS-4-2013", "SOFS-5-2015", "FluxPulse-1-2016", "SOFS-6-2017", "SOFS-7-2018", "SOFS-7.5-2018", "SOFS-8-2019", "SOFS-9-2020"], dtype='S20')
+        dep_name_var[:] = stringtochar(datain)
+
         for fn in ncFiles:
             print('merging  :', fn)
             ds_merge = Dataset(fn, 'r')
             time_merge = ds_merge.variables['TIME']
+            # TODO: trim time to only deployed times
+
+            deployment_code = ds_merge.deployment_code
+            deployment_n = dep_map[deployment_code]
 
             for v_to_merge in ['PSAL', 'TEMP']:
                 psal_merge = ds_merge.variables[v_to_merge]
@@ -103,6 +129,8 @@ def merge(files):
                 psal_var[:] = psal_vals
 
                 print(psal_vals[msk])
+
+            dep_var[msk] = deployment_n
 
             ds_new.history += '\n' + now.strftime("%Y-%m-%d : ") + 'merged ' + os.path.basename(fn)
 

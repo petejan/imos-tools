@@ -46,8 +46,8 @@ for path_file in sys.argv[1:len(sys.argv)]:
     except AttributeError:  # Attribute doesn't exist
         t_cal = u"gregorian"  # or standard
 
-    #dt_time = [num2date(t, units=t_unit, calendar=t_cal, only_use_cftime_datetimes=False) for t in nctime]
-    dt_time = [num2date(t, units=t_unit, calendar=t_cal) for t in nctime]
+    dt_time = [num2date(t, units=t_unit, calendar=t_cal, only_use_cftime_datetimes=False) for t in nctime]
+    #dt_time = [num2date(t, units=t_unit, calendar=t_cal) for t in nctime]
 
     # work out variables to plot
     nc_vars_to_plot = [var for var in nc.variables]
@@ -248,11 +248,11 @@ for path_file in sys.argv[1:len(sys.argv)]:
             len_qc = len(qc_m)
         except:
             pass
-        if len(qc_m.compressed()) == len_qc:
-            plt.ylim([mi - marg, mx + marg])
-        elif len(qc_m.compressed()) > 0:
-            plt.ylim([mi - 10*marg, mx + 10*marg])
-            print('expanding range, because of bad data')
+        #if len(qc_m.compressed()) == len_qc:
+        #    plt.ylim([mi - marg, mx + marg])
+        #elif len(qc_m.compressed()) > 0:
+        #    plt.ylim([mi - 10*marg, mx + 10*marg])
+        #    print('expanding range, because of bad data')
 
         # create a legend entry made from serial_number and depth
         if hasattr(plot_var, 'sensor_serial_number'):
@@ -282,12 +282,13 @@ for path_file in sys.argv[1:len(sys.argv)]:
 
         pl = ax.plot(dt_time, qc_m, plot_marks)
 
+        #if len(dt_time) < 200:
+
         # mark qc>2 with yellow dot, qc>3 with red dot
-        if len(dt_time) < 200:
-            qc_m = np.ma.masked_where(qc != 2, var)
-            ax.plot(dt_time, qc_m, 'co')
-            qc_m = np.ma.masked_where(qc != 3, var)
-            ax.plot(dt_time, qc_m, 'yo')
+        qc_m = np.ma.masked_where(qc != 2, var)
+        ax.plot(dt_time, qc_m, 'co')
+        qc_m = np.ma.masked_where(qc != 3, var)
+        ax.plot(dt_time, qc_m, 'yo')
         qc_m = np.ma.masked_where(qc != 4, var)
         ax.plot(dt_time, qc_m, 'ro')
 
@@ -347,8 +348,8 @@ for path_file in sys.argv[1:len(sys.argv)]:
         except AttributeError:
             pass
 
-        if date_time_start:
-            plt.xlim(date_time_start, date_time_end)
+        #if date_time_start:
+        #    plt.xlim(date_time_start, date_time_end)
 
         if has_qc:
             plt.text(0.0, -0.08, 'cyan: QC=2 (pgood); yellow : QC=3 (pbad); red : QC=4 (bad); QC=4,6,9 no line', fontsize=8, horizontalalignment='left', verticalalignment='center', transform = ax.transAxes)

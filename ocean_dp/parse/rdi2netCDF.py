@@ -262,7 +262,7 @@ def rdi_parse(files):
                                 velocity = np.array(struct.unpack("<%dh" % (num_beams*num_cells), data))
                                 #print("velocity shape ", velocity.shape)
                                 v = velocity.reshape([num_cells, num_beams])
-
+                                #print(var_vel1, number_ensambles_read, v.shape)
                                 var_vel1[number_ensambles_read, :] = v[:, 0] / 1000
                                 var_vel2[number_ensambles_read, :] = v[:, 1] / 1000
                                 var_vel3[number_ensambles_read, :] = v[:, 2] / 1000
@@ -272,7 +272,7 @@ def rdi_parse(files):
                                 n += len(data)
                             elif data == b'\x00\x02':  # correlation mag
                                 data = ensemble[n:n+num_beams*num_cells]
-                                np_corr = np.array(struct.unpack("<%db" % (num_beams*num_cells), data)).reshape([num_cells, num_beams])
+                                np_corr = np.array(struct.unpack("<%dB" % (num_beams*num_cells), data)).reshape([num_cells, num_beams])
                                 #print('size corr', len(np_corr))
                                 if len(np_corr) > 0:
                                     var_corr1[number_ensambles_read, :] = np_corr[:, 0]
@@ -282,7 +282,7 @@ def rdi_parse(files):
                                 n += len(data)
                             elif data == b'\x00\x03':  # echo intensity
                                 data = ensemble[n:n+num_beams*num_cells]
-                                np_echo_int = np.array(struct.unpack("<%db" % (num_beams*num_cells), data)).reshape([num_cells, num_beams])
+                                np_echo_int = np.array(struct.unpack("<%dB" % (num_beams*num_cells), data)).reshape([num_cells, num_beams])
                                 var_echo_int1[number_ensambles_read, :] = np_echo_int[:, 0] * 0.45
                                 var_echo_int2[number_ensambles_read, :] = np_echo_int[:, 1] * 0.45
                                 var_echo_int3[number_ensambles_read, :] = np_echo_int[:, 2] * 0.45
@@ -290,7 +290,7 @@ def rdi_parse(files):
                                 n += len(data)
                             elif data == b'\x00\x04':  # percent good
                                 data = ensemble[n:n+num_beams*num_cells]
-                                np_pg = np.array(struct.unpack("<%db" % (4*num_cells), data)).reshape([num_cells, 4])
+                                np_pg = np.array(struct.unpack("<%dB" % (4*num_cells), data)).reshape([num_cells, 4])
                                 var_per_good1[number_ensambles_read, :] = np_pg[:, 0]
                                 var_per_good2[number_ensambles_read, :] = np_pg[:, 1]
                                 var_per_good3[number_ensambles_read, :] = np_pg[:, 2]
