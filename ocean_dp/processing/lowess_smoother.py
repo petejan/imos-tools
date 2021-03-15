@@ -66,9 +66,9 @@ def smooth(files):
         sample_rate_mid = np.round(24*3600*(t_mid1 - t_mid0))
         print('dt ', (t1 - t0)*24*3600, 'sec, sample_rate', sample_rate, ' sample rate mid', sample_rate_mid)
 
-        # find number of samples to make 3 hrs of data
+        # find number of samples to make 1.2 hrs of data
         i = n_mid
-        while (time_masked[i] - t_mid0) < 3/24:
+        while (time_masked[i] - t_mid0) < 1.2/24:
             i = i + 1
         i = i - n_mid
 
@@ -151,8 +151,25 @@ def smooth(files):
             lowess_y = list(zip(*z))[1]
 
             f = interp1d(lowess_x, lowess_y, bounds_error=False, kind='cubic')
-
             y = f(d)
+            print('interpolated data', y)
+
+            # mark time cells bad where there are less than 3 samples in +/- 2.2 hours
+            bad = 0
+            for v in range(0, len(d)):
+                time_cell_min = np.where(time_masked > (d[v] - 2.2/24))
+                time_cell_max = np.where(time_masked < (d[v] + 2.2/24))
+                #print(dy[0][-1]-dx[0][0])
+                if (time_cell_max[0][-1]-time_cell_min[0][0]) < 3:
+                    y[v] = np.nan
+                    bad += 1
+            print('number bad', bad)
+
+            #    dt = abs(time_masked - lowess_x[v]) < 1.2/24
+            #    n = sum(dt)
+            #    if (n < 3):
+            #        lowess_y[v] = np.nan
+            #    print(v, dt, n)
 
             #  create output variables
             var_smooth_out = ds_new.createVariable(smooth_var, 'f4', 'TIME', fill_value=np.NaN, zlib=True)

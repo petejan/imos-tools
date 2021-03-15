@@ -21,7 +21,7 @@ import re
 import os
 
 from datetime import datetime, timedelta
-from netCDF4 import num2date, date2num
+from cftime import num2date, date2num
 from netCDF4 import Dataset
 import numpy as np
 from dateutil import parser
@@ -370,6 +370,11 @@ def parse(files):
         ncTimesOut.axis = "T"
 
         t_epoc = date2num(datetime(2000, 1, 1), calendar=ncTimesOut.calendar, units=ncTimesOut.units)
+
+        if 'TIME' not in name:
+            print('No time variable, start time', start_time, 'interval', sample_interval)
+
+            ncTimesOut[:] = [date2num(start_time + timedelta(seconds=x*sample_interval), calendar=ncTimesOut.calendar, units=ncTimesOut.units) for x in range(number_samples_read)]
 
         # for each variable in the data file, create a netCDF variable
         i = 0

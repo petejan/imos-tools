@@ -72,9 +72,10 @@ def eco_parse(files):
         while line:
 
             line_split = line.split("\t")
-            #print(line_split)
+            print(line_split)
 
             t = line_split[1][0:4] + " 20" + line_split[1][4:] + " " + line_split[2]
+            #print(t)
             ts = datetime.strptime(t, "%m%d %Y %H%M%S")
             #print(ts)
             v = [float(x) for x in line_split[3:]]
@@ -101,7 +102,7 @@ def eco_parse(files):
 
     ncOut.instrument = "WetLABs ; FLNTUS"
     ncOut.instrument_model = "FLNTUS"
-    ncOut.instrument_serial_number = "4821"
+    ncOut.instrument_serial_number = "1215"
 
     #     TIME:axis = "T";
     #     TIME:calendar = "gregorian";

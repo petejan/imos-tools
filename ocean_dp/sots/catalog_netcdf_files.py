@@ -24,12 +24,10 @@ from netCDF4 import Dataset
 import glob
 import os
 
+ncFiles = []
 # for each of the new files, process them
-if os.path.isfile(sys.argv[1]):
-    ncFiles = [sys.argv[1]]
-else:
-    path = sys.argv[1] + "/"
-    ncFiles = glob.glob(os.path.join(path, '*FV01*.nc'))
+for f in sys.argv[1:-1]:
+    ncFiles.extend(glob.glob(f))
 
 atts_to_list = ['file', 'platform_code', 'deployment_code', 'instrument', 'instrument_serial_number', 'instrument_nominal_depth', 'time_coverage_end', 'time_coverage_start', 'time_deployment_end', 'time_deployment_start']
 print(','.join(atts_to_list))

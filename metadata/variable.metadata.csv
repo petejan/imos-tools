@@ -31,6 +31,17 @@ VAR_ATT,PSAL,,,,,,,,,standard_name,str,sea_water_practical_salinity
 VAR_ATT,PSAL,,,,,,,,,valid_max,float32,41
 VAR_ATT,PSAL,,,,,,,,,valid_min,float32,2
 
+VAR_ATT,DOX2,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,DOX2,,,,,,,,,long_name,str,moles_of_oxygen_per_unit_mass_in_sea_water
+VAR_ATT,DOX2,,,,,,,,,standard_name,str,moles_of_oxygen_per_unit_mass_in_sea_water
+VAR_ATT,DOX2,,,,,,,,,valid_max,float32,400
+VAR_ATT,DOX2,,,,,,,,,valid_min,float32,0
+
+VAR_ATT,OXSOL,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,OXSOL,,,,,,,,,long_name,str,oxygen_solubility_per_unit_mass_in_seawater
+VAR_ATT,OXSOL,,,,,,,,,valid_max,float32,400
+VAR_ATT,OXSOL,,,,,,,,,valid_min,float32,0
+
 VAR_ATT,PAR,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
 VAR_ATT,PAR,,,,,,,,,valid_max,float32,10000
 VAR_ATT,PAR,,,,,,,,,valid_min,float32,-2

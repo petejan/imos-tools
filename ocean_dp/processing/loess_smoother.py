@@ -120,7 +120,7 @@ def smooth(files):
             ncVariableOut[:] = maVariable  # copy the data
 
         # variable to smooth
-        degree = 3
+        degree = 1
         in_vars = set([x for x in ds.variables])
         # print('input file vars', in_vars)
         z = in_vars.intersection(['TEMP', 'PSAL', 'DENSITY', 'DOX2', 'PRES'])
