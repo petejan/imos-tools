@@ -1,0 +1,19 @@
+rec_type, var_name, deployment_code, model, serial_number, time_deployment, time_recovery, variable_name, variable_dims, variable_shape, attribute_name,type,value
+GLOBAL,*,,,,,,,,,acknowledgement,str,"Any users of IMOS data are required to clearly acknowledge the source of the material derived from IMOS in the format: ""Data was sourced from the Integrated Marine Observing System (IMOS) - IMOS is a national collaborative research infrastructure, supported by the Australian Government."" If relevant, also credit other organisations involved in collection of this particular datastream (as listed in 'credit' in the metadata record)."
+GLOBAL,*,,,,,,,,,citation,str,"The citation in a list of references is: 'IMOS [year-of-data-download], [Title], [data-access-URL], accessed [date-of-access].'."
+GLOBAL,*,,,,,,,,,comment,str,Geospatial vertical min/max information has been filled using the NOMINAL_DEPTH.
+GLOBAL,*,,,,,,,,,Conventions,str,"CF-1.6,IMOS-1.4"
+GLOBAL,*,,,,,,,,,data_centre,str,Australian Ocean Data Network (AODN)
+GLOBAL,*,,,,,,,,,data_centre_email,str,info@aodn.org.au
+GLOBAL,*,,,,,,,,,disclaimer,str,"Data, products and services from IMOS are provided ""as is"" without any warranty as to fitness for a particular purpose."
+GLOBAL,*,,,,,,,,,featureType,str,timeSeries
+GLOBAL,*,,,,,,,,,file_version,str,Level 0 - Raw data
+GLOBAL,*,,,,,,,,,file_version_quality_control,str,"Raw data is defined as unprocessed data and data products that have not undergone quality control. The data may be in engineering physical units, time and location details can be in relative units and values can be pre-calibration measurements."
+GLOBAL,*,,,,,,,,,geospatial_vertical_positive,str,down
+GLOBAL,*,,,,,,,,,institution_references,str,http://www.imos.org.au/aodn.html
+GLOBAL,*,,,,,,,,,keywords_vocabulary,str,IMOS parameter names. See https://github.com/aodn/imos-toolbox/blob/master/IMOS/imosParameters.txt
+GLOBAL,*,,,,,,,,,license,str,http://creativecommons.org/licenses/by/4.0/
+GLOBAL,*,,,,,,,,,naming_authority,str,IMOS
+GLOBAL,*,,,,,,,,,project,str,Integrated Marine Observing System (IMOS)
+GLOBAL,*,,,,,,,,,references,str,http://www.imos.org.au
+GLOBAL,*,,,,,,,,,standard_name_vocabulary,str,NetCDF Climate and Forecast (CF) Metadata Convention Standard Name Table 67

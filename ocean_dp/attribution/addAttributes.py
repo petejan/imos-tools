@@ -33,6 +33,8 @@ def parseTypeValue(att_type, v):
         value = np.float32(v)
     elif att_type == 'int16':
         value = np.float16(v)
+    elif att_type == 'int32':
+        value = np.int32(v)
     else:
         value = v
 
@@ -88,12 +90,12 @@ def add(netCDFfile, metadatafiles):
                     # match time
                     if 'time_deployment' in dict1:
                         if len(dict1['time_deployment']) > 0:
-                            if time_end < parser.parse(dict1['time_deployment'], ignoretz=True, dayfirst=True):
+                            if time_end < parser.parse(dict1['time_deployment'], ignoretz=True, dayfirst=False):
                                 match = False
                                 #print("Time end before deployment ", time_end, dict1['time_deployment'])
                     if 'time_recovery' in dict1:
                         if len(dict1['time_recovery']) > 0:
-                            if time_start > parser.parse(dict1['time_recovery'], ignoretz=True, dayfirst=True):
+                            if time_start > parser.parse(dict1['time_recovery'], ignoretz=True, dayfirst=False):
                                 match = False
                                 #print("Time start after recovery ", time_start, dict1['time_recovery'], parser.parse(dict1['time_recovery'], ignoretz=True, dayfirst=False))
 

@@ -1,0 +1,9 @@
+rec_type, var_name, deployment_code, model, serial_number, time_deployment, time_recovery, variable_name, variable_dims, variable_shape, attribute_name, type, value
+GLOBAL,,,RBRmaestro3,200699,2020-03-08,2020-05-21,,"","",deployment_code,str,"GBRPPS-WireWalker-01-2020"
+
+VAR,LATITUDE,GBRPPS-WireWalker-01-2020,,,2020-03-08,2020-05-21,LATITUDE,"()","()",,float64,"-18.33"
+VAR,LONGITUDE,GBRPPS-WireWalker-01-2020,,,2020-03-08,2020-05-21,LONGITUDE,"()","()",,float64,"147.2"
+
+GLOBAL,,GBRPPS-WireWalker-01-2020,,,2020-03-08,2020-05-21,,"","",site_nominal_depth,float64,"130.00"
+
+VAR,NOMINAL_DEPTH,GBRPPS-WireWalker-01-2020,RBRmaestro3,200699,2020-03-08,2020-05-21,NOMINAL_DEPTH,"()","()",,float64,"90.00"

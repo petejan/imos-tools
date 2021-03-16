@@ -1,0 +1,147 @@
+rec_type, var_name, deployment_code, model, serial_number, time_deployment, time_recovery, variable_name, variable_dims, variable_shape, attribute_name, type, value
+VAR_ATT,TIME,,,,,,,,,standard_name,str,time
+VAR_ATT,TIME,,,,,,,,,valid_max,float64,90000
+VAR_ATT,TIME,,,,,,,,,valid_min,float64,0
+VAR_ATT,TEMP,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,TEMP,,,,,,,,,long_name,str,sea_water_temperature
+VAR_ATT,TEMP,,,,,,,,,standard_name,str,sea_water_temperature
+VAR_ATT,TEMP,,,,,,,,,valid_max,float32,40
+VAR_ATT,TEMP,,,,,,,,,valid_min,float32,-2.5
+VAR_ATT,CNDC,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,CNDC,,,,,,,,,long_name,str,sea_water_electrical_conductivity
+VAR_ATT,CNDC,,,,,,,,,standard_name,str,sea_water_electrical_conductivity
+VAR_ATT,CNDC,,,,,,,,,valid_max,float32,50000
+VAR_ATT,CNDC,,,,,,,,,valid_min,float32,0
+VAR_ATT,PRES,,,,,,,,,applied_offset,float32,-10.135297
+VAR_ATT,PRES,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,PRES,,,,,,,,,long_name,str,sea_water_pressure_due_to_sea_water
+VAR_ATT,PRES,,,,,,,,,standard_name,str,sea_water_pressure_due_to_sea_water
+VAR_ATT,PRES,,,,,,,,,valid_max,float32,12000
+VAR_ATT,PRES,,,,,,,,,valid_min,float32,-15
+VAR_ATT,DEPTH,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,DEPTH,,,,,,,,,long_name,str,actual depth
+VAR_ATT,DEPTH,,,,,,,,,positive,str,down
+VAR_ATT,DEPTH,,,,,,,,,reference_datum,str,sea surface
+VAR_ATT,DEPTH,,,,,,,,,standard_name,str,depth
+VAR_ATT,DEPTH,,,,,,,,,valid_max,float32,12000
+VAR_ATT,DEPTH,,,,,,,,,valid_min,float32,-5
+VAR_ATT,PSAL,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,PSAL,,,,,,,,,long_name,str,sea_water_practical_salinity
+VAR_ATT,PSAL,,,,,,,,,standard_name,str,sea_water_practical_salinity
+VAR_ATT,PSAL,,,,,,,,,valid_max,float32,41
+VAR_ATT,PSAL,,,,,,,,,valid_min,float32,2
+
+VAR_ATT,SBEOPOXMGL,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,SBEOPOXMGL,,,,,,,,,standard_name,str,mass_concentration_of_oxygen_in_sea_water
+VAR_ATT,SBEOPOXMGL,,,,,,,,,long_name,str,mass_concentration_of_oxygen_in_sea_water
+VAR_ATT,SBEOPOXMGL,,,,,,,,,valid_max,float32,8
+VAR_ATT,SBEOPOXMGL,,,,,,,,,valid_min,float32,0
+
+VAR_ATT,DOX2,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,DOX2,,,,,,,,,long_name,str,moles_of_oxygen_per_unit_mass_in_sea_water
+VAR_ATT,DOX2,,,,,,,,,standard_name,str,moles_of_oxygen_per_unit_mass_in_sea_water
+VAR_ATT,DOX2,,,,,,,,,valid_max,float32,400
+VAR_ATT,DOX2,,,,,,,,,valid_min,float32,0
+
+VAR_ATT,OXSOL,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,OXSOL,,,,,,,,,long_name,str,oxygen_solubility_per_unit_mass_in_seawater
+VAR_ATT,OXSOL,,,,,,,,,valid_max,float32,400
+VAR_ATT,OXSOL,,,,,,,,,valid_min,float32,0
+
+VAR_ATT,PAR,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,PAR,,,,,,,,,valid_max,float32,10000
+VAR_ATT,PAR,,,,,,,,,long_name,str,downwelling_photosynthetic_photon_flux_in_sea_water
+VAR_ATT,PAR,,,,,,,,,valid_min,float32,-2
+
+VAR_ATT,DENSITY,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,DENSITY,,,,,,,,,units,str,kg/m^3
+VAR_ATT,DENSITY,,,,,,,,,long_name,str,sea_water_density
+VAR_ATT,DENSITY,,,,,,,,,standard_name,str,sea_water_density
+VAR_ATT,DENSITY,,,,,,,,,valid_max,float32,1200
+VAR_ATT,DENSITY,,,,,,,,,valid_min,float32,0
+
+VAR_ATT,LATITUDE,,,,,,,,,axis,str,Y
+VAR_ATT,LATITUDE,,,,,,,,,comment,str,anchor latitude
+VAR_ATT,LATITUDE,,,,,,,,,long_name,str,latitude
+VAR_ATT,LATITUDE,,,,,,,,,reference_datum,str,WGS84 geographic coordinate system
+VAR_ATT,LATITUDE,,,,,,,,,standard_name,str,latitude
+VAR_ATT,LATITUDE,,,,,,,,,units,str,degrees_north
+VAR_ATT,LATITUDE,,,,,,,,,valid_max,float64,90
+VAR_ATT,LATITUDE,,,,,,,,,valid_min,float64,-90
+VAR_ATT,LONGITUDE,,,,,,,,,axis,str,X
+VAR_ATT,LONGITUDE,,,,,,,,,long_name,str,longitude
+VAR_ATT,LONGITUDE,,,,,,,,,comment,str,anchor longitude
+VAR_ATT,LONGITUDE,,,,,,,,,reference_datum,str,WGS84 geographic coordinate system
+VAR_ATT,LONGITUDE,,,,,,,,,standard_name,str,longitude
+VAR_ATT,LONGITUDE,,,,,,,,,units,str,degrees_east
+VAR_ATT,LONGITUDE,,,,,,,,,valid_max,float64,180
+VAR_ATT,LONGITUDE,,,,,,,,,valid_min,float64,-180
+
+VAR_ATT,NOMINAL_DEPTH,,,,,,,,,axis,str,Z
+VAR_ATT,NOMINAL_DEPTH,,,,,,,,,long_name,str,nominal depth
+VAR_ATT,NOMINAL_DEPTH,,,,,,,,,positive,str,down
+VAR_ATT,NOMINAL_DEPTH,,,,,,,,,reference_datum,str,sea surface
+VAR_ATT,NOMINAL_DEPTH,,,,,,,,,standard_name,str,depth
+VAR_ATT,NOMINAL_DEPTH,,,,,,,,,units,str,m
+VAR_ATT,NOMINAL_DEPTH,,,,,,,,,valid_max,float64,12000
+VAR_ATT,NOMINAL_DEPTH,,,,,,,,,valid_min,float64,-5
+
+VAR_ATT,DOXY,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,DOXY,,,,,,,,,standard_name,str,mass_concentration_of_oxygen_in_sea_water
+VAR_ATT,DOXY,,,,,,,,,long_name,str,mass_concentration_of_oxygen_in_sea_water
+VAR_ATT,DOXY,,,,,,,,,valid_max,float32,8
+VAR_ATT,DOXY,,,,,,,,,valid_min,float32,0
+
+VAR_ATT,DOXS,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,DOXS,,,,,,,,,standard_name,str,fractional_saturation_of_oxygen_in_sea_water
+VAR_ATT,DOXS,,,,,,,,,long_name,str,fractional_saturation_of_oxygen_in_sea_water
+VAR_ATT,DOXS,,,,,,,,,units,str,percent
+VAR_ATT,DOXS,,,,,,,,,valid_max,float32,130
+VAR_ATT,DOXS,,,,,,,,,valid_min,float32,0
+
+VAR_ATT,DOX2_RAW,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,DOX2_RAW,,,,,,,,,long_name,str,mass_concentration_of_oxygen
+VAR_ATT,DOX2_RAW,,,,,,,,,valid_max,float32,400
+VAR_ATT,DOX2_RAW,,,,,,,,,valid_min,float32,0
+
+VAR_ATT,DOX2_TEMP,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,DOX2_TEMP,,,,,,,,,long_name,str,temperature_of_sensor_for_oxygen_in_sea_water
+VAR_ATT,DOX2_TEMP,,,,,,,,,valid_max,float32,40
+VAR_ATT,DOX2_TEMP,,,,,,,,,valid_min,float32,-2.5
+
+VAR_ATT,PROFILE,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,PROFILE,,,,,,,,,long_name,str,profile number
+VAR_ATT,PROFILE,,,,,,,,,units,str,count
+VAR_ATT,PROFILE,,,,,,,,,valid_max,int32,10000
+VAR_ATT,PROFILE,,,,,,,,,valid_min,int32,0
+
+VAR_ATT,PROFILE_SAMPLE,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,PROFILE_SAMPLE,,,,,,,,,long_name,str,sample within profile
+VAR_ATT,PROFILE_SAMPLE,,,,,,,,,units,str,count
+VAR_ATT,PROFILE_SAMPLE,,,,,,,,,valid_max,int32,10000
+VAR_ATT,PROFILE_SAMPLE,,,,,,,,,valid_min,int32,0
+
+VAR_ATT,XPOS,,,,,,,,,long_name,str,latitude
+VAR_ATT,XPOS,,,,,,,,,reference_datum,str,WGS84 geographic coordinate system
+VAR_ATT,XPOS,,,,,,,,,units,str,degrees_north
+VAR_ATT,XPOS,,,,,,,,,valid_max,float64,90
+VAR_ATT,XPOS,,,,,,,,,valid_min,float64,-90
+VAR_ATT,YPOS,,,,,,,,,long_name,str,longitude
+VAR_ATT,YPOS,,,,,,,,,reference_datum,str,WGS84 geographic coordinate system
+VAR_ATT,YPOS,,,,,,,,,units,str,degrees_east
+VAR_ATT,YPOS,,,,,,,,,valid_max,float64,180
+VAR_ATT,YPOS,,,,,,,,,valid_min,float64,-180
+
+VAR_ATT,CPHL,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,CPHL,,,,,,,,,standard_name,str,mass_concentration_of_chlorophyll_in_sea_water
+VAR_ATT,CPHL,,,,,,,,,long_name,str,mass_concentration_of_inferred_chlorophyll_from_relative_fluorescence_units_in_sea_water
+VAR_ATT,CPHL,,,,,,,,,valid_max,float32,40
+VAR_ATT,CPHL,,,,,,,,,valid_min,float32,0
+
+VAR_ATT,NTU,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,NTU,,,,,,,,,long_name,str,sea_water_turbidity
+VAR_ATT,NTU,,,,,,,,,comment,str,from NTU Turbidity
+VAR_ATT,NTU,,,,,,,,,units,str,1
+VAR_ATT,NTU,,,,,,,,,valid_max,float32,20
+VAR_ATT,NTU,,,,,,,,,valid_min,float32,0
+

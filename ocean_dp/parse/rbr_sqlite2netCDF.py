@@ -23,6 +23,7 @@ import os
 from datetime import datetime
 
 import numpy
+import pytz
 from netCDF4 import date2num, num2date
 from netCDF4 import Dataset
 import numpy as np
@@ -47,6 +48,13 @@ nameMap = {}
 nameMap["Temp"] = "TEMP"
 nameMap["Pres"] = "PRES"
 nameMap["Depth"] = "DEPTH"
+
+nameMap["temp14"] = "TEMP"
+nameMap["cond10"] = "CNDC"
+nameMap["pres24"] = "PRES"
+nameMap["fluo10"] = "CPHL"
+nameMap["par_00"] = "PAR"
+nameMap["turb00"] = "NTU"
 
 # also map units .....
 
@@ -123,11 +131,14 @@ def parse(file):
     cur = conn.cursor()
     cur.execute('SELECT * FROM epochs')
     row = cur.fetchone()
-    print('count', row)
+    print('epochs count (deploymentID, start_time, end_time)', row)
+    start_time = datetime.fromtimestamp(row[1]/1000, tz=pytz.UTC)
+    end_time = datetime.fromtimestamp(row[2]/1000, tz=pytz.UTC)
+    print('start_time =', start_time, 'end_time =', end_time)
 
     # fetch the data
     cur = conn.cursor()
-    cur.execute('SELECT * FROM data')
+    cur.execute('SELECT * FROM data') # downsample100 has smaller data table
 
     # build the variables needed
     print(cur.description)
@@ -140,8 +151,11 @@ def parse(file):
             id = matchObj.group(1)
             ch = channel_list[int(id)]
             print('channel id', id, ch)
+            var_name = ch['shortName']
+            if var_name in nameMap:
+                var_name = nameMap[var_name]
 
-            nc_var_out = ncOut.createVariable(ch['shortName'], "f4", ("TIME",), zlib=True)
+            nc_var_out = ncOut.createVariable(var_name, "f4", ("TIME",), zlib=True)
             nc_var_out.long_name = ch['longNamePlainText']
             nc_var_out.units = ch['unitsPlainText']
 
@@ -172,7 +186,7 @@ def parse(file):
         sample = sample + len(records)
 
         records = cur.fetchmany()
-        print('fetch', len(records), sample)
+        print('fetch records=', len(records), 'sample number=', sample)
         data = numpy.array(records, dtype=float)
 
         # some feedback

@@ -54,7 +54,12 @@ def add_psal(netCDFfile):
         pass
 
     t = var_temp[:]
-    C = var_cndc[:] * 10
+    cndc_scale = 10.0
+    print('cndc unit', var_cndc.units)
+    if var_cndc.units == 'mS/cm':
+        cndc_scale = 1.0
+    print('cndc unit', var_cndc.units, cndc_scale)
+    C = var_cndc[:] * cndc_scale
     psal = gsw.SP_from_C(C, t, p)
 
     if "PSAL" in ds.variables:

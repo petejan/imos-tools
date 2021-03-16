@@ -1,0 +1,7 @@
+rec_type, var_name, deployment_code, model, serial_number, time_deployment, time_recovery, variable_name, variable_dims, variable_shape, attribute_name, type, value
+VAR,LATITUDE,,,,,,LATITUDE,"()","()",,float64,"-18.3360"
+VAR,LONGITUDE,,,,,,LONGITUDE,"()","()",,float64,"147.3887"
+
+GLOBAL,,,,,,,,"","",site_nominal_depth,float64,"131.0"
+GLOBAL,,,,,,,,"","",time_deployment_start,str,"2020-03-07T23:40:00Z"
+

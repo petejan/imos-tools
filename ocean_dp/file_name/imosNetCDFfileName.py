@@ -48,7 +48,7 @@ def rename(netCDFfile):
 
     ds_variables = ds.variables
 
-    facility = 'DWM-SOTS' # ds.institution
+    facility = ds.institution
     time_start = datetime.strptime(ds.time_coverage_start, ncTimeFormat)
     time_end = datetime.strptime(ds.time_coverage_end, ncTimeFormat)
     file_version = 0

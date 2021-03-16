@@ -371,7 +371,7 @@ def parse(files):
 
         t_epoc = date2num(datetime(2000, 1, 1), calendar=ncTimesOut.calendar, units=ncTimesOut.units)
 
-        if 'TIME' not in name:
+        if "TIME" not in name:
             print('No time variable, start time', start_time, 'interval', sample_interval)
 
             ncTimesOut[:] = [date2num(start_time + timedelta(seconds=x*sample_interval), calendar=ncTimesOut.calendar, units=ncTimesOut.units) for x in range(number_samples_read)]
