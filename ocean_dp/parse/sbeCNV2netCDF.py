@@ -22,6 +22,7 @@ import os
 
 from datetime import datetime, timedelta
 from cftime import num2date, date2num
+from glob2 import glob
 from netCDF4 import Dataset
 import numpy as np
 from dateutil import parser
@@ -433,4 +434,7 @@ def parse(files):
 
 
 if __name__ == "__main__":
-    parse(sys.argv[1:])
+    files = []
+    for f in sys.argv[1:]:
+        files.extend(glob(f))
+    parse(files)
