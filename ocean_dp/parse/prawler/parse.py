@@ -27,6 +27,25 @@ from datetime import timedelta
 
 import glob
 
+# data format for Caus PRAWLER data, format changed with surface unit upgrade
+#
+# GPS 11/07/2019 00:25:21 4327.7287 S 14748.6527 E 016 0000
+#
+# IMM 11/06/2019 23:53:01 090 U 24 005 004 090 250 02500 14570 00086 0414 0000 0 0 0 0
+# IMM 11/06/2019 23:59:43 003 D 24 005 004 090 250 02500 14571 00086 0413 0000 0 0 0 0
+# IMM 11/07/2019 00:23:11 003 D 24 005 004 090 250 02500 14573 00086 0413 0000 0 0 0 0
+# CTD 11/07/2019 00:00:52  06 181 P
+# 00218 12083 40173 00224 12087 40187 00262 12087 40188 00292 12086 40188 00334 12087 40188
+# 00381 12086 40188 00375 12087 40189 00402 12087 40189 00427 12085 40187 00453 12082 40184
+# 00496 12078 40182 00494 12073 40178 00487 12077 40180 00551 12076 40180 00583 12078 40182
+# 00616 12078 40182 00629 12075 40180 00649 12075 40180 00676 12074 40179 00698 12075 40180
+# AADI 11/07/2019 00:00:52  06 181 P
+# 12105 31575 12105 31582 12106 31581 12107 31578 12106 31584 12105 31579 12106 31571 12107 31575
+# 12107 31564 12103 31581 12098 31584 12098 31581 12097 31576 12095 31589 12096 31604 12096 31596
+# 12096 31595 12095 31597 12095 31591 12095 31597 12096 31595 12095 31598 12098 31597 12097 31590
+# 12097 31606 12097 31591 12102 31590 12102 31592 12104 31584 12107 31577 12107 31576 12108 31585
+# 12108 31579 12110 31579 12110 31577 12109 31567 12109 31565 12107 31562 12106 31565 12100 31577
+
 gps_dict = ['type', 'date', 'time', 'latDM', 'latNS', 'lonDM', 'lonEW', 'lock', 'error']
 ctd_dict = ['type', 'date', 'time', 'srate', 'sam', 'crc']
 imm_dict = ['type', 'date', 'time', 'depth', 'dir', 'np', 'pre', 'ul', 'll', 'ip', 'err_to', 'trip', 'err_c', 'vacume', 'slow_d', 'water', 'storm', 'mode']
@@ -36,6 +55,7 @@ times = []
 data = []
 locations = []
 
+output_pos = False
 
 def dm(x):
     degrees = int(x) // 100
@@ -220,8 +240,10 @@ def parse(files):
     ncOut.number_of_profiles = np.int32(n_profile)
 
     if last_gps:
-        ncOut.latitude = last_gps['latitude']
-        ncOut.longitude = last_gps['longitude']
+        ncOut.latitude = np.mean([l['latitude'] for l in locations])
+        ncOut.longitude = np.mean([l['longitude'] for l in locations])
+        #ncOut.latitude = last_gps['latitude']
+        #ncOut.longitude = last_gps['longitude']
 
     # add time variable
 
@@ -231,19 +253,19 @@ def parse(files):
     #     TIME:units = "days since 1950-01-01 00:00:00 UTC";
 
     #print(locations)
-    ncOut.createDimension("POS", len(locations))
-    nc_var_out = ncOut.createVariable("XPOS", "f4", ("POS"), fill_value=np.nan, zlib=True)
-    nc_var_out[:] = [l['longitude'] for l in locations]
-    nc_var_out.units = 'degrees_East'
-    nc_var_out = ncOut.createVariable("YPOS", "f4", ("POS"), fill_value=np.nan, zlib=True)
-    nc_var_out[:] = [l['latitude'] for l in locations]
-    nc_var_out.units = 'degrees_North'
-    nc_var_out = ncOut.createVariable("TPOS", "d", ("POS"), fill_value=np.nan, zlib=True)
-    nc_var_out.long_name = "position time"
-    nc_var_out.units = "days since 1950-01-01 00:00:00 UTC"
-    nc_var_out.calendar = "gregorian"
-    nc_var_out[:] = [date2num(datetime.datetime.strptime(loc['date'] + " " + loc['time'], '%m/%d/%Y %H:%M:%S'), calendar='gregorian', units="days since 1950-01-01 00:00:00 UTC") for loc in locations]
-
+    if output_pos:
+        ncOut.createDimension("POS", len(locations))
+        nc_var_out = ncOut.createVariable("XPOS", "f4", ("POS"), fill_value=np.nan, zlib=True)
+        nc_var_out[:] = [l['longitude'] for l in locations]
+        nc_var_out.units = 'degrees_East'
+        nc_var_out = ncOut.createVariable("YPOS", "f4", ("POS"), fill_value=np.nan, zlib=True)
+        nc_var_out[:] = [l['latitude'] for l in locations]
+        nc_var_out.units = 'degrees_North'
+        nc_var_out = ncOut.createVariable("TPOS", "d", ("POS"), fill_value=np.nan, zlib=True)
+        nc_var_out.long_name = "position time"
+        nc_var_out.units = "days since 1950-01-01 00:00:00 UTC"
+        nc_var_out.calendar = "gregorian"
+        nc_var_out[:] = [date2num(datetime.datetime.strptime(loc['date'] + " " + loc['time'], '%m/%d/%Y %H:%M:%S'), calendar='gregorian', units="days since 1950-01-01 00:00:00 UTC") for loc in locations]
 
     tDim = ncOut.createDimension("TIME")
     ncTimesOut = ncOut.createVariable("TIME", "d", ("TIME",), zlib=True)

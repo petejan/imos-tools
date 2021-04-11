@@ -280,49 +280,53 @@ def aggregate(files, varNames):
 
                 nc1 = Dataset(path_file, mode="r")
 
-                maVariable = nc1.variables[v][:]
-                varDims = varList[v].dimensions
-                varOrder = len(varDims)
+                if v in nc1.variables:
+                    maVariable = nc1.variables[v][:]
+                    varDims = varList[v].dimensions
+                    varOrder = len(varDims)
 
-                if len(varDims) > 0:
-                    # need to replace the TIME dimension with the now extended OBS dimension
-                    # should we extend this to the CTD case where the variables have a DEPTH dimension and no TIME
-                    if varList[v].dimensions[0] == 'TIME':
-                        if filen == 0:
-                            maVariableAll = maVariable
+                    if len(varDims) > 0:
+                        # need to replace the TIME dimension with the now extended OBS dimension
+                        # should we extend this to the CTD case where the variables have a DEPTH dimension and no TIME
+                        if varList[v].dimensions[0] == 'TIME':
+                            if filen == 0:
+                                maVariableAll = maVariable
 
-                            dim = ('OBS',) + varDims[1:len(varDims)]
-                            ncVariableOut = ncOut.createVariable(v, varList[v].dtype, dim)
+                                dim = ('OBS',) + varDims[1:len(varDims)]
+                                ncVariableOut = ncOut.createVariable(v, varList[v].dtype, dim)
+                            else:
+                                maVariableAll = ma.append(maVariableAll, maVariable, axis=0) # add new data to end along OBS axis
                         else:
-                            maVariableAll = ma.append(maVariableAll, maVariable, axis=0) # add new data to end along OBS axis
+                            if filen == 0:
+                                maVariableAll = maVariable
+                                maVariableAll.shape = (1,) + maVariable.shape
+
+                                dim = ('instrument',) + varDims[0:len(varDims)]
+                                varOrder += 1
+                                ncVariableOut = ncOut.createVariable(v, varList[v].dtype, dim)
+                            else:
+                                vdata = maVariable
+                                vdata.shape = (1,) + maVariable.shape
+                                maVariableAll = ma.append(maVariableAll, vdata, axis=0)
+
                     else:
                         if filen == 0:
                             maVariableAll = maVariable
-                            maVariableAll.shape = (1,) + maVariable.shape
 
                             dim = ('instrument',) + varDims[0:len(varDims)]
-                            varOrder += 1
                             ncVariableOut = ncOut.createVariable(v, varList[v].dtype, dim)
                         else:
-                            vdata = maVariable
-                            vdata.shape = (1,) + maVariable.shape
-                            maVariableAll = ma.append(maVariableAll, vdata, axis=0)
+                            maVariableAll = ma.append(maVariableAll, maVariable)
 
+                    # copy the variable attributes
+                    # this is ends up as the super set of all files_to_process
+                    for a in varList[v].ncattrs():
+                        if a not in ('comment', '_FillValue') and not re.match(r"calibration.*", a):
+                            #print("%s Attribute %s value %s" % (v, a, varList[v].getncattr(a)))
+                            ncVariableOut.setncattr(a, varList[v].getncattr(a))
                 else:
-                    if filen == 0:
-                        maVariableAll = maVariable
-
-                        dim = ('instrument',) + varDims[0:len(varDims)]
-                        ncVariableOut = ncOut.createVariable(v, varList[v].dtype, dim)
-                    else:
-                        maVariableAll = ma.append(maVariableAll, maVariable)
-
-                # copy the variable attributes
-                # this is ends up as the super set of all files_to_process
-                for a in varList[v].ncattrs():
-                    if a not in ('comment', '_FillValue') and not re.match(r"calibration.*", a):
-                        #print("%s Attribute %s value %s" % (v, a, varList[v].getncattr(a)))
-                        ncVariableOut.setncattr(a, varList[v].getncattr(a))
+                    maVariable = numpy.zeros_like(maVariable)  # fill new data (if its missing, like the last variable)
+                    maVariableAll = ma.append(maVariableAll, maVariable, axis=0)  # add new data to end along OBS axis
 
                 nc1.close()
                 filen += 1

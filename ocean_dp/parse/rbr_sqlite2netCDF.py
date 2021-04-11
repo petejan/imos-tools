@@ -60,6 +60,7 @@ nameMap["turb00"] = "NTU"
 
 unitMap = {}
 unitMap["C"] = "degrees_Celsius"
+unitMap["Degrees_C"] = "degrees_Celsius"
 
 
 def parse(file):

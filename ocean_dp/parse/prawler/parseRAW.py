@@ -27,9 +27,25 @@ from datetime import timedelta, datetime
 
 import glob
 
+output_pos = False
+
 times = []
 data = []
 locations = []
+
+# %%GPS_PPS
+# DT,ID,T,LAT,LATD,LON,LOND,Q,S,H,M
+# 2020-03-17T00:25:27Z,GPGGA,002527.484,1820.1349,S,14723.3115,E,1,04,1.5,-41.4
+#
+# %%PRAWC_PPS
+# EP,CD,CT,CC,OT,O2,CH,TB
+# 5E7005A2,6.37,28.744,5.677,28.757,224.990,00059,00079
+# 5E7005A8,6.54,28.748,5.679,28.757,224.910,00059,00081
+# 5E7005AE,7.40,28.747,5.679,28.757,224.980,00060,00080
+# 5E7005B4,9.18,28.749,5.679,28.758,224.960,00059,00097
+# 5E7005BA,11.39,28.748,5.679,28.758,224.930,00060,00081
+# 5E7005C0,13.05,28.749,5.680,28.758,224.980,00062,00078
+# 5E7005C6,14.91,28.750,5.680,28.758,225.000,00061,00079
 
 def dm(x):
     degrees = int(x) // 100
@@ -143,8 +159,10 @@ def parse(files):
     ncOut.number_of_profiles = np.int32(n_profile)
 
     if last_gps:
-        ncOut.latitude = last_gps['latitude']
-        ncOut.longitude = last_gps['longitude']
+        ncOut.latitude = np.mean([l['latitude'] for l in locations])
+        ncOut.longitude = np.mean([l['longitude'] for l in locations])
+        #ncOut.latitude = last_gps['latitude']
+        #ncOut.longitude = last_gps['longitude']
 
     # add time variable
 
@@ -154,19 +172,19 @@ def parse(files):
     #     TIME:units = "days since 1950-01-01 00:00:00 UTC";
 
     #print(locations)
-    ncOut.createDimension("POS", len(locations))
-    nc_var_out = ncOut.createVariable("XPOS", "f4", ("POS"), fill_value=np.nan, zlib=True)
-    nc_var_out[:] = [l['longitude'] for l in locations]
-    nc_var_out.units = 'degrees_East'
-    nc_var_out = ncOut.createVariable("YPOS", "f4", ("POS"), fill_value=np.nan, zlib=True)
-    nc_var_out[:] = [l['latitude'] for l in locations]
-    nc_var_out.units = 'degrees_North'
-    nc_var_out = ncOut.createVariable("TPOS", "d", ("POS"), fill_value=np.nan, zlib=True)
-    nc_var_out.long_name = "position time"
-    nc_var_out.units = "days since 1950-01-01 00:00:00 UTC"
-    nc_var_out.calendar = "gregorian"
-    nc_var_out[:] = [date2num(datetime.strptime(loc['ts'], "%Y-%m-%dT%H:%M:%SZ"), calendar='gregorian', units="days since 1950-01-01 00:00:00 UTC") for loc in locations]
-
+    if output_pos:
+        ncOut.createDimension("POS", len(locations))
+        nc_var_out = ncOut.createVariable("XPOS", "f4", ("POS"), fill_value=np.nan, zlib=True)
+        nc_var_out[:] = [l['longitude'] for l in locations]
+        nc_var_out.units = 'degrees_East'
+        nc_var_out = ncOut.createVariable("YPOS", "f4", ("POS"), fill_value=np.nan, zlib=True)
+        nc_var_out[:] = [l['latitude'] for l in locations]
+        nc_var_out.units = 'degrees_North'
+        nc_var_out = ncOut.createVariable("TPOS", "d", ("POS"), fill_value=np.nan, zlib=True)
+        nc_var_out.long_name = "position time"
+        nc_var_out.units = "days since 1950-01-01 00:00:00 UTC"
+        nc_var_out.calendar = "gregorian"
+        nc_var_out[:] = [date2num(datetime.strptime(loc['ts'], "%Y-%m-%dT%H:%M:%SZ"), calendar='gregorian', units="days since 1950-01-01 00:00:00 UTC") for loc in locations]
 
     tDim = ncOut.createDimension("TIME")
     ncTimesOut = ncOut.createVariable("TIME", "d", ("TIME",), zlib=True)
@@ -189,15 +207,15 @@ def parse(files):
     nc_var_out.units = 'S/m'
     nc_var_out = ncOut.createVariable("DOX2_RAW", "f4", ("TIME"), fill_value=np.nan, zlib=True)
     nc_var_out[:] = dox2_out
-    #nc_var_out.units = 'umol/kg'
+    nc_var_out.units = 'umol/kg'
     nc_var_out.comment = 'RAW DOX2, referenced to PSAL=0'
-    nc_var_out = ncOut.createVariable("DOX2_TEMP", "f4", ("TIME"), fill_value=np.nan, zlib=True)
+    nc_var_out = ncOut.createVariable("DOXY_TEMP", "f4", ("TIME"), fill_value=np.nan, zlib=True)
     nc_var_out[:] = dox2_temp_out
     nc_var_out.units = 'degrees_Celsius'
-    nc_var_out = ncOut.createVariable("FLU", "f4", ("TIME"), fill_value=np.nan, zlib=True)
+    nc_var_out = ncOut.createVariable("CPHL", "f4", ("TIME"), fill_value=np.nan, zlib=True)
     nc_var_out[:] = flu_out
     nc_var_out.units = 'counts'
-    nc_var_out = ncOut.createVariable("BS", "f4", ("TIME"), fill_value=np.nan, zlib=True)
+    nc_var_out = ncOut.createVariable("TURB", "f4", ("TIME"), fill_value=np.nan, zlib=True)
     nc_var_out[:] = bs_out
     nc_var_out.units = 'counts'
 

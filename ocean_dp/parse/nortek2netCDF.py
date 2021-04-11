@@ -29,30 +29,6 @@ import struct
 from si_prefix import si_format
 
 import ctypes
-c_uint8 = ctypes.c_uint8
-c_uint16 = ctypes.c_uint16
-
-
-class Flags_bits( ctypes.LittleEndianStructure ):
-    _fields_ = [
-                ("profile",     c_uint8, 1),     # bit 1
-                ("mode_burst", c_uint8, 1),      # bin 2
-                ("not used", c_uint8, 2),        # bin 3, 4
-                ("power",    c_uint8, 2),        # bit 5, 6
-                ("sync_out",       c_uint8, 1),  # bit 7
-                ("sample_on_sync", c_uint8, 1),  # bit 8
-                ("start_on_sync", c_uint8, 1),   # bit 9
-    ]
-
-class Flags( ctypes.Union ):
-    _anonymous_ = ("bit",)
-    _fields_ = [
-                ("bit",    Flags_bits ),
-                ("asByte", c_uint16    )
-               ]
-
-time_ctrl_reg = Flags()
-time_ctrl_reg.asByte = 0x2  # ->0010
 
 # nortek data codes (these are in hex) from 'system integrator manual october 2017'
 #  0 User Configuration
@@ -285,6 +261,12 @@ def parse_file(filepath):
                             #print(packet_decode2netCDF[att])
                             if packet_decode2netCDF[att]['decode'] in d:
                                 attribute_list.append((packet_decode2netCDF[att]["attrib"], float(d[packet_decode2netCDF[att]["decode"]])))
+
+                        # include all settings as attributes in file
+                        # if 'User Configuration' == packet_decoder[id]['name'] or 'Head Configuration' == packet_decoder[id]['name'] or 'Hardware Configuration' == packet_decoder[id]['name']:
+                        #     for k in d:
+                        #         print("dict ", k, " = " , d[k])
+                        #         attribute_list.append(('nortek_' + packet_decoder[id]['name'].replace(" ", "_").lower() + '-' + k, str(d[k])))
 
                         if 'Vector System Data' == packet_decoder[id]['name']:
                             if not first_time:
