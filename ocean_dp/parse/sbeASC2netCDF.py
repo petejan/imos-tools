@@ -175,19 +175,19 @@ def sbe_asc_parse(files):
                 if sensor:
                     matchObj = re.match(cal_val_expr, line)
                     if matchObj:
-                        print("cal_val_expr:matchObj.group() : ", matchObj.group())
+                        #print("cal_val_expr:matchObj.group() : ", matchObj.group())
                         #print("cal_val_expr:matchObj.group(1) : ", matchObj.group(1))
                         cal_param = matchObj.group(1)
                         cal_value = matchObj.group(2)
                         cal_tags.append((cal_sensor, cal_param, cal_value))
-                        print("calibration type %s param %s value %s" % (cal_sensor, cal_param, cal_value))
+                        #print("calibration type %s param %s value %s" % (cal_sensor, cal_param, cal_value))
 
                     else:
                         sensor = False
 
                 matchObj = re.match(cal_expr, line)
                 if matchObj:
-                    print("cal_expr:matchObj.group() : ", matchObj.group())
+                    #print("cal_expr:matchObj.group() : ", matchObj.group())
                     #print("cal_expr:matchObj.group(1) : ", matchObj.group(1))
                     sensor = True
                     cal_param = None
@@ -197,6 +197,9 @@ def sbe_asc_parse(files):
                 matchObj = re.match(notime_expr, line)
                 if matchObj:
                     no_time = True
+                matchObj = re.match(hastime_expr, line)
+                if matchObj:
+                    no_time = False
 
                 matchObj = re.match(model_serial_expr, line)
                 if matchObj:
@@ -263,7 +266,9 @@ def sbe_asc_parse(files):
                             if nVariables >= 2:
                                 name.insert(1, {'col': 1, 'var_name': "PRES", 'comment': None, 'unit': "dbar"})
 
-                        print("variables ", name)
+                        print("variables:")
+                        for v in name:
+                            print(" ", v)
 
                     #print(line.strip())
                     splitVarNo = 0
@@ -324,9 +329,9 @@ def sbe_asc_parse(files):
     ncTimesOut.axis = "T"
     ncTimesOut[:] = date2num(times, calendar=ncTimesOut.calendar, units=ncTimesOut.units)
 
+    # add any RTC calibration constants to the TIME variable
     for c in cal_tags:
         if c[0] == 'rtc':
-            print(c)
             try:
                 ncTimesOut.setncattr('calibration_' + c[1], np.float(c[2]))
             except ValueError:
@@ -343,18 +348,11 @@ def sbe_asc_parse(files):
         ncVarOut[:] = odata[:, v['col']]
         ncVarOut.units = v['unit']
 
+        # add any calibration values for this variable
         for c in cal_tags:
             add = False
-            if c[0] == 'temperature' and varName == 'TEMP':
-                print(c)
-                add = True
-            if c[0] == 'pressure' and varName == 'PRES':
-                print(c)
-                add = True
-            if c[0] == 'conductivity' and varName == 'CNDC':
-                add = True
-                print(c)
-            if add:
+            cal_name = nameMap.get(c[0])
+            if cal_name == varName:
                 try:
                     ncVarOut.setncattr('calibration_' + c[1], np.float32(c[2]))
                 except ValueError:
@@ -362,9 +360,6 @@ def sbe_asc_parse(files):
 
 
         i = i + 1
-
-    for c in cal_tags:
-        print(c)
 
     # add timespan attributes
     ncOut.setncattr("time_coverage_start", num2date(ncTimesOut[0], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
