@@ -327,7 +327,10 @@ def sbe_asc_parse(files):
     for c in cal_tags:
         if c[0] == 'rtc':
             print(c)
-            ncTimesOut.setncattr('calibration_' + c[1], c[2])
+            try:
+                ncTimesOut.setncattr('calibration_' + c[1], np.float(c[2]))
+            except ValueError:
+                ncTimesOut.setncattr('calibration_' + c[1], c[2])
 
     # for each variable in the data file, create a netCDF variable
     i = 0
@@ -341,15 +344,22 @@ def sbe_asc_parse(files):
         ncVarOut.units = v['unit']
 
         for c in cal_tags:
+            add = False
             if c[0] == 'temperature' and varName == 'TEMP':
                 print(c)
-                ncVarOut.setncattr('calibration_' + c[1], c[2])
+                add = True
             if c[0] == 'pressure' and varName == 'PRES':
                 print(c)
-                ncVarOut.setncattr('calibration_' + c[1], c[2])
+                add = True
             if c[0] == 'conductivity' and varName == 'CNDC':
+                add = True
                 print(c)
-                ncVarOut.setncattr('calibration_' + c[1], c[2])
+            if add:
+                try:
+                    ncVarOut.setncattr('calibration_' + c[1], np.float32(c[2]))
+                except ValueError:
+                    ncVarOut.setncattr('calibration_' + c[1], c[2])
+
 
         i = i + 1
 
