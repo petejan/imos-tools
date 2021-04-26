@@ -65,11 +65,17 @@ def sbe_asc_parse(files):
             #print(line_split)
 
             ts = parser.parse(line_split[0])
-            v = float(line_split[3])
+            try:
+                v = float(line_split[3])
 
-            time.append(ts)
-            value.append(v)
-            number_samples += 1
+                time.append(ts)
+                value.append(v)
+                number_samples += 1
+                if number_samples % 10000 == 0:
+                    print(ts)
+            except ValueError:
+                pass
+
 
             line = fp.readline()
 

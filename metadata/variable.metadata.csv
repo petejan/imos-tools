@@ -76,3 +76,17 @@ VAR_ATT,NOMINAL_DEPTH,,,,,,,,,standard_name,str,depth
 VAR_ATT,NOMINAL_DEPTH,,,,,,,,,units,str,m
 VAR_ATT,NOMINAL_DEPTH,,,,,,,,,valid_max,float64,12000
 VAR_ATT,NOMINAL_DEPTH,,,,,,,,,valid_min,float64,-5
+
+VAR_ATT,XPOS,,,,,,,,,long_name,str,longitude
+VAR_ATT,XPOS,,,,,,,,,reference_datum,str,WGS84 geographic coordinate system
+VAR_ATT,XPOS,,,,,,,,,units,str,degrees_east
+VAR_ATT,XPOS,,,,,,,,,valid_max,float32,360
+VAR_ATT,XPOS,,,,,,,,,valid_min,float32,-180
+VAR_ATT,XPOS,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,YPOS,,,,,,,,,long_name,str,latitude
+VAR_ATT,YPOS,,,,,,,,,reference_datum,str,WGS84 geographic coordinate system
+VAR_ATT,YPOS,,,,,,,,,units,str,degrees_north
+VAR_ATT,YPOS,,,,,,,,,valid_max,float32,90
+VAR_ATT,YPOS,,,,,,,,,valid_min,float32,-90
+VAR_ATT,YPOS,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+

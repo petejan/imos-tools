@@ -85,7 +85,7 @@ name_expr = r"# name (\d+) = (.*):\s*(.*)"
 end_expr = r"\*END\*"
 sampleExpr = r"\* sample interval = (\d+) seconds"
 startTimeExpr = r"# start_time = ([^\[]*)"
-intervalExpr = r"# interval = (\S+): (\d+)"
+intervalExpr = r"# interval = (\S+): (\S+)"
 
 nvalues_expr = r"# nvalues =\s*(\d+)"
 nquant_expr = r"# nquan = (\d+)"
@@ -258,10 +258,10 @@ def parse(files):
 
                     matchObj = re.match(intervalExpr, line)
                     if matchObj:
-                        #print("intervalExpr:matchObj.group() : ", matchObj.group())
+                        print("intervalExpr:matchObj.group() : ", matchObj.group())
                         #print("intervalExpr:matchObj.group(1) : ", matchObj.group(1))
                         #print("intervalExpr:matchObj.group(1) : ", matchObj.group(2))
-                        sample_interval = int(matchObj.group(2))
+                        sample_interval = float(matchObj.group(2))
 
                     matchObj = re.match(nvalues_expr, line)
                     if matchObj:
@@ -373,17 +373,14 @@ def parse(files):
 
         t_epoc = date2num(datetime(2000, 1, 1), calendar=ncTimesOut.calendar, units=ncTimesOut.units)
 
-        if "TIME" not in name:
-            print('No time variable, start time', start_time, 'interval', sample_interval)
-
-            ncTimesOut[:] = [date2num(start_time + timedelta(seconds=x*sample_interval), calendar=ncTimesOut.calendar, units=ncTimesOut.units) for x in range(number_samples_read)]
-
         # for each variable in the data file, create a netCDF variable
         i = 0
+        has_time = False
         for v in name:
             print("Variable %s : unit %s" % (v['var_name'], v['unit']))
             varName = v['var_name']
             if varName == 'TIME':
+                has_time = True
                 #print(data[:, v['col']])
                 if (v['unit'] == 'julian days') | (v['sbe-name'] == 'TIMEJ'):
                     t_epoc_start = datetime(start_time.year, 1, 1) - timedelta(days=1)
@@ -418,6 +415,12 @@ def parse(files):
                 ncVarOut[:] = odata[:, v['col']]
 
             i = i + 1
+
+        if not has_time:
+            print('No time variable, start time', start_time, 'interval', sample_interval)
+
+            ncTimesOut[:] = [date2num(start_time + timedelta(seconds=x*sample_interval), calendar=ncTimesOut.calendar, units=ncTimesOut.units) for x in range(number_samples_read)]
+
 
         # add timespan attributes
         ncOut.setncattr("time_coverage_start", num2date(ncTimesOut[0], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))

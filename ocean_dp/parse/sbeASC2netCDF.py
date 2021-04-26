@@ -126,7 +126,7 @@ sample_int2_expr  = r"sample interval =\s*(\d*)\s*(.*)"
 first_sample_expr = r"start sample number =\s*(\d*)"
 n_samples_expr    = r"\* samplenumber = (\d*)"
 
-cal_expr          = r"\* (.*):\s*(.*)"
+cal_expr          = r"\* ((\S*).*):\s*(.*)"
 cal_val_expr      = r"\*\s*(\S*) = ([0-9e+-\.]*)"
 
 navr_expr        = r"\* number of samples to average = (\s*)"
@@ -135,6 +135,7 @@ nortd_expr        = r"\* do not transmit real-time data"
 nosal_expr        = r"\* do not output salinity with each sample"
 novel_expr        = r"\* do not output sound velocity with each sample"
 notime_expr       = r"\* do not store time with each sample"
+hastime_expr       = r"\* store time with each sample"
 
 #
 # parse the file
@@ -152,8 +153,6 @@ def sbe_asc_parse(files):
     number_samples_read = 0
     nVars = 0
 
-    use_eqn = None
-    eqn = None
     cal_param = None
     cal_sensor = None
     cal_tags = []
@@ -174,16 +173,26 @@ def sbe_asc_parse(files):
 
             if hdr:
                 if sensor:
-                    sensor = False
+                    matchObj = re.match(cal_val_expr, line)
+                    if matchObj:
+                        print("cal_val_expr:matchObj.group() : ", matchObj.group())
+                        #print("cal_val_expr:matchObj.group(1) : ", matchObj.group(1))
+                        cal_param = matchObj.group(1)
+                        cal_value = matchObj.group(2)
+                        cal_tags.append((cal_sensor, cal_param, cal_value))
+                        print("calibration type %s param %s value %s" % (cal_sensor, cal_param, cal_value))
+
+                    else:
+                        sensor = False
 
                 matchObj = re.match(cal_expr, line)
                 if matchObj:
-                    #print("sensor_start:matchObj.group() : ", matchObj.group())
-                    #print("sensor_start:matchObj.group(1) : ", matchObj.group(1))
+                    print("cal_expr:matchObj.group() : ", matchObj.group())
+                    #print("cal_expr:matchObj.group(1) : ", matchObj.group(1))
                     sensor = True
-                    use_eqn = None
                     cal_param = None
-                    cal_sensor = None
+                    cal_sensor = matchObj.group(2)
+                    cal_tags.append((cal_sensor, "comment", matchObj.group(1) + " " + matchObj.group(3)))
 
                 matchObj = re.match(notime_expr, line)
                 if matchObj:
@@ -315,6 +324,11 @@ def sbe_asc_parse(files):
     ncTimesOut.axis = "T"
     ncTimesOut[:] = date2num(times, calendar=ncTimesOut.calendar, units=ncTimesOut.units)
 
+    for c in cal_tags:
+        if c[0] == 'rtc':
+            print(c)
+            ncTimesOut.setncattr('calibration_' + c[1], c[2])
+
     # for each variable in the data file, create a netCDF variable
     i = 0
     for v in name:
@@ -326,7 +340,21 @@ def sbe_asc_parse(files):
         ncVarOut[:] = odata[:, v['col']]
         ncVarOut.units = v['unit']
 
+        for c in cal_tags:
+            if c[0] == 'temperature' and varName == 'TEMP':
+                print(c)
+                ncVarOut.setncattr('calibration_' + c[1], c[2])
+            if c[0] == 'pressure' and varName == 'PRES':
+                print(c)
+                ncVarOut.setncattr('calibration_' + c[1], c[2])
+            if c[0] == 'conductivity' and varName == 'CNDC':
+                print(c)
+                ncVarOut.setncattr('calibration_' + c[1], c[2])
+
         i = i + 1
+
+    for c in cal_tags:
+        print(c)
 
     # add timespan attributes
     ncOut.setncattr("time_coverage_start", num2date(ncTimesOut[0], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
