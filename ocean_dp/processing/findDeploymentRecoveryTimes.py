@@ -22,6 +22,8 @@ import numpy as np
 import datetime
 from dateutil import parser
 
+overwrite = False
+
 # find the pressure where its half the median pressure
 
 def main(netCDFfile):
@@ -42,24 +44,36 @@ def main(netCDFfile):
         print("pressure median", median)
 
         if median > 1:
-            find = np.where(p.compressed() > median/2)
-            #print("find ", find)
-            dep_recovery = [find[0][0], find[0][-1]]
-            print("deployment ", find[0][0], " recovery ", find[0][-1])
+            mid = int(len(p)/2)
+            print("mid", mid)
+
+            for i in range(mid, 0, -1):
+                if p[i] < median/2:
+                    break
+            for j in range(mid, len(p)):
+                if p[j] < median/2:
+                    break
+
+            dep_recovery = [i, j]
+            # find = np.where(p.compressed() > median/2)
+            # #print("find ", find)
+            # dep_recovery = [find[0][0], find[0][-1]]
+            print("deployment ", dep_recovery[0], " recovery ", dep_recovery[1])
             print(p[dep_recovery])
             ts = num2date(t[dep_recovery], units=unit)
 
             ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
 
             print('time deployment ', ts[0].strftime(ncTimeFormat))
-            print('time recovery ', ts[-1].strftime(ncTimeFormat))
+            print('time recovery   ', ts[-1].strftime(ncTimeFormat))
 
             t_deploy = None
             t_recovery = None
-            if "time_deployment_start" in ds.ncattrs():
-                t_deploy = ds.time_deployment_start
-            if "time_deployment_end" in ds.ncattrs():
-                t_recovery = ds.time_deployment_end
+            if not overwrite:
+                if "time_deployment_start" in ds.ncattrs():
+                    t_deploy = ds.time_deployment_start
+                if "time_deployment_end" in ds.ncattrs():
+                    t_recovery = ds.time_deployment_end
 
             if t_deploy:
                 t_diff = parser.parse(t_deploy, ignoretz=True) - ts[0]
@@ -83,4 +97,7 @@ def main(netCDFfile):
 
 if __name__ == "__main__":
     for f in sys.argv[1:]:
-        main(f)
+        if f == '-overwrite':
+            overwrite = True
+        else:
+            main(f)

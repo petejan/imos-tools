@@ -143,235 +143,242 @@ hastime_expr       = r"\* store time with each sample"
 
 def sbe_asc_parse(files):
 
-    filepath = files[0]
+    outputNames = []
+    for filepath in files:
 
-    hdr = True
-    sensor = False
-    dataLine = 0
-    name = []
-    text = []
-    number_samples_read = 0
-    nVars = 0
+        hdr = True
+        sensor = False
+        dataLine = 0
+        name = []
+        text = []
+        number_samples_read = 0
+        nVars = 0
 
-    cal_param = None
-    cal_sensor = None
-    cal_tags = []
-    data = None
-    no_time = False
-    number_samples = 1
+        cal_param = None
+        cal_sensor = None
+        cal_tags = []
+        data = None
+        no_time = False
+        number_samples = 1
+        times = None
 
-    with open(filepath, 'r', errors='ignore') as fp:
-        line = fp.readline()
-        matchObj = re.match(first_line_expr, line)
-        if not matchObj:
-            print("Not a Sea Bird ASC file !")
-            return None
-
-        cnt = 1
-        while line:
-            #print("Line {}: {} : {}".format(cnt, dataLine, line.strip()))
-
-            if hdr:
-                if sensor:
-                    matchObj = re.match(cal_val_expr, line)
-                    if matchObj:
-                        #print("cal_val_expr:matchObj.group() : ", matchObj.group())
-                        #print("cal_val_expr:matchObj.group(1) : ", matchObj.group(1))
-                        cal_param = matchObj.group(1)
-                        cal_value = matchObj.group(2)
-                        cal_tags.append((cal_sensor, cal_param, cal_value))
-                        #print("calibration type %s param %s value %s" % (cal_sensor, cal_param, cal_value))
-
-                    else:
-                        sensor = False
-
-                matchObj = re.match(cal_expr, line)
-                if matchObj:
-                    #print("cal_expr:matchObj.group() : ", matchObj.group())
-                    #print("cal_expr:matchObj.group(1) : ", matchObj.group(1))
-                    sensor = True
-                    cal_param = None
-                    cal_sensor = matchObj.group(2)
-                    cal_tags.append((cal_sensor, "comment", matchObj.group(1) + " " + matchObj.group(3)))
-
-                matchObj = re.match(notime_expr, line)
-                if matchObj:
-                    no_time = True
-                matchObj = re.match(hastime_expr, line)
-                if matchObj:
-                    no_time = False
-
-                matchObj = re.match(model_serial_expr, line)
-                if matchObj:
-                    print("model_serial_expr:matchObj.group() : ", matchObj.group())
-                    print("model_serial_expr:matchObj.group(1) : ", matchObj.group(1))
-                    print("model_serial_expr:matchObj.group(1) : ", matchObj.group(2))
-                    print("model_serial_expr:matchObj.group(1) : ", matchObj.group(3))
-                    instrument_model = matchObj.group(1)
-                    instrument_serialnumber = matchObj.group(3)
-
-                matchObj = re.match(n_samples_expr, line)
-                if matchObj:
-                    #print("n_samples_expr:matchObj.group() : ", matchObj.group())
-                    number_samples = int(matchObj.group(1))
-
-                matchObj = re.match(end_expr, line)
-                if matchObj:
-                    #print("end_expr:matchObj.group() : ", matchObj.group())
-                    hdr = False
-
-            else:
-
-                dataL = True
-                matchObj = re.match(start_time_expr, line)
-                if matchObj:
-                    #print("start_time_expr:matchObj.group() : ", matchObj.group())
-                    start_time = parser.parse(matchObj.group(1))
-                    #print("start time ", start_time)
-                    dataL = False
-
-                matchObj = re.match(sample_int2_expr, line)
-                if matchObj:
-                    #print("sample_int2_expr:matchObj.group() : ", matchObj.group())
-                    sample_interval = int(matchObj.group(1))
-                    dataL = False
-
-                matchObj = re.match(first_sample_expr, line)
-                if matchObj:
-                    #print("first_sample_expr:matchObj.group() : ", matchObj.group())
-                    dataL = False
-
-                if dataL and (line.count(",") > 0):
-                    lineSplit = line.strip().split(",")
-                    if data is None:
-                        print("First data line : ", line.strip())
-                        if no_time:
-                            nVariables = len(lineSplit)
-                        else:
-                            nVariables = len(lineSplit) - 2  # 2 for the date and time
-                        print("number variables ", nVariables)
-                        print("data split number ", len(lineSplit), instrument_model)
-                        data = np.zeros((number_samples, nVariables))
-                        data.fill(np.nan)
-                        name.insert(0, {'col': 0, 'var_name': "TEMP", 'comment': None, 'unit': "degrees_Celsius"})
-                        try:
-                            if instrument_model.index("37") >= 0:
-                                if nVariables >= 2:
-                                    name.insert(1, {'col': 1, 'var_name': "CNDC", 'comment': None, 'unit': "S/m"})
-                                if nVariables >= 3:
-                                    name.insert(2, {'col': 2, 'var_name': "PRES", 'comment': None, 'unit': "dbar"})
-                                if nVariables >= 4:
-                                    name.insert(3, {'col': 3, 'var_name': "PSAL", 'comment': None, 'unit': "1"})
-                        except ValueError:
-                            if nVariables >= 2:
-                                name.insert(1, {'col': 1, 'var_name': "PRES", 'comment': None, 'unit': "dbar"})
-
-                        print("variables:")
-                        for v in name:
-                            print(" ", v)
-
-                    #print(line.strip())
-                    splitVarNo = 0
-                    try:
-                        for v in lineSplit:
-                            if splitVarNo < len(name):
-                                data[number_samples_read][splitVarNo] = float(lineSplit[splitVarNo])
-                            splitVarNo = splitVarNo + 1
-                        number_samples_read = number_samples_read + 1
-                    except ValueError:
-                        print("bad line ", lineSplit)
-                        pass
-
-                    dataLine = dataLine + 1
-
+        with open(filepath, 'r', errors='ignore') as fp:
             line = fp.readline()
-            cnt += 1
+            matchObj = re.match(first_line_expr, line)
+            if not matchObj:
+                print("Not a Sea Bird ASC file !")
+                return None
 
-    if nVariables < 1:
-        print('No Variables, exiting')
-        exit(-1)
+            cnt = 1
+            while line:
+                #print("Line {}: {} : {}".format(cnt, dataLine, line.strip()))
+
+                if hdr:
+                    if sensor:
+                        matchObj = re.match(cal_val_expr, line)
+                        if matchObj:
+                            #print("cal_val_expr:matchObj.group() : ", matchObj.group())
+                            #print("cal_val_expr:matchObj.group(1) : ", matchObj.group(1))
+                            cal_param = matchObj.group(1)
+                            cal_value = matchObj.group(2)
+                            cal_tags.append((cal_sensor, cal_param, cal_value))
+                            #print("calibration type %s param %s value %s" % (cal_sensor, cal_param, cal_value))
+
+                        else:
+                            sensor = False
+
+                    matchObj = re.match(cal_expr, line)
+                    if matchObj:
+                        #print("cal_expr:matchObj.group() : ", matchObj.group())
+                        #print("cal_expr:matchObj.group(1) : ", matchObj.group(1))
+                        sensor = True
+                        cal_param = None
+                        cal_sensor = matchObj.group(2)
+                        cal_tags.append((cal_sensor, "comment", matchObj.group(1) + " " + matchObj.group(3)))
+
+                    matchObj = re.match(notime_expr, line)
+                    if matchObj:
+                        no_time = True
+                    matchObj = re.match(hastime_expr, line)
+                    if matchObj:
+                        no_time = False
+
+                    matchObj = re.match(model_serial_expr, line)
+                    if matchObj:
+                        print("model_serial_expr:matchObj.group() : ", matchObj.group())
+                        print("model_serial_expr:matchObj.group(1) : ", matchObj.group(1))
+                        print("model_serial_expr:matchObj.group(1) : ", matchObj.group(2))
+                        print("model_serial_expr:matchObj.group(1) : ", matchObj.group(3))
+                        instrument_model = matchObj.group(1)
+                        instrument_serialnumber = matchObj.group(3)
+
+                    matchObj = re.match(n_samples_expr, line)
+                    if matchObj:
+                        #print("n_samples_expr:matchObj.group() : ", matchObj.group())
+                        number_samples = int(matchObj.group(1))
+
+                    matchObj = re.match(end_expr, line)
+                    if matchObj:
+                        #print("end_expr:matchObj.group() : ", matchObj.group())
+                        hdr = False
+
+                else:
+
+                    dataL = True
+                    matchObj = re.match(start_time_expr, line)
+                    if matchObj:
+                        #print("start_time_expr:matchObj.group() : ", matchObj.group())
+                        start_time = parser.parse(matchObj.group(1))
+                        #print("start time ", start_time)
+                        dataL = False
+
+                    matchObj = re.match(sample_int2_expr, line)
+                    if matchObj:
+                        #print("sample_int2_expr:matchObj.group() : ", matchObj.group())
+                        sample_interval = int(matchObj.group(1))
+                        dataL = False
+
+                    matchObj = re.match(first_sample_expr, line)
+                    if matchObj:
+                        #print("first_sample_expr:matchObj.group() : ", matchObj.group())
+                        dataL = False
+
+                    if dataL and (line.count(",") > 0):
+                        lineSplit = line.strip().split(",")
+                        if data is None:
+                            print("First data line : ", line.strip())
+                            if no_time:
+                                nVariables = len(lineSplit)
+                            else:
+                                nVariables = len(lineSplit) - 2  # 2 for the date and time
+                            print("number variables ", nVariables)
+                            print("data split number ", len(lineSplit), instrument_model)
+                            data = np.zeros((number_samples, nVariables))
+                            data.fill(np.nan)
+                            times = []
+                            name.insert(0, {'col': 0, 'var_name': "TEMP", 'comment': None, 'unit': "degrees_Celsius"})
+                            try:
+                                if instrument_model.index("37") >= 0:
+                                    if nVariables >= 2:
+                                        name.insert(1, {'col': 1, 'var_name': "CNDC", 'comment': None, 'unit': "S/m"})
+                                    if nVariables >= 3:
+                                        name.insert(2, {'col': 2, 'var_name': "PRES", 'comment': None, 'unit': "dbar"})
+                                    if nVariables >= 4:
+                                        name.insert(3, {'col': 3, 'var_name': "PSAL", 'comment': None, 'unit': "1"})
+                            except ValueError:
+                                if nVariables >= 2:
+                                    name.insert(1, {'col': 1, 'var_name': "PRES", 'comment': None, 'unit': "dbar"})
+
+                            print("variables:")
+                            for v in name:
+                                print(" ", v)
+
+                        if not no_time:
+
+                            times.append(parser.parse(lineSplit[-2] + " " + lineSplit[-1]))
+                        #print(line.strip())
+                        splitVarNo = 0
+                        try:
+                            for v in lineSplit:
+                                if splitVarNo < len(name):
+                                    data[number_samples_read][splitVarNo] = float(lineSplit[splitVarNo])
+                                splitVarNo = splitVarNo + 1
+                            number_samples_read = number_samples_read + 1
+                        except ValueError:
+                            print("bad line ", lineSplit)
+                            pass
+
+                        dataLine = dataLine + 1
+
+                line = fp.readline()
+                cnt += 1
+
+        if nVariables < 1:
+            print('No Variables, exiting')
+            exit(-1)
 
 
-    times = [start_time + timedelta(seconds=sample_interval*x) for x in range(0, number_samples_read)]
+        if times is None:
+            times = [start_time + timedelta(seconds=sample_interval*x) for x in range(0, number_samples_read)]
 
-    # trim data to what was read
-    odata = data[:number_samples_read]
-    print("nSamples %d samplesRead %d nVariables %d data shape %s read %s" % (number_samples, number_samples_read, nVariables, data.shape, odata.shape))
+        # trim data to what was read
+        odata = data[:number_samples_read]
+        print("nSamples %d samplesRead %d nVariables %d data shape %s read %s" % (number_samples, number_samples_read, nVariables, data.shape, odata.shape))
 
-    #
-    # build the netCDF file
-    #
+        #
+        # build the netCDF file
+        #
 
-    ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
+        ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
 
-    outputName = filepath + ".nc"
+        outputName = filepath + ".nc"
+        print("output file : %s" % outputName)
+        outputNames.append(outputName)
 
-    print("output file : %s" % outputName)
+        ncOut = Dataset(outputName, 'w', format='NETCDF4')
 
-    ncOut = Dataset(outputName, 'w', format='NETCDF4')
+        ncOut.instrument = 'Sea-Bird Electronics ; ' + instrument_model
+        ncOut.instrument_model = instrument_model
+        ncOut.instrument_serial_number = instrument_serialnumber
+        ncOut.instrument_sample_interval = np.float(sample_interval)
+        #ncOut.instrument_model = instrument_model
 
-    ncOut.instrument = 'Sea-Bird Electronics ; ' + instrument_model
-    ncOut.instrument_model = instrument_model
-    ncOut.instrument_serial_number = instrument_serialnumber
-    ncOut.instrument_sample_interval = np.float(sample_interval)
-    #ncOut.instrument_model = instrument_model
+        #     TIME:axis = "T";
+        #     TIME:calendar = "gregorian";
+        #     TIME:long_name = "time";
+        #     TIME:units = "days since 1950-01-01 00:00:00 UTC";
 
-    #     TIME:axis = "T";
-    #     TIME:calendar = "gregorian";
-    #     TIME:long_name = "time";
-    #     TIME:units = "days since 1950-01-01 00:00:00 UTC";
+        tDim = ncOut.createDimension("TIME", number_samples_read)
+        ncTimesOut = ncOut.createVariable("TIME", "d", ("TIME",), zlib=True)
+        ncTimesOut.long_name = "time"
+        ncTimesOut.units = "days since 1950-01-01 00:00:00 UTC"
+        ncTimesOut.calendar = "gregorian"
+        ncTimesOut.axis = "T"
+        ncTimesOut[:] = date2num(times, calendar=ncTimesOut.calendar, units=ncTimesOut.units)
 
-    tDim = ncOut.createDimension("TIME", number_samples_read)
-    ncTimesOut = ncOut.createVariable("TIME", "d", ("TIME",), zlib=True)
-    ncTimesOut.long_name = "time"
-    ncTimesOut.units = "days since 1950-01-01 00:00:00 UTC"
-    ncTimesOut.calendar = "gregorian"
-    ncTimesOut.axis = "T"
-    ncTimesOut[:] = date2num(times, calendar=ncTimesOut.calendar, units=ncTimesOut.units)
-
-    # add any RTC calibration constants to the TIME variable
-    for c in cal_tags:
-        if c[0] == 'rtc':
-            try:
-                ncTimesOut.setncattr('calibration_' + c[1], np.float(c[2]))
-            except ValueError:
-                ncTimesOut.setncattr('calibration_' + c[1], c[2])
-
-    # for each variable in the data file, create a netCDF variable
-    i = 0
-    for v in name:
-        print("Variable %s : unit %s" % (v['var_name'], v['unit']))
-        varName = v['var_name']
-        ncVarOut = ncOut.createVariable(varName, "f4", ("TIME",), fill_value=np.nan, zlib=True) # fill_value=nan otherwise defaults to max
-
-        #print("Create Variable %s : %s" % (ncVarOut, data[v[0]]))
-        ncVarOut[:] = odata[:, v['col']]
-        ncVarOut.units = v['unit']
-
-        # add any calibration values for this variable
+        # add any RTC calibration constants to the TIME variable
         for c in cal_tags:
-            add = False
-            cal_name = nameMap.get(c[0])
-            if cal_name == varName:
+            if c[0] == 'rtc':
                 try:
-                    ncVarOut.setncattr('calibration_' + c[1], np.float32(c[2]))
+                    ncTimesOut.setncattr('calibration_' + c[1], np.float(c[2]))
                 except ValueError:
-                    ncVarOut.setncattr('calibration_' + c[1], c[2])
+                    ncTimesOut.setncattr('calibration_' + c[1], c[2])
+
+        # for each variable in the data file, create a netCDF variable
+        i = 0
+        for v in name:
+            print("Variable %s : unit %s" % (v['var_name'], v['unit']))
+            varName = v['var_name']
+            ncVarOut = ncOut.createVariable(varName, "f4", ("TIME",), fill_value=np.nan, zlib=True) # fill_value=nan otherwise defaults to max
+
+            #print("Create Variable %s : %s" % (ncVarOut, data[v[0]]))
+            ncVarOut[:] = odata[:, v['col']]
+            ncVarOut.units = v['unit']
+
+            # add any calibration values for this variable
+            for c in cal_tags:
+                add = False
+                cal_name = nameMap.get(c[0])
+                if cal_name == varName:
+                    try:
+                        ncVarOut.setncattr('calibration_' + c[1], np.float32(c[2]))
+                    except ValueError:
+                        ncVarOut.setncattr('calibration_' + c[1], c[2])
 
 
-        i = i + 1
+            i = i + 1
 
-    # add timespan attributes
-    ncOut.setncattr("time_coverage_start", num2date(ncTimesOut[0], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
-    ncOut.setncattr("time_coverage_end", num2date(ncTimesOut[-1], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
+        # add timespan attributes
+        ncOut.setncattr("time_coverage_start", num2date(ncTimesOut[0], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
+        ncOut.setncattr("time_coverage_end", num2date(ncTimesOut[-1], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
 
-    # add creating and history entry
-    ncOut.setncattr("date_created", datetime.utcnow().strftime(ncTimeFormat))
-    ncOut.setncattr("history", datetime.utcnow().strftime("%Y-%m-%d") + " created from file " + os.path.basename(filepath))
+        # add creating and history entry
+        ncOut.setncattr("date_created", datetime.utcnow().strftime(ncTimeFormat))
+        ncOut.setncattr("history", datetime.utcnow().strftime("%Y-%m-%d") + " created from file " + os.path.basename(filepath))
 
-    ncOut.close()
+        ncOut.close()
 
-    return outputName
+    return outputNames
 
 
 if __name__ == "__main__":
