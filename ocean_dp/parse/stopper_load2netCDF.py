@@ -64,7 +64,7 @@ def sbe_asc_parse(files):
 
             #print(line_split)
 
-            ts = parser.parse(line_split[0])
+            ts = datetime.strptime(line_split[0]+'000', '%Y-%m-%d %H:%M:%S.%f')
             try:
                 v = float(line_split[3])
 
@@ -80,6 +80,8 @@ def sbe_asc_parse(files):
             line = fp.readline()
 
     print("nSamples %d " % number_samples)
+    print('t(0)', time[0])
+    print('t(-1)', time[-1])
 
     #
     # build the netCDF file

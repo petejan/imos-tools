@@ -25,7 +25,7 @@ from datetime import datetime
 # add OXSOL to a data file with TEMP, PSAL, PRES variables, many assumptions are made about the input file
 
 
-def add_psal(netCDFfile):
+def oxygen(netCDFfile):
     ds = Dataset(netCDFfile, 'a')
 
     var_temp = ds.variables["TEMP"]
@@ -36,6 +36,17 @@ def add_psal(netCDFfile):
     SP = var_psal[:]
     p = var_pres[:]
 
+    var_dox = None
+    if "DOX" in ds.variables:
+        var_dox = ds.variables["DOX"]
+        dox = var_dox[:]
+    if "DOXY" in ds.variables:
+        var_dox = ds.variables["DOXY"]
+        dox = var_dox[:]/1.42903 # Sea Bird AN-64 [mg/L] = [ml/L] * 1.42903
+    if var_dox is None:
+        print("No DOX/DOXY in file")
+        return
+
     lat = -47
     lon = 142
     try:
@@ -45,14 +56,23 @@ def add_psal(netCDFfile):
         pass
 
     SA = gsw.SA_from_SP(SP, p, lon , lat)
-    pt = gsw.pt0_from_t(SA, t, p)
+    CT = gsw.CT_from_t(SA, t, p)
 
-    oxsol = gsw.O2sol_SP_pt(SP, pt)
+    sigma_theta0 = gsw.sigma0(SA, CT)
 
-    ncVarOut = ds.createVariable("OXSOL", "f4", ("TIME",), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
-    ncVarOut[:] = oxsol
+    # calculate disolved oxygen, umol/kg
+    dox2 = 44660 * dox / (sigma_theta0 + 1000)
+
+    if 'DOX2' not in ds.variables:
+        ncVarOut = ds.createVariable("DOX2", "f4", ("TIME",), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
+    else:
+        ncVarOut = ds.variables['DOX2']
+
+    ncVarOut[:] = dox2
     ncVarOut.units = "umol/kg"
-    ncVarOut.comment = "calculated using gsw-python https://teos-10.github.io/GSW-Python/index.html function gsw.O2sol_SP_pt"
+    ncVarOut.units = "calculated from DOX using https://www.seabird.com/asset-get.download.jsa?code=251036"
+
+    # finish off, and close file
 
     # update the history attribute
     try:
@@ -60,10 +80,10 @@ def add_psal(netCDFfile):
     except AttributeError:
         hist = ""
 
-    ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " : added oxygen solubility")
+    ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " : added derived oxygen, DOX2, DOXS, DOX_MG")
 
     ds.close()
 
 
 if __name__ == "__main__":
-    add_psal(sys.argv[1])
+    oxygen(sys.argv[1])

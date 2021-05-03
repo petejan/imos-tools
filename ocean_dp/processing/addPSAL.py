@@ -24,10 +24,12 @@ from datetime import datetime
 
 # add PSAL to a data file with TEMP, CNDC, PRES variables, many assumptions are made about the input file
 
+overwrite = False
+
 def add_psal(netCDFfile):
     ds = Dataset(netCDFfile, 'a')
 
-    if "PSAL" in ds.variables:
+    if not overwrite and "PSAL" in ds.variables:
         print("file already has salinity variable")
         return
 
@@ -37,19 +39,24 @@ def add_psal(netCDFfile):
 
     var_temp = ds.variables["TEMP"]
     var_cndc = ds.variables["CNDC"]
-    comment = ""
+
+    # find a pressure/depth variable
+    # TODO: use nc.get_variables_by_attributes(units='dbar')
+    p = 0
+    pres_var = "nominal depth of 0 dbar"
+    comment = ", using nominal depth 0 dbar"
     try:
-        p = 0
-        pres_var = "nominal depth of 0 dbar"
-        comment = ", using nominal depth 0 dbar"
         var_pres = ds.variables["NOMINAL_DEPTH"]
-        comment = ", using nominal depth " + str(var_pres[:])
         pres_var = "NOMINAL_DEPTH"
+        comment = ", using nominal depth " + str(var_pres[:])
         p = var_pres[:]
+    except KeyError:
+        pass
+    try:
         var_pres = ds.variables["PRES"]
+        pres_var = "PRES"
         p = var_pres[:]
         comment = ""
-        pres_var = "PRES"
     except KeyError:
         pass
 
@@ -87,4 +94,7 @@ def add_psal(netCDFfile):
 
 if __name__ == "__main__":
     for f in sys.argv[1:]:
-        add_psal(f)
+        if f == '-overwrite':
+            overwrite = True
+        else:
+            add_psal(f)
