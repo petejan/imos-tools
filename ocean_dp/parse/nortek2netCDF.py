@@ -382,7 +382,7 @@ def parse_file(filepath):
         var_names.append({'data_n':  6, 'name': 'ROLL', 'comment': "roll", 'unit': 'degrees'})
         var_names.append({'data_n':  7, 'name': 'PRES', 'comment': "pressure", 'unit': 'dbar'})
         var_names.append({'data_n':  8, 'name': 'BATT', 'comment': "battery voltage", 'unit': 'V'})
-        var_names.append({'data_n':  9, 'name': 'TEMP', 'comment': "temperature", 'unit': 'degrees_Celsius'})
+        var_names.append({'data_n':  9, 'name': 'ITEMP', 'comment': "instrument temperature", 'unit': 'degrees_Celsius'})
         var_names.append({'data_n': 10, 'name': 'SSPEED', 'comment': "sound speed", 'unit': 'm/s'})
 
         var_names.append({'byte_n':  0, 'name': 'ABSIC1', 'comment': "amplitude beam 1", 'unit': 'counts'})
@@ -515,7 +515,7 @@ def parse_file(filepath):
             ncVarOut.units = v['unit']
             ncVarOut[:] = data_array[v['data_n']]
         elif 'byte_n' in v:
-            ncVarOut = ncOut.createVariable(v['name'], "u1", ("TIME",), fill_value=0, zlib=True)  # fill_value=0 otherwise defaults to max
+            ncVarOut = ncOut.createVariable(v['name'], "i2", ("TIME",), fill_value=256, zlib=True)  # fill_value=256 otherwise defaults to max
             ncVarOut.comment = v['comment']
             ncVarOut.units = v['unit']
             ncVarOut[:] = byte_array[v['byte_n']]

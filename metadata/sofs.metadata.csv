@@ -5,8 +5,6 @@ GLOBAL,*,,,,,,,,,author_email,str,peter.jansen@csiro.au
 GLOBAL,*,,,,,,,,,citation,str,"The citation in a list of references is: 'IMOS [year-of-data-download], [Title], [data-access-URL], accessed [date-of-access]'."
 GLOBAL,*,,,,,,,,,institution,str,DWM-SOTS
 GLOBAL,*,,,,,,,,,platform_code,str,SOFS
-GLOBAL,*,,,,,,,,,principal_investigator,str,"Trull, Tom"
-GLOBAL,*,,,,,,,,,principal_investigator_email,str,tom.trull@csiro.au
 GLOBAL,*,,,,,,,,,site_code,str,SOTS
 GLOBAL,*,,,,,,,,,title,str,Oceanographic mooring data deployment of {platform_code} at latitude {geospatial_lat_max:3.1f} longitude {geospatial_lon_max:3.1f} depth {geospatial_vertical_max:3.0f} (m) instrument {instrument} serial {instrument_serial_number}
 GLOBAL,*,,,,,,,,,geospatial_vertical_positive,str,down

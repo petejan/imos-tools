@@ -70,7 +70,7 @@ def oxygen(netCDFfile):
 
     ncVarOut[:] = dox2
     ncVarOut.units = "umol/kg"
-    ncVarOut.units = "calculated from DOX using https://www.seabird.com/asset-get.download.jsa?code=251036"
+    ncVarOut.comment = "calculated from DOX using https://www.seabird.com/asset-get.download.jsa?code=251036"
 
     # finish off, and close file
 

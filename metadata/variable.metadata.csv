@@ -37,6 +37,12 @@ VAR_ATT,DOX2,,,,,,,,,standard_name,str,moles_of_oxygen_per_unit_mass_in_sea_wate
 VAR_ATT,DOX2,,,,,,,,,valid_max,float32,400
 VAR_ATT,DOX2,,,,,,,,,valid_min,float32,0
 
+VAR_ATT,DOXY,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,DOXY,,,,,,,,,long_name,str,mass_concentration_of_oxygen_in_sea_water
+VAR_ATT,DOXY,,,,,,,,,standard_name,str,mass_concentration_of_oxygen_in_sea_water
+VAR_ATT,DOXY,,,,,,,,,valid_max,float32,40
+VAR_ATT,DOXY,,,,,,,,,valid_min,float32,0
+
 VAR_ATT,OXSOL,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
 VAR_ATT,OXSOL,,,,,,,,,long_name,str,oxygen_solubility_per_unit_mass_in_seawater
 VAR_ATT,OXSOL,,,,,,,,,valid_max,float32,400
@@ -67,7 +73,7 @@ VAR_ATT,LONGITUDE,,,,,,,,,standard_name,str,longitude
 VAR_ATT,LONGITUDE,,,,,,,,,units,str,degrees_east
 VAR_ATT,LONGITUDE,,,,,,,,,valid_max,float64,180
 VAR_ATT,LONGITUDE,,,,,,,,,valid_min,float64,-180
-,,,,,,,,,,,,
+
 VAR_ATT,NOMINAL_DEPTH,,,,,,,,,axis,str,Z
 VAR_ATT,NOMINAL_DEPTH,,,,,,,,,long_name,str,nominal depth
 VAR_ATT,NOMINAL_DEPTH,,,,,,,,,positive,str,down
@@ -89,4 +95,73 @@ VAR_ATT,YPOS,,,,,,,,,units,str,degrees_north
 VAR_ATT,YPOS,,,,,,,,,valid_max,float32,90
 VAR_ATT,YPOS,,,,,,,,,valid_min,float32,-90
 VAR_ATT,YPOS,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+
+VAR_ATT,UCUR_MAG,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,UCUR_MAG,,,,,,,,,long_name,str,eastward_sea_water_velocity
+VAR_ATT,UCUR_MAG,,,,,,,,,standard_name,str,eastward_sea_water_velocity
+VAR_ATT,UCUR_MAG,,,,,,,,,reference_datum,str,magnetic north
+VAR_ATT,UCUR_MAG,,,,,,,,,valid_max,float32,10.0
+VAR_ATT,UCUR_MAG,,,,,,,,,valid_min,float32,-10.0
+VAR_ATT,VCUR_MAG,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,VCUR_MAG,,,,,,,,,long_name,str,northward_sea_water_velocity
+VAR_ATT,VCUR_MAG,,,,,,,,,standard_name,str,northward_sea_water_velocity
+VAR_ATT,VCUR_MAG,,,,,,,,,reference_datum,str,magnetic north
+VAR_ATT,VCUR_MAG,,,,,,,,,valid_max,float32,10.0
+VAR_ATT,VCUR_MAG,,,,,,,,,valid_min,float32,-10.0
+VAR_ATT,WCUR,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,WCUR,,,,,,,,,long_name,str,upward_sea_water_velocity
+VAR_ATT,WCUR,,,,,,,,,standard_name,str,upward_sea_water_velocity
+VAR_ATT,WCUR,,,,,,,,,valid_max,float32,5.0
+VAR_ATT,WCUR,,,,,,,,,valid_min,float32,-5.0
+
+VAR_ATT,HEADING_MAG,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,HEADING_MAG,,,,,,,,,long_name,str,platform_yaw_angle
+VAR_ATT,HEADING_MAG,,,,,,,,,standard_name,str,platform_yaw_angle
+VAR_ATT,HEADING_MAG,,,,,,,,,positive,str,clockwise
+VAR_ATT,HEADING_MAG,,,,,,,,,reference_datum,str,magnetic north
+VAR_ATT,HEADING_MAG,,,,,,,,,valid_max,float32,360.0
+VAR_ATT,HEADING_MAG,,,,,,,,,valid_min,float32,0.0
+
+VAR_ATT,PITCH,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,PITCH,,,,,,,,,long_name,str,platform_pitch_angle
+VAR_ATT,PITCH,,,,,,,,,standard_name,str,platform_pitch_angle
+VAR_ATT,PITCH,,,,,,,,,valid_max,float32,180.0
+VAR_ATT,PITCH,,,,,,,,,valid_min,float32,-180.0
+
+VAR_ATT,ROLL,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,ROLL,,,,,,,,,long_name,str,platform_roll_angle
+VAR_ATT,ROLL,,,,,,,,,standard_name,str,platform_roll_angle
+VAR_ATT,ROLL,,,,,,,,,valid_max,float32,180.0
+VAR_ATT,ROLL,,,,,,,,,valid_min,float32,-180.0
+
+VAR_ATT,BATT,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,BATT,,,,,,,,,long_name,str,battery_voltage
+VAR_ATT,BATT,,,,,,,,,valid_max,float32,100.0
+VAR_ATT,BATT,,,,,,,,,valid_min,float32,0.0
+
+VAR_ATT,ITEMP,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,ITEMP,,,,,,,,,long_name,str,instrument_temperature
+VAR_ATT,ITEMP,,,,,,,,,valid_max,float32,100.0
+VAR_ATT,ITEMP,,,,,,,,,valid_min,float32,0.0
+
+VAR_ATT,SSPEED,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,SSPEED,,,,,,,,,long_name,str,speed_of_sound_in_sea_water
+VAR_ATT,SSPEED,,,,,,,,,standard_name,str,speed_of_sound_in_sea_water
+VAR_ATT,SSPEED,,,,,,,,,valid_max,float32,1600.0
+VAR_ATT,SSPEED,,,,,,,,,valid_min,float32,1400.0
+VAR_ATT,SSPEED,,,,,,,,,comment,str,speed of sound used for conversion of time to distance (not measured)
+
+VAR_ATT,ABSIC1,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,ABSIC1,,,,,,,,,long_name,str,backscatter_intensity_from_acoustic_beam_1
+VAR_ATT,ABSIC1,,,,,,,,,valid_max,int16,255
+VAR_ATT,ABSIC1,,,,,,,,,valid_min,int16,0
+VAR_ATT,ABSIC2,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,ABSIC2,,,,,,,,,long_name,str,backscatter_intensity_from_acoustic_beam_2
+VAR_ATT,ABSIC2,,,,,,,,,valid_max,int16,255
+VAR_ATT,ABSIC2,,,,,,,,,valid_min,int16,0
+VAR_ATT,ABSIC3,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,ABSIC3,,,,,,,,,long_name,str,backscatter_intensity_from_acoustic_beam_3
+VAR_ATT,ABSIC3,,,,,,,,,valid_max,int16,255
+VAR_ATT,ABSIC3,,,,,,,,,valid_min,int16,0
+
 

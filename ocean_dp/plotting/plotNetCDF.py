@@ -348,8 +348,8 @@ for path_file in sys.argv[1:len(sys.argv)]:
         except AttributeError:
             pass
 
-        #if date_time_start:
-        #    plt.xlim(date_time_start, date_time_end)
+        if date_time_start:
+            plt.xlim(date_time_start, date_time_end)
 
         if has_qc:
             plt.text(0.0, -0.08, 'cyan: QC=2 (pgood); yellow : QC=3 (pbad); red : QC=4 (bad); QC=4,6,9 no line', fontsize=8, horizontalalignment='left', verticalalignment='center', transform = ax.transAxes)

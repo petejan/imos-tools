@@ -32,9 +32,11 @@ def parseTypeValue(att_type, v):
     elif att_type == 'float32':
         value = np.float32(v)
     elif att_type == 'int16':
-        value = np.float16(v)
+        value = np.int16(v)
     elif att_type == 'int32':
         value = np.int32(v)
+    elif att_type == 'ubyte':
+        value = np.ubyte(v)
     else:
         value = v
 
