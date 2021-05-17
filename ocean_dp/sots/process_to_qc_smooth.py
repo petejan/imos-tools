@@ -32,6 +32,7 @@ import ocean_dp.qc.in_out_water
 import ocean_dp.qc.global_range
 import ocean_dp.qc.spike_test
 import ocean_dp.qc.rate_of_change
+import ocean_dp.qc.manual_by_date
 import ocean_dp.processing.loess_smoother
 
 import ocean_dp.file_name.find_file_with
@@ -60,6 +61,34 @@ for fn in ncFiles:
     has_temp = False
     if 'TEMP' in ds.variables:
         has_temp = True
+
+    # QC report manual flagging
+    manual_flag = None
+    maunal_date = None
+    manual_reason = None
+    # Pulse 6,7,8 SOFS 1,2 Vemco Mini sensors with SN < 10000 -> flag 3
+    if ds.instrument_model == 'Minilog-T':
+        manual_flag = 3
+        manual_reason = 'difference to higher precision sensors'
+    # Pulse 8 SBE16plusV2 battery fail (after 2012-01-30 15:25) -> flag 3 after Pressure fails
+    if ds.instrument_model == 'SBE16plus' and ds.deployment_code == 'Pulse-8-2011':
+        manual_flag = 4
+        manual_reason = 'battery failed'
+        maunal_date = '2012-01-30 15:25:00'
+    # Pulse 9 SBE16plusV2 battery fail (after 2012-12-29 12:30) -> flag 3 after Pressure fails
+    if ds.instrument_model == 'SBE16plus' and ds.deployment_code == 'Pulse-9-2012':
+        manual_flag = 4
+        manual_reason = 'battery failed'
+        maunal_date = '2012-12-29 12:30:00'
+    # SOFS-7.5 70 and 75m Starmon mini -> flag 4
+    if (ds.instrument_serial_number == '4052' or ds.instrument_serial_number == '4053') and ds.instrument_model == 'Starmon mini' and ds.deployment_code == 'SOFS-7.5-2018':
+        manual_flag = 4
+        manual_reason = 'sensor data noisy'
+    # SOFS-8 55m and 320m show bias -> flag 4
+    if (ds.instrument_serial_number == '5304' or ds.instrument_serial_number == '5320') and ds.instrument_model == 'Starmon mini' and ds.deployment_code == 'SOFS-8-2019':
+        manual_flag = 4
+        manual_reason = 'sensor data noisy'
+
     ds.close()
 
     if not has_temp:
@@ -79,7 +108,14 @@ for fn in ncFiles:
     f = ocean_dp.qc.spike_test.spike_test(f, 'TEMP', q['spike_height'], 3)
     f = ocean_dp.qc.rate_of_change.rate_of_change(f, 'TEMP', q['rate_max'], 3)
 
-    f = ocean_dp.processing.loess_smoother.smooth(f)
+    if manual_flag:
+        f = ocean_dp.qc.manual_by_date.maunal(f, 'TEMP', None, manual_flag, manual_reason)
+
+    ds = Dataset(f[0], 'a')
+    ds.references += '; Jansen P, Weeding B, Shadwick EH and Trull TW (2020). Southern Ocean Time Series (SOTS) Quality Assessment and Control Report Temperature Records Version 1.0. CSIRO, Australia. DOI: 10.26198/gfgr-fq47 (https://doi.org/10.26198/gfgr-fq47)'
+    ds.close()
+
+    #f = ocean_dp.processing.loess_smoother.smooth(f)
 
     #qc_files.extend(f)
 

@@ -60,7 +60,7 @@ def global_range(netCDFfiles, variable, max, min, qc_value=4):
         mask = ((var_data_qc > max) | (var_data_qc < min))
         print('mask data ', mask)
 
-        new_qc_flags = np.zeros_like(var_data_qc)
+        new_qc_flags = np.ones_like(var_data_qc)
         new_qc_flags[mask] = qc_value
 
         if create_sub_qc:
@@ -69,7 +69,7 @@ def global_range(netCDFfiles, variable, max, min, qc_value=4):
                 ncVarOut = ds.variables[nc_var.name + "_quality_control_gr"]
             else:
                 ncVarOut = ds.createVariable(nc_var.name + "_quality_control_gr", "i1", nc_var.dimensions, fill_value=99, zlib=True)  # fill_value=0 otherwise defaults to max
-                ncVarOut[:] = np.zeros(nc_var.shape)
+                ncVarOut[:] = np.ones(nc_var.shape)
 
                 if 'long_name' in nc_var.ncattrs():
                     ncVarOut.long_name = "global_range flag for " + nc_var.long_name
@@ -95,8 +95,8 @@ def global_range(netCDFfiles, variable, max, min, qc_value=4):
         # var_data          ----------------------------------------------------------
         # data_to_qc_msk    00000000----------------------------------------0000000000
         # var_data_qc               -----------x----------------------------
-        # new_qc_flags              -----------4----------------------------
-        # var_qc            66666666-----------4----------------------------6666666666
+        # new_qc_flags              1111111111141111111111111111111111111111
+        # var_qc            6666666611111111111411111111111111111111111111116666666666
 
         # calculate the number of points marked as bad_data
         marked = np.zeros_like(new_qc_flags)

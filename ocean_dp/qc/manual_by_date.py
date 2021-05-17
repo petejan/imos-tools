@@ -27,7 +27,7 @@ from dateutil import parser
 # flag data after a date
 
 
-def maunal(netCDFfile, var_name=None, after_str=None, flag=4, reason='None'):
+def maunal(netCDFfile, var_name=None, after_str=None, flag=4, reason=None):
 
     out_file = []
 
@@ -60,8 +60,11 @@ def maunal(netCDFfile, var_name=None, after_str=None, flag=4, reason='None'):
         print('var to add', to_add)
 
         # create a mask for the time range
-        after = parser.parse(after_str, ignoretz=True)
-        mask = (time >= after)
+        after = None
+        mask = True
+        if after_str:
+            after = parser.parse(after_str, ignoretz=True)
+            mask = (time >= after)
 
         for v in to_add:
             print("var", v, ' dimensions ', nc_vars[v].dimensions)
@@ -89,7 +92,11 @@ def maunal(netCDFfile, var_name=None, after_str=None, flag=4, reason='None'):
             #ncVarOut.flag_values = np.array([0, 1, 2, 3, 4, 6, 7, 9], dtype=np.int8)
             #ncVarOut.flag_meanings = 'unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value'
             ncVarOut.units = "1"
-            ncVarOut.comment = 'manual by date, after ' + after.strftime("%Y-%m-%d")
+            ncVarOut.comment = 'manual'
+            if after_str:
+                ncVarOut.comment += ', by date, after ' + after.strftime("%Y-%m-%d")
+            if reason:
+                ncVarOut.comment += ', ' + reason
 
             new_qc_flags = np.zeros(var_qc.shape)
             new_qc_flags[mask] = flag
@@ -115,12 +122,15 @@ def maunal(netCDFfile, var_name=None, after_str=None, flag=4, reason='None'):
         except AttributeError:
             hist = ""
         if var_name:
-            ds.setncattr("history", hist + datetime.utcnow().strftime("%Y-%m-%d") + " " + var_name + " manual QC, marked " + str(int(count)) + ", after " + after.strftime("%Y-%m-%d %H:%M:%S"))
+            hist = hist + datetime.utcnow().strftime("%Y-%m-%d") + " " + var_name + " manual QC, marked " + str(int(count))
         else:
-            ds.setncattr("history", hist + datetime.utcnow().strftime("%Y-%m-%d") + " manual QC, marked " + str(int(count)) + ", after " + after.strftime("%Y-%m-%d %H:%M:%S"))
-
+            hist = hist + datetime.utcnow().strftime("%Y-%m-%d") + " manual QC, marked " + str(int(count))
+        if after_str:
+            hist = hist + ", after " + after.strftime("%Y-%m-%d %H:%M:%S")
         if reason:
-            ds.setncattr("history", ds.history + ' ' + reason)
+            hist += ', ' + reason
+
+        ds.setncattr("history", hist)
 
         ds.close()
 
