@@ -247,15 +247,17 @@ def sbe_asc_parse(files):
                         lineSplit = line.strip().split(",")
                         if data is None:
                             print("First data line : ", line.strip())
+                            # does the file have time record for each sample, if so it uses 2 values on the line
                             if no_time:
                                 nVariables = len(lineSplit)
                             else:
                                 nVariables = len(lineSplit) - 2  # 2 for the date and time
+                                times = []
+
                             print("number variables ", nVariables)
                             print("data split number ", len(lineSplit), instrument_model)
                             data = np.zeros((number_samples, nVariables))
                             data.fill(np.nan)
-                            times = []
                             name.insert(0, {'col': 0, 'var_name': "TEMP", 'comment': None, 'unit': "degrees_Celsius"})
                             try:
                                 if instrument_model.index("37") >= 0:
@@ -274,8 +276,8 @@ def sbe_asc_parse(files):
                                 print(" ", v)
 
                         if not no_time:
-
                             times.append(parser.parse(lineSplit[-2] + " " + lineSplit[-1]))
+
                         #print(line.strip())
                         splitVarNo = 0
                         try:
@@ -297,7 +299,7 @@ def sbe_asc_parse(files):
             print('No Variables, exiting')
             exit(-1)
 
-
+        # if there is no times, calculate from sample interval and start time
         if times is None:
             times = [start_time + timedelta(seconds=sample_interval*x) for x in range(0, number_samples_read)]
 
