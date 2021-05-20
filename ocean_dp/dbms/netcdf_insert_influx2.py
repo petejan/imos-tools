@@ -19,51 +19,33 @@ import os
 import sys
 sys.path.extend(['.'])
 
-import datetime
-import urllib
+from datetime import datetime
 
-import psycopg2
-from netCDF4 import num2date
+from cftime import num2date
 from netCDF4 import Dataset
 import numpy as np
 
 import glob
-import influxdb_client
-from influxdb_client.client.write_api import ASYNCHRONOUS
-import json
-import dateutil.parser
 
-from ocean_dp.dbms.netcdf_insert_postgres import postgres_insert
+from influxdb import InfluxDBClient
 
 
 def parse(files):
 
-    fn = []
-    for f in files:
-        fn.extend(glob.glob(f))
+    fn = files
+    print(files)
+    #for f in files:
+    #    fn.extend(glob.glob(f))
 
-    username = 'admin'
-    password = 'password'
+    client = InfluxDBClient(host='144.6.230.0', port=8086)
+    client.switch_database('rtdp')
 
-    database = 'sots'
-    retention_policy = 'autogen'
-
-    bucket = f'{database}/{retention_policy}'
-
-    client = influxdb_client.InfluxDBClient(url='http://localhost:8086', token=f'{username}:{password}', org='-')
-
-    # bucket = "sots"
-    # org = "abos"
-    # token = "-SmyZoCtOefu_-_TBws9e28bT7KV7gwISMC0s3B8jgCOYckv-vujCBkrKblWWA15elwqwMHJeCOxkvrrHwvyMw=="
-    #
-    # client = influxdb_client.InfluxDBClient(url="http://localhost:9999", token=token, org=org)
-    write_api = client.write_api(write_options=ASYNCHRONOUS)
+    print(fn)
 
     for filepath in fn:
         print('file name', filepath)
 
         nc = Dataset(filepath, 'r')
-        post_id = postgres_insert(nc)
 
         # get time variable
         vs = nc.get_variables_by_attributes(standard_name='time')
@@ -74,8 +56,6 @@ def parse(files):
             t_cal = nctime.calendar
         except AttributeError:  # Attribute doesn't exist
             t_cal = u"gregorian"  # or standard
-
-        dt_time = [num2date(t, units=t_unit, calendar=t_cal) for t in nctime]
 
         print('time variable', nctime.name)
         time_dims = nctime.get_dims()
@@ -129,13 +109,21 @@ def parse(files):
                 qc = nc.variables[v + "_quality_control"]
             time_vars.append({'var': data, 'time_dim': data.dimensions.index('TIME'), 'qc': qc})
 
-        date_time_start = datetime.datetime.strptime(nc.getncattr('time_deployment_start'), '%Y-%m-%dT%H:%M:%SZ')
-        date_time_end = datetime.datetime.strptime(nc.getncattr('time_deployment_end'), '%Y-%m-%dT%H:%M:%SZ')
+        date_time_start = datetime.strptime(nc.getncattr('time_deployment_start'), '%Y-%m-%dT%H:%M:%SZ')
+        try:
+            date_time_end = datetime.strptime(nc.getncattr('time_deployment_end'), '%Y-%m-%dT%H:%M:%SZ')
+        except AttributeError:
+            date_time_end = datetime.strptime(nc.getncattr('time_coverage_end'), '%Y-%m-%dT%H:%M:%SZ')
 
-        point = {'measurement': nc.platform_code, 'tags': {'file_id': post_id, 'site': nc.deployment_code, 'nominal_depth': nom_depth}}
+        # read the TIME variable and convert to python datetime
+        dt_time = num2date(nctime[:], units=t_unit, calendar=t_cal, only_use_cftime_datetimes=False)
+
+        point = {'measurement': nc.platform_code, 'tags': {'site': nc.deployment_code, 'nominal_depth': nom_depth}}
         for n in range(0, len(time_dims[0])):
             if (dt_time[n] > date_time_start) & (dt_time[n] < date_time_end):
-                print(n, dt_time[n], nom_depth)
+
+                #print(n, dt_time[n], nom_depth)
+
                 point['time'] = dt_time[n]
                 fields = {}
                 for v in time_vars:
@@ -143,7 +131,7 @@ def parse(files):
                     if v['qc']:
                         qc = v['qc'][n]
                     if qc <= 2:
-                        print('field ', v['var'].name, v['time_dim'], qc)
+                        #print('field ', v['var'].name, v['time_dim'], qc)
                         if v['time_dim'] == 0:
                             fields[v['var'].name] = np.float(v['var'][n].data)
                         elif v['time_dim'] == 1:
@@ -151,12 +139,10 @@ def parse(files):
 
                 point['fields'] = fields
 
-                print('point', point)
+                if (n % 1000) == 0:
+                    print('point', point)
 
-                #write_api.write(bucket=bucket, org=org, record=point)
-                write_api.write(bucket=bucket, record=point, write_precision='s')
-
-        write_api.flush()
+                client.write_points([point], database='rtdp', protocol='json')
 
         nc.close()
 
