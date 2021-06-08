@@ -52,12 +52,8 @@ import numpy as np
 
 def parse(file, name):
 
-    hdr = True
-    dataLine = 0
     number_samples_read = 0
-    nVars = 0
     data = []
-    raw = []
     ts = []
     settings = []
     instrument_model = 'CR1000'
@@ -68,8 +64,8 @@ def parse(file, name):
 
     with open(filepath, 'r', errors='ignore') as fp:
         line = fp.readline()
-        cnt = 1
         while line:
+            line = line.strip('"')
             #print("Line ", line)
             lineSplit = line.strip().split(sep)
             #print('Split ', lineSplit)
@@ -89,10 +85,11 @@ def parse(file, name):
                         pass
 
             name_value = dict(zip(names, values))
-            print(t, name_value)
+            #print(t, name_value)
 
             if name in names:
-                data.append(name_value)
+                print(t, name_value)
+                data.append({'YPOS': name_value['lat'], 'XPOS': name_value['lon']})
                 ts.append(t)
                 number_samples_read = number_samples_read + 1
 
@@ -118,9 +115,9 @@ def parse(file, name):
 
     ncOut = Dataset(outputName, 'w', format='NETCDF4')
 
-    ncOut.instrument = 'LI-COR ; ' + instrument_model
-    ncOut.instrument_model = instrument_model
-    ncOut.instrument_serial_number = instrument_serial_number
+    #ncOut.instrument = 'LI-COR ; ' + instrument_model
+    #ncOut.instrument_model = instrument_model
+    #ncOut.instrument_serial_number = instrument_serial_number
 
     for s in settings:
         ncOut.setncattr("comment_file_settings_" + s[0], s[1])
@@ -138,19 +135,11 @@ def parse(file, name):
     ncTimesOut.axis = "T"
     ncTimesOut[:] = date2num(ts, units=ncTimesOut.units, calendar=ncTimesOut.calendar)
 
-    for name in name_value.keys():
+    for name in ['XPOS', 'YPOS']:
         print(name)
 
         ncVarOut = ncOut.createVariable(name, "f4", ("TIME",), fill_value=np.nan, zlib=True) # fill_value=nan otherwise defaults to max
-    #ncVarOut.long_name = 'PAR sensor Voltage'
-    #ncVarOut.units = 'mV'
-    #ncVarOut.sensor_SeaVoX_L22_code = 'SDN:L22::TOOL0193'
-    #ncVarOut.comment_sensor_type = 'cosine sensor'
         ncVarOut[:] = [v[name] for v in data]
-
-    #ncVarOut = ncOut.createVariable('PAR_RAW', "f4", ("TIME",), fill_value=np.nan, zlib=True) # fill_value=nan otherwise defaults to max
-    #ncVarOut.units = '1'
-    #ncVarOut[:] = raw
 
     ncOut.setncattr("time_coverage_start", num2date(ncTimesOut[0], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
     ncOut.setncattr("time_coverage_end", num2date(ncTimesOut[-1], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
@@ -163,5 +152,5 @@ def parse(file, name):
 
 
 if __name__ == "__main__":
-    parse(sys.argv[1:], "PAR")
+    parse(sys.argv[1:], 'lat')
 

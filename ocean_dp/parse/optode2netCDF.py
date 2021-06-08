@@ -40,6 +40,7 @@ import numpy as np
 # parse the file
 #
 line_exp = r"(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}) INFO:.*MEASUREMENT\s*(\d*)\s*(\d*).*Temperature:\s*([0-9.]*).*BPhase:\s*([0-9.]*).*$"
+done_line_expr = r"(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}) INFO:.*done time.*OBP=\s*([0-9.]*).*OT=\s*([0-9.]*).*$"
 
 #2019-12-03 05:00:07 INFO: Optode Line : MEASUREMENT   3830   1419 Oxygen:     330.55 Saturation:      94.27 Temperature:      10.19 DPhase:      34.15 BPhase:      34.15 RPhase:       0.00 BAmp:     2
 #2019-12-03 06:00:07 INFO: Optode Line : MEASUREMENT   3830   1419 Oxygen:     330.59 Saturation:      94.19 Temperature:      10.15 DPhase:      34.17 BPhase:      34.17 RPhase:       0.00 BAmp:     2
@@ -68,6 +69,22 @@ def parse(file):
 
                     bp = float(matchObj.group(5))
                     ot = float(matchObj.group(4))
+
+                    t.append(ts)
+                    bphase.append(bp)
+                    temp.append(ot)
+
+                    number_samples_read = number_samples_read + 1
+                except ValueError as v:
+                    print('Value Error:', v)
+                    print(line)
+            matchObj = re.match(done_line_expr, line)
+            if matchObj:
+                try:
+                    ts = datetime.strptime(matchObj.group(1), '%Y-%m-%d %H:%M:%S')
+
+                    bp = float(matchObj.group(2))
+                    ot = float(matchObj.group(3))
 
                     t.append(ts)
                     bphase.append(bp)

@@ -123,7 +123,7 @@ def smooth(files):
         degree = 1
         in_vars = set([x for x in ds.variables])
         # print('input file vars', in_vars)
-        z = in_vars.intersection(['TEMP', 'PSAL', 'DENSITY', 'DOX2', 'PRES'])
+        z = in_vars.intersection(['TEMP', 'PSAL', 'DENSITY', 'SIGMA_T0', 'DOX2', 'PRES'])
         print ('vars to smooth', z)
         for smooth_var in z:
 
@@ -141,7 +141,7 @@ def smooth(files):
             # do the smoothing
             loess = Loess.Loess(np.array(time_masked[qc[msk] <= 2]), np.array(smooth_in[qc[msk] <= 2]))
             #  TODO: can this be vectorised call, instead of for loop
-            y = [loess.estimate(x, window=int(window), use_matrix=False, degree=degree) for x in d]
+            y = loess.estimate(d, window=int(window), use_matrix=False, degree=degree)
             print('output data : ', y[0:10])
 
             #  create output variables

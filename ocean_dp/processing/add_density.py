@@ -28,25 +28,27 @@ def add_density(netCDFfile):
     # loads the netcdf file
     ds = Dataset(netCDFfile, 'a')
 
-    if 'DENSITY' in list(ds.variables):
-        ds.close()
-
-        return "file already contains density"
+    # if 'DENSITY' in list(ds.variables):
+    #     ds.close()
+    #     return "file already contains density"
 
     if "PSAL" not in ds.variables:
         print("no salinity")
-
         return
 
     # extracts the variables from the netcdf
     var_temp = ds.variables["TEMP"]
     var_psal = ds.variables["PSAL"]
-    pres_var = 'PRES'
-    try:
+
+    if 'PRES' in ds.variables:
+        pres_var = 'PRES'
         var_pres = ds.variables["PRES"]
-    except KeyError:
+    elif 'NOMINAL_DEPTH' in ds.variables:
         var_pres = ds.variables["NOMINAL_DEPTH"]
         pres_var = 'NOMINAL_DEPTH'
+    else:
+        print("no pressure variable, or nominal depth")
+        return
 
     var_lon = ds.variables["LONGITUDE"]
     var_lat = ds.variables["LATITUDE"]
@@ -64,11 +66,15 @@ def add_density(netCDFfile):
     # calculates conservative temperature
     CT = gsw.CT_from_t(SA, t, p)
 
+    # TODO: copy forward the QC from PSAL
+
     # calculates density
     density = gsw.rho(SA, CT, p)
-
     # generates a new variable 'DENSITY' in the netcdf
-    ncVarOut = ds.createVariable("DENSITY", "f4", ("TIME",), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
+    if 'DENSITY' not in ds.variables:
+        ncVarOut = ds.createVariable("DENSITY", "f4", ("TIME",), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
+    else:
+        ncVarOut = ds.variables['DENSITY']
 
     # assigns the calculated densities to the DENSITY variable, sets the units as kg/m^3, and comments on the variable's origin
     ncVarOut[:] = density
@@ -80,13 +86,33 @@ def add_density(netCDFfile):
 
     ncVarOut.comment = "calculated using gsw-python https://teos-10.github.io/GSW-Python/index.html"
 
+    # calculate sigma theta at 0 dbar
+    sigmatheta0 = gsw.sigma0(SA, CT)
+
+    # generates a new variable 'SIGMAT0' in the netcdf
+    if 'SIGMA_T0' not in ds.variables:
+        ncVarOut = ds.createVariable("SIGMA_T0", "f4", ("TIME",), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
+    else:
+        ncVarOut = ds.variables['SIGMA_T0']
+
+    # assigns the calculated densities to the DENSITY variable, sets the units as kg/m^3, and comments on the variable's origin
+    ncVarOut[:] = sigmatheta0
+    ncVarOut.units = "kg/m^3"
+    ncVarOut.long_name = "sea_water_sigma_theta"
+    ncVarOut.standard_name = "sea_water_sigma_theta"
+    ncVarOut.reference_pressure = "0 dbar"
+    ncVarOut.valid_max = np.float32(100)
+    ncVarOut.valid_min = np.float32(0)
+
+    ncVarOut.comment = "calculated using gsw-python https://teos-10.github.io/GSW-Python/index.html"
+
     # update the history attribute
     try:
         hist = ds.history + "\n"
     except AttributeError:
         hist = ""
 
-    ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " : added DENSITY from TEMP, PSAL, "+pres_var+", LAT, LON")
+    ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " : added DENSITY and SIGMA-THETA0 from TEMP, PSAL, "+pres_var+", LAT, LON")
 
     ds.close()
 
@@ -94,4 +120,5 @@ def add_density(netCDFfile):
 
 
 if __name__ == "__main__":
-    add_density(sys.argv[1])
+    for f in sys.argv[1:]:
+        add_density(f)

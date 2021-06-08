@@ -35,10 +35,16 @@ def parse_cal(netCDF, cal):
 
     ncVarUVWL = ncOut.variables['UV_DIM']
 
-    ncVarNO3 = ncOut.createVariable('NO3', "f4", ("UV_DIM",), fill_value=np.nan, zlib=False)  # fill_value=nan otherwise defaults to max
-    ncVarSWA = ncOut.createVariable('SWA', "f4", ("UV_DIM",), fill_value=np.nan, zlib=False)  # fill_value=nan otherwise defaults to max
-    ncVarTSWA = ncOut.createVariable('TAWS', "f4", ("UV_DIM",), fill_value=np.nan, zlib=False)  # fill_value=nan otherwise defaults to max
-    ncVarI0 = ncOut.createVariable('I0', "f4", ("UV_DIM",), fill_value=np.nan, zlib=False)  # fill_value=nan otherwise defaults to max
+    if 'NO3' in ncOut.variables:
+        ncVarNO3 = ncOut.variables['NO3']
+        ncVarSWA = ncOut.variables['SWA']
+        ncVarTSWA = ncOut.variables['TAWS']
+        ncVarI0 = ncOut.variables['I0']
+    else:
+        ncVarNO3 = ncOut.createVariable('NO3', "f4", ("UV_DIM",), fill_value=np.nan, zlib=False)  # fill_value=nan otherwise defaults to max
+        ncVarSWA = ncOut.createVariable('SWA', "f4", ("UV_DIM",), fill_value=np.nan, zlib=False)  # fill_value=nan otherwise defaults to max
+        ncVarTSWA = ncOut.createVariable('TAWS', "f4", ("UV_DIM",), fill_value=np.nan, zlib=False)  # fill_value=nan otherwise defaults to max
+        ncVarI0 = ncOut.createVariable('I0', "f4", ("UV_DIM",), fill_value=np.nan, zlib=False)  # fill_value=nan otherwise defaults to max
 
     with open(cal, 'r', errors='ignore') as fp:
         line = fp.readline()

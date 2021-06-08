@@ -31,7 +31,7 @@ from collections import OrderedDict
 
 def parse_xml(files):
 
-    instrument_model = 'SUNAv2'
+    instrument_model = 'ISUS'
     instrument_serialnumber = '0829'
 
     with open(files[0]) as fd:
@@ -70,7 +70,7 @@ def parse_xml(files):
     # create netCDF variables for each sensorField in frame
     frames = doc['InstrumentPackage']['Instrument']['VarAsciiFrame']
     for f in frames:
-        if f['@identifier'].startswith('SATSLF'):
+        if f['@identifier'].startswith('SATNLF'):
             for sfg in f['SensorFieldGroup']:
                 sensor_field = sfg['SensorField']
                 #print('type', sensor_field.__class__, 'len', len(sensor_field))
@@ -104,9 +104,9 @@ def parse_xml(files):
         with open(f, 'r', errors='ignore') as fp:
             line = fp.readline()
             while line:
-                if line.startswith('SATSLF') or line.startswith('SATSDF'):
+                if line.startswith('SATNLF') or line.startswith('SATNDF'):
                     frame_type = 0
-                    if line.startswith('SATSLF'):
+                    if line.startswith('SATNLF'):
                         frame_type = 1
                     split = line.split(',')
                     dt = datetime.strptime(split[1], '%Y%j') + timedelta(hours=float(split[2]))

@@ -76,7 +76,7 @@ for fn in ncFiles:
         manual_reason = 'battery failed'
         maunal_date = '2012-01-30 15:25:00'
     # Pulse 9 SBE16plusV2 battery fail (after 2012-12-29 12:30) -> flag 3 after Pressure fails
-    if ds.instrument_model == 'SBE16plus' and ds.deployment_code == 'Pulse-9-2012':
+    if ds.instrument_model == 'SBE16plusV2' and ds.deployment_code == 'Pulse-9-2012':
         manual_flag = 4
         manual_reason = 'battery failed'
         maunal_date = '2012-12-29 12:30:00'

@@ -88,8 +88,9 @@ def nmea_parse(files):
 
                     msg = pynmea2.parse(matchobj.group(2))
                     #print (msg.fields)
-                    dt = datetime.combine(msg.datestamp, msg.timestamp)
-                    print('gps rmc ', data_time, 'gps time', dt)
+                    if msg.datestamp:
+                        dt = datetime.combine(msg.datestamp, msg.timestamp)
+                        print('gps rmc ', data_time, 'gps time', dt)
 
                 # check for gps rmc
                 matchobj = cgsn_expr.match(line)

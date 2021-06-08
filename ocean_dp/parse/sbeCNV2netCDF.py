@@ -133,7 +133,7 @@ def parse(files):
         cal_tags = []
         cast = None
         instrument_serialnumber = None
-        instrument_model = None
+        instrument_model = 'unknown'
 
         with open(filepath, 'r', errors='ignore') as fp:
             line = fp.readline()
