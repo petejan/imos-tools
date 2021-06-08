@@ -15,8 +15,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
-
-
+import os
 import sys
 
 #print('Python %s on %s' % (sys.version, sys.platform))
@@ -36,51 +35,55 @@ for f in sys.argv[1:]:
 
 print('file,deployment,depth,n_points,max,min,max_rate,max_spike,qc')
 
+stats_var = 'PSAL'
+
 qc_files = []
 for fn in ncFiles:
-    #print ("processing ", fn)
     ds = Dataset(fn, 'r')
 
-    ndepth_var = ds.variables['NOMINAL_DEPTH']
-    ndepth = ndepth_var[:]
-    aux_vars = ds.variables["TEMP"].ancillary_variables
-    aux_vars_split = aux_vars.split(" ")
+    if stats_var in ds.variables:
+        #print ("processing ", fn)
 
-    # TODO: add deployment code, total samples
+        ndepth_var = ds.variables['NOMINAL_DEPTH']
+        ndepth = ndepth_var[:]
+        aux_vars = ds.variables[stats_var].ancillary_variables
+        aux_vars_split = aux_vars.split(" ")
 
-    #print(ndepth, aux_vars_split)
-    line = []
-    line.append(fn)
-    line.append(ds.deployment_code)
-    line.append(str(ndepth))
-    line.append(str(len(ds.variables['TIME'])))
+        # TODO: add deployment code, total samples
 
-    # variable stats
+        #print(ndepth, aux_vars_split)
+        line = []
+        line.append(os.path.basename(fn))
+        line.append(ds.deployment_code)
+        line.append(str(ndepth))
+        line.append(str(len(ds.variables['TIME'])))
 
-    qc = ds.variables['TEMP_quality_control_loc'][:]
-    var_data_inpos = ds.variables['TEMP'][qc <= 1]
-    time_inpos = ds.variables['TIME'][qc <= 1]*24
-    line.append(str(np.max(var_data_inpos)))
-    line.append(str(np.min(var_data_inpos)))
-    line.append(str(np.max(np.abs(np.diff(var_data_inpos)/(np.diff(time_inpos)))))) # roc / hr
-    #print(len(var_data_inpos[0:-3]), len(var_data_inpos[1:-2]), len(var_data_inpos[2:-1]))
-    spk = np.abs(var_data_inpos[1:-2] - (var_data_inpos[0:-3] + var_data_inpos[2:-1])/2)
-    line.append(str(np.max(np.diff(spk)))) # spike height
+        # variable stats
 
-    # stats for each QC var
-    for v in aux_vars_split:
-        var = ds.variables[v]
-        qc = var[:]
-        count3 = np.zeros_like(qc)
-        count4 = np.zeros_like(qc)
-        count3[qc == 3] = 1
-        count4[qc > 3] = 1
-        s3 = sum(count3)
-        s4 = sum(count4)
-        line.append(v[v.rfind('_')+1:len(v)])
-        line.append(str(s3))
-        line.append(str(s4))
-        #print(s)
+        qc = ds.variables[stats_var + '_quality_control_loc'][:]
+        var_data_inpos = ds.variables[stats_var][qc <= 1]
+        time_inpos = ds.variables[stats_var][qc <= 1]*24
+        line.append(str(np.max(var_data_inpos)))
+        line.append(str(np.min(var_data_inpos)))
+        line.append(str(np.max(np.abs(np.diff(var_data_inpos)/(np.diff(time_inpos)))))) # roc / hr
+        #print(len(var_data_inpos[0:-3]), len(var_data_inpos[1:-2]), len(var_data_inpos[2:-1]))
+        spk = np.abs(var_data_inpos[1:-2] - (var_data_inpos[0:-3] + var_data_inpos[2:-1])/2)
+        line.append(str(np.max(np.diff(spk)))) # spike height
 
-    print(','.join(line))
+        # stats for each QC var
+        for v in aux_vars_split:
+            var = ds.variables[v]
+            qc = var[:]
+            count3 = np.zeros_like(qc)
+            count4 = np.zeros_like(qc)
+            count3[qc == 3] = 1
+            count4[qc > 3] = 1
+            s3 = sum(count3)
+            s4 = sum(count4)
+            line.append(v[v.rfind('_')+1:len(v)])
+            line.append(str(s3))
+            line.append(str(s4))
+            #print(s)
+
+        print(','.join(line))
     ds.close()
