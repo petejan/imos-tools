@@ -109,7 +109,7 @@ for fn in ncFiles:
     f = ocean_dp.qc.rate_of_change.rate_of_change(f, 'TEMP', q['rate_max'], 3)
 
     if manual_flag:
-        f = ocean_dp.qc.manual_by_date.maunal(f, 'TEMP', None, manual_flag, manual_reason)
+        f = ocean_dp.qc.manual_by_date.maunal(f, 'TEMP', maunal_date, manual_flag, manual_reason)
 
     ds = Dataset(f[0], 'a')
     ds.references += '; Jansen P, Weeding B, Shadwick EH and Trull TW (2020). Southern Ocean Time Series (SOTS) Quality Assessment and Control Report Temperature Records Version 1.0. CSIRO, Australia. DOI: 10.26198/gfgr-fq47 (https://doi.org/10.26198/gfgr-fq47)'
