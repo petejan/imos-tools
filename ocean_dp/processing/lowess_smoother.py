@@ -21,23 +21,6 @@ def smooth(files):
         fn_new = filepath
         dirname = os.path.dirname(fn_new)
         basename = os.path.basename(fn_new)
-        if basename.startswith("IMOS"):
-            fn_split = basename.split('_')
-
-            # IMOS_ABOS-SOTS_CPT_20090922_SOFS_FV01_Pulse-6-2009-SBE37SM-RS232-6962-100m_END-20100323_C-20200227.nc
-            # 0    1         2   3        4    5    6                                    7            8
-            # rename the file FV00 to FV01
-            fn_split[5] = "FV02"
-            fn_split[6] = fn_split[6] + "-lowess"
-
-            # Change the creation date in the filename to today
-            fn_split[8] = now.strftime("C-%Y%m%d.nc")
-            fn_new = os.path.join(dirname, 'smooth', "_".join(fn_split))
-
-        # Add the new file name to the list of new file names
-        output_names.append(fn_new)
-
-        print('output file : ', fn_new)
 
         ds = Dataset(filepath, 'r')
 
@@ -47,10 +30,17 @@ def smooth(files):
         date_time_start = datetime.strptime(ds.getncattr('time_deployment_start'), '%Y-%m-%dT%H:%M:%SZ')
         date_time_end = datetime.strptime(ds.getncattr('time_deployment_end'), '%Y-%m-%dT%H:%M:%SZ')
 
+        num_start = date2num(date_time_start, units=var_time.units)
+        num_end = date2num(date_time_end, units=var_time.units)
+
+        # TODO: change to using timedelta not num2date for times and datetime.replace(....)
+        # date_series = date + pd.to_timedelta(np.arange(12), 'D')
+        # date_list = [(start_date + datetime.timedelta(days = day)) for day in range(number_of_days)]
+
         time = var_time[:]
 
         # create mask for deployment time
-        msk = (time > date2num(date_time_start, units=var_time.units)) & (time < date2num(date_time_end, units=var_time.units))
+        msk = (time > num_start) & (time < num_end)
 
         t_dt = num2date(time, units=var_time.units)
         time_masked = var_time[msk]
@@ -69,19 +59,40 @@ def smooth(files):
 
         # find number of samples to make 4 hrs of data
         i = n_mid
-        while (time_masked[i] - t_mid0) < 4/24:
+        while (time_masked[i] - t_mid0) < 2/24:
             i = i + 1
         i = i - n_mid
 
-        window = np.max([i, 3])
+        window = np.max([i, 4])
         print('window (points)', window)
         frac = window/len(time_masked)  # 10 * 24 / 3 = 80 points for 10 day window
 
         # create the new time array to sample to
-        d0 = np.ceil(t0*24) / 24
-        dend = np.floor(tend*24) / 24
-        d = np.arange(d0, dend, 1/24)
-        d_dt = num2date(d, units=var_time.units)
+        num_start_new = np.ceil(num_start*24) / 24
+        num_end_new = np.floor(num_end*24) / 24
+        new_times = np.arange(num_start_new, num_end_new, 1/24)
+        new_times_datetime = num2date(new_times, units=var_time.units)
+
+        print('len new_times', len(new_times))
+        if basename.startswith("IMOS"):
+            fn_split = basename.split('_')
+
+            # IMOS_ABOS-SOTS_CPT_20090922_SOFS_FV01_Pulse-6-2009-SBE37SM-RS232-6962-100m_END-20100323_C-20200227.nc
+            # 0    1         2   3        4    5    6                                    7            8
+            # rename the file FV00 to FV01
+            fn_split[3] = new_times_datetime[0].strftime('%Y%m%d')
+            fn_split[7] = new_times_datetime[-1].strftime('END-%Y%m%d')
+            fn_split[5] = "FV02"
+            fn_split[6] = fn_split[6] + "-lowess"
+
+            # Change the creation date in the filename to today
+            fn_split[8] = now.strftime("C-%Y%m%d.nc")
+            fn_new = os.path.join(dirname, 'smooth', "_".join(fn_split))
+
+        # Add the new file name to the list of new file names
+        output_names.append(fn_new)
+
+        print('output file : ', fn_new)
 
         # output data to new file
         ds_new = Dataset(fn_new, 'w')
@@ -96,7 +107,7 @@ def smooth(files):
         ds_new.date_created = now.strftime("%Y-%m-%dT%H:%M:%SZ")
 
         #  copy dimension
-        ds_new.createDimension(ds.dimensions['TIME'].name, len(d_dt))
+        ds_new.createDimension(ds.dimensions['TIME'].name, len(new_times))
         #ds_temp.createDimension(ds.dimensions['TIME'].name, len(time_masked))
 
         #  create new time
@@ -110,7 +121,7 @@ def smooth(files):
                 attr_dict[a] = var_time.getncattr(a)
 
         time_var.setncatts(attr_dict)
-        time_var[:] = d
+        time_var[:] = new_times
         #time_temp[:] = np.array(time_masked)
 
         # copy the NOMINAL_DEPTH, LATITUDE, and LONGITUDE
@@ -136,16 +147,20 @@ def smooth(files):
         for smooth_var in z:
 
             var_to_smooth_in = ds.variables[smooth_var]
+            qc = ds.variables["TEMP_quality_control"][:]
 
-            smooth_in = var_to_smooth_in[msk]
+            smooth_in = var_to_smooth_in[msk & (qc <= 2)]
+            time_masked = var_time[msk & (qc <= 2)]
 
-            print('input data : ', var_to_smooth_in[msk])
+            print(smooth_var, 'input data : ', smooth_in)
+            #print('times', time_masked)
+            #print('new times', new_times)
 
             # do the smoothing
 
             lowess = sm.nonparametric.lowess
 
-            y = lowess(np.array(smooth_in), np.array(time_masked), frac=frac, it=3, is_sorted=True, xvals=d)
+            y = lowess(np.array(smooth_in), np.array(time_masked), frac=frac, it=3, is_sorted=True, xvals=new_times)
 
             # unpack the lowess smoothed points to their values
             #lowess_x = list(zip(*z))[0]
@@ -157,11 +172,17 @@ def smooth(files):
 
             # mark time cells bad where there are less than 3 samples in +/- 2.2 hours
             bad = 0
-            for v in range(0, len(d)):
-                time_cell_min = np.where(time_masked > (d[v] - 3/24))
-                time_cell_max = np.where(time_masked < (d[v] + 3/24))
-                #print(dy[0][-1]-dx[0][0])
-                if (time_cell_max[0][-1]-time_cell_min[0][0]) < 3:
+            for v in range(0, len(new_times)):
+                time_cell_min = np.where(time_masked > (new_times[v] - 2/24))
+                time_cell_max = np.where(time_masked < (new_times[v] + 2/24))
+                # print(np.shape(time_cell_max), np.shape(time_cell_min))
+                if np.shape(time_cell_min)[1] > 0 and np.shape(time_cell_max)[1] > 0:
+                    #print(v, time_cell_max[0][-1], time_cell_min[0][0], time_cell_max[0][-1]-time_cell_min[0][0])
+                    #print(dy[0][-1]-dx[0][0])
+                    if (time_cell_max[0][-1]-time_cell_min[0][0]) < 3:
+                        y[v] = np.nan
+                        bad += 1
+                else:
                     y[v] = np.nan
                     bad += 1
             print('number bad', bad)
@@ -190,8 +211,8 @@ def smooth(files):
 
         ds_new.file_version = 'Level 2 – Derived Products'
         ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
-        ds_new.time_coverage_start = num2date(time_var[0], units=time_var.units, calendar=time_var.calendar).strftime(ncTimeFormat)
-        ds_new.time_coverage_end = num2date(time_var[-1], units=time_var.units, calendar=time_var.calendar).strftime(ncTimeFormat)
+        ds_new.time_coverage_start = new_times_datetime[0].strftime(ncTimeFormat)
+        ds_new.time_coverage_end = new_times_datetime[-1].strftime(ncTimeFormat)
 
         ds_new.close()
         #ds_temp.close()
