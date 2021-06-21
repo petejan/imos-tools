@@ -61,16 +61,6 @@ def smooth(files):
         sample_rate_mid = t_mid1 - t_mid0
         print('sample rate mid', sample_rate_mid.total_seconds(), '(seconds)')
 
-        # find number of samples to make 2.2 hrs of data
-        i = n_mid
-        while (datetime_time_masked[i] - t_mid0) < timedelta(hours=2.2):
-            i = i + 1
-        i = i - n_mid
-
-        window = np.max([i, 4])
-        print('window (points)', window)
-        frac = window/len(time_masked)  # 10 * 24 / 3 = 80 points for 10 day window
-
         # create the new time array to sample to
         sample_datenum = date2num(sample_datetime, units=var_time.units )
 
@@ -84,7 +74,7 @@ def smooth(files):
             fn_split[3] = sample_datetime[0].strftime('%Y%m%d')
             fn_split[7] = sample_datetime[-1].strftime('END-%Y%m%d')
             fn_split[5] = "FV02"
-            fn_split[6] = fn_split[6] + "-lowess"
+            fn_split[6] = fn_split[6] + "-nearest"
 
             # Change the creation date in the filename to today
             fn_split[8] = now.strftime("C-%Y%m%d.nc")
@@ -97,23 +87,21 @@ def smooth(files):
 
         # output data to new file
         ds_new = Dataset(fn_new, 'w')
-        #ds_temp = Dataset(fn_new.replace('lowess', 'lowess-raw'), 'w')
 
         #  copy global attributes
         attr_dict = {}
         for a in ds.ncattrs():
             attr_dict[a] = ds.getncattr(a)
         ds_new.setncatts(attr_dict)
+
         ds_new.comment_original_file_sample_rate_sec = str(sample_rate_mid)
         ds_new.date_created = now.strftime("%Y-%m-%dT%H:%M:%SZ")
 
         #  copy dimension
         ds_new.createDimension(ds.dimensions['TIME'].name, len(sample_datenum))
-        #ds_temp.createDimension(ds.dimensions['TIME'].name, len(time_masked))
 
         #  create new time
         time_var = ds_new.createVariable('TIME', 'f8', 'TIME', zlib=True)
-        #time_temp = ds_temp.createVariable('TIME', 'f8', 'TIME', fill_value=np.NaN, zlib=True)
 
         #   copy times attributes and data
         attr_dict = {}
@@ -123,7 +111,6 @@ def smooth(files):
 
         time_var.setncatts(attr_dict)
         time_var[:] = sample_datenum
-        #time_temp[:] = np.array(time_masked)
 
         # copy the NOMINAL_DEPTH, LATITUDE, and LONGITUDE
         # TODO: check _FillValue
@@ -139,51 +126,43 @@ def smooth(files):
 
             ncVariableOut[:] = maVariable  # copy the data
 
-        # variable to smooth
-        degree = 3
+        # variable to resample
         in_vars = set([x for x in ds.variables])
         # print('input file vars', in_vars)
         z = in_vars.intersection(['PRES', 'TEMP', 'PSAL', 'DENSITY', 'SIGMA_T0', 'DOX2'])
         print ('vars to smooth', z)
         qc = np.ones_like(datetime_time)
-        for smooth_var in z:
+        for resample_var in z:
 
-            var_to_smooth_in = ds.variables[smooth_var]
-            if smooth_var + '_quality_control' in ds.variables:
-                print('using qc : ', smooth_var + "_quality_control")
-                qc = ds.variables[smooth_var + "_quality_control"][:]
+            var_to_smooth_in = ds.variables[resample_var]
+            if resample_var + '_quality_control' in ds.variables:
+                print('using qc : ', resample_var + "_quality_control")
+                qc = ds.variables[resample_var + "_quality_control"][:]
 
             smooth_in = var_to_smooth_in[msk & (qc <= 2)]
             time_masked = var_time[msk & (qc <= 2)]
+            if len(time_masked) == 0:
+                continue
 
-            print(smooth_var, 'input data : ', smooth_in)
-            #print('times', time_masked)
-            #print('new times', new_times)
+            print(resample_var, 'input data : ', smooth_in)
 
-            # do the smoothing
+            # do the resample
 
-            lowess = sm.nonparametric.lowess
+            f = interp1d(np.array(time_masked), np.array(smooth_in), kind='nearest', bounds_error=False, fill_value=np.nan)
+            y = f(sample_datenum)
 
-            y = lowess(np.array(smooth_in), np.array(time_masked), frac=frac, it=3, is_sorted=True, xvals=sample_datenum)
-
-            # unpack the lowess smoothed points to their values
-            #lowess_x = list(zip(*z))[0]
-            #lowess_y = list(zip(*z))[1]
-
-            #f = interp1d(lowess_x, lowess_y, bounds_error=False, kind='linear')
-            #y = f(d)
-            print('interpolated data', smooth_var, y)
+            print('interpolated data', resample_var, y)
 
             # mark time cells bad where there are less than 3 samples in +/- 2.2 hours
             bad = 0
             for v in range(0, len(sample_datenum)):
-                time_cell_min = np.where(time_masked > (sample_datenum[v] - 2.2/24)) # TODO: only works when time.units='days since .....'
-                time_cell_max = np.where(time_masked < (sample_datenum[v] + 2.2/24))
+                time_cell_min = np.where(time_masked > (sample_datenum[v] - 1.5/24)) # TODO: only works when time.units='days since .....'
+                time_cell_max = np.where(time_masked < (sample_datenum[v] + 1.5/24))
                 # print(np.shape(time_cell_max), np.shape(time_cell_min))
                 if np.shape(time_cell_min)[1] > 0 and np.shape(time_cell_max)[1] > 0:
                     #print(v, time_cell_max[0][-1], time_cell_min[0][0], time_cell_max[0][-1]-time_cell_min[0][0])
                     #print(dy[0][-1]-dx[0][0])
-                    if (time_cell_max[0][-1]-time_cell_min[0][0]) < 3:
+                    if (time_cell_max[0][-1]-time_cell_min[0][0]) < 1:
                         y[v] = np.nan
                         bad += 1
                 else:
@@ -192,20 +171,17 @@ def smooth(files):
             print('number bad', bad)
 
             #  create output variables
-            var_smooth_out = ds_new.createVariable(smooth_var, 'f4', 'TIME', fill_value=np.NaN, zlib=True)
+            var_resample_out = ds_new.createVariable(resample_var, 'f4', 'TIME', fill_value=np.NaN, zlib=True)
             attr_dict = {}
             for a in var_to_smooth_in.ncattrs():
-                if a != 'ancillary_variables': # don't copy these for now
+                if a != 'ancillary_variables': # don't copy these for now, did we want the aux (quality_code) vars copied
                     attr_dict[a] = var_to_smooth_in.getncattr(a)
 
-            var_smooth_out.setncatts(attr_dict)
-            var_smooth_out[:] = y
-
-            #var_smooth_out_temp = ds_temp.createVariable(smooth_var, 'f4', 'TIME', fill_value=np.NaN, zlib=True)
-            #var_smooth_out_temp[:] = lowess_y
+            var_resample_out.setncatts(attr_dict)
+            var_resample_out[:] = y
 
         #  create history
-        ds_new.history += '\n' + now.strftime("%Y-%m-%d : ") + 'resampled data created from ' + os.path.basename(filepath) + ' window=' + str(window) + ' degree=' + str(degree)
+        ds_new.history += '\n' + now.strftime("%Y-%m-%d : ") + 'resampled data created from ' + os.path.basename(filepath)
 
         ds_new.file_version = 'Level 2 – Derived Products'
         ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
@@ -215,6 +191,8 @@ def smooth(files):
         ds_new.close()
 
         ds.close()
+
+        print()
 
     return output_names
 
