@@ -132,6 +132,16 @@ def smooth(files):
         z = in_vars.intersection(['PRES', 'TEMP', 'PSAL', 'DENSITY', 'SIGMA_T0', 'DOX2'])
         print ('vars to smooth', z)
         qc = np.ones_like(datetime_time)
+
+        # interpolate the time to get the distance to the nearest point
+        f = interp1d(np.array(time_masked), np.array(time_masked), kind='nearest', bounds_error=False, fill_value=np.nan)
+        y = (f(sample_datenum) - sample_datenum) * 24 * 3600
+
+        print('sample distance', y, '(seconds)')
+        var_resample_out = ds_new.createVariable('SAMPLE_TIME_DIFF', 'f4', 'TIME', fill_value=np.NaN, zlib=True)
+        var_resample_out.comment = 'seconds to actual sample timestamp'
+        var_resample_out[:] = y
+
         for resample_var in z:
 
             var_to_smooth_in = ds.variables[resample_var]
@@ -139,16 +149,16 @@ def smooth(files):
                 print('using qc : ', resample_var + "_quality_control")
                 qc = ds.variables[resample_var + "_quality_control"][:]
 
-            smooth_in = var_to_smooth_in[msk & (qc <= 2)]
+            data_in = var_to_smooth_in[msk & (qc <= 2)]
             time_masked = var_time[msk & (qc <= 2)]
             if len(time_masked) == 0:
                 continue
 
-            print(resample_var, 'input data : ', smooth_in)
+            print(resample_var, 'input data : ', data_in)
 
             # do the resample
 
-            f = interp1d(np.array(time_masked), np.array(smooth_in), kind='nearest', bounds_error=False, fill_value=np.nan)
+            f = interp1d(np.array(time_masked), np.array(data_in), kind='nearest', bounds_error=False, fill_value=np.nan)
             y = f(sample_datenum)
 
             print('interpolated data', resample_var, y)

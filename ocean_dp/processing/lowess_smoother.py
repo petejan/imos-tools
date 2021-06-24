@@ -63,7 +63,7 @@ def smooth(files):
 
         # find number of samples to make 2.2 hrs of data
         i = n_mid
-        while (datetime_time_masked[i] - t_mid0) < timedelta(hours=2.2):
+        while (datetime_time_masked[i] - t_mid0) < timedelta(hours=1):
             i = i + 1
         i = i - n_mid
 
@@ -140,12 +140,13 @@ def smooth(files):
             ncVariableOut[:] = maVariable  # copy the data
 
         # variable to smooth
-        degree = 3
         in_vars = set([x for x in ds.variables])
         # print('input file vars', in_vars)
-        z = in_vars.intersection(['PRES', 'TEMP', 'PSAL', 'DENSITY', 'SIGMA_T0', 'DOX2'])
+        z = in_vars.intersection(['PRES', 'TEMP', 'PSAL', 'CNDC', 'DENSITY', 'SIGMA_T0', 'DOX2'])
         print ('vars to smooth', z)
         qc = np.ones_like(datetime_time)
+        lowess = sm.nonparametric.lowess
+
         for smooth_var in z:
 
             var_to_smooth_in = ds.variables[smooth_var]
@@ -161,8 +162,6 @@ def smooth(files):
             #print('new times', new_times)
 
             # do the smoothing
-
-            lowess = sm.nonparametric.lowess
 
             y = lowess(np.array(smooth_in), np.array(time_masked), frac=frac, it=3, is_sorted=True, xvals=sample_datenum)
 
@@ -205,7 +204,7 @@ def smooth(files):
             #var_smooth_out_temp[:] = lowess_y
 
         #  create history
-        ds_new.history += '\n' + now.strftime("%Y-%m-%d : ") + 'resampled data created from ' + os.path.basename(filepath) + ' window=' + str(window) + ' degree=' + str(degree)
+        ds_new.history += '\n' + now.strftime("%Y-%m-%d : ") + 'resampled data created from ' + os.path.basename(filepath) + ' window=' + str(window)
 
         ds_new.file_version = 'Level 2 – Derived Products'
         ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
