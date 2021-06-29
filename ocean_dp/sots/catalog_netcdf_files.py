@@ -21,25 +21,55 @@ import sys
 from netCDF4 import Dataset
 #print('Python %s on %s' % (sys.version, sys.platform))
 
-import glob
+import glob2 as glob
 import os
+import re
 
 ncFiles = []
 # for each of the new files, process them
-for f in sys.argv[1:-1]:
+for f in sys.argv[1:]:
+    #print(f)
     ncFiles.extend(glob.glob(f))
 
 atts_to_list = ['file', 'platform_code', 'deployment_code', 'instrument', 'instrument_serial_number', 'instrument_nominal_depth', 'time_coverage_end', 'time_coverage_start', 'time_deployment_end', 'time_deployment_start']
-print(','.join(atts_to_list))
+
+pump_map = r"SBE16plus|SBE37SMP"
+
+hdr = []
+hdr.extend(atts_to_list)
+hdr.append('has conductivity')
+hdr.append('conductivity calibration date')
+hdr.append('is pumped')
+
+print(','.join(hdr))
 
 for fn in ncFiles:
+    #print(fn)
     nc = Dataset(fn, 'r')
 
-    att_list = [fn]
+    att_list = [os.path.basename(fn)]
     for att in atts_to_list[1:]:
         att_list.append(str(nc.getncattr(att)))
 
-    print (','.join(att_list))
+    if 'CNDC' in nc.variables:
+        att_list.append('yes')
+        if 'calibration_CalibrationDate' in nc.variables['CNDC'].ncattrs() :
+            att_list.append(nc.variables['CNDC'].calibration_CalibrationDate)
+        else:
+            att_list.append('')
+    else:
+        att_list.append('')
+        att_list.append('')
+    #print(re.search(pump_map, nc.instrument), nc.instrument)
+    if re.search(pump_map, nc.instrument):
+        att_list.append('yes')
+    else:
+        att_list.append('')
+
+
+    print(','.join(att_list))
+
+    nc.close()
 
 
 
