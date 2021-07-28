@@ -33,7 +33,8 @@ from matplotlib import rc
 
 # rc('text', usetex=True)
 
-for path_file in sys.argv[1:len(sys.argv)]:
+
+def plot_file(path_file)
 
     nc = Dataset(path_file)
 
@@ -363,3 +364,10 @@ for path_file in sys.argv[1:len(sys.argv)]:
     pp.close()
 
     nc.close()
+
+
+if __name__ == "__main__":
+
+    for path_file in sys.argv[1:len(sys.argv)]:
+        plot_file(path_file)
+
