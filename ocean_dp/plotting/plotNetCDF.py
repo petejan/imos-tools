@@ -17,6 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 import textwrap
 
+from glob2 import glob
 from netCDF4 import Dataset
 from netCDF4 import num2date
 import datetime as dt
@@ -34,7 +35,7 @@ from matplotlib import rc
 # rc('text', usetex=True)
 
 
-def plot_file(path_file)
+def plot_file(path_file):
 
     nc = Dataset(path_file)
 
@@ -368,6 +369,10 @@ def plot_file(path_file)
 
 if __name__ == "__main__":
 
-    for path_file in sys.argv[1:len(sys.argv)]:
+    ncFiles = []
+    for f in sys.argv[1:]:
+        ncFiles.extend(glob.glob(f))
+
+    for path_file in ncFiles:
         plot_file(path_file)
 
