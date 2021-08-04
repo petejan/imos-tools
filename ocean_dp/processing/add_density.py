@@ -118,6 +118,8 @@ def add_density(netCDFfile):
 
     print('added density')
 
+    return [netCDFfile]
+
 
 if __name__ == "__main__":
     for f in sys.argv[1:]:

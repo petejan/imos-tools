@@ -42,23 +42,20 @@ def add_psal(netCDFfile):
 
     # find a pressure/depth variable
     # TODO: use nc.get_variables_by_attributes(units='dbar')
-    p = 0
-    pres_var = "nominal depth of 0 dbar"
-    comment = ", using nominal depth 0 dbar"
-    try:
+    if "PRES" in ds.variables:
+        var_pres = ds.variables["PRES"]
+        pres_var = "PRES"
+        comment = ""
+        p = var_pres[:]
+    elif "NOMINAL_DEPTH" in ds.variables:
         var_pres = ds.variables["NOMINAL_DEPTH"]
         pres_var = "NOMINAL_DEPTH"
         comment = ", using nominal depth " + str(var_pres[:])
         p = var_pres[:]
-    except KeyError:
-        pass
-    try:
-        var_pres = ds.variables["PRES"]
-        pres_var = "PRES"
-        p = var_pres[:]
-        comment = ""
-    except KeyError:
-        pass
+    else:
+        p = 0
+        pres_var = "nominal depth of 0 dbar"
+        comment = ", using nominal depth 0 dbar"
 
     t = var_temp[:]
     cndc_scale = 10.0

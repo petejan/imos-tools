@@ -67,6 +67,7 @@ def rate_of_change(netCDFfiles, variable, rate, qc_value=4):
         print('mask data ', mask)
 
         new_qc_flags = np.zeros_like(var_data_qc)
+        new_qc_flags.mask = False
         new_qc_flags[mask] = qc_value
 
         if create_sub_qc:

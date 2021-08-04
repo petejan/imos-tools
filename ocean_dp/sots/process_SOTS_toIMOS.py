@@ -42,8 +42,9 @@ for fn in ncFiles:
         filename = ocean_dp.attribution.format_attributes.format_attributes(filename)
 
         print('step 2 (attributes) filename : ', filename)
-    except RuntimeError:
+    except RuntimeError as ex:
         print('problem with file', fn)
+        print(ex)
         pass
 
     filename = ocean_dp.file_name.imosNetCDFfileName.rename(filename)

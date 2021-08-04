@@ -61,6 +61,7 @@ def global_range(netCDFfiles, variable, max, min, qc_value=4):
         print('mask data ', mask)
 
         new_qc_flags = np.ones_like(var_data_qc)
+        new_qc_flags.mask = False
         new_qc_flags[mask] = qc_value
 
         if create_sub_qc:
@@ -112,7 +113,7 @@ def global_range(netCDFfiles, variable, max, min, qc_value=4):
             hist = ds.history + "\n"
         except AttributeError:
             hist = ""
-        ds.setncattr("history", hist + datetime.utcnow().strftime("%Y-%m-%d") + " " + variable + " global range min = " + str(min) + " max = " + str(max) + " marked " + str(int(count)))
+        ds.setncattr("history", hist + datetime.utcnow().strftime("%Y-%m-%d") + " " + variable + " global range min = " + str(min) + " max = " + str(max) + " marked " + str(count))
 
         ds.close()
 

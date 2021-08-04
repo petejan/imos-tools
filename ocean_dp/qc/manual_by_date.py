@@ -27,7 +27,7 @@ from dateutil import parser
 # flag data after a date
 
 
-def maunal(netCDFfile, var_name=None, after_str=None, flag=4, reason=None):
+def maunal(netCDFfile, var_name=None, start_str=None, flag=4, reason=None, end_str=None):
 
     out_file = []
 
@@ -60,11 +60,18 @@ def maunal(netCDFfile, var_name=None, after_str=None, flag=4, reason=None):
         print('var to add', to_add)
 
         # create a mask for the time range
-        after = None
-        mask = True
-        if after_str:
-            after = parser.parse(after_str, ignoretz=True)
-            mask = (time >= after)
+        start = None
+        end = None
+        mask = True # mark all data
+        if end_str and start_str:
+            end = parser.parse(end_str, ignoretz=True)
+            start = parser.parse(start_str, ignoretz=True)
+            mask = (time <= end) & (time >= start)
+        elif start_str:
+            start = parser.parse(start_str, ignoretz=True)
+            mask = (time >= start) # mark all data after start with flag
+
+        print(mask)
 
         for v in to_add:
             print("var", v, ' dimensions ', nc_vars[v].dimensions)
@@ -93,8 +100,11 @@ def maunal(netCDFfile, var_name=None, after_str=None, flag=4, reason=None):
             #ncVarOut.flag_meanings = 'unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value'
             ncVarOut.units = "1"
             ncVarOut.comment = 'manual'
-            if after_str:
-                ncVarOut.comment += ', by date, after ' + after.strftime("%Y-%m-%d")
+            if start_str:
+                ncVarOut.comment += ', by date, start ' + start.strftime("%Y-%m-%d")
+            if end_str:
+                ncVarOut.comment += ', by date, end ' + end.strftime("%Y-%m-%d")
+
             if reason:
                 ncVarOut.comment += ', ' + reason
 
@@ -125,8 +135,10 @@ def maunal(netCDFfile, var_name=None, after_str=None, flag=4, reason=None):
             hist = hist + datetime.utcnow().strftime("%Y-%m-%d") + " " + var_name + " manual QC, marked " + str(int(count))
         else:
             hist = hist + datetime.utcnow().strftime("%Y-%m-%d") + " manual QC, marked " + str(int(count))
-        if after_str:
-            hist = hist + ", after " + after.strftime("%Y-%m-%d %H:%M:%S")
+        if start_str:
+            hist = hist + ", start " + start.strftime("%Y-%m-%d %H:%M:%S")
+        if end_str:
+            hist = hist + ", end " + end.strftime("%Y-%m-%d %H:%M:%S")
         if reason:
             hist += ', ' + reason
 
@@ -140,4 +152,4 @@ def maunal(netCDFfile, var_name=None, after_str=None, flag=4, reason=None):
 
 
 if __name__ == "__main__":
-    maunal(netCDFfile=[sys.argv[1]], after_str=sys.argv[2], var_name=sys.argv[3], flag=sys.argv[4])
+    maunal(netCDFfile=[sys.argv[1]], start_str=sys.argv[2], var_name=sys.argv[3], flag=sys.argv[4])

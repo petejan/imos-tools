@@ -45,7 +45,7 @@ import numpy as np
 
 # map sea bird name to netCDF variable name
 nameMap = {}
-nameMap["temperature"] = "TIME"
+nameMap["temperature"] = "TEMP"
 nameMap["conductivity"] = "CNDC"
 nameMap["pressure"] = "PRES"
 
@@ -182,14 +182,14 @@ def sbe_asc_parse(files):
                             cal_param = matchObj.group(1)
                             cal_value = matchObj.group(2)
                             cal_tags.append((cal_sensor, cal_param, cal_value))
-                            #print("calibration type %s param %s value %s" % (cal_sensor, cal_param, cal_value))
+                            print("calibration type %s param %s value %s" % (cal_sensor, cal_param, cal_value))
 
                         else:
                             sensor = False
 
                     matchObj = re.match(cal_expr, line)
                     if matchObj:
-                        #print("cal_expr:matchObj.group() : ", matchObj.group())
+                        print("cal_expr:matchObj.group() : ", matchObj.group())
                         #print("cal_expr:matchObj.group(1) : ", matchObj.group(1))
                         sensor = True
                         cal_param = None

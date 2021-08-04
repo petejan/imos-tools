@@ -30,11 +30,24 @@ def add_psal(netCDFfile):
 
     var_temp = ds.variables["TEMP"]
     var_psal = ds.variables["PSAL"]
-    var_pres = ds.variables["PRES"]
 
     t = var_temp[:]
     SP = var_psal[:]
-    p = var_pres[:]
+
+    if "PRES" in ds.variables:
+        var_pres = ds.variables["PRES"]
+        pres_var = "PRES"
+        comment = ""
+        p = var_pres[:]
+    elif "NOMINAL_DEPTH" in ds.variables:
+        var_pres = ds.variables["NOMINAL_DEPTH"]
+        pres_var = "NOMINAL_DEPTH"
+        comment = ", using nominal depth of " + str(var_pres[:])
+        p = var_pres[:]
+    else:
+        p = 0
+        pres_var = "nominal depth of 0 dbar"
+        comment = ", using nominal depth 0 dbar"
 
     lat = -47
     lon = 142
@@ -52,7 +65,7 @@ def add_psal(netCDFfile):
     ncVarOut = ds.createVariable("OXSOL", "f4", ("TIME",), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
     ncVarOut[:] = oxsol
     ncVarOut.units = "umol/kg"
-    ncVarOut.comment = "calculated using gsw-python https://teos-10.github.io/GSW-Python/index.html function gsw.O2sol_SP_pt"
+    ncVarOut.comment = "calculated using gsw-python https://teos-10.github.io/GSW-Python/index.html function gsw.O2sol_SP_pt" + comment
 
     # update the history attribute
     try:

@@ -56,6 +56,7 @@ nameMap["PRDM"] = "PRES"
 nameMap["PRM"] = "PRES"
 nameMap["PR"] = "PRES"
 nameMap["SAL00"] = "PSAL"
+nameMap["SIGMAT00"] = "SIGMA_T0"
 nameMap["SBEOPOXMMKG"] = "DOX2"
 nameMap["SBEOPOXMLL"] = "DOX"
 nameMap["SBEOPOXMML"] = "DOX1"
@@ -86,6 +87,9 @@ end_expr = r"\*END\*"
 sampleExpr = r"\* sample interval = (\d+) seconds"
 startTimeExpr = r"# start_time = ([^\[]*)"
 intervalExpr = r"# interval = (\S+): (\S+)"
+firmwareDateExpr = r"\*.*<FirmwareDate>(.*)<\/FirmwareDate>"
+firmwareVerExpr = r"\*.*<FirmwareVersion>(.*)<\/FirmwareVersion>"
+mfgDateExpr = r"\*.*<MfgDate>(.*)<\/MfgDate>"
 
 nvalues_expr = r"# nvalues =\s*(\d+)"
 nquant_expr = r"# nquan = (\d+)"
@@ -101,12 +105,14 @@ comment = r"<!--(.+?)-->"
 tag = r".*<(.+?)>(.+)<\/\1>|.*<(.+=.*)>"
 
 instr_exp = r"\* Sea-Bird.?(\S+)"
-sn_expr = r"\* SBE\s+\S+\s+V\s+\S+\s+SERIAL NO. (\S*)"
+sn_expr = r"\* (SBE.*)\s+V\s+(\S+)\s+SERIAL NO. (\S*)"
 sn2_6_expr = r"\* Temperature SN = (\S*)"
 sn39_expr = r"\* SerialNumber: (\S*)"
 
 cast_exp = r"\* cast\s+(.*$)"
 
+cal_expr          = r"\* ((\S*).*):\s*(.*)"
+cal_val_expr      = r"\*\s*(\S*) = ([0-9e+-\.]*)"
 
 #
 # parse the file
@@ -134,6 +140,10 @@ def parse(files):
         cast = None
         instrument_serialnumber = None
         instrument_model = 'unknown'
+        firmware_version = None
+        sensor = False
+        firmware_date = None
+        mfg_date = None
 
         with open(filepath, 'r', errors='ignore') as fp:
             line = fp.readline()
@@ -147,7 +157,20 @@ def parse(files):
                 #print("Line {}: {} : {}".format(cnt, dataLine, line.strip()))
 
                 if hdr:
+
                     if sensor:
+                        matchObj = re.match(cal_val_expr, line)
+                        if matchObj:
+                            #print("cal_val_expr:matchObj.group() : ", matchObj.group())
+                            #print("cal_val_expr:matchObj.group(1) : ", matchObj.group(1))
+                            cal_param = matchObj.group(1)
+                            cal_value = matchObj.group(2)
+                            cal_tags.append((cal_sensor, cal_param, cal_value))
+                            print("calibration type %s param %s value %s" % (cal_sensor, cal_param, cal_value))
+
+                        else:
+                            sensor = False
+
                         tmatchObj = re.match(tag, line)
                         if tmatchObj:
                             #print("sensor_tag:matchObj.group() : ", tmatchObj.group())
@@ -176,6 +199,15 @@ def parse(files):
 
                                 cal_tags.append((cal_sensor, cal_param, cal_value))
                                 #print("calibration type %s param %s value %s" % (cal_sensor, cal_param, cal_value))
+
+                    matchObj = re.match(cal_expr, line)
+                    if matchObj:
+                        print("cal_expr:matchObj.group() : ", matchObj.group())
+                        #print("cal_expr:matchObj.group(1) : ", matchObj.group(1))
+                        sensor = True
+                        cal_param = None
+                        cal_sensor = matchObj.group(2)
+                        cal_tags.append((cal_sensor, "comment", matchObj.group(1) + " " + matchObj.group(3)))
 
                     matchObj = re.match(sensor_start, line)
                     if matchObj:
@@ -224,6 +256,21 @@ def parse(files):
                         #print("instr_exp:matchObj.group(1) : ", matchObj.group(1))
                         instrument_model = matchObj.group(1)
 
+                    matchObj = re.match(firmwareDateExpr, line)
+                    if matchObj:
+                        #print("firmware_date:matchObj.group() : ", matchObj.group())
+                        firmware_date = matchObj.group(1)
+
+                    matchObj = re.match(firmwareVerExpr, line)
+                    if matchObj:
+                        #print("firmware_date:matchObj.group() : ", matchObj.group())
+                        firmware_version = matchObj.group(1)
+
+                    matchObj = re.match(mfgDateExpr, line)
+                    if matchObj:
+                        #print("firmware_date:matchObj.group() : ", matchObj.group())
+                        mfg_date = matchObj.group(1).strip()
+
                     matchObj = re.match(hardware_expr, line)
                     if matchObj:
                         #print("hardware_expr:matchObj.group() : ", matchObj.group())
@@ -236,7 +283,8 @@ def parse(files):
                     if matchObj:
                         #print("sn_expr:matchObj.group() : ", matchObj.group())
                         print("sn_expr:matchObj.group(1) : ", matchObj.group(1))
-                        instrument_serialnumber = matchObj.group(1)
+                        instrument_model = matchObj.group(1)
+                        instrument_serialnumber = matchObj.group(3)
 
                     matchObj = re.match(sn2_6_expr, line)
                     if matchObj:
@@ -356,6 +404,12 @@ def parse(files):
         ncOut.instrument_model = instrument_model
         if instrument_serialnumber:
             ncOut.instrument_serial_number = instrument_serialnumber
+        if firmware_version:
+            ncOut.firmware_version = firmware_version
+        if firmware_date:
+            ncOut.firmware_date = firmware_date
+        if mfg_date:
+            ncOut.manufacture_date = mfg_date
         if cast:
             ncOut.instrument_cast = cast
 
@@ -399,6 +453,7 @@ def parse(files):
                 # add any relevant calibration information to variables, bit of a hard coded hack
                 for c in cal_tags:
                     add = False
+                    #print("cal_tag", c)
                     if varName == 'TEMP' and c[0] == 'TemperatureSensor':
                         add = True
                     if varName == 'DOX2' and c[0] == 'OxygenSensor':
@@ -406,6 +461,12 @@ def parse(files):
                     if varName == 'PRES' and c[0] == 'PressureSensor':
                         add = True
                     if varName == 'CNDC' and c[0] == 'ConductivitySensor':
+                        add = True
+                    if varName == 'TEMP' and c[0] == 'temperature':
+                        add = True
+                    if varName == 'CNDC' and c[0] == 'conductivity':
+                        add = True
+                    if varName == 'PRES' and c[0] == 'pressure':
                         add = True
 
                     if add:
