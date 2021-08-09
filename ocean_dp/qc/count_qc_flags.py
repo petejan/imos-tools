@@ -26,6 +26,7 @@ from netCDF4 import Dataset, num2date
 import struct
 import os
 from scipy import stats
+import glob2 as glob
 
 
 def flag_count(netCDFfile):
@@ -59,7 +60,7 @@ def flag_count(netCDFfile):
 
         # get a list of auxiliary variables
         auxList = []
-        for variable in ds.variables:
+        for variable in ['TEMP']: # ds.variables:
             var = ds[variable]
 
             try:
@@ -69,13 +70,15 @@ def flag_count(netCDFfile):
                 pass
 
         # loop over aux variables
+        linevar = line
         for aux_var_name in sorted(set(auxList)):
+            #print(aux_var_name)
             try:
                 aux_var = ds.variables[aux_var_name]
-                if aux_var.long_name.startswith("quality flag for") | aux_var.long_name.startswith('quality_code for'):
+                if aux_var.long_name.startswith("quality flag for") or aux_var.long_name.startswith('quality_code for') or ("quality_control" in aux_var_name):
                     #print(' qc var', aux_var_name)
 
-                    linevar = line + ',' + aux_var_name
+                    linevar = linevar + ',' + aux_var_name
 
                     aux_var_data = aux_var[:]
                     # mask the non in/out water or main quality flag
@@ -90,13 +93,16 @@ def flag_count(netCDFfile):
                         if bin_names[i]:
                             linevar += ',' + str(int(stat.statistic[i]))
 
-                    print (linevar)
 
             except KeyError:
                 pass
+        print(linevar)
 
         ds.close()
 
 
 if __name__ == "__main__":
-    flag_count(sys.argv[1:])
+    files=[]
+    for f in sys.argv[1:]:
+        files.extend(glob.glob(f))
+    flag_count(files)

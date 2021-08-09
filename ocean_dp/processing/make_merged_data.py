@@ -2,6 +2,7 @@ import os
 import shutil
 import sys
 
+from glob2 import glob
 from netCDF4 import Dataset, date2num, num2date, stringtochar
 
 from datetime import datetime, timedelta
@@ -141,4 +142,8 @@ def make(files):
 
 
 if __name__ == "__main__":
-    make(sys.argv[1:])
+    files = []
+    for f in sys.argv[1:]:
+        files.extend(glob(f))
+
+    make(files)

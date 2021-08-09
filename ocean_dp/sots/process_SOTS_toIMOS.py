@@ -1,8 +1,8 @@
 import sys
+import os
 
 print('Python %s on %s' % (sys.version, sys.platform))
-
-sys.path.extend(['.'])
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), '..'))
 
 import ocean_dp.attribution.addAttributes
 import ocean_dp.attribution.add_geospatial_attributes

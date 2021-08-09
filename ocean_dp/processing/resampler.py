@@ -2,6 +2,7 @@ import os
 import shutil
 import sys
 
+from glob2 import glob
 from netCDF4 import Dataset, date2num, num2date
 
 from datetime import datetime, timedelta
@@ -153,7 +154,7 @@ def smooth(files, method, resample='True', hours=12):
         # variable to smooth
         in_vars = set([x for x in ds.variables])
         # print('input file vars', in_vars)
-        z = in_vars.intersection(['PRES', 'TEMP', 'PSAL', 'CNDC', 'DENSITY', 'SIGMA_T0', 'DOX2'])
+        z = in_vars.intersection(['PRES', 'TEMP', 'PSAL', 'CNDC', 'DENSITY', 'SIGMA_T0', 'DOX2', 'ATMP', 'AIRT', 'WSPD', 'SW', 'LW', 'UWIND', 'VWIND'])
         print ('vars to smooth', z)
         qc = np.ones_like(datetime_time)
         lowess = sm.nonparametric.lowess
@@ -239,6 +240,9 @@ def plot():
 
 
 if __name__ == "__main__":
-    method = 'lowess'
+    method = 'interp'
+    files = []
+    for f in sys.argv[1:]:
+        files.extend(glob(f))
 
-    smooth(sys.argv[1:], method, resample=False, hours=1)
+    smooth(files, method, resample=True, hours=1)

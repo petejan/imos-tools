@@ -35,7 +35,7 @@ import ocean_dp.qc.global_range
 import ocean_dp.qc.spike_test
 import ocean_dp.qc.rate_of_change
 import ocean_dp.qc.manual_by_date
-import ocean_dp.processing.loess_smoother
+#import ocean_dp.processing.loess_smoother
 import ocean_dp.processing.addPSAL
 import ocean_dp.processing.add_density
 import ocean_dp.processing.add_sigma_theta0_sm
@@ -157,10 +157,10 @@ for fn in ncFiles:
         maunal_date_start = '2017-01-12 00:00:00'
         maunal_date_end = '2017-01-23 00:00:00'
     # SOFS-5 add data bad
-    if ds.instrument_model == 'SBE37SM-RS485' and ds.deployment_code == 'SOFS-5-2015' and ds.instrument_serial_number == '03707409':
-        manual_flag = 3
-        manual_var = 'PSAL'
-        manual_reason = 'calibration issue, reading high'
+#    if ds.instrument_model == 'SBE37SM-RS485' and ds.deployment_code == 'SOFS-5-2015' and ds.instrument_serial_number == '03707409':
+#        manual_flag = 3
+#        manual_var = 'PSAL'
+#        manual_reason = 'calibration issue, reading high'
     # SOFS-9 add data bad
     if ds.instrument_model == 'SBE37SMP-ODO-RS232' and ds.deployment_code == 'SOFS-9-2020' and ds.instrument_serial_number == '03715971':
         manual_flag = 3
@@ -168,6 +168,10 @@ for fn in ncFiles:
         manual_reason = 'high salinity'
         maunal_date_start = '2020-09-01 00:00:00'
         maunal_date_end = '2020-10-25 00:00:00'
+    # SOFS-9 70m Starmon mini -> flag 4
+    if ( ds.instrument_serial_number == '4052') and ds.instrument_model == 'Starmon mini' and ds.deployment_code == 'SOFS-9-2020':
+        manual_flag = 4
+        manual_reason = 'sensor data noisy'
 
     ds.close()
 
