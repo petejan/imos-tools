@@ -78,7 +78,7 @@ def add_sigma_theta0_sm(netCDFfile, limit=0.02):
     ncVarOutQc.comment = "data flagged 3 when sigma-theta0 jumps "+str(limit)+" more than the 30 point smoothed data"
 
     var_psal = ds.variables['PSAL']
-    var_psal.ancillary_variables += var_psal.ancillary_variables + " PSAL_quality_control_dst"
+    var_psal.ancillary_variables = var_psal.ancillary_variables + " PSAL_quality_control_dst"
     var_psal_qc = ds.variables['PSAL_quality_control']
 
     var_psal_qc[:] = np.max([var_psal_qc[:], ncVarOutQc[:]], axis=0)

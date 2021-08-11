@@ -61,7 +61,7 @@ def global_range(netCDFfiles, variable, max, min, qc_value=4):
         print('mask data ', mask)
 
         new_qc_flags = np.ones_like(var_data_qc)
-        new_qc_flags.mask = False
+        new_qc_flags.mask = False # incase its a masked array
         new_qc_flags[mask] = qc_value
 
         if create_sub_qc:
@@ -88,6 +88,7 @@ def global_range(netCDFfiles, variable, max, min, qc_value=4):
 
             # store new flags
             ncVarOut[data_to_qc_msk] = new_qc_flags
+            ncVarOut[~data_to_qc_msk] = 2
 
         # update the existing qc-flags
         existing_qc_flags[data_to_qc_msk] = np.max([existing_qc_flags[data_to_qc_msk], new_qc_flags], axis=0)

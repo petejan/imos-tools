@@ -57,21 +57,22 @@ def maunal(netCDFfile, var_name=None, start_str=None, flag=4, reason=None, end_s
 
         print('file', fn)
 
-        print('var to add', to_add)
+        print('vars to add flags to : ', to_add)
 
         # create a mask for the time range
         start = None
         end = None
-        mask = True # mark all data
-        if end_str and start_str:
-            end = parser.parse(end_str, ignoretz=True)
-            start = parser.parse(start_str, ignoretz=True)
-            mask = (time <= end) & (time >= start)
-        elif start_str:
-            start = parser.parse(start_str, ignoretz=True)
-            mask = (time >= start) # mark all data after start with flag
+        print('time shape', time.shape)
 
-        print(mask)
+        mask = np.ones(time.shape, dtype= bool) # mark all data
+        if end_str:
+            end = parser.parse(end_str, ignoretz=True)
+            mask[time > end] = False # clear flags for data after end
+        if start_str:
+            start = parser.parse(start_str, ignoretz=True)
+            mask[time <= start] = False # clear flags for data before start
+
+        print('mask', len(mask), mask)
 
         for v in to_add:
             print("var", v, ' dimensions ', nc_vars[v].dimensions)
@@ -83,12 +84,11 @@ def maunal(netCDFfile, var_name=None, start_str=None, flag=4, reason=None, end_s
             # create a qc variable just for this test flags
             if v + "_quality_control_man" in ds.variables:
                 ncVarOut = ds.variables[v + "_quality_control_man"]
-                ncVarOut[:] = 0
             else:
                 ncVarOut = ds.createVariable(v + "_quality_control_man", "i1", nc_vars[v].dimensions, fill_value=99, zlib=True)  # fill_value=0 otherwise defaults to max
                 nc_vars[v].ancillary_variables = nc_vars[v].ancillary_variables + " " + v + "_quality_control_man"
 
-            ncVarOut[:] = 0
+                ncVarOut[:] = 0
 
             if 'long_name' in nc_vars[v].ncattrs():
                 ncVarOut.long_name = "manual flag for " + nc_vars[v].long_name
@@ -108,8 +108,8 @@ def maunal(netCDFfile, var_name=None, start_str=None, flag=4, reason=None, end_s
             if reason:
                 ncVarOut.comment += ', ' + reason
 
-            new_qc_flags = np.zeros(var_qc.shape)
-            new_qc_flags[mask] = flag
+            new_qc_flags = ncVarOut[:]
+            new_qc_flags[mask] = np.max([ncVarOut[mask], flag*np.ones_like(ncVarOut[mask])], axis=0)
             ncVarOut[:] = new_qc_flags
 
             # update the existing qc-flags
@@ -135,6 +135,7 @@ def maunal(netCDFfile, var_name=None, start_str=None, flag=4, reason=None, end_s
             hist = hist + datetime.utcnow().strftime("%Y-%m-%d") + " " + var_name + " manual QC, marked " + str(int(count))
         else:
             hist = hist + datetime.utcnow().strftime("%Y-%m-%d") + " manual QC, marked " + str(int(count))
+        hist = hist + " with flag="+str(flag)
         if start_str:
             hist = hist + ", start " + start.strftime("%Y-%m-%d %H:%M:%S")
         if end_str:
@@ -152,4 +153,4 @@ def maunal(netCDFfile, var_name=None, start_str=None, flag=4, reason=None, end_s
 
 
 if __name__ == "__main__":
-    maunal(netCDFfile=[sys.argv[1]], start_str=sys.argv[2], var_name=sys.argv[3], flag=sys.argv[4])
+    maunal(netCDFfile=[sys.argv[1]], start_str=sys.argv[2], var_name=sys.argv[3], flag=int(sys.argv[4]))

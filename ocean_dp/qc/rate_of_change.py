@@ -66,7 +66,7 @@ def rate_of_change(netCDFfiles, variable, rate, qc_value=4):
         mask[1:] = np.abs(np.diff(var_data_qc)/np.diff(time[data_to_qc_msk])) > rate
         print('mask data ', mask)
 
-        new_qc_flags = np.zeros_like(var_data_qc)
+        new_qc_flags = np.ones_like(var_data_qc)
         new_qc_flags.mask = False
         new_qc_flags[mask] = qc_value
 
@@ -89,6 +89,7 @@ def rate_of_change(netCDFfiles, variable, rate, qc_value=4):
 
             # store new flags
             ncVarOut[data_to_qc_msk] = new_qc_flags
+            ncVarOut[~data_to_qc_msk] = 2
 
         # update the existing qc-flags
         existing_qc_flags[data_to_qc_msk] = np.max([existing_qc_flags[data_to_qc_msk], new_qc_flags], axis=0)

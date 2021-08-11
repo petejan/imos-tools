@@ -65,7 +65,7 @@ def spike_test(netCDFfiles, variable, height, qc_value=4):
         mask[1:-2] = spk > height
         print('mask data ', mask)
 
-        new_qc_flags = np.zeros_like(var_data_qc)
+        new_qc_flags = np.ones_like(var_data_qc)
         new_qc_flags.mask = False
         new_qc_flags[mask] = qc_value
 
@@ -88,6 +88,7 @@ def spike_test(netCDFfiles, variable, height, qc_value=4):
 
             # store new flags
             ncVarOut[data_to_qc_msk] = new_qc_flags
+            ncVarOut[~data_to_qc_msk] = 2
 
         # update the existing qc-flags
         existing_qc_flags[data_to_qc_msk] = np.max([existing_qc_flags[data_to_qc_msk], new_qc_flags], axis=0)

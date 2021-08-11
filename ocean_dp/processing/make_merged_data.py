@@ -114,8 +114,10 @@ def make(files):
     # for each variable in the source files create a output variable with an instance of each input file
     for v in var_list_dict:
         ds_new.createDimension("INSTANCE_"+v, len(var_list_dict[v]))
+
         nd_out = ds_new.createVariable("NOMINAL_DEPTH_"+v, "f4", ("INSTANCE_"+v), zlib=True)
         nd_out[:] = nominal_depth[var_list_dict[v]]
+
         fn_out = ds_new.createVariable("SOURCE_FILE_"+v, "i2", ("INSTANCE_"+v), zlib=True)
 
         temp_out = ds_new.createVariable(v, "f4", ("INSTANCE_" + v, "TIME"), fill_value=np.nan, zlib=True)
@@ -127,7 +129,7 @@ def make(files):
             fn_out[fn] = fn_idx
             ds = Dataset(filepath, 'r')
 
-            temp_out[fn, :] = ds.variables['TEMP'][:]
+            temp_out[fn, :] = ds.variables[v][:]
 
             ds.close()
 

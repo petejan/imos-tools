@@ -78,12 +78,12 @@ def in_out_water(netCDFfile, var_name=None):
                     # create a qc variable just for this test flags
                     if v + "_quality_control_io" in ds.variables:
                         ncVarOut = ds.variables[v + "_quality_control_loc"]
-                        ncVarOut[:] = 0
+                        ncVarOut[:] = 1
                     else:
                         ncVarOut = ds.createVariable(v + "_quality_control_loc", "i1", nc_vars[v].dimensions, fill_value=99, zlib=True)  # fill_value=0 otherwise defaults to max
                         nc_vars[v].ancillary_variables = nc_vars[v].ancillary_variables + " " + v + "_quality_control_loc"
 
-                    ncVarOut[:] = 0
+                    ncVarOut[:] = 1
                     if 'long_name' in nc_vars[v].ncattrs():
                         ncVarOut.long_name = "in/out of water flag for " + nc_vars[v].long_name
                     #if 'standard_name' in nc_vars[v].ncattrs():

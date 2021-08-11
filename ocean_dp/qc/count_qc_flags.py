@@ -20,6 +20,7 @@ import sys
 
 import datetime
 
+import numpy as np
 from dateutil import parser
 from netCDF4 import date2num
 from netCDF4 import Dataset, num2date
@@ -31,18 +32,17 @@ import glob2 as glob
 
 def flag_count(netCDFfile):
 
-    bins = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 99, 1000]
-    bin_names = ['unknown', 'good_data', 'probably_good_data', 'probably_bad_data', 'bad_data', None,
-                 'not_deployed', 'interpolated', None, 'missing_value', None, 'not_set']
-
-    line = 'file_name,deployment_date,deployment,instrument,serial_number,depth,flag,' + ','.join(filter(None, bin_names[0:-1]))
-    print (line)
+    file_list = []
+    flag_meanings = 'unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value'
+    flag_list = {}
 
     for fn in netCDFfile:
-        #print('file', os.path.basename(fn))
-        line = os.path.basename(fn)
-
         ds = Dataset(fn, 'r')
+
+        file_metadata = {}
+
+        file_metadata['file_name'] = os.path.basename(fn)
+        #print(os.path.basename(fn))
 
         time_var = ds.variables["TIME"]
         time = num2date(time_var[:], units=time_var.units, calendar=time_var.calendar)
@@ -56,49 +56,96 @@ def flag_count(netCDFfile):
 
         instrument = ds.instrument_model + " " + ds.instrument_serial_number + " @ " + str(ds.instrument_nominal_depth)
 
-        line += ',' + datetime.datetime.strftime(time_deploy, '%Y-%m-%d') + ',' + deployment + ',' + ds.instrument_model + ',\"' + ds.instrument_serial_number + '\",' + str(ds.instrument_nominal_depth)
+        file_metadata['deployment'] = ds.deployment_code
+        file_metadata['time_deploy'] = time_deploy
+        file_metadata['instrument'] = ds.instrument_model
+
+        file_metadata['sn'] = ds.instrument_serial_number
+        file_metadata['nominal_depth'] = float(ds.variables['NOMINAL_DEPTH'][:].data)
 
         # get a list of auxiliary variables
         auxList = []
-        for variable in ['TEMP']: # ds.variables:
+        for variable in ['PSAL']: # ds.variables:
             var = ds[variable]
 
             try:
                 aux = var.getncattr('ancillary_variables')
-                auxList.extend(aux.split(' '))
+                #print(' aux variables :', aux)
+                for a in aux.split(' '):
+                    if a in ds.variables:
+                        aux_v = {}
+                        aux_v['name'] = a
+                        aux_v['long_name'] = ds.variables[a].long_name
+                        if 'flag_values' in ds.variables[a].ncattrs():
+                            aux_v['flag_values'] = ds.variables[a].flag_values
+                            flag_meanings = ds.variables[a].flag_meanings
+                            aux_v['flag_meanings'] = flag_meanings
+                            flag_sep = flag_meanings.split(' ')
+                            for i in range(0,len(ds.variables[a].flag_values)):
+                                #print(i, flag_sep[i])
+                                flag_list[ds.variables[a].flag_values[i]] = flag_sep[i]
+
+                        hist, bin_edges = np.histogram(ds.variables[a], bins=[0, 1, 2, 3, 4, 6, 9, 99])
+                        aux_v['hist'] = hist
+                        aux_v['bin_edges'] = bin_edges
+                        #print('{:35} {}'.format(a, hist))
+
+                        auxList.append(aux_v)
+
             except AttributeError:
                 pass
-
-        # loop over aux variables
-        linevar = line
-        for aux_var_name in sorted(set(auxList)):
-            #print(aux_var_name)
-            try:
-                aux_var = ds.variables[aux_var_name]
-                if aux_var.long_name.startswith("quality flag for") or aux_var.long_name.startswith('quality_code for') or ("quality_control" in aux_var_name):
-                    #print(' qc var', aux_var_name)
-
-                    linevar = linevar + ',' + aux_var_name
-
-                    aux_var_data = aux_var[:]
-                    # mask the non in/out water or main quality flag
-                    if not aux_var_name.endswith("quality_control") and not aux_var_name.endswith("quality_control_io"):
-                        aux_var_data.mask = ~deployment_time_mask
-                    stat = stats.binned_statistic(aux_var_data.compressed(), [], 'count', bins=bins)
-                    #print(' ', deployment, instrument) # , aux_var_name, stat)
-
-                    for i in range(0, len(stat.statistic)-1):
-                        #print(i, stat.statistic[i], stat.bin_edges[i], bin_names[i])
-                        #print('  ', bin_names[i], ': count=', stat.statistic[i])
-                        if bin_names[i]:
-                            linevar += ',' + str(int(stat.statistic[i]))
-
-
-            except KeyError:
-                pass
-        print(linevar)
+        file_metadata['aux_variables'] = auxList
 
         ds.close()
+        file_list.append(file_metadata)
+
+    sort_orders = sorted(file_list, key=lambda x: [x['time_deploy'], x['nominal_depth']])
+
+    last_deployment = ''
+    flag_k = []
+    flag_m = []
+    for i in flag_list.keys():
+        flag_k.append(str(i))
+        flag_m.append(flag_list[i])
+
+    print('deployment,instrument,sn,nominal_depth,flag,'+','.join(flag_m))
+    print(',,,,,',','.join(flag_k))
+
+    for f in sort_orders:
+        deployment = f['deployment']
+        #print(f)
+        line = []
+        if deployment != last_deployment:
+            line.append(deployment)
+            last_deployment = deployment
+        else:
+            line.append('')
+
+        line.append('{}'.format(f['instrument']))
+        line.append('{}'.format(f['sn']))
+        line.append('{}'.format(f['nominal_depth']))
+        for a in f['aux_variables']:
+            if 'flag_values' in a:
+                line.append(a['long_name'])
+                s = np.array2string(a['hist'], separator=',')
+                line.append(s[1:-1])
+
+        print(','.join(line))
+
+        long_names = []
+        for a in f['aux_variables']:
+            if 'flag_values' not in a:
+                if a['long_name'] not in long_names:
+                    line = []
+                    line.append('')
+                    line.append('')
+                    line.append('')
+                    line.append('')
+                    line.append(a['long_name'].replace(' for sea_water_practical_salinity', ''))
+                    s = np.array2string(a['hist'], separator=',')
+                    line.append(s[1:-1])
+                    print(','.join(line))
+                    long_names.append(a['long_name'])
 
 
 if __name__ == "__main__":

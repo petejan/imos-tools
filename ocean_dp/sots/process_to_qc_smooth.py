@@ -23,7 +23,7 @@ import sys, os
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), '..'))
 
-print(sys.path)
+#print(sys.path)
 
 from netCDF4 import Dataset
 
@@ -98,82 +98,90 @@ for fn in ncFiles:
     maunal_date_end = None
     manual_reason = None
     manual_var = None
+
+    sn = ds.instrument_serial_number
+    model = ds.instrument_model
+    deployment = ds.deployment_code
+
+    ds.close()
+
     # Pulse 6,7,8 SOFS 1,2 Vemco Mini sensors with SN < 10000 -> flag 3
-    if ds.instrument_model == 'Minilog-T':
+    if model == 'Minilog-T':
         manual_flag = 3
         manual_reason = 'difference to higher precision sensors'
     # Pulse 8 SBE16plusV2 battery fail (after 2012-01-30 15:25) -> flag 3 after Pressure fails
-    if ds.instrument_model == 'SBE16plus' and ds.deployment_code == 'Pulse-8-2011':
+    if model == 'SBE16plus' and deployment == 'Pulse-8-2011':
         manual_flag = 4
         manual_reason = 'battery failed'
         maunal_date_start = '2012-01-30 15:25:00'
     # Pulse 9 SBE16plusV2 battery fail (after 2012-12-29 12:30) -> flag 3 after Pressure fails
-    if ds.instrument_model == 'SBE16plusV2' and ds.deployment_code == 'Pulse-9-2012':
+    if model == 'SBE16plusV2' and deployment == 'Pulse-9-2012':
         manual_flag = 4
         manual_reason = 'battery failed'
         maunal_date_start = '2012-12-29 12:30:00'
     # SOFS-7.5 70 and 75m Starmon mini -> flag 4
-    if (ds.instrument_serial_number == '4052' or ds.instrument_serial_number == '4053') and ds.instrument_model == 'Starmon mini' and ds.deployment_code == 'SOFS-7.5-2018':
+    if (sn == '4052' or sn == '4053') and model == 'Starmon mini' and deployment == 'SOFS-7.5-2018':
         manual_flag = 4
         manual_reason = 'sensor data noisy'
     # SOFS-8 55m and 320m show bias -> flag 4
-    if (ds.instrument_serial_number == '5304' or ds.instrument_serial_number == '5320') and ds.instrument_model == 'Starmon mini' and ds.deployment_code == 'SOFS-8-2019':
+    if (sn == '5304' or sn == '5320') and model == 'Starmon mini' and deployment == 'SOFS-8-2019':
         manual_flag = 4
         manual_reason = 'sensor data noisy'
 
+    mark_rest = False
     # SOFS-7.5-2018 SBE37 ODO at 200m salinity jump after Feb 09
-    if ds.instrument_model == 'SBE37SMP-ODO-RS232' and ds.deployment_code == 'SOFS-7.5-2018' and ds.instrument_serial_number == '03715971':
+    if model == 'SBE37SMP-ODO-RS232' and deployment == 'SOFS-7.5-2018' and sn == '03715971':
         manual_flag = 4
         manual_var = 'PSAL'
         manual_reason = 'density inversion'
         maunal_date_start = '2019-02-09 00:00:00'
+        mark_rest = True
 
     # SAZ 15 2013-02-19 2013-03-06
-    if ds.instrument_model == 'SBE37SM-RS232' and ds.deployment_code == 'SAZ47-15-2012' and ds.instrument_serial_number == '03708597':
+    if model == 'SBE37SM-RS232' and deployment == 'SAZ47-15-2012' and sn == '03708597':
         manual_flag = 4
         manual_var = 'PSAL'
         manual_reason = 'drop in salinity, cell contamination'
         maunal_date_start = '2013-02-19 00:00:00'
         maunal_date_end = '2013-03-06 00:00:00'
     # SAZ 16 2014-01-20 2014-01-24
-    if ds.instrument_model == 'SBE37-SM' and ds.deployment_code == 'SAZ47-16-2013' and ds.instrument_serial_number == '1778':
+    if model == 'SBE37-SM' and deployment == 'SAZ47-16-2013' and sn == '1778':
         manual_flag = 4
         manual_var = 'PSAL'
         manual_reason = 'drop in salinity, cell contamination'
         maunal_date_start = '2014-01-20 00:00:00'
         maunal_date_end = '2014-01-24 00:00:00'
     # SAZ 17 2015-05-01 2015-05-03
-    if ds.instrument_model == 'SBE37SM-RS232' and ds.deployment_code == 'SAZ47-17-2015' and ds.instrument_serial_number == '03708985':
+    if model == 'SBE37SM-RS232' and deployment == 'SAZ47-17-2015' and sn == '03708985':
         manual_flag = 4
         manual_var = 'PSAL'
         manual_reason = 'drop in salinity, cell contamination'
         maunal_date_start = '2015-05-01 00:00:00'
         maunal_date_end = '2015-05-03 00:00:00'
     # SAZ 18 2017-01-05 2015-01-23
-    if ds.instrument_model == 'SBE37SM-RS232' and ds.deployment_code == 'SAZ47-18-2016' and ds.instrument_serial_number == '03708597':
+    if model == 'SBE37SM-RS232' and deployment == 'SAZ47-18-2016' and sn == '03708597':
         manual_flag = 4
         manual_var = 'PSAL'
         manual_reason = 'drop in salinity, cell contamination'
         maunal_date_start = '2017-01-12 00:00:00'
         maunal_date_end = '2017-01-23 00:00:00'
     # SOFS-5 add data bad
-#    if ds.instrument_model == 'SBE37SM-RS485' and ds.deployment_code == 'SOFS-5-2015' and ds.instrument_serial_number == '03707409':
+#    if model == 'SBE37SM-RS485' and deployment == 'SOFS-5-2015' and sn == '03707409':
 #        manual_flag = 3
 #        manual_var = 'PSAL'
 #        manual_reason = 'calibration issue, reading high'
     # SOFS-9 add data bad
-    if ds.instrument_model == 'SBE37SMP-ODO-RS232' and ds.deployment_code == 'SOFS-9-2020' and ds.instrument_serial_number == '03715971':
-        manual_flag = 3
+    if model == 'SBE37SMP-ODO-RS232' and deployment == 'SOFS-9-2020' and sn == '03715971':
+        manual_flag = 4
         manual_var = 'PSAL'
         manual_reason = 'high salinity'
-        maunal_date_start = '2020-09-01 00:00:00'
+        maunal_date_start = '2020-08-01 00:00:00'
         maunal_date_end = '2020-10-25 00:00:00'
+        mark_rest = True
     # SOFS-9 70m Starmon mini -> flag 4
-    if ( ds.instrument_serial_number == '4052') and ds.instrument_model == 'Starmon mini' and ds.deployment_code == 'SOFS-9-2020':
+    if ( sn == '4052') and model == 'Starmon mini' and deployment == 'SOFS-9-2020':
         manual_flag = 4
         manual_reason = 'sensor data noisy'
-
-    ds.close()
 
     if not has_temp:
         continue
@@ -211,7 +219,7 @@ for fn in ncFiles:
         f = ocean_dp.qc.spike_test.spike_test(f, 'PSAL', q['spike_height'], 3)
         f = ocean_dp.qc.rate_of_change.rate_of_change(f, 'PSAL', q['rate_max'], 3)
 
-        if is_pumped == False:
+        if not is_pumped:
             f = ocean_dp.processing.add_density.add_density(f[0])
             if ndepth > 4000:
                 limit = 0.001
@@ -221,6 +229,16 @@ for fn in ncFiles:
 
     if manual_flag:
         f = ocean_dp.qc.manual_by_date.maunal(f, manual_var, maunal_date_start, manual_flag, manual_reason, end_str=maunal_date_end)
+        if model == 'SBE37SMP-ODO-RS232' and deployment == 'SOFS-9-2020' and sn == '03715971':
+            manual_flag = 2
+            manual_var = 'PSAL'
+            manual_reason = 'high salinity at start, rest of data suspect'
+            f = ocean_dp.qc.manual_by_date.maunal(f, manual_var, None, manual_flag, manual_reason, end_str=None)
+        if model == 'SBE37SMP-ODO-RS232' and deployment == 'SOFS-7.5-2018' and sn == '03715971':
+            manual_flag = 2
+            manual_var = 'PSAL'
+            manual_reason = 'high salinity at end, reset of data suspect'
+            f = ocean_dp.qc.manual_by_date.maunal(f, manual_var, None, manual_flag, manual_reason, end_str=None)
 
     ds = Dataset(f[0], 'a')
     ds.references += '; Jansen P, Weeding B, Shadwick EH and Trull TW (2020). Southern Ocean Time Series (SOTS) Quality Assessment and Control Report Temperature Records Version 1.0. CSIRO, Australia. DOI: 10.26198/gfgr-fq47 (https://doi.org/10.26198/gfgr-fq47)'

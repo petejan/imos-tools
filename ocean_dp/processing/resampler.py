@@ -163,9 +163,9 @@ def smooth(files, method, resample='True', hours=12):
         for resample_var in z:
 
             var_to_resample_in = ds.variables[resample_var]
-            # if resample_var + '_quality_control' in ds.variables:
-            #     print('using qc : ', resample_var + "_quality_control")
-            #     qc = ds.variables[resample_var + "_quality_control"][:]
+            if resample_var + '_quality_control' in ds.variables:
+                print('using qc : ', resample_var + "_quality_control")
+                qc = ds.variables[resample_var + "_quality_control"][:]
 
             data_in = var_to_resample_in[deployment_msk & (qc <= qc_in_level)]
             time_deployment = var_time[deployment_msk & (qc <= qc_in_level)]
