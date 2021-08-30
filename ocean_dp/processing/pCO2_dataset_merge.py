@@ -17,7 +17,7 @@ def merge(files):
 
     for filepath in files:
 
-        fn_new = 'pCO2/pCO2-merge.nc'
+        fn_new = 'pCO2-merge-' + now.strftime("%Y-%m-%d") + '.nc'
         print('output file : ', fn_new)
 
         ds = Dataset(filepath, 'r')
@@ -35,10 +35,27 @@ def merge(files):
 
         ds_new.date_created = now.strftime("%Y-%m-%dT%H:%M:%SZ")
 
+        dep_map = {"unknown" : 0,
+            "SOFS-1-2010" : 1,
+            "SOFS-2-2011" : 2,
+            "SOFS-3-2012" : 3,
+            "SOFS-4-2013" : 4,
+            "SOFS-5-2015" : 5,
+            "FluxPulse-1-2016" : 6,
+            "SOFS-6-2017" : 7,
+            "SOFS-7-2018" : 8,
+            "SOFS-7.5-2018" : 9,
+            "SOFS-8-2019" : 10,
+            "SOFS-9-2020" : 11,
+            "SOFS-10-2021": 12}
+
+        print(dep_map.keys())
+        deployments_as_string = np.array(["unknown", "SOFS-1-2010", "SOFS-2-2011", "SOFS-3-2012", "SOFS-4-2013", "SOFS-5-2015", "FluxPulse-1-2016", "SOFS-6-2017", "SOFS-7-2018", "SOFS-7.5-2018", "SOFS-8-2019", "SOFS-9-2020", "SOFS-10-2021"], dtype='S20')
+
         #  copy dimension
         ds_new.createDimension(ds.dimensions['TIME'].name, len(var_time[:]))
         ds_new.createDimension('strlen', 20)
-        ds_new.createDimension('deployments', 12)
+        ds_new.createDimension('deployments', len(dep_map))
 
         #  create new time
         time_var = ds_new.createVariable('TIME', 'f8', 'TIME', fill_value=np.NaN, zlib=True)
@@ -77,26 +94,11 @@ def merge(files):
         #  create history
         ds_new.history += '\n' + now.strftime("%Y-%m-%d : ") + 'merged data created from ' + os.path.basename(filepath)
 
-        dep_map = {"unknown" : 0,
-            "SOFS-1-2010" : 1,
-            "SOFS-2-2011" : 2,
-            "SOFS-3-2012" : 3,
-            "SOFS-4-2013" : 4,
-            "SOFS-5-2015" : 5,
-            "FluxPulse-1-2016" : 6,
-            "SOFS-6-2017" : 7,
-            "SOFS-7-2018" : 8,
-            "SOFS-7.5-2018" : 9,
-            "SOFS-8-2019" : 10,
-            "SOFS-9-2020" : 11}
-
-        ncFiles = glob.glob(os.path.join('pCO2', 'IMOS*FV01*.nc'))
+        ncFiles = glob.glob('IMOS*FV0*.nc')
         dep_var = ds_new.createVariable("deployment", 'i1', varList['xCO2_SW'].dimensions, zlib=True, fill_value=0)
 
         dep_name_var = ds_new.createVariable("deployment_name", 'S1', ['deployments', 'strlen'])
-        print(dep_map.keys())
-        datain = np.array(["unknown", "SOFS-1-2010", "SOFS-2-2011", "SOFS-3-2012", "SOFS-4-2013", "SOFS-5-2015", "FluxPulse-1-2016", "SOFS-6-2017", "SOFS-7-2018", "SOFS-7.5-2018", "SOFS-8-2019", "SOFS-9-2020"], dtype='S20')
-        dep_name_var[:] = stringtochar(datain)
+        dep_name_var[:] = stringtochar(deployments_as_string)
 
         for fn in ncFiles:
             print('merging  :', fn)
@@ -109,8 +111,13 @@ def merge(files):
 
             for v_to_merge in ['PSAL', 'TEMP']:
                 psal_merge = ds_merge.variables[v_to_merge]
-                psal_qc = ds_merge.variables[v_to_merge+'_quality_control']
                 psal_merge_vals = psal_merge[:]
+
+                if v_to_merge+'_quality_control' in ds_merge.variables:
+                    psal_qc = ds_merge.variables[v_to_merge+'_quality_control']
+                else:
+                    psal_qc = np.ones_like(psal_merge[:])
+
                 psal_merge_vals[psal_qc[:] != 1] = np.nan
 
                 psal_interp = np.interp(varList['TIME'][:], time_merge[:], psal_merge_vals, left=np.nan, right=np.nan)
