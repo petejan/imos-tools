@@ -43,6 +43,7 @@ from dateutil import parser
 
 # map sea bird name to netCDF variable name
 nameMap = {}
+nameMap["TIMES"] = "TIME"
 nameMap["TIMEK"] = "TIME"
 nameMap["TIMEJ"] = "TIME"
 nameMap["TIMEJV2"] = "TIME"
@@ -58,6 +59,7 @@ nameMap["PR"] = "PRES"
 nameMap["SAL00"] = "PSAL"
 nameMap["SIGMAT00"] = "SIGMA_T0"
 nameMap["SBEOPOXMMKG"] = "DOX2"
+nameMap["SBOX0MMKG"] = "DOX2"
 nameMap["SBEOPOXMLL"] = "DOX"
 nameMap["SBEOPOXMML"] = "DOX1"
 nameMap["SBEOPOXMGL"] = "DOXY"
@@ -441,6 +443,9 @@ def parse(files):
                     t_epoc_jd = date2num(t_epoc_start, calendar=ncTimesOut.calendar, units=ncTimesOut.units)
                     ncTimesOut[:] = (odata[:, v['col']] + t_epoc_jd)
                     print("julian days time ", odata[0, v['col']], start_time, ncTimesOut[0])
+                elif v['sbe-name'] == 'TIMES':
+                    print("time is seconds")
+                    ncTimesOut[:] = (odata[:, v['col']] / 3600 / 24) + date2num(start_time, calendar=ncTimesOut.calendar, units=ncTimesOut.units)
                 else:
                     print("time is seconds")
                     ncTimesOut[:] = (odata[:, v['col']]/ 3600 / 24) + t_epoc
