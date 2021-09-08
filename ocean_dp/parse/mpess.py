@@ -179,7 +179,7 @@ def mpess(filepath):
 
                 crc = zlib.crc32(packet_end[0:4], crc)
                 (bat, crc_packet) = struct.unpack('>LL', packet_end)
-                print("bat, crc", bat, crc, crc_packet)
+                #print("bat, crc", bat, crc, crc_packet)
 
                 # check the CRC
                 if crc != crc_packet:
@@ -280,7 +280,7 @@ def mpess(filepath):
                 print(end_single_sample_dict)
 
                 # check the CRC
-                print("crc", crc, end_single_sample_dict['crc'])
+                #print("crc", crc, end_single_sample_dict['crc'])
                 if crc != end_single_sample_dict['crc']:
                     crc_errors += 1
                     crc_error = True

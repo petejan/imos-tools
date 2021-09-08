@@ -21,11 +21,10 @@ import sys
 from datetime import datetime, timedelta
 
 from glob2 import glob
-from netCDF4 import date2num, num2date
+from netCDF4 import date2num
 from netCDF4 import Dataset
 
 import numpy as np
-import csv
 import os
 import re
 
@@ -146,6 +145,7 @@ def datalogger(files):
     t_last = 0
     samples_red = 0
     sample = 0
+    last_sample = -1
     times_dict = {}
     n_times = -1
 
@@ -196,7 +196,7 @@ def datalogger(files):
 
                             load_var[t_idx, sample] = decode['Load']
 
-                            # TODO: check timer if we have missed a sample
+                            # find the sample index from the IMU timer, need to detech missed samples in the record
                             if sample == 0:
                                 t0 = int(decode['Timer'] * 5)/5
 
@@ -204,8 +204,11 @@ def datalogger(files):
                             if (sample_t - sample) != 0:
                                 print('time sample ', sample, sample_t, t0, decode['Timer'], (decode["Timer"] - t0) * 5)
 
-                            t_last = decode['Timer']
-                            sample += 1 # kick along a bit so that next time its not zero
+                            sample = sample_t
+                            if sample == last_sample:
+                                sample += 1
+                            last_sample = sample
+
                             samples_red += 1
                         else:
                             print('bad checksum ', f.tell())
