@@ -20,6 +20,7 @@ import sys
 
 from datetime import datetime, timedelta
 
+from glob2 import glob
 from netCDF4 import date2num, num2date
 from netCDF4 import Dataset
 
@@ -77,12 +78,14 @@ def datalogger(files):
     start_data = re.compile(r'(\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2}) \*\*\*\*\*\* START RAW MRU DATA \*\*\*\*\*\*')
     end_data = re.compile(r'(\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2}) \*\*\*\*\*\* END DATA \*\*\*\*\*\*')
     done_str = re.compile(r'(\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2}) INFO: \d done time \d+ ,BV=(\S+) ,PT=(\S+) ,OBP=(\S+) ,OT=(\S+) ,CHL=(\S+) ,NTU=(\S+) PAR=(\S+) ,meanAccel=(\S+) ,meanLoad=(\S+)')
+    done_pulse_str = re.compile(r'(\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2}) INFO: \d done time \d+ ,BV=(\S+) ,PT=(\S+) ,meanAccel=(\S+) ,meanLoad=(\S+)')
 
     gps_fix = re.compile(r'(\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2}) INFO : GPS Fix (\d+) Latitude (\S+) Longitude (\S+) sats (\S+) HDOP (\S+)')
 
     # TODO: also check RMC strings for date time offset
 
-    sn = re.compile(r'(\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2}) INFO: MRU SerialNumber (\d+)')
+    sn = re.compile(r'(\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2}) INFO: Station Name (\S+)')
+    sn_imu = re.compile(r'(\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2}) INFO: MRU SerialNumber (\d+)')
 
     #
     # build the netCDF file
@@ -120,17 +123,15 @@ def datalogger(files):
     ypos_var = dataset.createVariable('YPOS', np.float32, ('TIME',), fill_value=np.nan)
 
     bat_var = dataset.createVariable('vbat', np.float32, ('TIME',), fill_value=np.nan)
-    obp_var = dataset.createVariable('optode_bphase', np.float32, ('TIME',), fill_value=np.nan)
-    otemp_var = dataset.createVariable('optode_temp', np.float32, ('TIME',), fill_value=np.nan)
-    chl_var = dataset.createVariable('CHL', np.float32, ('TIME',), fill_value=np.nan)
-    ntu_var = dataset.createVariable('NTU', np.float32, ('TIME',), fill_value=np.nan)
-    par_var = dataset.createVariable('PAR', np.float32, ('TIME',), fill_value=np.nan)
+
     mean_load_var = dataset.createVariable('mean_load', np.float32, ('TIME',), fill_value=np.nan)
 
     accel_var = dataset.createVariable('accel', np.float32, ('TIME', 'SAMPLE', 'VECTOR'), fill_value=np.nan)
     mag_var = dataset.createVariable('mag_field', np.float32, ('TIME', 'SAMPLE', 'VECTOR'), fill_value=np.nan)
     gyro_var = dataset.createVariable('gyro_rate', np.float32, ('TIME', 'SAMPLE', 'VECTOR'), fill_value=np.nan)
     quat_var = dataset.createVariable('quaternion', np.float32, ('TIME', 'SAMPLE', 'QUAT'), fill_value=np.nan)
+
+    obp_var = None
 
     load_var = dataset.createVariable('load', np.float32, ('TIME', 'SAMPLE'), fill_value=np.nan)
 
@@ -197,10 +198,11 @@ def datalogger(files):
 
                             # TODO: check timer if we have missed a sample
                             if sample == 0:
-                                t0 = decode['Timer']
+                                t0 = int(decode['Timer'] * 5)/5
 
-                            sample = int((decode['Timer'] - t0) * 5)
-                            # print('time sample ', sample)
+                            sample_t = int((decode['Timer'] - t0) * 5 + 0.5)
+                            if (sample_t - sample) != 0:
+                                print('time sample ', sample, sample_t, t0, decode['Timer'], (decode["Timer"] - t0) * 5)
 
                             t_last = decode['Timer']
                             sample += 1 # kick along a bit so that next time its not zero
@@ -213,7 +215,8 @@ def datalogger(files):
                 elif byte[0] > 0x20: # start of string
                     xs = bytearray()
                     while byte[0] != 13:
-                        xs.append(byte[0])
+                        if byte[0] < 128:
+                            xs.append(byte[0])
                         byte = f.read(1)
                     s = xs.decode('ascii')
                     #print('string : ', s)
@@ -241,6 +244,15 @@ def datalogger(files):
                         print('done time ', data_time)
                         done = matchobj
                         print('done', s)
+
+                    # check for done_pulse
+                    done_pulse = None
+                    matchobj = done_pulse_str.match(s)
+                    if matchobj:
+                        data_time = datetime.strptime(matchobj.group(1), "%Y-%m-%d %H:%M:%S")
+                        print('done time ', data_time)
+                        done_pulse = matchobj
+                        print('done_pulse', s)
 
                     # check for gps fix
                     gps = None
@@ -271,12 +283,22 @@ def datalogger(files):
                             ypos_var[t_idx] = np.float(gps.group(3))
                         if done:
                             bat_var[t_idx] = np.float(done.group(2))
+                            mean_load_var[t_idx] = np.float(done.group(10))
+                            if not obp_var:
+                                obp_var = dataset.createVariable('optode_bphase', np.float32, ('TIME',), fill_value=np.nan)
+                                otemp_var = dataset.createVariable('optode_temp', np.float32, ('TIME',), fill_value=np.nan)
+                                chl_var = dataset.createVariable('CHL', np.float32, ('TIME',), fill_value=np.nan)
+                                ntu_var = dataset.createVariable('NTU', np.float32, ('TIME',), fill_value=np.nan)
+                                par_var = dataset.createVariable('PAR', np.float32, ('TIME',), fill_value=np.nan)
+
                             obp_var[t_idx] = np.float(done.group(4))
                             otemp_var[t_idx] = np.float(done.group(5))
                             chl_var[t_idx] = np.float(done.group(6))
                             ntu_var[t_idx] = np.float(done.group(7))
                             par_var[t_idx] = np.float(done.group(8))
-                            mean_load_var[t_idx] = np.float(done.group(10))
+                        if done_pulse:
+                            bat_var[t_idx] = np.float(done_pulse.group(2))
+                            mean_load_var[t_idx] = np.float(done_pulse.group(5))
 
                         # keep time stats, start (first) and end (last), maybe should use min/max
                         ts_end = data_time
@@ -285,6 +307,10 @@ def datalogger(files):
 
                     # check for serial number
                     matchobj = sn.match(s)
+                    if matchobj:
+                        dataset.instrument_serial_number = matchobj.group(2)
+
+                    matchobj = sn_imu.match(s)
                     if matchobj:
                         dataset.instrument_imu_serial_number = matchobj.group(2)
                 else:
@@ -306,4 +332,8 @@ def datalogger(files):
 
 
 if __name__ == "__main__":
-    datalogger(sys.argv[1:])
+    files = []
+    for f in sys.argv[1:]:
+        files.extend(glob(f))
+
+    datalogger(files)
