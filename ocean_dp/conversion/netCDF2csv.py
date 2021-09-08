@@ -5,6 +5,7 @@ import numpy as np
 import sys
 import os
 
+
 for path_file in sys.argv[1:len(sys.argv)]:
 
     nc = Dataset(path_file)
@@ -91,7 +92,8 @@ for path_file in sys.argv[1:len(sys.argv)]:
             var = process_var[:]
             #qc_values = qc_var[:]
             #var.mask = qc_values > 1  # mask out all values not GOOD, or unknown
-            var.fill_value = float('nan')
+            if var.dtype == 'float32':
+                var.fill_value = float('nan')
             shape_len = len(var.shape)
 
             #if process_var.dimensions[0] != 'TIME':

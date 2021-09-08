@@ -23,6 +23,7 @@ from netCDF4 import num2date, date2num
 from netCDF4 import Dataset
 import numpy as np
 import struct
+import traceback
 
 header_decoder = {'keys': ['spare', 'dataTypes'],
                   'unpack': "<BB"}
@@ -102,8 +103,6 @@ def rdi_parse(files):
     ncTimesOut.calendar = "gregorian"
     ncTimesOut.axis = "T"
 
-    cellDim = ncOut.createDimension("CELL")
-
     var_temp = ncOut.createVariable("INST_TEMP", "f4", ("TIME",), zlib=True, chunksizes=[1024])
     var_temp.units = 'degrees_Celsius'
     var_temp.instrument_uncertainty = np.float(0.5)
@@ -129,45 +128,7 @@ def rdi_parse(files):
     var_sspeed= ncOut.createVariable("SOUND_SPEED", "f4", ("TIME",), zlib=True, chunksizes=[1024])
     var_sspeed.units = 'm/s'
 
-    # create cell variables, one for each beam, generic names until we know the coordinates
-    var_vel1 = ncOut.createVariable("V1", "f4", ("TIME", "CELL"), zlib=True, chunksizes=[1024, 37])
-    var_vel1.units = 'm/s'
-    var_vel1.valid_max = 20
-    var_vel1.valid_min = -20
-    var_vel2 = ncOut.createVariable("V2", "f4", ("TIME", "CELL"), zlib=True, chunksizes=[1024, 37])
-    var_vel2.units = 'm/s'
-    var_vel2.valid_max = 20
-    var_vel2.valid_min = -20
-    var_vel3 = ncOut.createVariable("V3", "f4", ("TIME", "CELL"), zlib=True, chunksizes=[1024, 37])
-    var_vel3.units = 'm/s'
-    var_vel3.valid_max = 20
-    var_vel3.valid_min = -20
-    var_vel4 = ncOut.createVariable("V4", "f4", ("TIME", "CELL"), zlib=True, chunksizes=[1024, 37])
-    var_vel4.units = 'm/s'
-    var_vel4.valid_max = 20
-    var_vel4.valid_min = -20
-
-    #beam_dim = ncOut.createDimension("BEAM", 4)
-    #field_dim = ncOut.createDimension("FIELD", 4)
-    var_corr1 = ncOut.createVariable("CORR_MAG1", "u1", ("TIME", "CELL"), zlib=True, chunksizes=[1024, 37])
-    var_corr2 = ncOut.createVariable("CORR_MAG2", "u1", ("TIME", "CELL"), zlib=True, chunksizes=[1024, 37])
-    var_corr3 = ncOut.createVariable("CORR_MAG3", "u1", ("TIME", "CELL"), zlib=True, chunksizes=[1024, 37])
-    var_corr4 = ncOut.createVariable("CORR_MAG4", "u1", ("TIME", "CELL"), zlib=True, chunksizes=[1024, 37])
-
-    var_echo_int1 = ncOut.createVariable("ECHO_INT1", "f4", ("TIME", "CELL"), zlib=True, chunksizes=[1024, 37])
-    var_echo_int2 = ncOut.createVariable("ECHO_INT2", "f4", ("TIME", "CELL"), zlib=True, chunksizes=[1024, 37])
-    var_echo_int3 = ncOut.createVariable("ECHO_INT3", "f4", ("TIME", "CELL"), zlib=True, chunksizes=[1024, 37])
-    var_echo_int4 = ncOut.createVariable("ECHO_INT4", "f4", ("TIME", "CELL"), zlib=True, chunksizes=[1024, 37])
-
-    var_per_good1 = ncOut.createVariable("PCT_GOOD1", "u1", ("TIME", "CELL"), zlib=True, chunksizes=[1024, 37])
-    var_per_good2 = ncOut.createVariable("PCT_GOOD2", "u1", ("TIME", "CELL"), zlib=True, chunksizes=[1024, 37])
-    var_per_good3 = ncOut.createVariable("PCT_GOOD3", "u1", ("TIME", "CELL"), zlib=True, chunksizes=[1024, 37])
-    var_per_good4 = ncOut.createVariable("PCT_GOOD4", "u1", ("TIME", "CELL"), zlib=True, chunksizes=[1024, 37])
-
-    var_status1 = ncOut.createVariable("STATUS1", "u1", ("TIME", "CELL"), zlib=True, chunksizes=[1024, 37])
-    var_status2 = ncOut.createVariable("STATUS2", "u1", ("TIME", "CELL"), zlib=True, chunksizes=[1024, 37])
-    var_status3 = ncOut.createVariable("STATUS3", "u1", ("TIME", "CELL"), zlib=True, chunksizes=[1024, 37])
-    var_status4 = ncOut.createVariable("STATUS4", "u1", ("TIME", "CELL"), zlib=True, chunksizes=[1024, 37])
+    cellDim = None
 
     # loop over file, adding data to netCDF file for each ensemble
 
@@ -223,6 +184,52 @@ def rdi_parse(files):
                                 num_cells = fixed_decoded['num_cells']
                                 num_beams = fixed_decoded['num_beam']
 
+                                print('fixed header, num_cells', num_cells)
+
+                                # know how big a cell is now, create the cell based variables
+                                if not cellDim:
+                                    cellDim = ncOut.createDimension("CELL")
+                                    #cellDim = ncOut.createDimension("CELL", num_cells)
+                                    # create cell variables, one for each beam, generic names until we know the coordinates
+                                    var_vel1 = ncOut.createVariable("V1", "f4", ("TIME", "CELL"), zlib=True, chunksizes=[1024, num_cells])
+                                    var_vel1.units = 'm/s'
+                                    var_vel1.valid_max = 20
+                                    var_vel1.valid_min = -20
+                                    var_vel2 = ncOut.createVariable("V2", "f4", ("TIME", "CELL"), zlib=True, chunksizes=[1024, num_cells])
+                                    var_vel2.units = 'm/s'
+                                    var_vel2.valid_max = 20
+                                    var_vel2.valid_min = -20
+                                    var_vel3 = ncOut.createVariable("V3", "f4", ("TIME", "CELL"), zlib=True, chunksizes=[1024, num_cells])
+                                    var_vel3.units = 'm/s'
+                                    var_vel3.valid_max = 20
+                                    var_vel3.valid_min = -20
+                                    var_vel4 = ncOut.createVariable("V4", "f4", ("TIME", "CELL"), zlib=True, chunksizes=[1024, num_cells])
+                                    var_vel4.units = 'm/s'
+                                    var_vel4.valid_max = 20
+                                    var_vel4.valid_min = -20
+
+                                    # beam_dim = ncOut.createDimension("BEAM", 4)
+                                    # field_dim = ncOut.createDimension("FIELD", 4)
+                                    var_corr1 = ncOut.createVariable("CORR_MAG1", "u1", ("TIME", "CELL"), zlib=True, chunksizes=[1024, num_cells])
+                                    var_corr2 = ncOut.createVariable("CORR_MAG2", "u1", ("TIME", "CELL"), zlib=True, chunksizes=[1024, num_cells])
+                                    var_corr3 = ncOut.createVariable("CORR_MAG3", "u1", ("TIME", "CELL"), zlib=True, chunksizes=[1024, num_cells])
+                                    var_corr4 = ncOut.createVariable("CORR_MAG4", "u1", ("TIME", "CELL"), zlib=True, chunksizes=[1024, num_cells])
+
+                                    var_echo_int1 = ncOut.createVariable("ECHO_INT1", "f4", ("TIME", "CELL"), zlib=True, chunksizes=[1024, num_cells])
+                                    var_echo_int2 = ncOut.createVariable("ECHO_INT2", "f4", ("TIME", "CELL"), zlib=True, chunksizes=[1024, num_cells])
+                                    var_echo_int3 = ncOut.createVariable("ECHO_INT3", "f4", ("TIME", "CELL"), zlib=True, chunksizes=[1024, num_cells])
+                                    var_echo_int4 = ncOut.createVariable("ECHO_INT4", "f4", ("TIME", "CELL"), zlib=True, chunksizes=[1024, num_cells])
+
+                                    var_per_good1 = ncOut.createVariable("PCT_GOOD1", "u1", ("TIME", "CELL"), zlib=True, chunksizes=[1024, num_cells])
+                                    var_per_good2 = ncOut.createVariable("PCT_GOOD2", "u1", ("TIME", "CELL"), zlib=True, chunksizes=[1024, num_cells])
+                                    var_per_good3 = ncOut.createVariable("PCT_GOOD3", "u1", ("TIME", "CELL"), zlib=True, chunksizes=[1024, num_cells])
+                                    var_per_good4 = ncOut.createVariable("PCT_GOOD4", "u1", ("TIME", "CELL"), zlib=True, chunksizes=[1024, num_cells])
+
+                                    var_status1 = ncOut.createVariable("STATUS1", "u1", ("TIME", "CELL"), zlib=True, chunksizes=[1024, num_cells])
+                                    var_status2 = ncOut.createVariable("STATUS2", "u1", ("TIME", "CELL"), zlib=True, chunksizes=[1024, num_cells])
+                                    var_status3 = ncOut.createVariable("STATUS3", "u1", ("TIME", "CELL"), zlib=True, chunksizes=[1024, num_cells])
+                                    var_status4 = ncOut.createVariable("STATUS4", "u1", ("TIME", "CELL"), zlib=True, chunksizes=[1024, num_cells])
+
                                 inst_system = fixed_decoded['sysConfig'] & 0x7
                                 inst_system_text = inst_system_decoder[inst_system][0]
                                 #print("system ", inst_system_text)
@@ -240,7 +247,7 @@ def rdi_parse(files):
                                                        second=variable_decoded['rtc_sec'],
                                                        microsecond=variable_decoded['rtc_hsec']*1000*10)
 
-                                #print("ts = ", ts)
+                                print("ts = ", ts)
                                 if not ts_start:
                                     ts_start = ts
 
@@ -298,13 +305,17 @@ def rdi_parse(files):
                                 n += len(data)
                             elif data == b'\x00\x05':  # status data
                                 data = ensemble[n:n+num_beams*num_cells]
+                                print(len(ensemble), num_beams*num_cells)
                                 np_status = np.array(struct.unpack("<%db" % (num_beams*num_cells), data)).reshape([num_cells, num_beams])
                                 var_status1[number_ensambles_read, :] = np_status[:, 0]
                                 var_status2[number_ensambles_read, :] = np_status[:, 1]
                                 var_status3[number_ensambles_read, :] = np_status[:, 2]
                                 var_status4[number_ensambles_read, :] = np_status[:, 3]
                                 n += len(data)
-                        except struct.error:
+                        except struct.error as e:
+                            print(num_cells, len(ensemble), num_beams * num_cells)
+                            print(e)
+                            traceback.print_exc(limit=2, file=sys.stdout)
                             print('file parse error, maybe truncated, building file anyway')
                             pass
 

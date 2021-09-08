@@ -39,6 +39,7 @@ def parse_xml(files):
 
     instrument_manufacture = doc['InstrumentPackage']['Instrument']['@manufacturer']
     instrument_serialnumber = doc['InstrumentPackage']['Instrument']['@serialNumber']
+    instrument_model = doc['InstrumentPackage']['Instrument']['@identifier']
 
     output_name = files[1] + ".nc"
     print("output file : %s" % output_name)
@@ -70,7 +71,7 @@ def parse_xml(files):
     # create netCDF variables for each sensorField in frame
     frames = doc['InstrumentPackage']['Instrument']['VarAsciiFrame']
     for f in frames:
-        if f['@identifier'].startswith('SATNLF'):
+        if f['@identifier'].startswith('SATNLF') or f['@identifier'].startswith('SATSLF'):
             for sfg in f['SensorFieldGroup']:
                 sensor_field = sfg['SensorField']
                 #print('type', sensor_field.__class__, 'len', len(sensor_field))
@@ -104,9 +105,9 @@ def parse_xml(files):
         with open(f, 'r', errors='ignore') as fp:
             line = fp.readline()
             while line:
-                if line.startswith('SATNLF') or line.startswith('SATNDF'):
+                if line.startswith('SATNLF') or line.startswith('SATNDF') or line.startswith('SATSLF') or line.startswith('SATSDF'):
                     frame_type = 0
-                    if line.startswith('SATNLF'):
+                    if line.startswith('SATNLF') or line.startswith('SATSLF'):
                         frame_type = 1
                     split = line.split(',')
                     dt = datetime.strptime(split[1], '%Y%j') + timedelta(hours=float(split[2]))

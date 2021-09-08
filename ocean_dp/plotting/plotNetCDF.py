@@ -371,7 +371,7 @@ if __name__ == "__main__":
 
     ncFiles = []
     for f in sys.argv[1:]:
-        ncFiles.extend(glob.glob(f))
+        ncFiles.extend(glob(f))
 
     for path_file in ncFiles:
         plot_file(path_file)
