@@ -46,6 +46,15 @@ from collections import namedtuple
 # convert time to netCDF cf-timeformat (double days since 1950-01-01 00:00:00 UTC)
 
 
+def gps_dm_degree (lat_dm, lat_ns):
+    lat_d = int(lat_dm / 100)
+    lat = lat_d + (lat_dm - (lat_d * 100)) / 60
+    if lat_ns == 'S' or lat_ns == 'W':
+        lat = -lat
+
+    return lat
+
+
 def round_time(dt=None, roundTo=3600):
     """Round a datetime object to any time lapse in seconds
     dt : datetime.datetime object, default now.
@@ -63,10 +72,14 @@ def round_time(dt=None, roundTo=3600):
 
 def datalogger(files):
 
-    decoder = namedtuple('decode', 'StabQ0 StabQ1 StabQ2 StabQ3 '
-                                   'MagFieldX MagFieldY MagFieldZ AccelX AccelY AccelZ '
-                                   'CompAngleRateX CompAngleRateY CompAngleRateZ '
-                                   'Timer CheckSum Load')
+    decode_dict = {'StabQ0': 0, 'StabQ1': 1, 'StabQ2': 2, 'StabQ3': 3,
+                   'MagFieldX': 4, 'MagFieldY': 5, 'MagFieldZ': 6,
+                   'AccelX': 7, 'AccelY': 8, 'AccelZ': 9,
+                   'CompAngleRateX': 10, 'CompAngleRateY': 11, 'CompAngleRateZ': 12,
+                   'Timer': 13,
+                   'CheckSum': 14,
+                   'Load': 15,
+                   }
 
     scale = [1/ 8192.0, 1/ 8192.0, 1/ 8192.0, 1/ 8192.0,
              1/ (32768000.0 / 2000), 1/ (32768000.0 / 2000), 1/ (32768000.0 / 2000),
@@ -80,6 +93,9 @@ def datalogger(files):
     done_pulse_str = re.compile(r'(\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2}) INFO: \d done time \d+ ,BV=(\S+) ,PT=(\S+) ,meanAccel=(\S+) ,meanLoad=(\S+)')
 
     gps_fix = re.compile(r'(\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2}) INFO : GPS Fix (\d+) Latitude (\S+) Longitude (\S+) sats (\S+) HDOP (\S+)')
+    gps_fix2 = re.compile(r'(\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2}) INFO : GPS RMC Fix (\d+) Latitude (\S+) Longitude (\S+)')
+
+    gps_rmc = re.compile(r'(\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2}) INFO: GPS String \'GPRMC\' string (\S+)')
 
     # TODO: also check RMC strings for date time offset
 
@@ -118,8 +134,8 @@ def datalogger(files):
     times.units = 'days since 1950-01-01 00:00:00'
     times.calendar = 'gregorian'
 
-    xpos_var = dataset.createVariable('XPOS', np.float32, ('TIME',), fill_value=np.nan)
-    ypos_var = dataset.createVariable('YPOS', np.float32, ('TIME',), fill_value=np.nan)
+    xpos_var = dataset.createVariable('XPOS', np.float, ('TIME',), fill_value=np.nan)
+    ypos_var = dataset.createVariable('YPOS', np.float, ('TIME',), fill_value=np.nan)
 
     bat_var = dataset.createVariable('vbat', np.float32, ('TIME',), fill_value=np.nan)
 
@@ -133,6 +149,13 @@ def datalogger(files):
     obp_var = None
 
     load_var = dataset.createVariable('load', np.float32, ('TIME', 'SAMPLE'), fill_value=np.nan)
+
+    accel_samples = np.zeros([3072, 3])
+    mag_samples = np.zeros([3072, 3])
+    gyro_samples = np.zeros([3072, 3])
+    quat_samples = np.zeros([3072, 4])
+
+    load_samples = np.zeros([3072])
 
     # TODO: process the output of this parser into frequency spectra, wave height
 
@@ -150,6 +173,8 @@ def datalogger(files):
     n_times = -1
 
     for file in files:
+        lat = np.nan
+        lon = np.nan
 
         with open(file, "rb") as f:
             byte = f.read(1)
@@ -172,41 +197,61 @@ def datalogger(files):
                             for x in range(0,len(decode)):
                                 d = decode[x] * scale[x]
                                 decode_scale.append(d)
+
                             # create a dict from the decoded data (could just use indexes, but this is clearer
-                            decode = decoder._asdict(decoder._make(decode_scale))
+                            #decode = decoder._asdict(decoder._make(decode_scale))
                             # print('decode ', decode)
 
                             # save data to netCDF
-                            accel_var[t_idx, sample, 0] = decode['AccelX']
-                            accel_var[t_idx, sample, 1] = decode['AccelY']
-                            accel_var[t_idx, sample, 2] = decode['AccelZ']
+                            accel_samples[sample, 0] = decode_scale[decode_dict['AccelX']]
+                            accel_samples[sample, 1] = decode_scale[decode_dict['AccelY']]
+                            accel_samples[sample, 2] = decode_scale[decode_dict['AccelZ']]
 
-                            quat_var[t_idx, sample, 0] = decode['StabQ0']
-                            quat_var[t_idx, sample, 1] = decode['StabQ1']
-                            quat_var[t_idx, sample, 2] = decode['StabQ2']
-                            quat_var[t_idx, sample, 3] = decode['StabQ3']
+                            quat_samples[sample, 0] = decode_scale[decode_dict['StabQ0']]
+                            quat_samples[sample, 1] = decode_scale[decode_dict['StabQ1']]
+                            quat_samples[sample, 2] = decode_scale[decode_dict['StabQ2']]
+                            quat_samples[sample, 3] = decode_scale[decode_dict['StabQ3']]
 
-                            mag_var[t_idx, sample, 0] = decode['MagFieldX']
-                            mag_var[t_idx, sample, 1] = decode['MagFieldY']
-                            mag_var[t_idx, sample, 2] = decode['MagFieldZ']
+                            mag_samples[sample, 0] = decode_scale[decode_dict['MagFieldX']]
+                            mag_samples[sample, 1] = decode_scale[decode_dict['MagFieldY']]
+                            mag_samples[sample, 2] = decode_scale[decode_dict['MagFieldZ']]
 
-                            gyro_var[t_idx, sample, 0] = decode['CompAngleRateX']
-                            gyro_var[t_idx, sample, 1] = decode['CompAngleRateY']
-                            gyro_var[t_idx, sample, 2] = decode['CompAngleRateZ']
+                            gyro_samples[sample, 0] = decode_scale[decode_dict['CompAngleRateX']]
+                            gyro_samples[sample, 1] = decode_scale[decode_dict['CompAngleRateY']]
+                            gyro_samples[sample, 2] = decode_scale[decode_dict['CompAngleRateZ']]
 
-                            load_var[t_idx, sample] = decode['Load']
+                            load_samples[sample] = decode_scale[decode_dict['Load']]
 
-                            # find the sample index from the IMU timer, need to detech missed samples in the record
+                            # accel_var[t_idx, sample, 0] = decode_scale[decode_dict['AccelX']]
+                            # accel_var[t_idx, sample, 1] = decode_scale[decode_dict['AccelY']]
+                            # accel_var[t_idx, sample, 2] = decode_scale[decode_dict['AccelZ']]
+                            #
+                            # quat_var[t_idx, sample, 0] = decode_scale[decode_dict['StabQ0']]
+                            # quat_var[t_idx, sample, 1] = decode_scale[decode_dict['StabQ1']]
+                            # quat_var[t_idx, sample, 2] = decode_scale[decode_dict['StabQ2']]
+                            # quat_var[t_idx, sample, 3] = decode_scale[decode_dict['StabQ3']]
+                            #
+                            # mag_var[t_idx, sample, 0] = decode_scale[decode_dict['MagFieldX']]
+                            # mag_var[t_idx, sample, 1] = decode_scale[decode_dict['MagFieldY']]
+                            # mag_var[t_idx, sample, 2] = decode_scale[decode_dict['MagFieldZ']]
+                            #
+                            # gyro_var[t_idx, sample, 0] = decode_scale[decode_dict['CompAngleRateX']]
+                            # gyro_var[t_idx, sample, 1] = decode_scale[decode_dict['CompAngleRateY']]
+                            # gyro_var[t_idx, sample, 2] = decode_scale[decode_dict['CompAngleRateZ']]
+                            #
+                            # load_var[t_idx, sample] = decode_scale[decode_dict['Load']]
+
+                            # find the sample index from the IMU timer, need to detect missed samples in the record
                             if sample == 0:
-                                t0 = int(decode['Timer'] * 5)/5
+                                t0 = int(decode_scale[decode_dict['Timer']] * 5)/5
 
-                            sample_t = int((decode['Timer'] - t0) * 5 + 0.5)
+                            sample_t = int((decode_scale[decode_dict['Timer']] - t0) * 5 + 0.5)
                             if (sample_t - sample) != 0:
-                                print('time sample ', sample, sample_t, t0, decode['Timer'], (decode["Timer"] - t0) * 5)
+                                print('time sample ', sample, sample_t, t0, decode_scale[decode_dict['Timer']], (decode_scale[decode_dict["Timer"]] - t0) * 5)
 
                             sample = sample_t
-                            if sample == last_sample:
-                                sample += 1
+
+                            sample += 1
                             last_sample = sample
 
                             samples_red += 1
@@ -262,10 +307,35 @@ def datalogger(files):
                     matchobj = gps_fix.match(s)
                     if matchobj:
                         data_time = datetime.strptime(matchobj.group(1), "%Y-%m-%d %H:%M:%S")
-                        print('gps time ', data_time)
+                        print('time ', data_time)
 
                         gps = matchobj
                         print('gps', s)
+
+                    matchobj = gps_fix2.match(s)
+                    if matchobj:
+                        data_time = datetime.strptime(matchobj.group(1), "%Y-%m-%d %H:%M:%S")
+                        print('time ', data_time)
+
+                        gps = matchobj
+                        print('gps', s)
+
+                    matchobj = gps_rmc.match(s)
+                    if matchobj:
+                        data_time = datetime.strptime(matchobj.group(1), "%Y-%m-%d %H:%M:%S")
+                        rmc_split = matchobj.group(2).split(',')
+                        if rmc_split[2] == 'A':
+                            lat_dm = float(rmc_split[3])
+                            lat_ns = rmc_split[4]
+                            lon_dm = float(rmc_split[5])
+                            lon_ew = rmc_split[6]
+
+                            lat = gps_dm_degree(lat_dm, lat_ns)
+                            lon = gps_dm_degree(lon_dm, lon_ew)
+
+                            data_time_rmc = datetime.strptime(rmc_split[9] + ' ' + rmc_split[1] + '000', "%d%m%y %H%M%S.%f")
+
+                        #print('time ', data_time, data_time_rmc, lat, lon, rmc_split)
 
                     # update time bounds if we got a time
                     if data_time:
@@ -282,8 +352,14 @@ def datalogger(files):
                         # print('got time', data_time, t_idx, n_times)
                         times[t_idx] = date2num(data_time, units=times.units, calendar=times.calendar)
                         if gps:
-                            xpos_var[t_idx] = -np.float(gps.group(4))
-                            ypos_var[t_idx] = np.float(gps.group(3))
+                            # xpos_var[t_idx] = -np.float(gps.group(4))
+                            # ypos_var[t_idx] = np.float(gps.group(3))
+                            xpos_var[t_idx] = lon
+                            ypos_var[t_idx] = lat
+
+                            lat = np.nan
+                            lon = np.nan
+
                         if done:
                             bat_var[t_idx] = np.float(done.group(2))
                             mean_load_var[t_idx] = np.float(done.group(10))
@@ -299,9 +375,17 @@ def datalogger(files):
                             chl_var[t_idx] = np.float(done.group(6))
                             ntu_var[t_idx] = np.float(done.group(7))
                             par_var[t_idx] = np.float(done.group(8))
+
                         if done_pulse:
                             bat_var[t_idx] = np.float(done_pulse.group(2))
                             mean_load_var[t_idx] = np.float(done_pulse.group(5))
+
+                        if done or done_pulse:
+                            accel_var[t_idx] = accel_samples
+                            gyro_var[t_idx] = gyro_samples
+                            mag_var[t_idx] = mag_samples
+                            quat_var[t_idx] = quat_samples
+                            load_var[t_idx] = load_samples
 
                         # keep time stats, start (first) and end (last), maybe should use min/max
                         ts_end = data_time
