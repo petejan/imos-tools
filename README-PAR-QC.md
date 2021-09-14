@@ -55,7 +55,7 @@ VAR_ATT,PAR_COUNT,SOFS-7-2018,ECO-PARS,unknown,,,,,,calibration_PAR_SN,str,PARSB
 
 	python3 sots/processPAR.py RAW/IMOS_DWM-SOTS_F_20190115_SOFS_FV00_SOFS-8-2019-PARSB-439-30m_END-20201001_C-20210914.nc
 
-*nix
+```
 
 netcdf IMOS_DWM-SOTS_F_20190115_SOFS_FV01_SOFS-8-2019-PARSB-439-30m_END-20201001_C-20210914 {
 dimensions:
@@ -200,3 +200,4 @@ variables:
 		:file_version = "Level 1 - Quality Controlled Data" ;
 		:history = "2021-09-14 created from file RAW/PARSB-439.RAW\n2021-09-14 : attributes added from file(s) [metadata/pulse-saz-sofs-flux.metadata.csv, metadata/imos.metadata.csv, metadata/sots.metadata.csv, metadata/sofs.metadata.csv, metadata/asimet.metadata.csv, metadata/variable.metadata.csv]\n2021-09-14 : quality_control variables added.\n2021-09-14 : added incoming radiation\n2021-09-14 : in/out marked 3840\n2021-09-14 PAR global range min = -1.7 max = 10000 marked 0.0\n2021-09-14 PAR global range min = -1.7 max = 4500 marked 0.0\n2021-09-14 PAR climate range, marked 0" ;
 }
+```
