@@ -84,7 +84,7 @@ unitMap["density, kg/m^3"] = "kg/m^3"
 first_line_expr = r"\* Sea-Bird (.*) Data File:"
 
 hardware_expr = r"\* <HardwareData DeviceType='(\S+)' SerialNumber='(\S+)'>"
-name_expr = r"# name (\d+) = (.*):\s*(.*)"
+name_expr = r"# name (?P<number>\d+) = (?P<param>.*):\s*(?P<text>.*)"
 end_expr = r"\*END\*"
 sampleExpr = r"\* sample interval = (\d+) seconds"
 startTimeExpr = r"# start_time = ([^\[]*)"
@@ -92,6 +92,8 @@ intervalExpr = r"# interval = (\S+): (\S+)"
 firmwareDateExpr = r"\*.*<FirmwareDate>(.*)<\/FirmwareDate>"
 firmwareVerExpr = r"\*.*<FirmwareVersion>(.*)<\/FirmwareVersion>"
 mfgDateExpr = r"\*.*<MfgDate>(.*)<\/MfgDate>"
+
+name_units = r"(?P<name>.*)\s\[(?P<units>.*)\]"
 
 nvalues_expr = r"# nvalues =\s*(\d+)"
 nquant_expr = r"# nquan = (\d+)"
@@ -102,9 +104,11 @@ equa_group = r".*<(.*) equation=\"(\d+)\" >"
 sensor_start = r".*<sensor Channel=\"(.*)\" >"
 sensor_end = r".*</sensor(.*)>"
 sensor_type = r".*<(.*) SensorID=\"(.*)\" >"
+sensor_cal_type_name = r"#.*<!--\s([^,]*),\s(.*)\s-->"
 
 comment = r"<!--(.+?)-->"
 tag = r".*<(.+?)>(.+)<\/\1>|.*<(.+=.*)>"
+cal_tag = r".*<(?P<tag>.+?)>(?P<value>.+)<\/(?P=tag)>"
 
 instr_exp = r"\* Sea-Bird.?(\S+)"
 sn_expr = r"\* (SBE.*)\s+V\s+(\S+)\s+SERIAL NO. (\S*)"
@@ -115,6 +119,11 @@ cast_exp = r"\* cast\s+(.*$)"
 
 cal_expr          = r"\* ((\S*).*):\s*(.*)"
 cal_val_expr      = r"\*\s*(\S*) = ([0-9e+-\.]*)"
+
+dat_cnv_start = r"# </Sensors>"
+dat_cnv_end = r"# file_type = ascii"
+advance_pri_cond = r"\* advance primary conductivity\s*(\S*)\s* seconds"
+advance_sec_cond = r"\* advance secondary conductivity\s*(\S*)\s* seconds"
 
 #
 # parse the file
@@ -127,7 +136,6 @@ def parse(files):
     for filepath in files:
 
         hdr = True
-        sensor = False
         dataLine = 0
         name = []
         text = []
@@ -146,6 +154,10 @@ def parse(files):
         sensor = False
         firmware_date = None
         mfg_date = None
+        data_cnv = False
+        data_cnv_lines = []
+        adv_pri = None
+        adv_sec = None
 
         with open(filepath, 'r', errors='ignore') as fp:
             line = fp.readline()
@@ -160,7 +172,30 @@ def parse(files):
 
                 if hdr:
 
+                    if data_cnv:
+                        matchObj = re.match(dat_cnv_end, line)
+                        if matchObj:
+                            data_cnv = False
+                        else:
+                            if len(line) > 0:
+                                #print("data cnv line ", line.strip())
+                                data_cnv_lines.append(line)
+
+                    matchObj = re.match(dat_cnv_start, line)
+                    if matchObj:
+                        data_cnv = True
+                        #print("data cnv line start")
+
+                    matchObj = re.match(advance_pri_cond, line)
+                    if matchObj:
+                        adv_pri = line
+                    matchObj = re.match(advance_sec_cond, line)
+                    if matchObj:
+                        adv_sec = line
+
+                    # deal with sensor tags
                     if sensor:
+                        #print('sensor line', line.strip())
                         matchObj = re.match(cal_val_expr, line)
                         if matchObj:
                             #print("cal_val_expr:matchObj.group() : ", matchObj.group())
@@ -168,18 +203,27 @@ def parse(files):
                             cal_param = matchObj.group(1)
                             cal_value = matchObj.group(2)
                             cal_tags.append((cal_sensor, cal_param, cal_value))
-                            print("calibration type %s param %s value %s" % (cal_sensor, cal_param, cal_value))
+                            #print("calibration type %s param %s value %s" % (cal_sensor, cal_param, cal_value))
 
-                        else:
-                            sensor = False
+                        #else:
+                        #    sensor = False
 
-                        tmatchObj = re.match(tag, line)
+                        matchObj = re.match(sensor_cal_type_name, line.strip())
+                        if matchObj:
+                            #print("sensor_cal_type_name:matchObj.group() : ", matchObj.group())
+                            sensor_name = matchObj.group(2)
+
+                        tmatchObj = re.match(cal_tag, line)
                         if tmatchObj:
                             #print("sensor_tag:matchObj.group() : ", tmatchObj.group())
                             #print("sensor_tag:matchObj.group(1) : ", tmatchObj.group(1))
                             #print("sensor_tag:matchObj.group(2) : ", tmatchObj.group(2))
                             cal_param = tmatchObj.group(1)
                             cal_value = tmatchObj.group(2)
+                            cal_tup = (cal_sensor, cal_param, cal_value, sensor_name)
+                            #cal_tags.append(cal_tup)
+                            #print('cal_tag', cal_tup)
+                            #print("calibration type %s param %s value %s" % (cal_sensor, cal_param, cal_value))
 
                         smatchObj = re.match(sensor_type, line)
                         if smatchObj:
@@ -199,17 +243,10 @@ def parse(files):
                                 if cal_param != 'SerialNumber' and cal_param != 'CalibrationDate' and cal_param != 'SensorName':
                                     cal_value = float(cal_value)
 
-                                cal_tags.append((cal_sensor, cal_param, cal_value))
+                                cal_tup = (cal_sensor, cal_param, cal_value, sensor_name)
+                                cal_tags.append(cal_tup)
+                                #print('cal_tag', cal_tup)
                                 #print("calibration type %s param %s value %s" % (cal_sensor, cal_param, cal_value))
-
-                    matchObj = re.match(cal_expr, line)
-                    if matchObj:
-                        print("cal_expr:matchObj.group() : ", matchObj.group())
-                        #print("cal_expr:matchObj.group(1) : ", matchObj.group(1))
-                        sensor = True
-                        cal_param = None
-                        cal_sensor = matchObj.group(2)
-                        cal_tags.append((cal_sensor, "comment", matchObj.group(1) + " " + matchObj.group(3)))
 
                     matchObj = re.match(sensor_start, line)
                     if matchObj:
@@ -225,6 +262,16 @@ def parse(files):
                         #print("sensor_end:matchObj.group() : ", matchObj.group())
                         #print("sensor_end:matchObj.group(1) : ", matchObj.group(1))
                         sensor = False
+
+                    # matchObj = re.match(cal_expr, line)
+                    # if matchObj:
+                    #     print("cal_expr:matchObj.group() : ", matchObj.group())
+                    #     #print("cal_expr:matchObj.group(1) : ", matchObj.group(1))
+                    #     sensor = True
+                    #     cal_param = None
+                    #     cal_sensor = matchObj.group(2)
+                    #     cal_tags.append((cal_sensor, "comment", matchObj.group(1) + " " + matchObj.group(3)))
+
 
                     matchObj = re.match(cast_exp, line)
                     if matchObj:
@@ -328,12 +375,14 @@ def parse(files):
                         nameN = int(matchObj.group(1))
                         comment = matchObj.group(3)
 
-                        unitObj = re.match(r'# name \d+ = .*:\s*[^\[]*\[([^]]*)\]', line)
-                        unit = None
+                        unitObj = re.match(name_units, comment)
+                        unit = '1'
+                        name_sensor = None
                         if unitObj:
-                            unit = unitObj.group(1)
+                            name_sensor = unitObj.group(1)
+                            unit = unitObj.group(2)
 
-                        #print("unit match ", unitObj, comment)
+                        #print("unit match ", unit)
                         try:
                             unit = unitMap[unit]
                         except KeyError:
@@ -349,7 +398,9 @@ def parse(files):
                             #print('name map ', nameMap[varName])
                             ncVarName = nameMap[varName]
                         if ncVarName:
-                            name.insert(nVars, {'sbe-name' : varName, 'col': nameN, 'var_name': ncVarName, 'comment': comment, 'unit': unit})
+                            name_dict = {'sbe-name' : varName, 'col': nameN, 'var_name': ncVarName, 'comment': comment, 'unit': unit, 'sensor_name': name_sensor}
+                            name.insert(nVars, name_dict)
+                            #print(name_dict)
                             nVars = nVars + 1
                         print("name {} : {} ncName {}".format(nameN, varName, ncVarName))
 
@@ -415,6 +466,18 @@ def parse(files):
         if cast:
             ncOut.instrument_cast = cast
 
+        if adv_pri:
+            ncOut.setncattr("sea_bird_advance_pri", adv_pri.strip() )
+        if adv_sec:
+            ncOut.setncattr("sea_bird_advance_sec", adv_sec.strip() )
+
+        # add any data convertion info lines as global attributes
+        n = 1
+        for l in data_cnv_lines:
+            splt_idx = l.find("=")
+            ncOut.setncattr("sea_bird_data_conversion_" + "{:02d}".format(n) + "_" + l[2:splt_idx-1].strip().replace(":", "_").replace(" ", ""), l[splt_idx+1:].strip() )
+            n += 1
+
         #     TIME:axis = "T";
         #     TIME:calendar = "gregorian";
         #     TIME:long_name = "time";
@@ -458,21 +521,23 @@ def parse(files):
                 # add any relevant calibration information to variables, bit of a hard coded hack
                 for c in cal_tags:
                     add = False
-                    #print("cal_tag", c)
-                    if varName == 'TEMP' and c[0] == 'TemperatureSensor':
+                    #print("cal_tag", c, v)
+                    if c[3] == v['sensor_name']:
                         add = True
-                    if varName == 'DOX2' and c[0] == 'OxygenSensor':
-                        add = True
+                    # if varName == 'TEMP' and c[0] == 'TemperatureSensor':
+                    #     add = True
+                    # if varName == 'DOX2' and c[0] == 'OxygenSensor':
+                    #     add = True
                     if varName == 'PRES' and c[0] == 'PressureSensor':
-                        add = True
-                    if varName == 'CNDC' and c[0] == 'ConductivitySensor':
-                        add = True
-                    if varName == 'TEMP' and c[0] == 'temperature':
-                        add = True
-                    if varName == 'CNDC' and c[0] == 'conductivity':
-                        add = True
-                    if varName == 'PRES' and c[0] == 'pressure':
-                        add = True
+                         add = True
+                    # if varName == 'CNDC' and c[0] == 'ConductivitySensor':
+                    #     add = True
+                    # if varName == 'TEMP' and c[0] == 'temperature':
+                    #     add = True
+                    # if varName == 'CNDC' and c[0] == 'conductivity':
+                    #     add = True
+                    # if varName == 'PRES' and c[0] == 'pressure':
+                    #     add = True
 
                     if add:
                         ncVarOut.setncattr('calibration_' + c[1], c[2])
