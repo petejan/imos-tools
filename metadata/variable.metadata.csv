@@ -51,6 +51,36 @@ VAR_ATT,OXSOL,,,,,,,,,valid_min,float32,0
 VAR_ATT,PAR,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
 VAR_ATT,PAR,,,,,,,,,valid_max,float32,10000
 VAR_ATT,PAR,,,,,,,,,valid_min,float32,-2
+VAR_ATT,PAR,,,,,,,,,units,str,umol/m^2/s
+VAR_ATT,PAR,,,,,,,,,standard_name,str,surface_downwelling_photosynthetic_photon_flux_in_air
+VAR_ATT,PAR,,,,,,,,,long_name,str,surface_downwelling_photosynthetic_photon_flux_in_air
+
+VAR_ATT,PAR,,,,,,,,,sensor_SeaVoX_L22_code,str,SDN:L22::TOOL0193
+VAR_ATT,PAR,,,,,,,,,comment_sensor_type,str,cosine sensor
+
+VAR_ATT,CHL,,,,,,,,,units,str,ug/l
+VAR_ATT,CHL,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,CHL,,,,,,,,,standard_name,str,mass_concentration_of_chlorophyll_in_sea_water
+VAR_ATT,CHL,,,,,,,,,long_name,str,mass_concentration_of_inferred_chlorophyll_from_relative_fluorescence_units_in_sea_water
+VAR_ATT,CHL,,,,,,,,,valid_max,float32,40
+VAR_ATT,CHL,,,,,,,,,valid_min,float32,-1
+
+VAR_ATT,TURB,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,TURB,,,,,,,,,standard_name,str,sea_water_turbidity
+VAR_ATT,TURB,,,,,,,,,long_name,str,sea_water_turbidity
+VAR_ATT,TURB,,,,,,,,,units,str,1
+VAR_ATT,TURB,,,,,,,,,valid_max,float32,50
+VAR_ATT,TURB,,,,,,,,,valid_min,float32,-1
+
+VAR_ATT,BB,,,,,,,,,comment_equation_1: turb (NTU)= scale factor*(counts-dark counts)
+VAR_ATT,BB,,,,,,,,,comment_equation_2: B (m-1 sr-1)=turb (NTU)*0.002727 ... wetlabs
+VAR_ATT,BB,,,,,,,,,comment_equation_3: bbp (m-1) = 2 * pi * Xp * (B - Bsw) ... Zhang et al. (2009)
+VAR_ATT,BB,,,,,,,,,comment_equation_4: where Xp angle taken as 142 deg, 1.17 ... Sullivan and Twardowski, 2009
+VAR_ATT,BB,,,,,,,,,comment_qc_climatology: BB < 0 or BB > 0.01 m-1
+VAR_ATT,BB,,,,,,,,,comment_qc_flat_line: window_size = 24 hours; abs(diff(data in window)) == 0
+VAR_ATT,BB,,,,,,,,,comment_qc_param_flat_line: abs(diff(all_data_in_burst)) == 0
+VAR_ATT,BB,,,,,,,,,comment_qc_spike_test: window_size_for_running_median = 25 hours; abs(single_data_point - running_median) > 3 * stddev(whole_time_series)
+
 
 VAR_ATT,DENSITY,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
 VAR_ATT,DENSITY,,,,,,,,,units,str,kg/m^3
