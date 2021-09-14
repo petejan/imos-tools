@@ -56,7 +56,9 @@ import re
 # parse the file
 #
 
-line_re = "(\d\d\/\d\d\/\d\d\s+\d\d:\d\d:\d\d)\s*695\s*(\d+)\s*700\s*(\d+)\s*(\d+)$"
+line_re = r'(\d{2}/\d{2}/\d{2}\s\d{2}:\d{2}:\d{2})\s([0-9\t\- ]*)$'
+
+line_re_test = r'(\d{2}/\d{2}/\d{2}\s\d{2}:\d{2}:\d{2})(?:\t\-?([0-9]+))+$'
 
 def eco_parse(files):
     time = []
@@ -66,25 +68,30 @@ def eco_parse(files):
     number_samples = 0
 
     with open(filepath, 'r', errors='ignore') as fp:
-        hdr_line = fp.readline().replace("\n", "")
-        hdr_split = hdr_line.split("\t")
-        hdr = [re.sub("\(.*\)\n?", "", x) for x in hdr_split[3:]]
-        print (hdr)
-
-        print(hdr_split)
         line = fp.readline()
         while line:
+            print(line)
             matchObj = re.match(line_re, line)
             if matchObj:
                 ts = datetime.strptime(matchObj.group(1), "%m/%d/%y\t%H:%M:%S")
-                print(ts)
-                time.append(ts)
-                value.append([np.float(matchObj.group(2)), np.float(matchObj.group(3)), np.float(matchObj.group(4))])
-                number_samples += 1
+                values_split = matchObj.group(2).split('\t')
+                if len(values_split) == 7:
+                    try:
+
+                        values = [float(x) if len(x) <= 4 else np.nan for x in values_split]
+                        print(ts, values)
+
+                        if values[0] == 700 and values[2] == 695 and values[4] == 460 and values[6] > 500:
+                            time.append(ts)
+                            value.append(values)
+
+                            number_samples += 1
+                    except ValueError:
+                        pass
 
             line = fp.readline()
 
-    print("nSamples %d " % number_samples)
+    print("nSamples %d times %d" % (number_samples, len(time)))
 
     #
     # build the netCDF file
@@ -115,12 +122,11 @@ def eco_parse(files):
     ncTimesOut.axis = "T"
     ncTimesOut[:] = date2num(time, calendar=ncTimesOut.calendar, units=ncTimesOut.units)
 
-    ncVarOut = ncOut.createVariable('CHL_COUNT', "f4", ("TIME",), zlib=True)
-    ncVarOut[:] = [v[0] for v in value]
-    ncVarOut = ncOut.createVariable('NTU_COUNT', "f4", ("TIME",), zlib=True)
-    ncVarOut[:] = [v[1] for v in value]
-    ncVarOut = ncOut.createVariable('TEMP_COUNT', "f4", ("TIME",), zlib=True)
-    ncVarOut[:] = [v[2] for v in value]
+    print(len(value[0]))
+
+    for i in range(0, len(value[0])):
+        ncVarOut = ncOut.createVariable('V_'+str(i), "f4", ("TIME",), zlib=True)
+        ncVarOut[:] = [v[i] for v in value]
 
     # add timespan attributes
     ncOut.setncattr("time_coverage_start", num2date(ncTimesOut[0], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
