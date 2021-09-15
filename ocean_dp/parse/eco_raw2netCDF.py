@@ -220,6 +220,19 @@ def eco_parse(files, dev_file):
                 ncVarOut[:] = [((v[idx - 3] - dark) * scale) if (len(v) - idx + 3) >= 1 else np.nan for v in value]
                 ncVarOut.setncattr('calibration_scale', scale)
                 ncVarOut.setncattr('calibration_dark', dark)
+
+            ncVarOut = ncOut.createVariable('ECO_' + dev_file_info[0] + '_' + ncVarName, "f4", ("TIME",), zlib=True)
+            ncVarOut.units = 1
+            if ncVarName == 'CHL':
+                ncVarOut.CH_DIGITAL_DARK_COUNT = float(info[2][2])
+                ncVarOut.CH_DIGITAL_SCALE_FACTOR = float(info[2][1])
+
+            if ncVarName == 'TURB':
+                ncVarOut.TURB_DIGITAL_DARK_COUNT = float(info[2][2])
+                ncVarOut.TURB_DIGITAL_SCALE_FACTOR = float(info[2][1])
+
+            ncVarOut[:] = [v[idx - 3] if (len(v) - idx + 3) >= 1 else np.nan for v in value]
+
     else:
         for i in range(0, len(value[0])):
             ncVarOut = ncOut.createVariable('V_'+str(i), "f4", ("TIME",), zlib=True)
