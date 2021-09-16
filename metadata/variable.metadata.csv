@@ -58,12 +58,24 @@ VAR_ATT,PAR,,,,,,,,,long_name,str,surface_downwelling_photosynthetic_photon_flux
 VAR_ATT,PAR,,,,,,,,,sensor_SeaVoX_L22_code,str,SDN:L22::TOOL0193
 VAR_ATT,PAR,,,,,,,,,comment_sensor_type,str,cosine sensor
 
-VAR_ATT,CHL,,,,,,,,,units,str,ug/l
-VAR_ATT,CHL,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
-VAR_ATT,CHL,,,,,,,,,standard_name,str,mass_concentration_of_chlorophyll_in_sea_water
-VAR_ATT,CHL,,,,,,,,,long_name,str,mass_concentration_of_inferred_chlorophyll_from_relative_fluorescence_units_in_sea_water
-VAR_ATT,CHL,,,,,,,,,valid_max,float32,40
-VAR_ATT,CHL,,,,,,,,,valid_min,float32,-1
+VAR_ATT,ECO_FLNTUS_CPHL,,,,,,,,,name,str,Eco-FLNTUS CHL counts
+VAR_ATT,ECO_FLNTUS_CPHL,,,,,,,,,long_name,str,wetlabs_flntus_chl_counts
+VAR_ATT,ECO_FLNTUS_CPHL,,,,,,,,,valid_min,float32,0.
+VAR_ATT,ECO_FLNTUS_CPHL,,,,,,,,,valid_max,float32,4130.
+VAR_ATT,ECO_FLNTUS_CPHL,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+
+VAR_ATT,ECO_FLNTUS_TURB,,,,,,,,,name,str,Eco-FLNTUS Turbidity counts
+VAR_ATT,ECO_FLNTUS_TURB,,,,,,,,,long_name,str,wetlabs_flntus_turb_counts
+VAR_ATT,ECO_FLNTUS_TURB,,,,,,,,,valid_min,float32,0.
+VAR_ATT,ECO_FLNTUS_TURB,,,,,,,,,valid_max,float32,4130.
+VAR_ATT,ECO_FLNTUS_TURB,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+
+VAR_ATT,CPHL,,,,,,,,,units,str,ug/l
+VAR_ATT,CPHL,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,CPHL,,,,,,,,,standard_name,str,mass_concentration_of_chlorophyll_in_sea_water
+VAR_ATT,CPHL,,,,,,,,,long_name,str,mass_concentration_of_inferred_chlorophyll_from_relative_fluorescence_units_in_sea_water
+VAR_ATT,CPHL,,,,,,,,,valid_max,float32,40
+VAR_ATT,CPHL,,,,,,,,,valid_min,float32,-1
 
 VAR_ATT,TURB,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
 VAR_ATT,TURB,,,,,,,,,standard_name,str,sea_water_turbidity

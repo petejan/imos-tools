@@ -54,7 +54,7 @@ import re
 # 07/02/19        05:53:53        695     67      700     205     552
 
 nameMap = {}
-nameMap["Chl"] = "CHL"
+nameMap["Chl"] = "CPHL"
 nameMap["NTU"] = "TURB"
 
 #
@@ -117,6 +117,7 @@ def eco_parse(files, dev_file):
     time = []
     value = []
     first_line_values = 0
+    last_time = datetime(2000, 1, 1)
 
     filepath = files[0]
     number_samples = 0
@@ -140,13 +141,16 @@ def eco_parse(files, dev_file):
                     if first_line_values == 0:
                         first_line_values = len(values_split)
                     # does this line have the same number of values as the first
-                    if len(values_split) == first_line_values:
+                    if len(values_split) == first_line_values and ts > last_time:
 
                             values = [float(x) if len(x) <= 5 else np.nan for x in values_split]
                             print(ts, values)
 
                             #if values[0] == 700 and values[2] == 695 and values[4] == 460 and values[6] > 500:
                             #if values[0] == 695 and values[2] == 700:
+                            if ts == last_time:
+                                ts = ts + timedelta(seconds=0.1)
+                            last_time = ts
                             time.append(ts)
                             value.append(values)
 
@@ -222,8 +226,8 @@ def eco_parse(files, dev_file):
                 ncVarOut.setncattr('calibration_dark', dark)
 
             ncVarOut = ncOut.createVariable('ECO_' + dev_file_info[0] + '_' + ncVarName, "f4", ("TIME",), zlib=True)
-            ncVarOut.units = 1
-            if ncVarName == 'CHL':
+            ncVarOut.units = '1'
+            if ncVarName == 'CPHL':
                 ncVarOut.CH_DIGITAL_DARK_COUNT = float(info[2][2])
                 ncVarOut.CH_DIGITAL_SCALE_FACTOR = float(info[2][1])
 

@@ -50,6 +50,8 @@ def resample(netCDF_file, sample_file):
 
             new_data = np.interp(time_var[:], sample_time[qc <= qc_in_level], var[qc <= qc_in_level])
             print(new_data)
+            new_var.sensor_model = ds_sample.instrument_model
+            new_var.sensor_serial_number = ds_sample.instrument_serial_number
             new_var[:] = new_data
 
             for a in var.ncattrs():
@@ -63,7 +65,7 @@ def resample(netCDF_file, sample_file):
     except AttributeError:
         hist = ""
 
-    ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " : added data from " + os.path.basename(sample_file) + " interpolated to this time")
+    ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " added data from " + os.path.basename(sample_file) + " interpolated to this time")
 
 
     ds.close()

@@ -37,6 +37,8 @@ nameCode['HEADING'] = "E"
 nameCode['ABSIC1'] = "A"
 nameCode['EAST_VEL'] = "V"
 nameCode['ECHO_INT1'] = "A"
+nameCode['CPHL'] = "B"
+nameCode['BB'] = "U"
 
 # IMOS_<Facility-Code>_<Data-Code>_<Start-date>_<Platform-Code>_FV<File-Version>_ <Product-Type>_END-<End-date>_C-<Creation_date>_<PARTX>.nc
 
@@ -51,7 +53,7 @@ def rename(netCDFfile):
     facility = ds.institution
     time_start = datetime.strptime(ds.time_coverage_start, ncTimeFormat)
     time_end = datetime.strptime(ds.time_coverage_end, ncTimeFormat)
-    file_version = 0
+    file_version = ds.file_version
     creation_date = datetime.strptime(ds.date_created, ncTimeFormat)
     platform_code = ds.platform_code
     deployment = ds.deployment_code
@@ -59,6 +61,10 @@ def rename(netCDFfile):
     instrument_sn = ds.instrument_serial_number
 
     nominal_depth = ds.variables["NOMINAL_DEPTH"][:]
+
+    fv = 'FV00'
+    if file_version == 'Level 1 - Quality Controlled data':
+        fv = 'FV01'
 
     product_code = deployment + "-" + instrument + "-" + instrument_sn + "-" + "{0:.0f}".format(np.abs(nominal_depth)) + "m"
     product_code = product_code.replace(" ", "-")
@@ -83,16 +89,16 @@ def rename(netCDFfile):
 
     folder = os.path.dirname(netCDFfile)
 
-    imosName = folder + '/' + \
+    imosName = os.path.join(folder, \
                'IMOS_' + facility + \
                "_" + codesCat + \
                "_" + time_start.strftime("%Y%m%d") + \
                "_" + platform_code + \
-               "_FV00" + \
+               "_" + fv + \
                "_" + product_code + \
                "_END-" + time_end.strftime("%Y%m%d") + \
                "_C-" + creation_date.strftime("%Y%m%d") + \
-               ".nc"
+               ".nc")
 
     print(imosName)
 
