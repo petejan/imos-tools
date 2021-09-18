@@ -45,3 +45,7 @@ VAR,NOMINAL_DEPTH,StormBay-PRAWLER-01-2019,SBE37SMP-ODO-RS232,03709538,2019-08-0
 VAR,NOMINAL_DEPTH,StormBay-PRAWLER-01-2019,SBE 39,4708,2019-08-07,2019-12-01,NOMINAL_DEPTH,"()","()",,float64,"117.00"
 VAR,NOMINAL_DEPTH,StormBay-PRAWLER-01-2019,SL-60,1,2019-08-07,2019-12-01,NOMINAL_DEPTH,"()","()",,float64,"0.00"
 VAR,NOMINAL_DEPTH,StormBay-PRAWLER-01-2019,BPA50,005,2019-08-07,2019-12-01,NOMINAL_DEPTH,"()","()",,float64,"94.00"
+
+GLOBAL,*,StormBay-PRAWLER-01-2019,,,,,,,,abstract,str,Oceanographic data from the deployment of PRAWLER profiling mooring in Storm Bay, Southern Tasmania
+GLOBAL,*,StormBay-PRAWLER-01-2019,,,,,,,,platform_code,str,StormBay-PRAWLER
+GLOBAL,*,StormBay-PRAWLER-01-2019,,,,,,,,site_code,str,StormBay

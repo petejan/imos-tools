@@ -6,4 +6,11 @@ VAR,LONGITUDE,GBRPPS-WireWalker-01-2020,,,2020-03-08,2020-05-21,LONGITUDE,"()","
 
 GLOBAL,,GBRPPS-WireWalker-01-2020,,,2020-03-08,2020-05-21,,"","",site_nominal_depth,float64,"130.00"
 
+GLOBAL,,GBRPPS-WireWalker-01-2020,,,2020-03-08,2020-05-21,,"","",time_deployment_start,str,"2020-03-08T05:30:00Z"
+GLOBAL,,GBRPPS-WireWalker-01-2020,,,2020-03-08,2020-05-21,,"","",time_deployment_end,str,"2020-05-20T00:00:00Z"
+
 VAR,NOMINAL_DEPTH,GBRPPS-WireWalker-01-2020,RBRmaestro3,200699,2020-03-08,2020-05-21,NOMINAL_DEPTH,"()","()",,float64,"90.00"
+
+GLOBAL,*,GBRPPS-WireWalker-01-2020,,,,,,,,abstract,str,Oceanographic data from the deployment of Wire Walker profiling mooring in Palm Passage, Queensland, Australia
+GLOBAL,*,GBRPPS-WireWalker-01-2020,,,,,,,,platform_code,str,GBRPPS-WireWalker
+GLOBAL,*,GBRPPS-WireWalker-01-2020,,,,,,,,site_code,str,GBRPPS

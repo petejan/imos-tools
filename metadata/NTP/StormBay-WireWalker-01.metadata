@@ -1,0 +1,16 @@
+rec_type, var_name, deployment_code, model, serial_number, time_deployment, time_recovery, variable_name, variable_dims, variable_shape, attribute_name, type, value
+GLOBAL,,,RBRmaestro3,200699,2021-06-02,2021-09-03,,"","",deployment_code,str,"StormBay-WireWalker-01-2021"
+
+VAR,LATITUDE,StormBay-WireWalker-01-2021,,,2021-06-02,2021-09-03,LATITUDE,"()","()",,float64,"-43.3720"
+VAR,LONGITUDE,StormBay-WireWalker-01-2021,,,2021-06-02,2021-09-03,LONGITUDE,"()","()",,float64,"147.7228"
+
+GLOBAL,,StormBay-WireWalker-01-2021,,,2021-06-02,2021-09-03,,"","",site_nominal_depth,float64,"130.00"
+
+GLOBAL,,StormBay-WireWalker-01-2021,,,2021-06-02,2021-09-03,,"","",time_deployment_start,str,"2021-06-02T00:45:00Z"
+GLOBAL,,StormBay-WireWalker-01-2021,,,2021-06-02,2021-09-03,,"","",time_deployment_end,str,"2021-09-03T00:00:00Z"
+
+VAR,NOMINAL_DEPTH,StormBay-WireWalker-01-2021,RBRmaestro3,200699,2021-06-02,2021-09-03,NOMINAL_DEPTH,"()","()",,float64,"90.00"
+
+GLOBAL,*,StormBay-WireWalker-01-2021,,,,,,,,abstract,str,Oceanographic data from the deployment of WireWalker profiling mooring in Storm Bay, Southern Tasmania
+GLOBAL,*,StormBay-WireWalker-01-2021,,,,,,,,platform_code,str,StormBay-WireWalker
+GLOBAL,*,StormBay-WireWalker-01-2021,,,,,,,,site_code,str,StormBay

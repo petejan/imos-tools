@@ -1,14 +1,4 @@
 rec_type, var_name, deployment_code, model, serial_number, time_deployment, time_recovery, variable_name, variable_dims, variable_shape, attribute_name,type,value
 GLOBAL,*,,,,,,,,,abstract,str,Oceanographic data from the deployment of Wire Walker profiling mooring in Palm Passage, Queensland, Australia
-GLOBAL,*,,,,,,,,,author,str,"Jansen, Peter"
-GLOBAL,*,,,,,,,,,author_email,str,peter.jansen@csiro.au
-GLOBAL,*,,,,,,,,,citation,str,"The citation in a list of references is: 'IMOS [year-of-data-download], [Title], [data-access-URL], accessed [date-of-access]'."
-GLOBAL,*,,,,,,,,,institution,str,NTP-PME
 GLOBAL,*,,,,,,,,,platform_code,str,GBRPPS-WireWalker
-GLOBAL,*,,,,,,,,,principal_investigator,str,"Martini, Andrew"
-GLOBAL,*,,,,,,,,,principal_investigator_email,str,andrew.martini@csiro.au
 GLOBAL,*,,,,,,,,,site_code,str,GBRPPS
-GLOBAL,*,,,,,,,,,title,str,Oceanographic mooring data deployment of {platform_code} at latitude {geospatial_lat_max:3.1f} longitude {geospatial_lon_max:3.1f} depth {geospatial_vertical_max:3.0f} (m) instrument {instrument} serial {instrument_serial_number}
-GLOBAL,*,,,,,,,,,geospatial_vertical_positive,str,down
-GLOBAL,*,,,,,,,,,geospatial_lat_units,str,degrees_north
-GLOBAL,*,,,,,,,,,geospatial_lon_units,str,degrees_east

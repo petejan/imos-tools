@@ -1,0 +1,33 @@
+rec_type, var_name, deployment_code, model, serial_number, time_deployment, time_recovery, variable_name, variable_dims, variable_shape, attribute_name, type, value
+GLOBAL,,,MPESS,1,2021-07-08 02:00,2021-09-03 00:00,,"","",deployment_code,str,"StormBay-PRAWLER-02-2021"
+GLOBAL,,,MPESS Load Cell,1,2021-07-08 02:00,2021-09-03 00:00,,"","",deployment_code,str,"StormBay-PRAWLER-02-2021"
+GLOBAL,,,WQM 10mm Frame,10,2021-07-08 02:00,2021-09-03 00:00,,"","",deployment_code,str,"StormBay-PRAWLER-02-2021"
+GLOBAL,,,CART,34071,2021-07-08 02:00,2021-09-03 00:00,,"","",deployment_code,str,"StormBay-PRAWLER-02-2021"
+GLOBAL,,,CART,36243,2021-07-08 02:00,2021-09-03 00:00,,"","",deployment_code,str,"StormBay-PRAWLER-02-2021"
+GLOBAL,,,DART2,1,2021-07-08 02:00,2021-09-03 00:00,,"","",deployment_code,str,"StormBay-PRAWLER-02-2021"
+GLOBAL,,,SUNA - V2,829,2021-07-08 02:00,2021-09-03 00:00,,"","",deployment_code,str,"StormBay-PRAWLER-02-2021"
+GLOBAL,,,SBE37SMP-ODO-RS232,03713316,2021-07-08 02:00,2021-09-03 00:00,,"","",deployment_code,str,"StormBay-PRAWLER-02-2021"
+GLOBAL,,,SBE37SMP-ODO-RS232,03709538,2021-07-08 02:00,2021-09-03 00:00,,"","",deployment_code,str,"StormBay-PRAWLER-02-2021"
+GLOBAL,,,PRAWLER,unknown,2021-07-08 02:00,2021-09-03 00:00,,"","",deployment_code,str,"StormBay-PRAWLER-02-2021"
+
+VAR,LATITUDE,StormBay-PRAWLER-02-2021,,,2021-07-08 02:00,2021-09-03 00:00,LATITUDE,"()","()",,float64,"-43.35462"
+VAR,LONGITUDE,StormBay-PRAWLER-02-2021,,,2021-07-08 02:00,2021-09-03 00:00,LONGITUDE,"()","()",,float64,"147.70670"
+
+GLOBAL,,StormBay-PRAWLER-02-2021,,,2021-07-08 02:00,2021-09-03 00:00,,"","",site_nominal_depth,float64,"130.00"
+
+VAR,NOMINAL_DEPTH,StormBay-PRAWLER-02-2021,MPESS,1,2021-07-08 02:00,2021-09-03 00:00,NOMINAL_DEPTH,"()","()",,float64,"90.00"
+VAR,NOMINAL_DEPTH,StormBay-PRAWLER-02-2021,MPESS Load Cell,1,2021-07-08 02:00,2021-09-03 00:00,NOMINAL_DEPTH,"()","()",,float64,"90.00"
+VAR,NOMINAL_DEPTH,StormBay-PRAWLER-02-2021,WQM 10mm Frame,10,2021-07-08 02:00,2021-09-03 00:00,NOMINAL_DEPTH,"()","()",,float64,"90.00"
+VAR,NOMINAL_DEPTH,StormBay-PRAWLER-02-2021,CART,34071,2021-07-08 02:00,2021-09-03 00:00,NOMINAL_DEPTH,"()","()",,float64,"115.00"
+VAR,NOMINAL_DEPTH,StormBay-PRAWLER-02-2021,CART,36243,2021-07-08 02:00,2021-09-03 00:00,NOMINAL_DEPTH,"()","()",,float64,"115.00"
+VAR,NOMINAL_DEPTH,StormBay-PRAWLER-02-2021,DART2,1,2021-07-08 02:00,2021-09-03 00:00,NOMINAL_DEPTH,"()","()",,float64,"0.00"
+VAR,NOMINAL_DEPTH,StormBay-PRAWLER-02-2021,SUNA - V2,829,2021-07-08 02:00,2021-09-03 00:00,NOMINAL_DEPTH,"()","()",,float64,"90.00"
+VAR,NOMINAL_DEPTH,StormBay-PRAWLER-02-2021,SBE37SMP-ODO-RS232,03713316,2021-07-08 02:00,2021-09-03 00:00,NOMINAL_DEPTH,"()","()",,float64,"80.00"
+VAR,NOMINAL_DEPTH,StormBay-PRAWLER-02-2021,SBE37SMP-ODO-RS232,03709538,2021-07-08 02:00,2021-09-03 00:00,NOMINAL_DEPTH,"()","()",,float64,"90.00"
+VAR,NOMINAL_DEPTH,StormBay-PRAWLER-02-2021,PRAWLER,unknown,2021-07-08 02:00,2021-09-03 00:00,NOMINAL_DEPTH,"()","()",,float64,"5.00"
+
+GLOBAL,,,PRAWLER,unknown,2021-07-08 02:00,2021-09-03 00:00,,"","",instrument_serial_number,str,"5"
+
+GLOBAL,*,StormBay-PRAWLER-02-2021,,,,,,,,abstract,str,Oceanographic data from the deployment of PRAWLER profiling mooring in Storm Bay, Southern Tasmania
+GLOBAL,*,StormBay-PRAWLER-02-2021,,,,,,,,platform_code,str,StormBay-PRAWLER
+GLOBAL,*,StormBay-PRAWLER-02-2021,,,,,,,,site_code,str,StormBay

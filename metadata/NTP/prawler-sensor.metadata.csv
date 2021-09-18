@@ -1,0 +1,46 @@
+rec_type, var_name, deployment_code, model, serial_number, time_deployment, time_recovery, variable_name, variable_dims, variable_shape, attribute_name, type, value
+VAR_ATT,DOX2_RAW,StormBay-PRAWLER-01-2019,,,,,,"","",comment_scale_offset,str,"1.095 0.0"
+
+VAR_ATT,CPHL,StormBay-PRAWLER-01-2019,,,,,,"","",comment_source_inst,str,"WetLABS FLNTUS SN 1801"
+VAR_ATT,CPHL,StormBay-PRAWLER-01-2019,,,,,,"","",calibration,str,"2020-01-09 WetLABs"
+VAR_ATT,CPHL,StormBay-PRAWLER-01-2019,,,,,,"","",calibration_scale_factor,str,"0.0121 ug/l/count"
+VAR_ATT,CPHL,StormBay-PRAWLER-01-2019,,,,,,"","",calibration_dark,str,"50 count"
+VAR_ATT,CPHL,StormBay-PRAWLER-01-2019,,,,,,"","",units,str,"ug/l"
+VAR_ATT,CPHL,StormBay-PRAWLER-01-2019,,,,,,"","",comment_scale_offset,str,"0.0121 -0.605"
+
+VAR_ATT,TURB,StormBay-PRAWLER-01-2019,,,,,,"","",comment_source_inst,str,"WetLABS FLNTUS SN 1801"
+VAR_ATT,TRUB,StormBay-PRAWLER-01-2019,,,,,,"","",calibration,str,"2020-01-09 WetLABs"
+VAR_ATT,TURB,StormBay-PRAWLER-01-2019,,,,,,"","",calibration_scale_factor,str,"0.067 NTU/count"
+VAR_ATT,TURB,StormBay-PRAWLER-01-2019,,,,,,"","",calibration_dark,str,"51 count"
+VAR_ATT,TURB,StormBay-PRAWLER-01-2019,,,,,,"","",comment_scale_offset,str,"0.067 -3.417"
+VAR_ATT,TURB,StormBay-PRAWLER-01-2019,,,,,,"","",units,str,"1"
+
+VAR_ATT,DOX2_RAW,GBRPPS-PRAWLER-01-2020,,,,,,"","",comment_scale_offset,str,"1.095 0.0"
+
+VAR_ATT,CPHL,GBRPPS-PRAWLER-01-2020,,,,,,"","",comment_source_inst,str,"WetLABS FLNTUS SN 1801"
+VAR_ATT,CPHL,GBRPPS-PRAWLER-01-2020,,,,,,"","",calibration,str,"2020-01-09 WetLABs"
+VAR_ATT,CPHL,GBRPPS-PRAWLER-01-2020,,,,,,"","",calibration_scale_factor,str,"0.0121 ug/l/count"
+VAR_ATT,CPHL,GBRPPS-PRAWLER-01-2020,,,,,,"","",calibration_dark,str,"50 count"
+VAR_ATT,CPHL,GBRPPS-PRAWLER-01-2020,,,,,,"","",units,str,"ug/l"
+VAR_ATT,CPHL,GBRPPS-PRAWLER-01-2020,,,,,,"","",comment_scale_offset,str,"0.0121 -0.605"
+
+VAR_ATT,TURB,GBRPPS-PRAWLER-01-2020,,,,,,"","",comment_source_inst,str,"WetLABS FLNTUS SN 1801"
+VAR_ATT,TRUB,GBRPPS-PRAWLER-01-2020,,,,,,"","",calibration,str,"2020-01-09 WetLABs"
+VAR_ATT,TURB,GBRPPS-PRAWLER-01-2020,,,,,,"","",calibration_scale_factor,str,"0.067 NTU/count"
+VAR_ATT,TURB,GBRPPS-PRAWLER-01-2020,,,,,,"","",calibration_dark,str,"51 count"
+VAR_ATT,TURB,GBRPPS-PRAWLER-01-2020,,,,,,"","",comment_scale_offset,str,"0.067 -3.417"
+VAR_ATT,TURB,GBRPPS-PRAWLER-01-2020,,,,,,"","",units,str,"1"
+
+VAR_ATT,CPHL,StormBay-PRAWLER-02-2021,,,,,,"","",comment_source_inst,str,"WetLABS BBFL2 6500"
+VAR_ATT,CPHL,StormBay-PRAWLER-02-2021,,,,,,"","",calibration,str,"2020-09-20 WetLABs"
+VAR_ATT,CPHL,StormBay-PRAWLER-02-2021,,,,,,"","",calibration_scale_factor,str,"0.0121 ug/l/count"
+VAR_ATT,CPHL,StormBay-PRAWLER-02-2021,,,,,,"","",calibration_dark,str,"48 count"
+VAR_ATT,CPHL,StormBay-PRAWLER-02-2021,,,,,,"","",units,str,"ug/l"
+VAR_ATT,CPHL,StormBay-PRAWLER-02-2021,,,,,,"","",comment_scale_offset,str,"0.0121 -0.580"
+
+VAR_ATT,OPBS,StormBay-PRAWLER-02-2021,,,,,,"","",comment_source_inst,str,"WetLABS BBFL2 6400"
+VAR_ATT,OPBS,StormBay-PRAWLER-02-2021,,,,,,"","",calibration,str,"2020-09-20 WetLABs"
+VAR_ATT,OPBS,StormBay-PRAWLER-02-2021,,,,,,"","",calibration_scale_factor,str,"3.435e-6 (m-1 sr-1/count)"
+VAR_ATT,OPBS,StormBay-PRAWLER-02-2021,,,,,,"","",calibration_dark,str,"48 count"
+VAR_ATT,OPBS,StormBay-PRAWLER-02-2021,,,,,,"","",comment_scale_offset,str,"3.435e-6 -1.649e-4"
+VAR_ATT,OPBS,StormBay-PRAWLER-02-2021,,,,,,"","",units,str,"m-1 sr-1"
