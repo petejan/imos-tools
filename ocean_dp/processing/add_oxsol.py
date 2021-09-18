@@ -62,7 +62,11 @@ def add_psal(netCDFfile):
 
     oxsol = gsw.O2sol_SP_pt(SP, pt)
 
-    ncVarOut = ds.createVariable("OXSOL", "f4", ("TIME",), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
+    if 'OXSOL' in ds.variables:
+        ncVarOut = ds.variables['OXSOL']
+    else:
+        ncVarOut = ds.createVariable("OXSOL", "f4", ("TIME",), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
+
     ncVarOut[:] = oxsol
     ncVarOut.units = "umol/kg"
     ncVarOut.comment = "calculated using gsw-python https://teos-10.github.io/GSW-Python/index.html function gsw.O2sol_SP_pt" + comment
@@ -73,7 +77,7 @@ def add_psal(netCDFfile):
     except AttributeError:
         hist = ""
 
-    ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " : added oxygen solubility")
+    ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " added oxygen solubility")
 
     ds.close()
 

@@ -28,6 +28,10 @@ from datetime import datetime
 def oxygen(netCDFfile):
     ds = Dataset(netCDFfile, 'a')
 
+    if 'DOX2_RAW' not in ds.variables:
+        ds.close()
+        return
+
     var_temp = ds.variables["TEMP"]
     var_psal = ds.variables["PSAL"]
     var_pres = ds.variables["PRES"]
@@ -73,17 +77,21 @@ def oxygen(netCDFfile):
         ncVarOut = ds.variables['DOX2']
 
     ncVarOut[:] = dox2
+    ncVarOut.standard_name = "moles_of_oxygen_per_unit_mass_in_sea_water"
+    ncVarOut.long_name = "moles_of_oxygen_per_unit_mass_in_sea_water"
     ncVarOut.units = "umol/kg"
     ncVarOut.comment = "calculated using DOX2 = DOX2_RAW * PSAL_CORRECTION / ((sigma_theta(P=0,Theta,S) + 1000).. Sea Bird AN 64, Aanderaa TD210 Optode Manual"
     ncVarOut.comment_calibration = "calibration slope " + str(slope) + " offset " + str(offset) + " umol/l"
 
     # calculate, and write the oxygen mass/seawater mass
-    if 'DOX_MG' not in ds.variables:
+    if 'DOXY' not in ds.variables:
         ncVarOut = ds.createVariable("DOXY", "f4", ("TIME",), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
     else:
         ncVarOut = ds.variables['DOXY']
 
     ncVarOut[:] = dox2_raw / 31.24872
+    ncVarOut.standard_name = "mass_concentration_of_oxygen_in_sea_water"
+    ncVarOut.long_name = "mass_concentration_of_oxygen_in_sea_water"
     ncVarOut.units = "mg/l"
     ncVarOut.comment = "calculated using DOXY =  * DOX2_RAW * PSAL_CORRECTION / 31.24872... Aanderaa TD210 Optode Manual"
     ncVarOut.comment_calibration = "calibration slope " + str(slope) + " offset " + str(offset) + " umol/l"
@@ -106,7 +114,7 @@ def oxygen(netCDFfile):
     except AttributeError:
         hist = ""
 
-    ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " : added derived oxygen, DOX2, DOXS, DOX_MG")
+    ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " added derived oxygen, DOX2, DOXS, DOXY")
 
     ds.close()
 

@@ -171,7 +171,7 @@ def add(netCDFfile, metadatafiles):
     except AttributeError:
         hist = ""
 
-    ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " : attributes added from file(s) [" + format(', '.join(metadatafiles)) + "]")
+    ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " attributes added from file(s) [" + format(', '.join(metadatafiles)) + "]")
 
     ds.close()
 

@@ -65,6 +65,7 @@ def add_optode_oxygen(netCDFfile):
 
     out_oxsol_var[:] = oxsol
     out_oxsol_var.units = "umol/kg"
+
     out_oxsol_var.comment = "calculated using gsw-python https://teos-10.github.io/GSW-Python/index.html function gsw.O2sol_SP_pt"
 
     C0 = var_bphase.calibration_C0
@@ -108,6 +109,8 @@ def add_optode_oxygen(netCDFfile):
         out_oxs_var = ds.variables['DOXS']
     else:
         out_oxs_var = ds.createVariable("DOXS", "f4", ("TIME",), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
+
+    out_oxs_var.units = '1'
 
     out_oxs_var[:] = out_ox_var[:] / oxsol
 

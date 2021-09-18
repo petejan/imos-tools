@@ -104,6 +104,8 @@ def parse(files):
                     type = 'GPS'
                 elif line.startswith('%%PRAWE'):
                     type = 'PRAWE'
+                elif line.startswith('%%PRAWS'):
+                    type = 'PRAWS'
 
                 if line_number == 1:
                     hdr = line.split(',')
@@ -147,15 +149,15 @@ def parse(files):
         return None
 
     # create the netCDF file
-    outputName = 'prawler' + ".nc"
+    outputName = 'prawler-' + datetime.utcnow().strftime("%Y-%m-%d") + ".nc"
 
     print("output file : %s" % outputName)
 
     ncOut = Dataset(outputName, 'w', format='NETCDF4')
 
-    ncOut.instrument = 'NOAA - Prawler'
-    ncOut.instrument_model = 'Prawler'
-    ncOut.instrument_serial_number = '4'
+    ncOut.instrument = 'McLane - PRAWLER'
+    ncOut.instrument_model = 'PRAWLER'
+    ncOut.instrument_serial_number = 'unknown'
     ncOut.number_of_profiles = np.int32(n_profile)
 
     if last_gps:
@@ -209,20 +211,21 @@ def parse(files):
     nc_var_out[:] = dox2_out
     nc_var_out.units = 'umol/kg'
     nc_var_out.comment = 'RAW DOX2, referenced to PSAL=0'
-    nc_var_out = ncOut.createVariable("DOXY_TEMP", "f4", ("TIME"), fill_value=np.nan, zlib=True)
+    nc_var_out = ncOut.createVariable("DOX2_TEMP", "f4", ("TIME"), fill_value=np.nan, zlib=True)
     nc_var_out[:] = dox2_temp_out
     nc_var_out.units = 'degrees_Celsius'
     nc_var_out = ncOut.createVariable("CPHL", "f4", ("TIME"), fill_value=np.nan, zlib=True)
     nc_var_out[:] = flu_out
     nc_var_out.units = 'counts'
-    nc_var_out = ncOut.createVariable("TURB", "f4", ("TIME"), fill_value=np.nan, zlib=True)
+    #nc_var_out = ncOut.createVariable("TURB", "f4", ("TIME"), fill_value=np.nan, zlib=True)
+    nc_var_out = ncOut.createVariable("OPBS", "f4", ("TIME"), fill_value=np.nan, zlib=True)
     nc_var_out[:] = bs_out
     nc_var_out.units = 'counts'
 
     nc_var_out = ncOut.createVariable("PROFILE", "i4", ("TIME"), fill_value=-1, zlib=True)
     nc_var_out[:] = profile_n_out
     nc_var_out.units = 'count'
-    nc_var_out = ncOut.createVariable("PROFILE_SAMPLE", "i4", ("TIME"), fill_value=-1, zlib=True)
+    nc_var_out = ncOut.createVariable("PROFILE_SAMPLE", "i4", ("TIME"), zlib=True)
     nc_var_out[:] = profile_sample_out
     nc_var_out.units = 'count'
 

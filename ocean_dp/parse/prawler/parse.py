@@ -228,7 +228,7 @@ def parse(files):
         return None
 
     # create the netCDF file
-    outputName = 'prawler' + ".nc"
+    outputName = 'prawler-' + datetime.datetime.utcnow().strftime("%Y-%m-%d") + ".nc"
 
     print("output file : %s" % outputName)
 
@@ -296,7 +296,7 @@ def parse(files):
     nc_var_out = ncOut.createVariable("PROFILE", "i4", ("TIME"), fill_value=-1, zlib=True)
     nc_var_out[:] = profile_n_out
     nc_var_out.units = 'count'
-    nc_var_out = ncOut.createVariable("PROFILE_SAMPLE", "i4", ("TIME"), fill_value=-1, zlib=True)
+    nc_var_out = ncOut.createVariable("PROFILE_SAMPLE", "i4", ("TIME"), zlib=True)
     nc_var_out[:] = profile_sample_out
     nc_var_out.units = 'count'
 

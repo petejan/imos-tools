@@ -84,7 +84,7 @@ def add_psal(netCDFfile):
     except AttributeError:
         hist = ""
 
-    ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " : added PSAL from TEMP, CNDC, " + pres_var)
+    ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " added PSAL from TEMP, CNDC, " + pres_var)
 
     ds.close()
 
