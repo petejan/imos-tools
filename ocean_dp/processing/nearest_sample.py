@@ -2,6 +2,7 @@ import os
 import shutil
 import sys
 
+from glob2 import glob
 from netCDF4 import Dataset, date2num, num2date
 
 from datetime import datetime, timedelta
@@ -79,6 +80,8 @@ def smooth(files):
             # Change the creation date in the filename to today
             fn_split[8] = now.strftime("C-%Y%m%d.nc")
             fn_new = os.path.join(dirname, 'resample', "_".join(fn_split))
+        else:
+            fn_new = fn_new.replace('.nc', '-resample.nc')
 
         # Add the new file name to the list of new file names
         output_names.append(fn_new)
@@ -129,21 +132,22 @@ def smooth(files):
         # variable to resample
         in_vars = set([x for x in ds.variables])
         # print('input file vars', in_vars)
-        z = in_vars.intersection(['PRES', 'TEMP', 'PSAL', 'DENSITY', 'SIGMA_T0', 'DOX2'])
+        z = in_vars.intersection(['PRES', 'TEMP', 'PSAL', 'DENSITY', 'SIGMA_T0', 'DOX2', 'AIRT', 'RELH', 'SW', 'LW', 'WSPD', 'CPHL', 'TURB', 'BB', 'ATMP', 'xCO2_AIR', 'xCO2_SW'])
         print ('vars to smooth', z)
         qc = np.ones_like(datetime_time)
 
         # interpolate the time to get the distance to the nearest point
         f = interp1d(np.array(time_masked), np.array(time_masked), kind='nearest', bounds_error=False, fill_value=np.nan)
-        y = (f(sample_datenum) - sample_datenum) * 24 * 3600
+        sample_time_diff = (f(sample_datenum) - sample_datenum) * 24 * 3600
 
-        print('sample distance', y, '(seconds)')
+        print('sample distance', sample_time_diff, '(seconds)')
         var_resample_out = ds_new.createVariable('SAMPLE_TIME_DIFF', 'f4', 'TIME', fill_value=np.NaN, zlib=True)
         var_resample_out.comment = 'seconds to actual sample timestamp'
-        var_resample_out[:] = y
+        var_resample_out[:] = sample_time_diff
 
         for resample_var in z:
 
+            qc = np.ones_like(datetime_time)
             var_to_smooth_in = ds.variables[resample_var]
             if resample_var + '_quality_control' in ds.variables:
                 print('using qc : ', resample_var + "_quality_control")
@@ -165,19 +169,22 @@ def smooth(files):
 
             # mark time cells bad where there are less than 3 samples in +/- 2.2 hours
             bad = 0
-            for v in range(0, len(sample_datenum)):
-                time_cell_min = np.where(time_masked > (sample_datenum[v] - 1.5/24)) # TODO: only works when time.units='days since .....'
-                time_cell_max = np.where(time_masked < (sample_datenum[v] + 1.5/24))
-                # print(np.shape(time_cell_max), np.shape(time_cell_min))
-                if np.shape(time_cell_min)[1] > 0 and np.shape(time_cell_max)[1] > 0:
-                    #print(v, time_cell_max[0][-1], time_cell_min[0][0], time_cell_max[0][-1]-time_cell_min[0][0])
-                    #print(dy[0][-1]-dx[0][0])
-                    if (time_cell_max[0][-1]-time_cell_min[0][0]) < 1:
-                        y[v] = np.nan
-                        bad += 1
-                else:
-                    y[v] = np.nan
-                    bad += 1
+            # for v in range(0, len(sample_datenum)):
+            #     time_cell_min = np.where(time_masked > (sample_datenum[v] - 24/24)) # TODO: only works when time.units='days since .....'
+            #     time_cell_max = np.where(time_masked < (sample_datenum[v] + 24/24))
+            #     # print(np.shape(time_cell_max), np.shape(time_cell_min))
+            #     if np.shape(time_cell_min)[1] > 0 and np.shape(time_cell_max)[1] > 0:
+            #         #print(v, time_cell_max[0][-1], time_cell_min[0][0], time_cell_max[0][-1]-time_cell_min[0][0])
+            #         #print(dy[0][-1]-dx[0][0])
+            #         if (time_cell_max[0][-1]-time_cell_min[0][0]) < 1:
+            #             y[v] = np.nan
+            #             bad += 1
+            #     else:
+            #         y[v] = np.nan
+            #         bad += 1
+            too_far_msk = sample_time_diff > 3600*1.5
+            bad = sum(too_far_msk)
+            y[too_far_msk] = np.nan
             print('number bad', bad)
 
             #  create output variables
@@ -193,7 +200,7 @@ def smooth(files):
         #  create history
         ds_new.history += '\n' + now.strftime("%Y-%m-%d : ") + 'resampled data created from ' + os.path.basename(filepath)
 
-        ds_new.file_version = 'Level 2 – Derived Products'
+        ds_new.file_version = "Level 2 - Derived Products"
         ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
         ds_new.time_coverage_start = sample_datetime[0].strftime(ncTimeFormat)
         ds_new.time_coverage_end = sample_datetime[-1].strftime(ncTimeFormat)
@@ -222,4 +229,8 @@ if __name__ == "__main__":
 
     # netCDFfile = sys.argv[1]
 
-    smooth(sys.argv[1:])
+    files = []
+    for f in sys.argv[1:]:
+        files.extend(glob(f))
+
+    smooth(files)

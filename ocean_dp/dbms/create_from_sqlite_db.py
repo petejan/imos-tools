@@ -124,8 +124,25 @@ def create(file):
 
             n += 1
 
+    # generate the time data
+    vars = cur_vars.execute(sql_select_vars)
+
+    rows = cur.execute('SELECT * FROM variable_depth WHERE name == "TIME" ORDER BY CAST(nominal_depth AS REAL)')
+    row = cur.fetchone()
+
+    print('time rows', cur.rowcount, len(row[5]))
+
+    number_samples_read = len(row[5])
+
+    tDim = ncOut.createDimension("TIME", number_samples_read)
+    ncTimesOut = ncOut.createVariable("TIME", "d", ("TIME",), zlib=True)
+    ncTimesOut.long_name = "time"
+    ncTimesOut.units = "days since 1950-01-01 00:00:00 UTC"
+    ncTimesOut.calendar = "gregorian"
+    ncTimesOut.axis = "T"
+    ncTimesOut[:] = row[5]
+
     # generate the data for each variable
-    tDim = None
     vars = cur_vars.execute(sql_select_vars)
     for var in vars:
         var_name = var[0]
@@ -137,13 +154,6 @@ def create(file):
         print('rows', cur.rowcount, len(row[5]))
 
         number_samples_read = len(row[5])
-        if not tDim:
-            tDim = ncOut.createDimension("TIME", number_samples_read)
-            ncTimesOut = ncOut.createVariable("TIME", "d", ("TIME",), zlib=True)
-            ncTimesOut.long_name = "time"
-            ncTimesOut.units = "days since 1950-01-01 00:00:00 UTC"
-            ncTimesOut.calendar = "gregorian"
-            ncTimesOut.axis = "T"
 
         #iDim = ncOut.createDimension("INSTANCE_"+var_name, var[1])
 
