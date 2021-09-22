@@ -67,6 +67,9 @@ nameMap["SBEOXTC"] = "DOX_TEMP"
 nameMap["OXSOLMMKG"] = "OXSOL"
 nameMap["DENSITY00"] = "DENSITY"
 nameMap["DEPSM"] = "DEPTH"
+nameMap["FLECOAFL"] = "CPHL"
+nameMap["GTDDOP0"] = "TOTAL_GAS_PRESSURE"
+nameMap["GTDDOT0"] = "TEMP_GTD"
 nameMap["FLAG"] = None  # don't keep this variable
 
 # also map units .....
