@@ -84,15 +84,17 @@ def parse(file):
     cur = conn.cursor()
 
     # read instrument info
-    cur.execute('SELECT * FROM instruments')
+    cur.execute('SELECT model, serialID, firmwareVersion, partNumber FROM instruments')
 
     row = cur.fetchone()
 
-    instrument_model = row[2]
+    instrument_model = str(row[0].encode("ascii"))
     instrument_serial_number = str(row[1])
     ncOut.instrument = 'RBR ; ' + instrument_model
     ncOut.instrument_model = instrument_model
     ncOut.instrument_serial_number = instrument_serial_number
+    ncOut.instrument_firmware_version = row[2]
+    ncOut.instrument_part_number = row[3]
 
     # create the netCDF TIME, PROFILE, PROFILE_SAMPLE variables
 
@@ -120,7 +122,7 @@ def parse(file):
 
     # fetch the channel info
     cur = conn.cursor()
-    cur.execute('SELECT * FROM channels')
+    cur.execute('select channelID, shortname, longName, units, longNamePlainText, unitsPlainText, serialID from channels c join instrumentChannels ic USING (channelID) left join instrumentSensors is2 USING (channelOrder)')
 
     row = cur.fetchone()
     #print(cur.description)
@@ -133,7 +135,8 @@ def parse(file):
                                           'longName': row[2],
                                           'units': row[3],
                                           'longNamePlainText': row[4],
-                                          'unitsPlainText': row[5]
+                                          'unitsPlainText': row[5],
+                                          'serialID': str(row[6])
                                           }
         row = cur.fetchone()
 
@@ -263,6 +266,10 @@ def parse(file):
                 units = unitMap[units]
 
             nc_var_out.units = units
+
+            if ch['serialID']:
+                if ch['serialID'] != 'None':
+                    nc_var_out.sensor_serial_number = ch['serialID']
 
             data_channels.append([i, ch, nc_var_out])
         i = i + 1

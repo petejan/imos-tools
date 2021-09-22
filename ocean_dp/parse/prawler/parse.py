@@ -180,7 +180,7 @@ def parse(files):
                     times_out.append(x['dt'] + timedelta(seconds = (dt * n)))
 
                 for x in d:
-                    print (x['dt'], x['hdr'])
+                    #print (x['dt'], x['hdr'])
                     if 'CTD' in x:
                         n = 0
                         raw_data = x['CTD']
@@ -234,9 +234,9 @@ def parse(files):
 
     ncOut = Dataset(outputName, 'w', format='NETCDF4')
 
-    ncOut.instrument = 'NOAA - Prawler'
-    ncOut.instrument_model = 'Prawler'
-    ncOut.instrument_serial_number = '4'
+    ncOut.instrument = 'NOAA - PRAWLER'
+    ncOut.instrument_model = 'PRAWLER'
+    ncOut.instrument_serial_number = 'unknown'
     ncOut.number_of_profiles = np.int32(n_profile)
 
     if last_gps:
