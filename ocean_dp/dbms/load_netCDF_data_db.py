@@ -158,6 +158,18 @@ def postgres_insert(file_name):
             if nc.variables['TIME'].long_name == 'time':
                 ts = num2date(nc.variables['TIME'], units=nc.variables['TIME'].units, calendar=nc.variables['TIME'].calendar).flatten()
 
+        lat = float(nc.variables['LATITUDE'][0])
+        lon = float(nc.variables['LONGITUDE'][0])
+        depth = float(nc.variables['NOMINAL_DEPTH'][0])
+        sensor = nc.instrument
+
+        print("file coords, sensor", lat, lon, depth, sensor)
+
+        # insert data into file_coords
+        cur.execute("INSERT INTO file_sensor_coords (file_id, lat, lon, depth, sensor)"
+                    "VALUES (%s, %s, %s, %s, %s)",
+                    (file_id, lat, lon, depth, sensor))
+
         # insert all variable metadata
         for var_name in nc.variables:
             var = nc.variables[var_name]
@@ -215,7 +227,7 @@ def postgres_insert(file_name):
                 print('variable', var_name, var_type, units)
 
             # insert variables into database
-            cur.execute("INSERT INTO variables (file_id, variable, name, units, dimensions, is_aux, is_coord, aux_vars, type)"
+            cur.execute("INSERT INTO variable (file_id, variable, name, units, dimensions, is_aux, is_coord, aux_vars, type)"
                         "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)",
                         (file_id, var_name, name, units, buf, is_aux, is_coord, aux_vars, var_type))
 
@@ -231,7 +243,7 @@ def postgres_insert(file_name):
                     print('var-att', var_name, att_name, att_type)
 
                 # insert variables_attributes into database
-                cur.execute("INSERT INTO variables_attributes (file_id, variable, name, type, value)"
+                cur.execute("INSERT INTO variable_attributes (file_id, variable, name, type, value)"
                             "VALUES (%s, %s, %s, %s, %s)",
                             (file_id , var_name, att_name, att_type, str(att_value)))
 
@@ -247,9 +259,9 @@ def postgres_insert(file_name):
                     dval = numpy.float(val)
 
                     # insert data into database
-                    cur.execute("INSERT INTO variable_data (file_id, variable, indx, timestamp, value)"
-                                "VALUES (%s, %s, %s, %s, %s)",
-                                (file_id, var_name, i, str(ts[i]), dval))
+                    cur.execute("INSERT INTO variable_data (file_id, variable, idx, deployment, lat, lon, depth, sensor, timestamp, value)"
+                                "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                                (file_id, var_name, i, deployment_code, lat, lon, depth, sensor, str(ts[i]), dval))
                     i = i + 1
 
     except IntegrityError as e:

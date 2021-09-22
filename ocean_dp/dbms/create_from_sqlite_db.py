@@ -95,10 +95,10 @@ def create(file):
 
         iDim = ncOut.createDimension("INSTANCE_"+var_name, var[1])
 
-        varOutFn = ncOut.createVariable("FILE_"+var_name, "i4", ("INSTANCE_"+var_name))
+        varOutFn = ncOut.createVariable("IDX_"+var_name, "i4", ("INSTANCE_"+var_name))
         n = 0
         while row:
-            print('create-file', row[1], row[6])
+            print('create-file-index', row[1], row[6])
             varOutFn[n] = row[0]
             row = cur.fetchone()
 
