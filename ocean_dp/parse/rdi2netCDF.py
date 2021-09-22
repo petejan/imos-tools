@@ -147,39 +147,39 @@ def rdi_parse(files):
                 for i in data:
                     sum += i
 
-                #print("length ", ensemble_len)
+                print("ensemble length ", ensemble_len)
                 ensemble = binary_file.read(ensemble_len-4)
                 for i in ensemble:
                     sum += i
 
                 sum = sum % 65536
                 (cksum,) = struct.unpack("<H", binary_file.read(2))
-                #print("checksum ", cksum, sum)
+                print("checksum ", cksum, sum)
 
                 if cksum == sum:
                     header = struct.unpack(header_decoder["unpack"], ensemble[0:2])
                     header_decoded = dict(zip(header_decoder['keys'], header))
-                    #print("header ", header_decoded)
+                    print("header ", header)
 
                     n = 2
                     addrs = [0 for x in range(0, header_decoded["dataTypes"])]
                     for i in range(0, header_decoded["dataTypes"]):
                         addr_data = ensemble[n:n+2]
                         addrs[i] = struct.unpack("<H", addr_data)[0]
-                        #print("addr ", addrs[i])
+                        print("addr ", addrs[i])
                         n += + 2
 
-                    while n < (ensemble_len - 4):
+                    while n < (ensemble_len - 6):
                         data = ensemble[n:n+2]
+                        print(n, "data hdr ", data, 'total len', ensemble_len - 6)
                         n += 2
-                        #print("data hdr ", data)
                         try:
                             if data == b'\x00\x00':  # fixed header
                                 data = ensemble[n:n+57]
                                 n += 57
                                 fixed = struct.unpack(fixed_decoder["unpack"], data)
                                 fixed_decoded = dict(zip(fixed_decoder['keys'], fixed))
-                                #print("fixed ", fixed_decoded)
+                                print("fixed ", fixed)
 
                                 num_cells = fixed_decoded['num_cells']
                                 num_beams = fixed_decoded['num_beam']
@@ -239,7 +239,7 @@ def rdi_parse(files):
                                 n += 63
                                 variable = struct.unpack(variable_decoder["unpack"], data)
                                 variable_decoded = dict(zip(variable_decoder['keys'], variable))
-                                #print("variable header ", variable_decoded)
+                                print("variable header ", variable)
 
                                 ts = datetime.datetime(year=variable_decoded['rtc_cen']*100 + variable_decoded['rtc_year'],
                                                        month=variable_decoded['rtc_month'], day=variable_decoded['rtc_day'],
@@ -370,7 +370,7 @@ def rdi_parse(files):
     # add fixed header data as attributes
     for x in fixed_decoded:
         #print("fixed value ", x)
-        print(x, " type ", type(fixed_decoded[x]))
+        #print(x, " type ", type(fixed_decoded[x]))
         if fixed_decoded[x] < np.iinfo(np.int32).max:
             ncOut.setncattr("instrument_setup_fixed_" + x, np.int32(fixed_decoded[x]))
 
