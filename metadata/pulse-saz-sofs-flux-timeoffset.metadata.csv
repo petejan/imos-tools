@@ -13,6 +13,8 @@ VAR_ATT,TIME,SOFS-6-2017,SBE37SM-RS485,03708764,20/3/16,8/11/16,,,,comment_scale
 
 VAR_ATT,TIME,,SBE37,1778,2013-05-05,2015-03-27,,,,comment_scale_offset,str,"1 -1"
 
+VAR_ATT,TIME,SOFS-7-2018,MS9,0027,2018-03-06,2018-07-16,,,,comment_scale_offset,str,"1 -120"
+
 VAR_ATT,TIME,SOFS-7.5-2018,Starmon mini,4035,23/8/18,10/4/19,,,,comment_scale_offset,str,1.0 -0.416666666666667
 VAR_ATT,TIME,SOFS-7.5-2018,Starmon mini,4039,23/8/18,10/4/19,,,,comment_scale_offset,str,1.0 -0.416666666666667
 VAR_ATT,TIME,SOFS-7.5-2018,Starmon mini,4047,23/8/18,10/4/19,,,,comment_scale_offset,str,1.0 -0.416666666666667

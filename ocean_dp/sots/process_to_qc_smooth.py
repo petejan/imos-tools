@@ -204,6 +204,8 @@ for fn in ncFiles:
     f = ocean_dp.qc.rate_of_change.rate_of_change(f, 'TEMP', q['rate_max'], 3)
 
     if has_cndc:
+        f = ocean_dp.qc.global_range.global_range(f, 'CNDC', 4.5, 3)
+
         # salinity QC
         for q in psal_qc_params:
             if q['depth'] > ndepth:

@@ -169,11 +169,11 @@ def parse(file):
     ncVarOut.units = "nm"
     ncVarOut[:] = wlens
 
-    ncVarOut = ncOut.createVariable('radiation', "f4", ("TIME", "WAVELENGTH"), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
+    ncVarOut = ncOut.createVariable('RAD', "f4", ("WAVELENGTH", "TIME"), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
     ncVarOut.units = units
     data_array = np.array([d for d in data])
     print(data_array.shape)
-    ncVarOut[:] = data_array
+    ncVarOut[:] = data_array.transpose()
 
     ncOut.setncattr("time_coverage_start", num2date(ncTimesOut[0], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
     ncOut.setncattr("time_coverage_end", num2date(ncTimesOut[-1], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))

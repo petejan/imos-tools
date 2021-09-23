@@ -15,6 +15,8 @@ GLOBAL,,,230A-101,110287,27/9/09,18/3/10,,,,deployment_code,str,Pulse-6-2009
 GLOBAL,,,GTD,29-102-15,27/9/09,18/3/10,,,,deployment_code,str,Pulse-6-2009
 GLOBAL,,,TDR-2050,14788,27/9/09,18/3/10,,,,deployment_code,str,Pulse-6-2009
 GLOBAL,,,SBE16plusV2,01606331,27/9/09,18/3/10,,,,deployment_code,str,Pulse-6-2009
+GLOBAL,,,SBE16plusV2,unknown,27/9/09,18/3/10,,,,deployment_code,str,Pulse-6-2009
+GLOBAL,,,SBE16plusV2,unknown,27/9/09,18/3/10,,,,instrument_serial_number,str,01606331
 GLOBAL,,,SBE37SM-RS232,6962,27/9/09,18/3/10,,,,deployment_code,str,Pulse-6-2009
 GLOBAL,,,SBE43,431635,27/9/09,18/3/10,,,,deployment_code,str,Pulse-6-2009
 GLOBAL,,,Minilog-T,4823,27/9/09,18/3/10,,,,deployment_code,str,Pulse-6-2009
@@ -43,13 +45,13 @@ VAR_ATT,PAR,Pulse-6-2009,MDS-MKVL,200341,,,,,,comment_scale_offset,str,0.7985 0
 VAR_ATT,PAR,Pulse-6-2009,MDS-MKVL,200664,,,,,,comment_scale_offset,str,0.8860 0.8175
 VAR_ATT,PAR,Pulse-6-2009,MDS-MKVL,200665,,,,,,comment_scale_offset,str,0.7564 0
 VAR_ATT,TIME,Pulse-6-2009,MDS-MKVL,200665,,,,,,comment_scale_offset,str,1.0 -0.4166666666667
-VAR_ATT,VOLT2,Pulse-6-2009,SBE16plusV2,01606331,,,,,,comment_attached_instrument,str,Wet-LABS ; PARS-134
-VAR_ATT,VOLT2,Pulse-6-2009,SBE16plusV2,01606331,,,,,,calibration_PAR_Im,float64,1.3589
-VAR_ATT,VOLT2,Pulse-6-2009,SBE16plusV2,01606331,,,,,,calibration_PAR_analog_A1,float64,0.8902
-VAR_ATT,VOLT2,Pulse-6-2009,SBE16plusV2,01606331,,,,,,calibration_PAR_analog_A0,float64,1.3145
-VAR_ATT,VOLT2,Pulse-6-2009,SBE16plusV2,01606331,,,,,,calibration_PAR_date,str,"Mar. 27, 2009"
-VAR_ATT,VOLT2,Pulse-6-2009,SBE16plusV2,01606331,,,,,,calibration_PAR_facility,str,Wet-LABS
-VAR_ATT,VOLT2,Pulse-6-2009,SBE16plusV2,01606331,,,,,,calibration_PAR_SN,str,PARS-134
+VAR_ATT,V1,Pulse-6-2009,SBE16plusV2,unknown,,,,,,comment_attached_instrument,str,Wet-LABS ; PARS-134
+VAR_ATT,V1,Pulse-6-2009,SBE16plusV2,unknown,,,,,,calibration_PAR_Im,float64,1.3589
+VAR_ATT,V1,Pulse-6-2009,SBE16plusV2,unknown,,,,,,calibration_PAR_analog_A1,float64,0.8902
+VAR_ATT,V1,Pulse-6-2009,SBE16plusV2,unknown,,,,,,calibration_PAR_analog_A0,float64,1.3145
+VAR_ATT,V1,Pulse-6-2009,SBE16plusV2,unknown,,,,,,calibration_PAR_date,str,"Mar. 27, 2009"
+VAR_ATT,V1,Pulse-6-2009,SBE16plusV2,unknown,,,,,,calibration_PAR_facility,str,Wet-LABS
+VAR_ATT,V1,Pulse-6-2009,SBE16plusV2,unknown,,,,,,calibration_PAR_SN,str,PARS-134
 VAR,NOMINAL_DEPTH,Pulse-6-2009,Optode 3975,1161,27/9/09,18/3/10,NOMINAL_DEPTH,(),(),,float64,37.5
 VAR,NOMINAL_DEPTH,Pulse-6-2009,MDS-MKVL,200341,27/9/09,18/3/10,NOMINAL_DEPTH,(),(),,float64,-0.1
 VAR,NOMINAL_DEPTH,Pulse-6-2009,MDS-MKVL,200664,27/9/09,18/3/10,NOMINAL_DEPTH,(),(),,float64,27
@@ -65,7 +67,7 @@ VAR,NOMINAL_DEPTH,Pulse-6-2009,RAS-3-48-500,11906-01,27/9/09,18/3/10,NOMINAL_DEP
 VAR,NOMINAL_DEPTH,Pulse-6-2009,230A-101,110287,27/9/09,18/3/10,NOMINAL_DEPTH,(),(),,float64,37.5
 VAR,NOMINAL_DEPTH,Pulse-6-2009,GTD,29-102-15,27/9/09,18/3/10,NOMINAL_DEPTH,(),(),,float64,37.5
 VAR,NOMINAL_DEPTH,Pulse-6-2009,TDR-2050,14788,27/9/09,18/3/10,NOMINAL_DEPTH,(),(),,float64,630
-VAR,NOMINAL_DEPTH,Pulse-6-2009,SBE16plusV2,01606331,27/9/09,18/3/10,NOMINAL_DEPTH,(),(),,float64,37.5
+VAR,NOMINAL_DEPTH,Pulse-6-2009,SBE16plusV2,unknown,27/9/09,18/3/10,NOMINAL_DEPTH,(),(),,float64,37.5
 VAR,NOMINAL_DEPTH,Pulse-6-2009,SBE37SM-RS232,6962,27/9/09,18/3/10,NOMINAL_DEPTH,(),(),,float64,100
 VAR,NOMINAL_DEPTH,Pulse-6-2009,SBE43,431635,27/9/09,18/3/10,NOMINAL_DEPTH,(),(),,float64,37.5
 VAR,NOMINAL_DEPTH,Pulse-6-2009,Minilog-T,4823,27/9/09,18/3/10,NOMINAL_DEPTH,(),(),,float64,50
@@ -267,13 +269,13 @@ VAR_ATT,PAR,Pulse-8-2011,MDS-MKVL,200341,,,,,,long_name,str,omnidirectional phot
 VAR_ATT,PAR,Pulse-8-2011,MDS-MKVL,200341,,,,,,coeff,str,"-1.05325996875763,1.05326104164124,0,0,"
 VAR_ATT,PAR,Pulse-8-2011,MDS-MKVL,200664,,,,,,coeff,str,"-0.817469000816345,0.817468822002411,0,0,"
 VAR_ATT,PAR,Pulse-8-2011,MDS-MKVL,200665,,,,,,coeff,str,"-1.13689994812012,1.13689994812012,0,0,"
-VAR_ATT,VOLT2,Pulse-8-2011,SBE16plusV2,01606331,,,,,,comment_attached_instrument,str,Wet-LABS ; PARS-134
-VAR_ATT,VOLT2,Pulse-8-2011,SBE16plusV2,01606331,,,,,,calibration_PAR_Im,float64,1.3589
-VAR_ATT,VOLT2,Pulse-8-2011,SBE16plusV2,01606331,,,,,,calibration_PAR_analog_A1,float64,0.8902
-VAR_ATT,VOLT2,Pulse-8-2011,SBE16plusV2,01606331,,,,,,calibration_PAR_analog_A0,float64,1.3145
-VAR_ATT,VOLT2,Pulse-8-2011,SBE16plusV2,01606331,,,,,,calibration_PAR_date,str,"Mar. 27, 2009"
-VAR_ATT,VOLT2,Pulse-8-2011,SBE16plusV2,01606331,,,,,,calibration_PAR_facility,str,Wet-LABS
-VAR_ATT,VOLT2,Pulse-8-2011,SBE16plusV2,01606331,,,,,,calibration_PAR_SN,str,PARS-134
+VAR_ATT,V1,Pulse-8-2011,SBE16plusV2,01606331,,,,,,comment_attached_instrument,str,Wet-LABS ; PARS-134
+VAR_ATT,V1,Pulse-8-2011,SBE16plusV2,01606331,,,,,,calibration_PAR_Im,float64,1.3589
+VAR_ATT,V1,Pulse-8-2011,SBE16plusV2,01606331,,,,,,calibration_PAR_analog_A1,float64,0.8902
+VAR_ATT,V1,Pulse-8-2011,SBE16plusV2,01606331,,,,,,calibration_PAR_analog_A0,float64,1.3145
+VAR_ATT,V1,Pulse-8-2011,SBE16plusV2,01606331,,,,,,calibration_PAR_date,str,"Mar. 27, 2009"
+VAR_ATT,V1,Pulse-8-2011,SBE16plusV2,01606331,,,,,,calibration_PAR_facility,str,Wet-LABS
+VAR_ATT,V1,Pulse-8-2011,SBE16plusV2,01606331,,,,,,calibration_PAR_SN,str,PARS-134
 VAR_ATT,PAR_COUNT,Pulse-8-2011,ECO-PARS,PAR-134,,,,,,comment_attached_instrument,str,Wet-LABS ; PARS-134
 VAR_ATT,PAR_COUNT,Pulse-8-2011,ECO-PARS,PAR-134,,,,,,calibration_PAR_Im,float64,1.3589
 VAR_ATT,PAR_COUNT,Pulse-8-2011,ECO-PARS,PAR-134,,,,,,calibration_PAR_digital_A1,float64,2923.6435
@@ -303,6 +305,8 @@ GLOBAL,,,TDR-2050,14786,17/7/12,5/5/13,,,,deployment_code,str,Pulse-9-2012
 GLOBAL,,,TDR-2050,14787,17/7/12,5/5/13,,,,deployment_code,str,Pulse-9-2012
 GLOBAL,,,MBARI-ISUS V3,221,17/7/12,5/5/13,,,,deployment_code,str,Pulse-9-2012
 GLOBAL,,,SBE16plusV2,01606331,17/7/12,5/5/13,,,,deployment_code,str,Pulse-9-2012
+GLOBAL,,,SBE16plusV2,unknown,17/7/12,5/5/13,,,,deployment_code,str,Pulse-9-2012
+GLOBAL,,,SBE16plusV2,unknown,17/7/12,5/5/13,,,,instrument_serial_number,str,01606331
 GLOBAL,,,SBE37SMP-ODO-RS232,3709515,17/7/12,5/5/13,,,,deployment_code,str,Pulse-9-2012
 GLOBAL,,,SBE43,431635,17/7/12,5/5/13,,,,deployment_code,str,Pulse-9-2012
 GLOBAL,,,Minilog-II-T,353253,17/7/12,5/5/13,,,,deployment_code,str,Pulse-9-2012
@@ -346,7 +350,7 @@ VAR,NOMINAL_DEPTH,Pulse-9-2012,DR-1050,14522,17/7/12,5/5/13,NOMINAL_DEPTH,(),(),
 VAR,NOMINAL_DEPTH,Pulse-9-2012,TDR-2050,14786,17/7/12,5/5/13,NOMINAL_DEPTH,(),(),,float64,475
 VAR,NOMINAL_DEPTH,Pulse-9-2012,TDR-2050,14787,17/7/12,5/5/13,NOMINAL_DEPTH,(),(),,float64,630
 VAR,NOMINAL_DEPTH,Pulse-9-2012,MBARI-ISUS V3,221,17/7/12,5/5/13,NOMINAL_DEPTH,(),(),,float64,38.5
-VAR,NOMINAL_DEPTH,Pulse-9-2012,SBE16plusV2,01606331,17/7/12,5/5/13,NOMINAL_DEPTH,(),(),,float64,38.5
+VAR,NOMINAL_DEPTH,Pulse-9-2012,SBE16plusV2,unknown,17/7/12,5/5/13,NOMINAL_DEPTH,(),(),,float64,38.5
 VAR,NOMINAL_DEPTH,Pulse-9-2012,SBE37SMP-ODO-RS232,3709515,17/7/12,5/5/13,NOMINAL_DEPTH,(),(),,float64,100
 VAR,NOMINAL_DEPTH,Pulse-9-2012,SBE43,431635,17/7/12,5/5/13,NOMINAL_DEPTH,(),(),,float64,38.5
 VAR,NOMINAL_DEPTH,Pulse-9-2012,Minilog-II-T,353253,17/7/12,5/5/13,NOMINAL_DEPTH,(),(),,float64,45
@@ -362,6 +366,14 @@ VAR,NOMINAL_DEPTH,Pulse-9-2012,Minilog-II-T,353262,17/7/12,5/5/13,NOMINAL_DEPTH,
 VAR,NOMINAL_DEPTH,Pulse-9-2012,Minilog-II-T,353263,17/7/12,5/5/13,NOMINAL_DEPTH,(),(),,float64,160
 VAR,NOMINAL_DEPTH,Pulse-9-2012,ECO-PAR,135,17/7/12,5/5/13,NOMINAL_DEPTH,(),(),,float64,38.5
 VAR,NOMINAL_DEPTH,Pulse-9-2012,FLNTUS,1596,17/7/12,5/5/13,NOMINAL_DEPTH,(),(),,float64,38.5
+VAR_ATT,V1,Pulse-9-2012,SBE16plusV2,unknown,,,,,,comment_attached_instrument,str,Wet-LABS ; PARS-135
+VAR_ATT,V1,Pulse-9-2012,SBE16plusV2,unknown,,,,,,calibration_PAR_Im,float64,1.3589
+VAR_ATT,V1,Pulse-9-2012,SBE16plusV2,unknown,,,,,,calibration_PAR_analog_A1,float64,0.8946
+VAR_ATT,V1,Pulse-9-2012,SBE16plusV2,unknown,,,,,,calibration_PAR_analog_A0,float64,1.3285
+VAR_ATT,V1,Pulse-9-2012,SBE16plusV2,unknown,,,,,,calibration_PAR_date,str,"Mar. 27, 2009"
+VAR_ATT,V1,Pulse-9-2012,SBE16plusV2,unknown,,,,,,calibration_PAR_facility,str,Wet-LABS
+VAR_ATT,V1,Pulse-9-2012,SBE16plusV2,unknown,,,,,,calibration_PAR_SN,str,PARS-135
+
 VAR_ATT,PAR_COUNT,Pulse-9-2012,ECO-PARS,PAR-135,,,,,,comment_attached_instrument,str,Wet-LABS ; PARS-135
 VAR_ATT,PAR_COUNT,Pulse-9-2012,ECO-PARS,PAR-135,,,,,,calibration_PAR_Im,float64,1.3589
 VAR_ATT,PAR_COUNT,Pulse-9-2012,ECO-PARS,PAR-135,,,,,,calibration_PAR_digital_A1,float64,2943.4639
@@ -480,6 +492,14 @@ VAR,NOMINAL_DEPTH,Pulse-10-2013,Minilog-II-T,354211,7/5/13,13/10/13,NOMINAL_DEPT
 VAR,NOMINAL_DEPTH,Pulse-10-2013,Minilog-II-T,354212,7/5/13,13/10/13,NOMINAL_DEPTH,(),(),,float64,480
 VAR,NOMINAL_DEPTH,Pulse-10-2013,ECO-PAR,134,7/5/13,13/10/13,NOMINAL_DEPTH,(),(),,float64,28
 VAR,NOMINAL_DEPTH,Pulse-10-2013,FLNTUS,1186,7/5/13,13/10/13,NOMINAL_DEPTH,(),(),,float64,28
+VAR_ATT,V1,Pulse-10-2013,SBE16plusV2,01606330,,,,,,comment_attached_instrument,str,Wet-LABS ; PARS-134
+VAR_ATT,V1,Pulse-10-2013,SBE16plusV2,01606330,,,,,,calibration_PAR_Im,float64,1.3589
+VAR_ATT,V1,Pulse-10-2013,SBE16plusV2,01606330,,,,,,calibration_PAR_analog_A1,float64,0.8902
+VAR_ATT,V1,Pulse-10-2013,SBE16plusV2,01606330,,,,,,calibration_PAR_analog_A0,float64,1.3145
+VAR_ATT,V1,Pulse-10-2013,SBE16plusV2,01606330,,,,,,calibration_PAR_date,str,"Mar. 27, 2009"
+VAR_ATT,V1,Pulse-10-2013,SBE16plusV2,01606330,,,,,,calibration_PAR_facility,str,Wet-LABS
+VAR_ATT,V1,Pulse-10-2013,SBE16plusV2,01606330,,,,,,calibration_PAR_SN,str,PARS-134
+
 VAR_ATT,PAR_COUNT,Pulse-10-2013,ECO-PARS,unknown,,,,,,comment_attached_instrument,str,Wet-LABS ; PARS-134
 VAR_ATT,PAR_COUNT,Pulse-10-2013,ECO-PARS,unknown,,,,,,calibration_PAR_Im,float64,1.3589
 VAR_ATT,PAR_COUNT,Pulse-10-2013,ECO-PARS,unknown,,,,,,calibration_PAR_digital_A1,float64,2923.6435
@@ -595,6 +615,103 @@ VAR,NOMINAL_DEPTH,Pulse-11-2015,Minilog-II-T,354211,20/3/15,14/4/16,NOMINAL_DEPT
 VAR,NOMINAL_DEPTH,Pulse-11-2015,Minilog-II-T,354212,20/3/15,14/4/16,NOMINAL_DEPTH,(),(),,float64,480
 VAR,NOMINAL_DEPTH,Pulse-11-2015,ECO-PAR,134,20/3/15,14/4/16,NOMINAL_DEPTH,(),(),,float64,28
 VAR,NOMINAL_DEPTH,Pulse-11-2015,FLNTUS,1186,20/3/15,14/4/16,NOMINAL_DEPTH,(),(),,float64,28
+
+VAR_ATT,V0,Pulse-6-2009,SBE16plusV2,unknown,,,,,,calibration_SerialNumber,str,"1634"
+VAR_ATT,V0,Pulse-6-2009,SBE16plusV2,unknown,,,,,,calibration_CalibrationDate,str,"15-May-09p"
+VAR_ATT,V0,Pulse-6-2009,SBE16plusV2,unknown,,,,,,calibration_Soc,str,0.4263
+VAR_ATT,V0,Pulse-6-2009,SBE16plusV2,unknown,,,,,,calibration_offset,str,-0.4382
+VAR_ATT,V0,Pulse-6-2009,SBE16plusV2,unknown,,,,,,calibration_A,str,-0.0025795
+VAR_ATT,V0,Pulse-6-2009,SBE16plusV2,unknown,,,,,,calibration_B,str,0.00016628
+VAR_ATT,V0,Pulse-6-2009,SBE16plusV2,unknown,,,,,,calibration_C,str,-3.1959e-06
+VAR_ATT,V0,Pulse-6-2009,SBE16plusV2,unknown,,,,,,calibration_D0,str,2.5826
+VAR_ATT,V0,Pulse-6-2009,SBE16plusV2,unknown,,,,,,calibration_D1,str,0.00019263
+VAR_ATT,V0,Pulse-6-2009,SBE16plusV2,unknown,,,,,,calibration_D2,str,-0.04648
+VAR_ATT,V0,Pulse-6-2009,SBE16plusV2,unknown,,,,,,calibration_E,str,0.036
+VAR_ATT,V0,Pulse-6-2009,SBE16plusV2,unknown,,,,,,calibration_Tau20,str,5.01
+VAR_ATT,V0,Pulse-6-2009,SBE16plusV2,unknown,,,,,,calibration_H1,str,-0.033
+VAR_ATT,V0,Pulse-6-2009,SBE16plusV2,unknown,,,,,,calibration_H2,str,5000.
+VAR_ATT,V0,Pulse-6-2009,SBE16plusV2,unknown,,,,,,calibration_H3,str,1450.
+
+VAR_ATT,V0,Pulse-7-2010,SBE16plusV2,01606331,,,,,,calibration_SerialNumber,str,"1635"
+VAR_ATT,V0,Pulse-7-2010,SBE16plusV2,01606331,,,,,,calibration_CalibrationDate,str,"15-May-09"
+VAR_ATT,V0,Pulse-7-2010,SBE16plusV2,01606331,,,,,,calibration_Soc,str,0.4873
+VAR_ATT,V0,Pulse-7-2010,SBE16plusV2,01606331,,,,,,calibration_offset,str,-0.4886
+VAR_ATT,V0,Pulse-7-2010,SBE16plusV2,01606331,,,,,,calibration_A,str,-0.0024093
+VAR_ATT,V0,Pulse-7-2010,SBE16plusV2,01606331,,,,,,calibration_B,str,0.00011208
+VAR_ATT,V0,Pulse-7-2010,SBE16plusV2,01606331,,,,,,calibration_C,str,-2.4562e-06
+VAR_ATT,V0,Pulse-7-2010,SBE16plusV2,01606331,,,,,,calibration_D0,str,2.5826
+VAR_ATT,V0,Pulse-7-2010,SBE16plusV2,01606331,,,,,,calibration_D1,str,0.00019263
+VAR_ATT,V0,Pulse-7-2010,SBE16plusV2,01606331,,,,,,calibration_D2,str,-0.04648
+VAR_ATT,V0,Pulse-7-2010,SBE16plusV2,01606331,,,,,,calibration_E,str,0.036
+VAR_ATT,V0,Pulse-7-2010,SBE16plusV2,01606331,,,,,,calibration_Tau20,str,5.56
+VAR_ATT,V0,Pulse-7-2010,SBE16plusV2,01606331,,,,,,calibration_H1,str,-0.033
+VAR_ATT,V0,Pulse-7-2010,SBE16plusV2,01606331,,,,,,calibration_H2,str,5000.
+VAR_ATT,V0,Pulse-7-2010,SBE16plusV2,01606331,,,,,,calibration_H3,str,1450.
+
+VAR_ATT,V0,Pulse-8-2011,SBE16plusV2,01606330,,,,,,calibration_SerialNumber,str,"1634"
+VAR_ATT,V0,Pulse-8-2011,SBE16plusV2,01606330,,,,,,calibration_CalibrationDate,str,"15-May-09p"
+VAR_ATT,V0,Pulse-8-2011,SBE16plusV2,01606330,,,,,,calibration_Soc,str,0.4263
+VAR_ATT,V0,Pulse-8-2011,SBE16plusV2,01606330,,,,,,calibration_offset,str,-0.4382
+VAR_ATT,V0,Pulse-8-2011,SBE16plusV2,01606330,,,,,,calibration_A,str,-0.0025795
+VAR_ATT,V0,Pulse-8-2011,SBE16plusV2,01606330,,,,,,calibration_B,str,0.00016628
+VAR_ATT,V0,Pulse-8-2011,SBE16plusV2,01606330,,,,,,calibration_C,str,-3.1959e-06
+VAR_ATT,V0,Pulse-8-2011,SBE16plusV2,01606330,,,,,,calibration_D0,str,2.5826
+VAR_ATT,V0,Pulse-8-2011,SBE16plusV2,01606330,,,,,,calibration_D1,str,0.00019263
+VAR_ATT,V0,Pulse-8-2011,SBE16plusV2,01606330,,,,,,calibration_D2,str,-0.04648
+VAR_ATT,V0,Pulse-8-2011,SBE16plusV2,01606330,,,,,,calibration_E,str,0.036
+VAR_ATT,V0,Pulse-8-2011,SBE16plusV2,01606330,,,,,,calibration_Tau20,str,5.01
+VAR_ATT,V0,Pulse-8-2011,SBE16plusV2,01606330,,,,,,calibration_H1,str,-0.033
+VAR_ATT,V0,Pulse-8-2011,SBE16plusV2,01606330,,,,,,calibration_H2,str,5000.
+VAR_ATT,V0,Pulse-8-2011,SBE16plusV2,01606330,,,,,,calibration_H3,str,1450.
+
+VAR_ATT,V0,Pulse-9-2012,SBE16plusV2,unknown,,,,,,calibration_SerialNumber,str,"1635"
+VAR_ATT,V0,Pulse-9-2012,SBE16plusV2,unknown,,,,,,calibration_CalibrationDate,str,"15-May-09"
+VAR_ATT,V0,Pulse-9-2012,SBE16plusV2,unknown,,,,,,calibration_Soc,str,0.4873
+VAR_ATT,V0,Pulse-9-2012,SBE16plusV2,unknown,,,,,,calibration_offset,str,-0.4886
+VAR_ATT,V0,Pulse-9-2012,SBE16plusV2,unknown,,,,,,calibration_A,str,-0.0024093
+VAR_ATT,V0,Pulse-9-2012,SBE16plusV2,unknown,,,,,,calibration_B,str,0.00011208
+VAR_ATT,V0,Pulse-9-2012,SBE16plusV2,unknown,,,,,,calibration_C,str,-2.4562e-06
+VAR_ATT,V0,Pulse-9-2012,SBE16plusV2,unknown,,,,,,calibration_D0,str,2.5826
+VAR_ATT,V0,Pulse-9-2012,SBE16plusV2,unknown,,,,,,calibration_D1,str,0.00019263
+VAR_ATT,V0,Pulse-9-2012,SBE16plusV2,unknown,,,,,,calibration_D2,str,-0.04648
+VAR_ATT,V0,Pulse-9-2012,SBE16plusV2,unknown,,,,,,calibration_E,str,0.036
+VAR_ATT,V0,Pulse-9-2012,SBE16plusV2,unknown,,,,,,calibration_Tau20,str,5.56
+VAR_ATT,V0,Pulse-9-2012,SBE16plusV2,unknown,,,,,,calibration_H1,str,-0.033
+VAR_ATT,V0,Pulse-9-2012,SBE16plusV2,unknown,,,,,,calibration_H2,str,5000.
+VAR_ATT,V0,Pulse-9-2012,SBE16plusV2,unknown,,,,,,calibration_H3,str,1450.
+
+VAR_ATT,V0,Pulse-10-2013,SBE16plusV2,01606330,,,,,,calibration_SerialNumber,str,"1634"
+VAR_ATT,V0,Pulse-10-2013,SBE16plusV2,01606330,,,,,,calibration_CalibrationDate,str,"15-May-09p"
+VAR_ATT,V0,Pulse-10-2013,SBE16plusV2,01606330,,,,,,calibration_Soc,str,0.4263
+VAR_ATT,V0,Pulse-10-2013,SBE16plusV2,01606330,,,,,,calibration_offset,str,-0.4382
+VAR_ATT,V0,Pulse-10-2013,SBE16plusV2,01606330,,,,,,calibration_A,str,-0.0025795
+VAR_ATT,V0,Pulse-10-2013,SBE16plusV2,01606330,,,,,,calibration_B,str,0.00016628
+VAR_ATT,V0,Pulse-10-2013,SBE16plusV2,01606330,,,,,,calibration_C,str,-3.1959e-06
+VAR_ATT,V0,Pulse-10-2013,SBE16plusV2,01606330,,,,,,calibration_D0,str,2.5826
+VAR_ATT,V0,Pulse-10-2013,SBE16plusV2,01606330,,,,,,calibration_D1,str,0.00019263
+VAR_ATT,V0,Pulse-10-2013,SBE16plusV2,01606330,,,,,,calibration_D2,str,-0.04648
+VAR_ATT,V0,Pulse-10-2013,SBE16plusV2,01606330,,,,,,calibration_E,str,0.036
+VAR_ATT,V0,Pulse-10-2013,SBE16plusV2,01606330,,,,,,calibration_Tau20,str,5.01
+VAR_ATT,V0,Pulse-10-2013,SBE16plusV2,01606330,,,,,,calibration_H1,str,-0.033
+VAR_ATT,V0,Pulse-10-2013,SBE16plusV2,01606330,,,,,,calibration_H2,str,5000.
+VAR_ATT,V0,Pulse-10-2013,SBE16plusV2,01606330,,,,,,calibration_H3,str,1450.
+
+VAR_ATT,V0,Pulse-11-2015,SBE16plusV2,01606330,,,,,,calibration_SerialNumber,str,"1634"
+VAR_ATT,V0,Pulse-11-2015,SBE16plusV2,01606330,,,,,,calibration_CalibrationDate,str,"15-May-09p"
+VAR_ATT,V0,Pulse-11-2015,SBE16plusV2,01606330,,,,,,calibration_Soc,str,0.4263
+VAR_ATT,V0,Pulse-11-2015,SBE16plusV2,01606330,,,,,,calibration_offset,str,-0.4382
+VAR_ATT,V0,Pulse-11-2015,SBE16plusV2,01606330,,,,,,calibration_A,str,-0.0025795
+VAR_ATT,V0,Pulse-11-2015,SBE16plusV2,01606330,,,,,,calibration_B,str,0.00016628
+VAR_ATT,V0,Pulse-11-2015,SBE16plusV2,01606330,,,,,,calibration_C,str,-3.1959e-06
+VAR_ATT,V0,Pulse-11-2015,SBE16plusV2,01606330,,,,,,calibration_D0,str,2.5826
+VAR_ATT,V0,Pulse-11-2015,SBE16plusV2,01606330,,,,,,calibration_D1,str,0.00019263
+VAR_ATT,V0,Pulse-11-2015,SBE16plusV2,01606330,,,,,,calibration_D2,str,-0.04648
+VAR_ATT,V0,Pulse-11-2015,SBE16plusV2,01606330,,,,,,calibration_E,str,0.036
+VAR_ATT,V0,Pulse-11-2015,SBE16plusV2,01606330,,,,,,calibration_Tau20,str,5.01
+VAR_ATT,V0,Pulse-11-2015,SBE16plusV2,01606330,,,,,,calibration_H1,str,-0.033
+VAR_ATT,V0,Pulse-11-2015,SBE16plusV2,01606330,,,,,,calibration_H2,str,5000.
+VAR_ATT,V0,Pulse-11-2015,SBE16plusV2,01606330,,,,,,calibration_H3,str,1450.
+
 VAR_ATT,V1,Pulse-11-2015,SBE16plusV2,01606330,,,,,,comment_attached_instrument,str,Wet-LABS ; PARS-134
 VAR_ATT,V1,Pulse-11-2015,SBE16plusV2,01606330,,,,,,calibration_PAR_Im,float64,1.3589
 VAR_ATT,V1,Pulse-11-2015,SBE16plusV2,01606330,,,,,,calibration_PAR_analog_A1,float64,0.8902
@@ -602,6 +719,47 @@ VAR_ATT,V1,Pulse-11-2015,SBE16plusV2,01606330,,,,,,calibration_PAR_analog_A0,flo
 VAR_ATT,V1,Pulse-11-2015,SBE16plusV2,01606330,,,,,,calibration_PAR_date,str,"Mar. 27, 2009"
 VAR_ATT,V1,Pulse-11-2015,SBE16plusV2,01606330,,,,,,calibration_PAR_facility,str,Wet-LABS
 VAR_ATT,V1,Pulse-11-2015,SBE16plusV2,01606330,,,,,,calibration_PAR_SN,str,PARS-134
+
+VAR_ATT,V4,Pulse-6-2009,SBE16plusV2,unknown,,,,,,long_name,str,optode_oxygen_voltage
+VAR_ATT,V4,Pulse-6-2009,SBE16plusV2,unknown,,,,,,calibration_scale_offset,str,"100 0"
+VAR_ATT,V4,Pulse-7-2010,SBE16plusV2,01606331,,,,,,long_name,str,optode_bphase_voltage
+VAR_ATT,V4,Pulse-7-2010,SBE16plusV2,01606331,,,,,,calibration_scale_offset,str,"12 10"
+VAR_ATT,V4,Pulse-8-2011,SBE16plusV2,01606330,,,,,,long_name,str,optode_bphase_voltage
+VAR_ATT,V4,Pulse-8-2011,SBE16plusV2,01606330,,,,,,calibration_scale_offset,str,"12 10"
+VAR_ATT,V4,Pulse-9-2012,SBE16plusV2,unknown,,,,,,long_name,str,optode_bphase_voltage
+VAR_ATT,V4,Pulse-9-2012,SBE16plusV2,unknown,,,,,,calibration_scale_offset,str,"12 10"
+VAR_ATT,V4,Pulse-10-2013,SBE16plusV2,01606330,,,,,,long_name,str,optode_bphase_voltage
+VAR_ATT,V4,Pulse-10-2013,SBE16plusV2,01606330,,,,,,calibration_scale_offset,str,"12 10"
+VAR_ATT,V4,Pulse-11-2015,SBE16plusV2,01606330,,,,,,long_name,str,optode_bphase_voltage
+VAR_ATT,V4,Pulse-11-2015,SBE16plusV2,01606330,,,,,,calibration_scale_offset,str,"12 10"
+
+VAR_ATT,V4,Pulse-6-2009,SBE16plusV2,unknown,,,,,,sensor_serial_number,str,1161
+VAR_ATT,V4,Pulse-7-2010,SBE16plusV2,01606331,,,,,,sensor_serial_number,str,1161
+VAR_ATT,V4,Pulse-8-2011,SBE16plusV2,01606330,,,,,,sensor_serial_number,str,1158
+VAR_ATT,V4,Pulse-9-2012,SBE16plusV2,unknown,,,,,,sensor_serial_number,str,1158
+VAR_ATT,V4,Pulse-10-2013,SBE16plusV2,01606330,,,,,,sensor_serial_number,str,1420
+VAR_ATT,V4,Pulse-11-2015,SBE16plusV2,01606330,,,,,,sensor_serial_number,str,1420
+
+VAR_ATT,V5,Pulse-6-2009,SBE16plusV2,unknown,,,,,,long_name,str,optode_temp_voltage
+VAR_ATT,V5,Pulse-6-2009,SBE16plusV2,unknown,,,,,,calibration_scale_offset,str,"9 -5"
+VAR_ATT,V5,Pulse-7-2010,SBE16plusV2,01606331,,,,,,log_name,str,optode_temp_voltage
+VAR_ATT,V5,Pulse-7-2010,SBE16plusV2,01606331,,,,,,calibration_scale_offset,str,"9 -5"
+VAR_ATT,V5,Pulse-8-2011,SBE16plusV2,01606330,,,,,,long_name,str,optode_temp_voltage
+VAR_ATT,V5,Pulse-8-2011,SBE16plusV2,01606330,,,,,,calibration_scale_offset,str,"9 -5"
+VAR_ATT,V5,Pulse-9-2012,SBE16plusV2,unknown,,,,,,long_name,str,optode_temp_voltage
+VAR_ATT,V5,Pulse-9-2012,SBE16plusV2,unknown,,,,,,calibration_scale_offset,str,"9 -5"
+VAR_ATT,V5,Pulse-10-2013,SBE16plusV2,01606330,,,,,,long_name,str,optode_temp_voltage
+VAR_ATT,V5,Pulse-10-2013,SBE16plusV2,01606330,,,,,,calibration_scale_offset,str,"9 -5"
+VAR_ATT,V5,Pulse-11-2015,SBE16plusV2,01606330,,,,,,long_name,str,optode_temp_voltage
+VAR_ATT,V5,Pulse-11-2015,SBE16plusV2,01606330,,,,,,calibration_scale_offset,str,"9 -5"
+
+VAR_ATT,V5,Pulse-6-2009,SBE16plusV2,unknown,,,,,,sensor_serial_number,str,1161
+VAR_ATT,V5,Pulse-7-2010,SBE16plusV2,01606331,,,,,,sensor_serial_number,str,1161
+VAR_ATT,V5,Pulse-8-2011,SBE16plusV2,01606330,,,,,,sensor_serial_number,str,1158
+VAR_ATT,V5,Pulse-9-2012,SBE16plusV2,unknown,,,,,,sensor_serial_number,str,1158
+VAR_ATT,V5,Pulse-10-2013,SBE16plusV2,01606330,,,,,,sensor_serial_number,str,1420
+VAR_ATT,V5,Pulse-11-2015,SBE16plusV2,01606330,,,,,,sensor_serial_number,str,1420
+
 GLOBAL,,,RCM8,7773,2009-09-28,2010-09-09,,"","",deployment_code,str,"SAZ47-12-2009"
 GLOBAL,,,ACR8242XS,16211,2009-09-28,2010-09-09,,"","",deployment_code,str,"SAZ47-12-2009"
 GLOBAL,,,ACR8242XS,29300,2009-09-28,2010-09-09,,"","",deployment_code,str,"SAZ47-12-2009"
@@ -1841,100 +1999,100 @@ VAR,NOMINAL_DEPTH,SOFS-6-2017,SWR,245,20/3/17,8/11/17,NOMINAL_DEPTH,(),(),,float
 VAR,NOMINAL_DEPTH,SOFS-6-2017,KILO,3.00E+14,20/3/17,8/11/17,NOMINAL_DEPTH,(),(),,float64,1
 VAR,NOMINAL_DEPTH,SOFS-6-2017,MELO,3.00E+14,20/3/17,8/11/17,NOMINAL_DEPTH,(),(),,float64,-2
 
-GLOBAL,,,MF-AZFP,55046,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,Optode 3975C,1420,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,DEFI-L,082V024,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,DEFI2-L,0AQH011,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,DEFI2-L,0AQH012,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,TriAxys,TAS04811,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,Casabel (6000 meters),3.00E+14,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,Casabel (6000 meters),3.00E+14,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,Data Logger,1,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,SOFS Tension Frame,1,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,ACR8242XS,33555,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,ACR8242XS,35505,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,MS9,0027,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,MS9,0028,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,MS9,0030,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,MAT-1-PVC,171414,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,MAT-1-PVC,171415,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,3DM-GX1,5357,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,9602-LP,3.00E+14,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,9602-LP,3.00E+14,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,9602-LP,3.00E+14,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,9602-N,3.00E+14,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,A3LA-X,3.00E+14,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,Aquadopp,AQD-5358 (ASP-3663),6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,icListenAF-3500m,2526,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,GTD,37-467-15,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,TGTD,37-468-33,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,38 kHz Transducer,312-073992,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,WBAT Mini,261182,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,AtoN Express,995031095,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,SUNA - V2,829,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,SBE37SM,3141,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,SBE37SM-RS485,03707408,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,SBE37SM-RS485,03707409,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,SBE37SMP-ODO-RS232,3715969,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,SBE37SMP-ODO-RS232,3715970,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,SBE37SMP-ODO-RS232,3715971,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,SBE37SMP-ODO-RS232,3715972,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,SBE39,5282,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,Load Cell 10826-3*,2,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,DST CT,S-9216,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,DST CT,S-9217,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,Starmon mini,T-4035,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,Starmon mini,T-4039,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,Starmon mini,T-4047,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,Starmon mini,T-4048,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,Starmon mini,T-4049,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,Starmon mini,T-4050,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,Starmon mini,T-4051,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,Starmon mini,T-4052,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,Starmon mini,T-4053,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,Starmon mini,T-4058,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,Starmon mini,T-4060,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,Starmon mini,T-4061,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,Starmon mini,T-4062,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,Starmon mini,T-4063,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,Starmon mini,T-4066,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,Starmon mini,T-4068,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,Starmon mini,T-4069,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,Starmon mini,T-4070,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,Starmon mini,T-4071,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,Starmon mini,T-4077,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,Starmon mini,T-4778,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,gpswaves,7,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,ECO-PARSB,419,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,FLNTUS,1186,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,FLNTUS,1802,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,ASIMET LOG53,L22,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,ASIMET LOG53,L23,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,BPR,227,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,BPR,276,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,HRH,255,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,HRH,363,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,LWR,238,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,LWR,252,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,PRC,227a,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,PRC,228a,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,PRC Logger,227,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,PRC Logger,228,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,SOFS Float,B,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,SWND,213,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,SWND,228,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,SWR,241,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,SWR,355,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,KILO,3.00E+14,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-GLOBAL,,,LI-190SA,unknown,6/03/2018,16/03/2018,,,,deployment_code,str,SOFS-7-2018
-VAR,LATITUDE,SOFS-7-2018,,,6/03/2018,16/03/2018,LATITUDE,(),(),,float64,-47.0111
-VAR,LONGITUDE,SOFS-7-2018,,,6/03/2018,16/03/2018,LONGITUDE,(),(),,float64,142.2135
-GLOBAL,,SOFS-7-2018,,,6/03/2018,16/03/2018,,,,site_nominal_depth,float64,4624
-GLOBAL,,SOFS-7-2018,,,6/03/2018,16/03/2018,,,,time_deployment_start,str,2018-03-06T10:00:00Z
-GLOBAL,,SOFS-7-2018,,,6/03/2018,16/03/2018,,,,time_deployment_end,str,2018-03-16T22:00:51Z
+GLOBAL,,,MF-AZFP,55046,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,Optode 3975C,1420,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,DEFI-L,082V024,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,DEFI2-L,0AQH011,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,DEFI2-L,0AQH012,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,TriAxys,TAS04811,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,Casabel (6000 meters),3.00E+14,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,Casabel (6000 meters),3.00E+14,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,Data Logger,1,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,SOFS Tension Frame,1,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,ACR8242XS,33555,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,ACR8242XS,35505,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,MS9,0027,2018-03-06,2018-07-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,MS9,0028,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,MS9,0030,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,MAT-1-PVC,171414,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,MAT-1-PVC,171415,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,3DM-GX1,5357,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,9602-LP,3.00E+14,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,9602-LP,3.00E+14,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,9602-LP,3.00E+14,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,9602-N,3.00E+14,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,A3LA-X,3.00E+14,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,Aquadopp,AQD-5358 (ASP-3663),2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,icListenAF-3500m,2526,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,GTD,37-467-15,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,TGTD,37-468-33,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,38 kHz Transducer,312-073992,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,WBAT Mini,261182,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,AtoN Express,995031095,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,SUNA - V2,829,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,SBE37SM,3141,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,SBE37SM-RS485,03707408,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,SBE37SM-RS485,03707409,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,SBE37SMP-ODO-RS232,3715969,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,SBE37SMP-ODO-RS232,3715970,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,SBE37SMP-ODO-RS232,3715971,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,SBE37SMP-ODO-RS232,3715972,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,SBE39,5282,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,Load Cell 10826-3*,2,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,DST CT,S-9216,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,DST CT,S-9217,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,Starmon mini,T-4035,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,Starmon mini,T-4039,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,Starmon mini,T-4047,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,Starmon mini,T-4048,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,Starmon mini,T-4049,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,Starmon mini,T-4050,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,Starmon mini,T-4051,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,Starmon mini,T-4052,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,Starmon mini,T-4053,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,Starmon mini,T-4058,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,Starmon mini,T-4060,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,Starmon mini,T-4061,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,Starmon mini,T-4062,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,Starmon mini,T-4063,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,Starmon mini,T-4066,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,Starmon mini,T-4068,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,Starmon mini,T-4069,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,Starmon mini,T-4070,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,Starmon mini,T-4071,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,Starmon mini,T-4077,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,Starmon mini,T-4778,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,gpswaves,7,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,ECO-PARSB,419,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,FLNTUS,1186,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,FLNTUS,1802,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,ASIMET LOG53,L22,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,ASIMET LOG53,L23,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,BPR,227,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,BPR,276,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,HRH,255,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,HRH,363,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,LWR,238,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,LWR,252,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,PRC,227a,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,PRC,228a,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,PRC Logger,227,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,PRC Logger,228,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,SOFS Float,B,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,SWND,213,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,SWND,228,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,SWR,241,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,SWR,355,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,KILO,3.00E+14,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+GLOBAL,,,LI-190SA,unknown,2018-03-06,2018-03-16,,,,deployment_code,str,SOFS-7-2018
+VAR,LATITUDE,SOFS-7-2018,,,2018-03-06,2018-03-16,LATITUDE,(),(),,float64,-47.0111
+VAR,LONGITUDE,SOFS-7-2018,,,2018-03-06,2018-03-16,LONGITUDE,(),(),,float64,142.2135
+GLOBAL,,SOFS-7-2018,,,2018-03-06,2018-03-16,,,,site_nominal_depth,float64,4624
+GLOBAL,,SOFS-7-2018,,,2018-03-06,2018-03-16,,,,time_deployment_start,str,2018-03-06T10:00:00Z
+GLOBAL,,SOFS-7-2018,,,2018-03-06,2018-03-16,,,,time_deployment_end,str,2018-03-16T22:00:51Z
 GLOBAL,,SOFS-7-2018,,,,,,,,voyage_deployment,str,http://www.cmar.csiro.au/data/trawler/survey_details.cfm?survey=IN2018_V02
 GLOBAL,,SOFS-7-2018,,,,,,,,voyage_recovery,str,http://www.cmar.csiro.au/data/trawler/survey_details.cfm?survey=IN2018_V02
-GLOBAL,,SOFS-7-2018,ECO-PARS,unknown,6/03/2018,16/03/2018,,,,instrument_serial_number,str,PARSB-419
+GLOBAL,,SOFS-7-2018,ECO-PARS,unknown,2018-03-06,2018-03-16,,,,instrument_serial_number,str,PARSB-419
 VAR_ATT,PAR_COUNT,SOFS-7-2018,ECO-PARS,unknown,,,,,,comment_attached_instrument,str,Wet-LABS ; PARS-419
 VAR_ATT,PAR_COUNT,SOFS-7-2018,ECO-PARS,unknown,,,,,,calibration_PAR_Im,float64,1.3589
 VAR_ATT,PAR_COUNT,SOFS-7-2018,ECO-PARS,unknown,,,,,,calibration_PAR_digital_A1,float64,2923
@@ -1942,220 +2100,220 @@ VAR_ATT,PAR_COUNT,SOFS-7-2018,ECO-PARS,unknown,,,,,,calibration_PAR_digital_A0,f
 VAR_ATT,PAR_COUNT,SOFS-7-2018,ECO-PARS,unknown,,,,,,calibration_PAR_date,str,9/5/2014
 VAR_ATT,PAR_COUNT,SOFS-7-2018,ECO-PARS,unknown,,,,,,calibration_PAR_facility,str,Satlantic
 VAR_ATT,PAR_COUNT,SOFS-7-2018,ECO-PARS,unknown,,,,,,calibration_PAR_SN,str,PARSB-419
-VAR,NOMINAL_DEPTH,SOFS-7-2018,ECO-PARS,unknown,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,30
-VAR,NOMINAL_DEPTH,SOFS-7-2018,LI-190SA,unknown,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,-1.8
-GLOBAL,,SOFS-7-2018,LI-190SA,unknown,6/03/2018,16/03/2018,,,,instrument_serial_number,str,Q47470
-VAR_ATT,PAR,SOFS-7-2018,LI-190SA,unknown,6/03/2018,16/03/2018,,,,calibration_date,str,"March 02, 2012"
-VAR_ATT,PAR,SOFS-7-2018,LI-190SA,unknown,6/03/2018,16/03/2018,,,,calibration_units,str,umol s-1 m-2 per uamp
-VAR_ATT,PAR,SOFS-7-2018,LI-190SA,unknown,6/03/2018,16/03/2018,,,,calibration_constant,str,8.19
-VAR_ATT,PAR,SOFS-7-2018,LI-190SA,unknown,6/03/2018,16/03/2018,,,,calibration_multiplier,str,-122.04
-VAR_ATT,PAR,SOFS-7-2018,LI-190SA,unknown,6/03/2018,16/03/2018,,,,calibration_resistor,str,604
-VAR_ATT,PAR,SOFS-7-2018,LI-190SA,unknown,6/03/2018,16/03/2018,,,,comment_scale_offset,str,202.05 0
-VAR_ATT,PAR,SOFS-7-2018,LI-190SA,unknown,6/03/2018,16/03/2018,,,,standard_name,str,surface_downwelling_photosynthetic_photon_flux_in_air
-VAR_ATT,PAR,SOFS-7-2018,LI-190SA,unknown,6/03/2018,16/03/2018,,,,long_name,str,surface_downwelling_photosynthetic_photon_flux_in_air
-VAR_ATT,PAR,SOFS-7-2018,LI-190SA,unknown,6/03/2018,16/03/2018,,,,units,str,umol/m^2/s
-VAR,NOMINAL_DEPTH,SOFS-7-2018,MF-AZFP,55046,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,0
-VAR,NOMINAL_DEPTH,SOFS-7-2018,Optode 3975C,1420,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,1
-VAR,NOMINAL_DEPTH,SOFS-7-2018,DEFI-L,082V024,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,50
-VAR,NOMINAL_DEPTH,SOFS-7-2018,DEFI2-L,0AQH011,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,11
-VAR,NOMINAL_DEPTH,SOFS-7-2018,DEFI2-L,0AQH012,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,20
-VAR,NOMINAL_DEPTH,SOFS-7-2018,TriAxys,TAS04811,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,0
-VAR,NOMINAL_DEPTH,SOFS-7-2018,Casabel (6000 meters),3.00E+14,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,4500
-VAR,NOMINAL_DEPTH,SOFS-7-2018,Casabel (6000 meters),3.00E+14,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,4500
-VAR,NOMINAL_DEPTH,SOFS-7-2018,Data Logger,1,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,0
-VAR,NOMINAL_DEPTH,SOFS-7-2018,SOFS Tension Frame,1,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,30
-VAR,NOMINAL_DEPTH,SOFS-7-2018,ACR8242XS,33555,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,4550
-VAR,NOMINAL_DEPTH,SOFS-7-2018,ACR8242XS,35505,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,4550
-VAR,NOMINAL_DEPTH,SOFS-7-2018,MS9,0027,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,-2
-VAR,NOMINAL_DEPTH,SOFS-7-2018,MS9,0028,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,1
-VAR,NOMINAL_DEPTH,SOFS-7-2018,MS9,0030,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,30
-VAR,NOMINAL_DEPTH,SOFS-7-2018,MAT-1-PVC,171414,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,30
-VAR,NOMINAL_DEPTH,SOFS-7-2018,MAT-1-PVC,171415,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,280
-VAR,NOMINAL_DEPTH,SOFS-7-2018,3DM-GX1,5357,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,0
-VAR,NOMINAL_DEPTH,SOFS-7-2018,9602-LP,3.00E+14,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,-2
-VAR,NOMINAL_DEPTH,SOFS-7-2018,9602-LP,3.00E+14,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,-2
-VAR,NOMINAL_DEPTH,SOFS-7-2018,9602-LP,3.00E+14,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,-2
-VAR,NOMINAL_DEPTH,SOFS-7-2018,9602-N,3.00E+14,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,-2
-VAR,NOMINAL_DEPTH,SOFS-7-2018,A3LA-X,3.00E+14,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,-2
-VAR,NOMINAL_DEPTH,SOFS-7-2018,Aquadopp,AQD-5358 (ASP-3663),6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,1
-VAR,NOMINAL_DEPTH,SOFS-7-2018,icListenAF-3500m,2526,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,30
-VAR,NOMINAL_DEPTH,SOFS-7-2018,GTD,37-467-15,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,30
-VAR,NOMINAL_DEPTH,SOFS-7-2018,TGTD,37-468-33,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,30
-VAR,NOMINAL_DEPTH,SOFS-7-2018,38 kHz Transducer,312-073992,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,1
-VAR,NOMINAL_DEPTH,SOFS-7-2018,WBAT Mini,261182,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,0
-VAR,NOMINAL_DEPTH,SOFS-7-2018,AtoN Express,995031095,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,-1
-VAR,NOMINAL_DEPTH,SOFS-7-2018,SUNA - V2,829,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,1
-VAR,NOMINAL_DEPTH,SOFS-7-2018,SBE37SM,3141,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,-2
-VAR,NOMINAL_DEPTH,SOFS-7-2018,SBE37SM-RS485,03707408,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,1
-VAR,NOMINAL_DEPTH,SOFS-7-2018,SBE37SM-RS485,03707409,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,1
-VAR,NOMINAL_DEPTH,SOFS-7-2018,SBE37SMP-ODO-RS232,3715969,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,30
-VAR,NOMINAL_DEPTH,SOFS-7-2018,SBE37SMP-ODO-RS232,3715970,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,125
-VAR,NOMINAL_DEPTH,SOFS-7-2018,SBE37SMP-ODO-RS232,3715971,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,200
-VAR,NOMINAL_DEPTH,SOFS-7-2018,SBE37SMP-ODO-RS232,3715972,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,480
-VAR,NOMINAL_DEPTH,SOFS-7-2018,SBE39,5282,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,-2
-VAR,NOMINAL_DEPTH,SOFS-7-2018,Load Cell 10826-3*,2,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,1
-VAR,NOMINAL_DEPTH,SOFS-7-2018,DST CT,S-9216,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,-2
-VAR,NOMINAL_DEPTH,SOFS-7-2018,DST CT,S-9217,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,-2
-VAR,NOMINAL_DEPTH,SOFS-7-2018,Starmon mini,T-4035,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,11
-VAR,NOMINAL_DEPTH,SOFS-7-2018,Starmon mini,T-4039,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,20
-VAR,NOMINAL_DEPTH,SOFS-7-2018,Starmon mini,T-4047,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,40
-VAR,NOMINAL_DEPTH,SOFS-7-2018,Starmon mini,T-4048,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,45
-VAR,NOMINAL_DEPTH,SOFS-7-2018,Starmon mini,T-4049,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,50
-VAR,NOMINAL_DEPTH,SOFS-7-2018,Starmon mini,T-4050,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,55
-VAR,NOMINAL_DEPTH,SOFS-7-2018,Starmon mini,T-4051,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,60
-VAR,NOMINAL_DEPTH,SOFS-7-2018,Starmon mini,T-4052,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,70
-VAR,NOMINAL_DEPTH,SOFS-7-2018,Starmon mini,T-4053,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,75
-VAR,NOMINAL_DEPTH,SOFS-7-2018,Starmon mini,T-4058,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,80
-VAR,NOMINAL_DEPTH,SOFS-7-2018,Starmon mini,T-4060,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,100
-VAR,NOMINAL_DEPTH,SOFS-7-2018,Starmon mini,T-4061,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,110
-VAR,NOMINAL_DEPTH,SOFS-7-2018,Starmon mini,T-4062,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,140
-VAR,NOMINAL_DEPTH,SOFS-7-2018,Starmon mini,T-4063,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,160
-VAR,NOMINAL_DEPTH,SOFS-7-2018,Starmon mini,T-4066,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,180
-VAR,NOMINAL_DEPTH,SOFS-7-2018,Starmon mini,T-4068,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,240
-VAR,NOMINAL_DEPTH,SOFS-7-2018,Starmon mini,T-4069,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,280
-VAR,NOMINAL_DEPTH,SOFS-7-2018,Starmon mini,T-4070,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,320
-VAR,NOMINAL_DEPTH,SOFS-7-2018,Starmon mini,T-4071,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,360
-VAR,NOMINAL_DEPTH,SOFS-7-2018,Starmon mini,T-4077,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,400
-VAR,NOMINAL_DEPTH,SOFS-7-2018,Starmon mini,T-4778,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,440
-VAR,NOMINAL_DEPTH,SOFS-7-2018,gpswaves,7,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,0
-VAR,NOMINAL_DEPTH,SOFS-7-2018,ECO-PARSB,419,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,30
-VAR,NOMINAL_DEPTH,SOFS-7-2018,FLNTUS,1186,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,30
-VAR,NOMINAL_DEPTH,SOFS-7-2018,FLNTUS,1802,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,0
-VAR,NOMINAL_DEPTH,SOFS-7-2018,ASIMET LOG53,L22,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,0
-VAR,NOMINAL_DEPTH,SOFS-7-2018,ASIMET LOG53,L23,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,0
-VAR,NOMINAL_DEPTH,SOFS-7-2018,BPR,227,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,-2
-VAR,NOMINAL_DEPTH,SOFS-7-2018,BPR,276,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,-2
-VAR,NOMINAL_DEPTH,SOFS-7-2018,HRH,255,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,-2
-VAR,NOMINAL_DEPTH,SOFS-7-2018,HRH,363,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,-2
-VAR,NOMINAL_DEPTH,SOFS-7-2018,LWR,238,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,-2
-VAR,NOMINAL_DEPTH,SOFS-7-2018,LWR,252,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,-2
-VAR,NOMINAL_DEPTH,SOFS-7-2018,PRC,227a,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,-2
-VAR,NOMINAL_DEPTH,SOFS-7-2018,PRC,228a,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,-2
-VAR,NOMINAL_DEPTH,SOFS-7-2018,PRC Logger,227,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,-2
-VAR,NOMINAL_DEPTH,SOFS-7-2018,PRC Logger,228,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,-2
-VAR,NOMINAL_DEPTH,SOFS-7-2018,SOFS Float,B,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,0
-VAR,NOMINAL_DEPTH,SOFS-7-2018,SWND,213,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,-2
-VAR,NOMINAL_DEPTH,SOFS-7-2018,SWND,228,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,-2
-VAR,NOMINAL_DEPTH,SOFS-7-2018,SWR,241,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,-2
-VAR,NOMINAL_DEPTH,SOFS-7-2018,SWR,355,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,-2
-VAR,NOMINAL_DEPTH,SOFS-7-2018,KILO,3.00E+14,6/03/2018,16/03/2018,NOMINAL_DEPTH,(),(),,float64,1.1
+VAR,NOMINAL_DEPTH,SOFS-7-2018,ECO-PARS,unknown,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,30
+VAR,NOMINAL_DEPTH,SOFS-7-2018,LI-190SA,unknown,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,-1.8
+GLOBAL,,SOFS-7-2018,LI-190SA,unknown,2018-03-06,2018-03-16,,,,instrument_serial_number,str,Q47470
+VAR_ATT,PAR,SOFS-7-2018,LI-190SA,unknown,2018-03-06,2018-03-16,,,,calibration_date,str,"March 02, 2012"
+VAR_ATT,PAR,SOFS-7-2018,LI-190SA,unknown,2018-03-06,2018-03-16,,,,calibration_units,str,umol s-1 m-2 per uamp
+VAR_ATT,PAR,SOFS-7-2018,LI-190SA,unknown,2018-03-06,2018-03-16,,,,calibration_constant,str,8.19
+VAR_ATT,PAR,SOFS-7-2018,LI-190SA,unknown,2018-03-06,2018-03-16,,,,calibration_multiplier,str,-122.04
+VAR_ATT,PAR,SOFS-7-2018,LI-190SA,unknown,2018-03-06,2018-03-16,,,,calibration_resistor,str,604
+VAR_ATT,PAR,SOFS-7-2018,LI-190SA,unknown,2018-03-06,2018-03-16,,,,comment_scale_offset,str,202.05 0
+VAR_ATT,PAR,SOFS-7-2018,LI-190SA,unknown,2018-03-06,2018-03-16,,,,standard_name,str,surface_downwelling_photosynthetic_photon_flux_in_air
+VAR_ATT,PAR,SOFS-7-2018,LI-190SA,unknown,2018-03-06,2018-03-16,,,,long_name,str,surface_downwelling_photosynthetic_photon_flux_in_air
+VAR_ATT,PAR,SOFS-7-2018,LI-190SA,unknown,2018-03-06,2018-03-16,,,,units,str,umol/m^2/s
+VAR,NOMINAL_DEPTH,SOFS-7-2018,MF-AZFP,55046,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,0
+VAR,NOMINAL_DEPTH,SOFS-7-2018,Optode 3975C,1420,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,1
+VAR,NOMINAL_DEPTH,SOFS-7-2018,DEFI-L,082V024,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,50
+VAR,NOMINAL_DEPTH,SOFS-7-2018,DEFI2-L,0AQH011,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,11
+VAR,NOMINAL_DEPTH,SOFS-7-2018,DEFI2-L,0AQH012,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,20
+VAR,NOMINAL_DEPTH,SOFS-7-2018,TriAxys,TAS04811,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,0
+VAR,NOMINAL_DEPTH,SOFS-7-2018,Casabel (6000 meters),3.00E+14,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,4500
+VAR,NOMINAL_DEPTH,SOFS-7-2018,Casabel (6000 meters),3.00E+14,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,4500
+VAR,NOMINAL_DEPTH,SOFS-7-2018,Data Logger,1,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,0
+VAR,NOMINAL_DEPTH,SOFS-7-2018,SOFS Tension Frame,1,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,30
+VAR,NOMINAL_DEPTH,SOFS-7-2018,ACR8242XS,33555,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,4550
+VAR,NOMINAL_DEPTH,SOFS-7-2018,ACR8242XS,35505,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,4550
+VAR,NOMINAL_DEPTH,SOFS-7-2018,MS9,0027,2018-03-06,2018-07-16,NOMINAL_DEPTH,(),(),,float64,-2
+VAR,NOMINAL_DEPTH,SOFS-7-2018,MS9,0028,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,1
+VAR,NOMINAL_DEPTH,SOFS-7-2018,MS9,0030,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,30
+VAR,NOMINAL_DEPTH,SOFS-7-2018,MAT-1-PVC,171414,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,30
+VAR,NOMINAL_DEPTH,SOFS-7-2018,MAT-1-PVC,171415,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,280
+VAR,NOMINAL_DEPTH,SOFS-7-2018,3DM-GX1,5357,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,0
+VAR,NOMINAL_DEPTH,SOFS-7-2018,9602-LP,3.00E+14,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,-2
+VAR,NOMINAL_DEPTH,SOFS-7-2018,9602-LP,3.00E+14,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,-2
+VAR,NOMINAL_DEPTH,SOFS-7-2018,9602-LP,3.00E+14,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,-2
+VAR,NOMINAL_DEPTH,SOFS-7-2018,9602-N,3.00E+14,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,-2
+VAR,NOMINAL_DEPTH,SOFS-7-2018,A3LA-X,3.00E+14,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,-2
+VAR,NOMINAL_DEPTH,SOFS-7-2018,Aquadopp,AQD-5358 (ASP-3663),2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,1
+VAR,NOMINAL_DEPTH,SOFS-7-2018,icListenAF-3500m,2526,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,30
+VAR,NOMINAL_DEPTH,SOFS-7-2018,GTD,37-467-15,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,30
+VAR,NOMINAL_DEPTH,SOFS-7-2018,TGTD,37-468-33,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,30
+VAR,NOMINAL_DEPTH,SOFS-7-2018,38 kHz Transducer,312-073992,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,1
+VAR,NOMINAL_DEPTH,SOFS-7-2018,WBAT Mini,261182,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,0
+VAR,NOMINAL_DEPTH,SOFS-7-2018,AtoN Express,995031095,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,-1
+VAR,NOMINAL_DEPTH,SOFS-7-2018,SUNA - V2,829,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,1
+VAR,NOMINAL_DEPTH,SOFS-7-2018,SBE37SM,3141,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,-2
+VAR,NOMINAL_DEPTH,SOFS-7-2018,SBE37SM-RS485,03707408,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,1
+VAR,NOMINAL_DEPTH,SOFS-7-2018,SBE37SM-RS485,03707409,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,1
+VAR,NOMINAL_DEPTH,SOFS-7-2018,SBE37SMP-ODO-RS232,3715969,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,30
+VAR,NOMINAL_DEPTH,SOFS-7-2018,SBE37SMP-ODO-RS232,3715970,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,125
+VAR,NOMINAL_DEPTH,SOFS-7-2018,SBE37SMP-ODO-RS232,3715971,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,200
+VAR,NOMINAL_DEPTH,SOFS-7-2018,SBE37SMP-ODO-RS232,3715972,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,480
+VAR,NOMINAL_DEPTH,SOFS-7-2018,SBE39,5282,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,-2
+VAR,NOMINAL_DEPTH,SOFS-7-2018,Load Cell 10826-3*,2,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,1
+VAR,NOMINAL_DEPTH,SOFS-7-2018,DST CT,S-9216,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,-2
+VAR,NOMINAL_DEPTH,SOFS-7-2018,DST CT,S-9217,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,-2
+VAR,NOMINAL_DEPTH,SOFS-7-2018,Starmon mini,T-4035,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,11
+VAR,NOMINAL_DEPTH,SOFS-7-2018,Starmon mini,T-4039,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,20
+VAR,NOMINAL_DEPTH,SOFS-7-2018,Starmon mini,T-4047,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,40
+VAR,NOMINAL_DEPTH,SOFS-7-2018,Starmon mini,T-4048,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,45
+VAR,NOMINAL_DEPTH,SOFS-7-2018,Starmon mini,T-4049,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,50
+VAR,NOMINAL_DEPTH,SOFS-7-2018,Starmon mini,T-4050,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,55
+VAR,NOMINAL_DEPTH,SOFS-7-2018,Starmon mini,T-4051,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,60
+VAR,NOMINAL_DEPTH,SOFS-7-2018,Starmon mini,T-4052,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,70
+VAR,NOMINAL_DEPTH,SOFS-7-2018,Starmon mini,T-4053,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,75
+VAR,NOMINAL_DEPTH,SOFS-7-2018,Starmon mini,T-4058,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,80
+VAR,NOMINAL_DEPTH,SOFS-7-2018,Starmon mini,T-4060,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,100
+VAR,NOMINAL_DEPTH,SOFS-7-2018,Starmon mini,T-4061,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,110
+VAR,NOMINAL_DEPTH,SOFS-7-2018,Starmon mini,T-4062,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,140
+VAR,NOMINAL_DEPTH,SOFS-7-2018,Starmon mini,T-4063,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,160
+VAR,NOMINAL_DEPTH,SOFS-7-2018,Starmon mini,T-4066,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,180
+VAR,NOMINAL_DEPTH,SOFS-7-2018,Starmon mini,T-4068,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,240
+VAR,NOMINAL_DEPTH,SOFS-7-2018,Starmon mini,T-4069,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,280
+VAR,NOMINAL_DEPTH,SOFS-7-2018,Starmon mini,T-4070,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,320
+VAR,NOMINAL_DEPTH,SOFS-7-2018,Starmon mini,T-4071,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,360
+VAR,NOMINAL_DEPTH,SOFS-7-2018,Starmon mini,T-4077,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,400
+VAR,NOMINAL_DEPTH,SOFS-7-2018,Starmon mini,T-4778,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,440
+VAR,NOMINAL_DEPTH,SOFS-7-2018,gpswaves,7,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,0
+VAR,NOMINAL_DEPTH,SOFS-7-2018,ECO-PARSB,419,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,30
+VAR,NOMINAL_DEPTH,SOFS-7-2018,FLNTUS,1186,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,30
+VAR,NOMINAL_DEPTH,SOFS-7-2018,FLNTUS,1802,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,0
+VAR,NOMINAL_DEPTH,SOFS-7-2018,ASIMET LOG53,L22,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,0
+VAR,NOMINAL_DEPTH,SOFS-7-2018,ASIMET LOG53,L23,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,0
+VAR,NOMINAL_DEPTH,SOFS-7-2018,BPR,227,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,-2
+VAR,NOMINAL_DEPTH,SOFS-7-2018,BPR,276,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,-2
+VAR,NOMINAL_DEPTH,SOFS-7-2018,HRH,255,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,-2
+VAR,NOMINAL_DEPTH,SOFS-7-2018,HRH,363,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,-2
+VAR,NOMINAL_DEPTH,SOFS-7-2018,LWR,238,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,-2
+VAR,NOMINAL_DEPTH,SOFS-7-2018,LWR,252,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,-2
+VAR,NOMINAL_DEPTH,SOFS-7-2018,PRC,227a,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,-2
+VAR,NOMINAL_DEPTH,SOFS-7-2018,PRC,228a,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,-2
+VAR,NOMINAL_DEPTH,SOFS-7-2018,PRC Logger,227,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,-2
+VAR,NOMINAL_DEPTH,SOFS-7-2018,PRC Logger,228,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,-2
+VAR,NOMINAL_DEPTH,SOFS-7-2018,SOFS Float,B,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,0
+VAR,NOMINAL_DEPTH,SOFS-7-2018,SWND,213,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,-2
+VAR,NOMINAL_DEPTH,SOFS-7-2018,SWND,228,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,-2
+VAR,NOMINAL_DEPTH,SOFS-7-2018,SWR,241,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,-2
+VAR,NOMINAL_DEPTH,SOFS-7-2018,SWR,355,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,-2
+VAR,NOMINAL_DEPTH,SOFS-7-2018,KILO,3.00E+14,2018-03-06,2018-03-16,NOMINAL_DEPTH,(),(),,float64,1.1
 
-GLOBAL,,,Optode 3975C,1420,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,TM Sampler,2,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,TM Sampler,3,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,DEFI-L,082V024,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,DEFI2-L,0AQH011,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,DEFI2-L,0AQH012,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,MF-AZFP,55046,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,TriAxys,TAS04811,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,Casabel (6000 meters),3.00E+14,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,CR1000,42881,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,Data Logger,1,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,gps-imu,1,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,processing_site_code,10007,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,processing_site_code,25,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,SOFS Tension Frame,1,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,ACR8242XS,33555,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,ACR8242XS,35505,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,MS9,0030,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,MS9,0027,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,MS9,0028,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,LI-190,Q47470,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,MAT-1-PVC,171414,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,MAT-1-PVC,171415,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,MAT-1-Ti,1805305,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,MAT-1-Ti,1805306,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,RAS-3-48-500,ML 14384-01,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,3DM-GX1,5357,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,9602-LP,3.00E+14,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,9602-LP,3.00E+14,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,9602-LP,3.00E+14,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,9602-LP,3.00E+14,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,9602-N,3.00E+14,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,A3LA-X,3.00E+14,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,Aquapro 1 MHz,AQD-5358 (ASP-3663),23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,icListenAF-3500m,2526,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,PCO2,156,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,GTD,37-467-15,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,TGTD,37-468-33,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,SUNA - V2,829,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,SBE37SM,3141,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,SBE37SM-RS485,3707408,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,SBE37SM-RS485,3707409,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,SBE37SMP-ODO-RS232,3715969,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,SBE37SMP-ODO-RS232,3715970,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,SBE37SMP-ODO-RS232,3715971,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,SBE37SMP-ODO-RS232,3715972,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,SBE39,5282,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,SBE39,6273,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,Load Cell 10826-3*,2,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,38 kHz Transducer,312-073992,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,WBAT Mini,261182,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,AtoN Express,995031095,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,DST CT,S-9216,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,DST CT,S-9217,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,Starmon mini,4035,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,Starmon mini,4039,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,Starmon mini,4047,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,Starmon mini,4048,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,Starmon mini,4049,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,Starmon mini,4050,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,Starmon mini,4051,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,Starmon mini,4052,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,Starmon mini,4053,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,Starmon mini,4058,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,Starmon mini,4060,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,Starmon mini,4061,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,Starmon mini,4062,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,Starmon mini,4063,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,Starmon mini,4066,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,Starmon mini,4068,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,Starmon mini,4069,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,Starmon mini,4070,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,Starmon mini,4071,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,Starmon mini,4077,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,Starmon mini,4778,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,gpswaves,7,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,ECO-PARS,unknown,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,FLNTUS,1186,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,FLNTUS,1802,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,ASIMET LOG53,L22,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,ASIMET LOG53,L23,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,BPR,227,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,BPR,276,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,HRH,363,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,HRH,364,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,LWR,239,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,LWR,252,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,PRC,227a,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,PRC,228a,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,PRC Logger,227,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,PRC Logger,228,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,SOFS Float,B,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,SWND,213,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,SWND,228,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,SWR,241,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,SWR,355,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,KILO,3.00E+14,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-GLOBAL,,,LI-190SA,unknown,23/8/18,10/4/19,,,,deployment_code,str,SOFS-7.5-2018
-VAR,LATITUDE,SOFS-7.5-2018,,,23/8/18,10/4/19,LATITUDE,(),(),,float64,-47.02274
-VAR,LONGITUDE,SOFS-7.5-2018,,,23/8/18,10/4/19,LONGITUDE,(),(),,float64,142.23341
-GLOBAL,,SOFS-7.5-2018,,,23/8/18,10/4/19,,,,site_nominal_depth,float64,4624
-GLOBAL,,SOFS-7.5-2018,,,23/8/18,10/4/19,,,,time_deployment_start,str,2018-08-22T13:17:54Z
-GLOBAL,,SOFS-7.5-2018,,,23/8/18,10/4/19,,,,time_deployment_end,str,2019-03-22T21:40:39Z
+GLOBAL,,,Optode 3975C,1420,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,TM Sampler,2,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,TM Sampler,3,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,DEFI-L,082V024,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,DEFI2-L,0AQH011,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,DEFI2-L,0AQH012,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,MF-AZFP,55046,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,TriAxys,TAS04811,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,Casabel (6000 meters),3.00E+14,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,CR1000,42881,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,Data Logger,1,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,gps-imu,1,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,processing_site_code,10007,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,processing_site_code,25,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,SOFS Tension Frame,1,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,ACR8242XS,33555,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,ACR8242XS,35505,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,MS9,0030,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,MS9,0027,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,MS9,0028,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,LI-190,Q47470,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,MAT-1-PVC,171414,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,MAT-1-PVC,171415,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,MAT-1-Ti,1805305,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,MAT-1-Ti,1805306,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,RAS-3-48-500,ML 14384-01,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,3DM-GX1,5357,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,9602-LP,3.00E+14,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,9602-LP,3.00E+14,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,9602-LP,3.00E+14,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,9602-LP,3.00E+14,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,9602-N,3.00E+14,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,A3LA-X,3.00E+14,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,Aquapro 1 MHz,AQD-5358 (ASP-3663),2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,icListenAF-3500m,2526,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,PCO2,156,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,GTD,37-467-15,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,TGTD,37-468-33,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,SUNA - V2,829,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,SBE37SM,3141,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,SBE37SM-RS485,3707408,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,SBE37SM-RS485,3707409,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,SBE37SMP-ODO-RS232,3715969,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,SBE37SMP-ODO-RS232,3715970,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,SBE37SMP-ODO-RS232,3715971,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,SBE37SMP-ODO-RS232,3715972,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,SBE39,5282,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,SBE39,6273,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,Load Cell 10826-3*,2,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,38 kHz Transducer,312-073992,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,WBAT Mini,261182,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,AtoN Express,995031095,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,DST CT,S-9216,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,DST CT,S-9217,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,Starmon mini,4035,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,Starmon mini,4039,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,Starmon mini,4047,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,Starmon mini,4048,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,Starmon mini,4049,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,Starmon mini,4050,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,Starmon mini,4051,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,Starmon mini,4052,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,Starmon mini,4053,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,Starmon mini,4058,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,Starmon mini,4060,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,Starmon mini,4061,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,Starmon mini,4062,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,Starmon mini,4063,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,Starmon mini,4066,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,Starmon mini,4068,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,Starmon mini,4069,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,Starmon mini,4070,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,Starmon mini,4071,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,Starmon mini,4077,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,Starmon mini,4778,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,gpswaves,7,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,ECO-PARS,unknown,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,FLNTUS,1186,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,FLNTUS,1802,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,ASIMET LOG53,L22,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,ASIMET LOG53,L23,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,BPR,227,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,BPR,276,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,HRH,363,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,HRH,364,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,LWR,239,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,LWR,252,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,PRC,227a,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,PRC,228a,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,PRC Logger,227,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,PRC Logger,228,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,SOFS Float,B,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,SWND,213,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,SWND,228,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,SWR,241,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,SWR,355,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,KILO,3.00E+14,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+GLOBAL,,,LI-190SA,unknown,2018-08-23,2019-04-10,,,,deployment_code,str,SOFS-7.5-2018
+VAR,LATITUDE,SOFS-7.5-2018,,,2018-08-23,2019-04-10,LATITUDE,(),(),,float64,-47.02274
+VAR,LONGITUDE,SOFS-7.5-2018,,,2018-08-23,2019-04-10,LONGITUDE,(),(),,float64,142.23341
+GLOBAL,,SOFS-7.5-2018,,,2018-08-23,2019-04-10,,,,site_nominal_depth,float64,4624
+GLOBAL,,SOFS-7.5-2018,,,2018-08-23,2019-04-10,,,,time_deployment_start,str,2018-08-22T13:17:54Z
+GLOBAL,,SOFS-7.5-2018,,,2018-08-23,2019-04-10,,,,time_deployment_end,str,2019-03-22T21:40:39Z
 GLOBAL,,SOFS-7.5-2018,,,,,,,,voyage_deployment,str,http://www.cmar.csiro.au/data/trawler/survey_details.cfm?survey=IN2018_V07
 GLOBAL,,SOFS-7.5-2018,,,,,,,,voyage_recovery,str,http://www.cmar.csiro.au/data/trawler/survey_details.cfm?survey=IN2019_V02
-GLOBAL,,SOFS-7.5-2018,LI-190SA,unknown,23/8/18,10/4/19,,,,instrument_serial_number,str,Q47470
-VAR_ATT,PAR,SOFS-7.5-2018,LI-190SA,unknown,23/8/18,10/4/19,,,,calibration_date,str,"March 02, 2012"
-VAR_ATT,PAR,SOFS-7.5-2018,LI-190SA,unknown,23/8/18,10/4/19,,,,calibration_units,str,umol s-1 m-2 per uamp
-VAR_ATT,PAR,SOFS-7.5-2018,LI-190SA,unknown,23/8/18,10/4/19,,,,calibration_constant,str,8.19
-VAR_ATT,PAR,SOFS-7.5-2018,LI-190SA,unknown,23/8/18,10/4/19,,,,calibration_multiplier,str,-122.04
-VAR_ATT,PAR,SOFS-7.5-2018,LI-190SA,unknown,23/8/18,10/4/19,,,,calibration_resistor,str,604
-VAR_ATT,PAR,SOFS-7.5-2018,LI-190SA,unknown,23/8/18,10/4/19,,,,comment_scale_offset,str,202.05 0
-VAR_ATT,PAR,SOFS-7.5-2018,LI-190SA,unknown,23/8/18,10/4/19,,,,standard_name,str,surface_downwelling_photosynthetic_photon_flux_in_air
-VAR_ATT,PAR,SOFS-7.5-2018,LI-190SA,unknown,23/8/18,10/4/19,,,,long_name,str,surface_downwelling_photosynthetic_photon_flux_in_air
-VAR_ATT,PAR,SOFS-7.5-2018,LI-190SA,unknown,23/8/18,10/4/19,,,,units,str,umol/m^2/s
-GLOBAL,,SOFS-7.5-2018,ECO-PARS,unknown,23/8/18,10/4/19,,,,instrument_serial_number,str,PARSB-419
+GLOBAL,,SOFS-7.5-2018,LI-190SA,unknown,2018-08-23,2019-04-10,,,,instrument_serial_number,str,Q47470
+VAR_ATT,PAR,SOFS-7.5-2018,LI-190SA,unknown,2018-08-23,2019-04-10,,,,calibration_date,str,"March 02, 2012"
+VAR_ATT,PAR,SOFS-7.5-2018,LI-190SA,unknown,2018-08-23,2019-04-10,,,,calibration_units,str,umol s-1 m-2 per uamp
+VAR_ATT,PAR,SOFS-7.5-2018,LI-190SA,unknown,2018-08-23,2019-04-10,,,,calibration_constant,str,8.19
+VAR_ATT,PAR,SOFS-7.5-2018,LI-190SA,unknown,2018-08-23,2019-04-10,,,,calibration_multiplier,str,-122.04
+VAR_ATT,PAR,SOFS-7.5-2018,LI-190SA,unknown,2018-08-23,2019-04-10,,,,calibration_resistor,str,604
+VAR_ATT,PAR,SOFS-7.5-2018,LI-190SA,unknown,2018-08-23,2019-04-10,,,,comment_scale_offset,str,202.05 0
+VAR_ATT,PAR,SOFS-7.5-2018,LI-190SA,unknown,2018-08-23,2019-04-10,,,,standard_name,str,surface_downwelling_photosynthetic_photon_flux_in_air
+VAR_ATT,PAR,SOFS-7.5-2018,LI-190SA,unknown,2018-08-23,2019-04-10,,,,long_name,str,surface_downwelling_photosynthetic_photon_flux_in_air
+VAR_ATT,PAR,SOFS-7.5-2018,LI-190SA,unknown,2018-08-23,2019-04-10,,,,units,str,umol/m^2/s
+GLOBAL,,SOFS-7.5-2018,ECO-PARS,unknown,2018-08-23,2019-04-10,,,,instrument_serial_number,str,PARSB-419
 VAR_ATT,PAR_COUNT,SOFS-7.5-2018,ECO-PARS,unknown,,,,,,comment_attached_instrument,str,Wet-LABS ; PARS-419
 VAR_ATT,PAR_COUNT,SOFS-7.5-2018,ECO-PARS,unknown,,,,,,calibration_PAR_Im,float64,1.3589
 VAR_ATT,PAR_COUNT,SOFS-7.5-2018,ECO-PARS,unknown,,,,,,calibration_PAR_digital_A1,float64,2923
@@ -2163,103 +2321,103 @@ VAR_ATT,PAR_COUNT,SOFS-7.5-2018,ECO-PARS,unknown,,,,,,calibration_PAR_digital_A0
 VAR_ATT,PAR_COUNT,SOFS-7.5-2018,ECO-PARS,unknown,,,,,,calibration_PAR_date,str,9/5/2014
 VAR_ATT,PAR_COUNT,SOFS-7.5-2018,ECO-PARS,unknown,,,,,,calibration_PAR_facility,str,Satlantic
 VAR_ATT,PAR_COUNT,SOFS-7.5-2018,ECO-PARS,unknown,,,,,,calibration_PAR_SN,str,PARSB-419
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,Optode 3975C,1420,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,1
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,TM Sampler,2,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,1.1
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,TM Sampler,3,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,1.1
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,DEFI-L,082V024,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,50
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,DEFI2-L,0AQH011,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,11
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,DEFI2-L,0AQH012,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,20
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,MF-AZFP,55046,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,0
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,TriAxys,TAS04811,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,0
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,Casabel (6000 meters),3.00E+14,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,4500
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,CR1000,42881,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,0
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,Data Logger,1,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,0
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,gps-imu,1,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,0
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,processing_site_code,10007,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,0
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,processing_site_code,25,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,0
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,SOFS Tension Frame,1,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,30
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,ACR8242XS,33555,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,4550
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,ACR8242XS,35505,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,4550
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,MS9,0030,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,30
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,MS9,0027,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,-2
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,MS9,0028,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,1
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,LI-190SA,unknown,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,-2
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,MAT-1-PVC,171414,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,30
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,MAT-1-PVC,171415,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,280
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,MAT-1-Ti,1805305,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,480
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,MAT-1-Ti,1805306,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,4550
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,RAS-3-48-500,ML 14384-01,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,3
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,3DM-GX1,5357,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,0
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,9602-LP,3.00E+14,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,-2
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,9602-LP,3.00E+14,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,-2
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,9602-LP,3.00E+14,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,-2
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,9602-LP,3.00E+14,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,4500
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,9602-N,3.00E+14,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,-2
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,A3LA-X,3.00E+14,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,-2
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,Aquapro 1 MHz,AQD-5358 (ASP-3663),23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,1
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,icListenAF-3500m,2526,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,30
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,PCO2,156,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,0
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,GTD,37-467-15,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,30
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,TGTD,37-468-33,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,30
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,SUNA - V2,829,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,1
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,SBE37SM,3141,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,-1
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,SBE37SM-RS485,3707408,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,1
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,SBE37SM-RS485,3707409,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,1
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,SBE37SMP-ODO-RS232,3715969,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,30
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,SBE37SMP-ODO-RS232,3715970,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,125
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,SBE37SMP-ODO-RS232,3715971,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,200
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,SBE37SMP-ODO-RS232,3715972,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,480
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,SBE39,5282,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,-2
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,SBE39,6273,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,4550
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,Load Cell 10826-3*,2,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,1
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,38 kHz Transducer,312-073992,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,1
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,WBAT Mini,261182,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,0
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,AtoN Express,995031095,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,-1
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,DST CT,S-9216,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,-2
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,DST CT,S-9217,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,-2
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,Starmon mini,4035,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,11
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,Starmon mini,4039,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,20
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,Starmon mini,4047,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,40
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,Starmon mini,4048,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,45
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,Starmon mini,4049,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,50
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,Starmon mini,4050,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,55
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,Starmon mini,4051,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,60
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,Starmon mini,4052,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,70
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,Starmon mini,4053,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,75
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,Starmon mini,4058,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,80
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,Starmon mini,4060,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,100
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,Starmon mini,4061,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,110
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,Starmon mini,4062,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,140
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,Starmon mini,4063,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,160
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,Starmon mini,4066,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,180
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,Starmon mini,4068,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,240
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,Starmon mini,4069,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,280
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,Starmon mini,4070,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,320
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,Starmon mini,4071,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,360
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,Starmon mini,4077,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,400
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,Starmon mini,4778,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,440
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,gpswaves,7,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,0
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,ECO-PARS,unknown,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,30
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,FLNTUS,1186,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,30
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,FLNTUS,1802,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,0
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,ASIMET LOG53,L22,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,0
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,ASIMET LOG53,L23,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,0
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,BPR,227,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,-2
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,BPR,276,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,-2
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,HRH,363,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,-2
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,HRH,364,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,-2
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,LWR,239,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,-2
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,LWR,252,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,-2
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,PRC,227a,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,-2
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,PRC,228a,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,-2
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,PRC Logger,227,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,-2
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,PRC Logger,228,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,-2
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,SOFS Float,B,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,0
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,SWND,213,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,-2
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,SWND,228,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,-2
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,SWR,241,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,-2
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,SWR,355,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,-2
-VAR,NOMINAL_DEPTH,SOFS-7.5-2018,KILO,3.00E+14,23/8/18,10/4/19,NOMINAL_DEPTH,(),(),,float64,1.1
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,Optode 3975C,1420,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,1
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,TM Sampler,2,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,1.1
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,TM Sampler,3,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,1.1
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,DEFI-L,082V024,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,50
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,DEFI2-L,0AQH011,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,11
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,DEFI2-L,0AQH012,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,20
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,MF-AZFP,55046,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,0
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,TriAxys,TAS04811,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,0
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,Casabel (6000 meters),3.00E+14,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,4500
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,CR1000,42881,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,0
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,Data Logger,1,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,0
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,gps-imu,1,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,0
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,processing_site_code,10007,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,0
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,processing_site_code,25,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,0
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,SOFS Tension Frame,1,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,30
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,ACR8242XS,33555,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,4550
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,ACR8242XS,35505,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,4550
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,MS9,0030,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,30
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,MS9,0027,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,-2
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,MS9,0028,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,1
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,LI-190SA,unknown,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,-2
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,MAT-1-PVC,171414,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,30
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,MAT-1-PVC,171415,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,280
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,MAT-1-Ti,1805305,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,480
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,MAT-1-Ti,1805306,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,4550
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,RAS-3-48-500,ML 14384-01,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,3
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,3DM-GX1,5357,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,0
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,9602-LP,3.00E+14,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,-2
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,9602-LP,3.00E+14,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,-2
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,9602-LP,3.00E+14,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,-2
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,9602-LP,3.00E+14,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,4500
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,9602-N,3.00E+14,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,-2
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,A3LA-X,3.00E+14,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,-2
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,Aquapro 1 MHz,AQD-5358 (ASP-3663),2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,1
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,icListenAF-3500m,2526,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,30
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,PCO2,156,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,0
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,GTD,37-467-15,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,30
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,TGTD,37-468-33,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,30
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,SUNA - V2,829,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,1
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,SBE37SM,3141,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,-1
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,SBE37SM-RS485,3707408,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,1
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,SBE37SM-RS485,3707409,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,1
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,SBE37SMP-ODO-RS232,3715969,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,30
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,SBE37SMP-ODO-RS232,3715970,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,125
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,SBE37SMP-ODO-RS232,3715971,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,200
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,SBE37SMP-ODO-RS232,3715972,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,480
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,SBE39,5282,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,-2
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,SBE39,6273,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,4550
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,Load Cell 10826-3*,2,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,1
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,38 kHz Transducer,312-073992,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,1
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,WBAT Mini,261182,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,0
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,AtoN Express,995031095,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,-1
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,DST CT,S-9216,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,-2
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,DST CT,S-9217,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,-2
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,Starmon mini,4035,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,11
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,Starmon mini,4039,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,20
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,Starmon mini,4047,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,40
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,Starmon mini,4048,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,45
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,Starmon mini,4049,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,50
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,Starmon mini,4050,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,55
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,Starmon mini,4051,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,60
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,Starmon mini,4052,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,70
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,Starmon mini,4053,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,75
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,Starmon mini,4058,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,80
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,Starmon mini,4060,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,100
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,Starmon mini,4061,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,110
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,Starmon mini,4062,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,140
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,Starmon mini,4063,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,160
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,Starmon mini,4066,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,180
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,Starmon mini,4068,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,240
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,Starmon mini,4069,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,280
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,Starmon mini,4070,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,320
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,Starmon mini,4071,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,360
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,Starmon mini,4077,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,400
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,Starmon mini,4778,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,440
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,gpswaves,7,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,0
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,ECO-PARS,unknown,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,30
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,FLNTUS,1186,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,30
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,FLNTUS,1802,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,0
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,ASIMET LOG53,L22,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,0
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,ASIMET LOG53,L23,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,0
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,BPR,227,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,-2
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,BPR,276,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,-2
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,HRH,363,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,-2
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,HRH,364,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,-2
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,LWR,239,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,-2
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,LWR,252,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,-2
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,PRC,227a,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,-2
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,PRC,228a,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,-2
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,PRC Logger,227,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,-2
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,PRC Logger,228,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,-2
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,SOFS Float,B,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,0
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,SWND,213,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,-2
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,SWND,228,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,-2
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,SWR,241,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,-2
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,SWR,355,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,-2
+VAR,NOMINAL_DEPTH,SOFS-7.5-2018,KILO,3.00E+14,2018-08-23,2019-04-10,NOMINAL_DEPTH,(),(),,float64,1.1
 
 GLOBAL,,,Optode 3975,1161,18/3/16,30/6/16,,,,deployment_code,str,FluxPulse-1-2016
 GLOBAL,,,Optode 3975C,1157,18/3/16,30/6/16,,,,deployment_code,str,FluxPulse-1-2016

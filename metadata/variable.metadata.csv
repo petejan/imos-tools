@@ -58,6 +58,14 @@ VAR_ATT,PAR,,,,,,,,,long_name,str,surface_downwelling_photosynthetic_photon_flux
 VAR_ATT,PAR,,,,,,,,,sensor_SeaVoX_L22_code,str,SDN:L22::TOOL0193
 VAR_ATT,PAR,,,,,,,,,comment_sensor_type,str,cosine sensor
 
+VAR_ATT,RAD,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,RAD,,,,,,,,,valid_max,float32,10000
+VAR_ATT,RAD,,,,,,,,,valid_min,float32,-2
+VAR_ATT,RAD,,,,,,,,,long_name,str,radiation in spectra band
+
+VAR_ATT,WAVELENGTH,,,,,,,,,long_name,str,wavelength
+
+
 VAR_ATT,ECO_FLNTUS_CPHL,,,,,,,,,name,str,Eco-FLNTUS CHL counts
 VAR_ATT,ECO_FLNTUS_CPHL,,,,,,,,,long_name,str,wetlabs_flntus_chl_counts
 VAR_ATT,ECO_FLNTUS_CPHL,,,,,,,,,valid_min,float32,0.

@@ -42,7 +42,7 @@ def rename(netCDFfiles):
 
         ds.close()
 
-        new_name = deployment+'-'+instrument+'-'+instrument_sn + ".nc"
+        new_name = deployment+'-'+instrument+'-'+instrument_sn + '-'+str(nominal_depth) + "m.nc"
 
         folder = os.path.dirname(netCDFfile)
 
