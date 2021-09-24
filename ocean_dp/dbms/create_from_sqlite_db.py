@@ -19,7 +19,7 @@ import os
 import sys
 
 from glob2 import glob
-from netCDF4 import Dataset
+from netCDF4 import Dataset, stringtochar
 
 import sqlite3
 import numpy as np
@@ -59,6 +59,7 @@ def create(file):
     cur = con.cursor()
     cur_vatt = con.cursor()
     cur_att = con.cursor()
+    cur_files = con.cursor()
 
     ncOut = Dataset(file+'.nc', "w", format='NETCDF4')
 
@@ -79,6 +80,40 @@ def create(file):
             elif att[2] == 'float64':
                 ncOut.setncattr(att[0], np.float(att[3]))
 
+    fDim = ncOut.createDimension("FILE_NAME", file_count)
+    sDim = ncOut.createDimension("strlen", 256)
+    varOutFn = ncOut.createVariable("FILE_NAME", "S1", ('FILE_NAME', 'strlen'))
+    varOutInst = ncOut.createVariable("INSTRUMENT", "S1", ('FILE_NAME', 'strlen'))
+    varOutIdxFn = ncOut.createVariable("IDX_FILE_NAME", "i4", ("FILE_NAME"))
+    varOutNdFn = ncOut.createVariable("DEPTH_FILE_NAME", "i4", ("FILE_NAME"))
+
+    sql_select_files = 'select file.file_id, file.name, a_inst.value, a_sn.value, CAST(a_nd.value AS REAL) AS nom_depth FROM file ' \
+                       'left join "attributes" a_inst on (file.file_id = a_inst.file_id and a_inst.name = "instrument_model") ' \
+                       'left join "attributes" a_sn on (file.file_id = a_sn.file_id and a_sn.name = "instrument_serial_number") ' \
+                       'left join "attributes" a_nd on (file.file_id = a_nd.file_id and a_nd.name = "instrument_nominal_depth") ' \
+	                   'ORDER BY nom_depth, file.file_id'
+
+    files = cur_files.execute(sql_select_files)
+    row = cur_files.fetchone()
+
+    print('rows', cur.rowcount)
+
+    n = 0
+    file_names = np.empty(file_count, dtype='S256')
+    instrument = np.empty(file_count, dtype='S256')
+    while row:
+        print('create-file-name', n, row[1])
+        file_names[n] = row[1]
+        instrument[n] = row[2] + ' ; ' + row[3]
+        varOutIdxFn[n] = int(row[0])
+        varOutNdFn[n] = float(row[4])
+
+        row = cur_files.fetchone()
+
+        n += 1
+
+    varOutFn[:] = stringtochar(file_names)
+    varOutInst[:] = stringtochar(instrument)
 
     sql_select_vars = 'SELECT name, COUNT(*) FROM variables v WHERE dimensions LIKE "TIME[%]" and name != "TIME" and name != "SAMPLE_TIME_DIFF" GROUP BY name ORDER BY name'
 

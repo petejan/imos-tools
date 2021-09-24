@@ -145,6 +145,7 @@ def smooth(files):
         var_resample_out.comment = 'seconds to actual sample timestamp'
         var_resample_out[:] = sample_time_diff
 
+        qc_level = 3
         for resample_var in z:
 
             qc = np.ones_like(datetime_time)
@@ -153,8 +154,8 @@ def smooth(files):
                 print('using qc : ', resample_var + "_quality_control")
                 qc = ds.variables[resample_var + "_quality_control"][:]
 
-            data_in = var_to_smooth_in[msk & (qc <= 2)]
-            time_masked = var_time[msk & (qc <= 2)]
+            data_in = var_to_smooth_in[msk & (qc <= qc_level)]
+            time_masked = var_time[msk & (qc <= qc_level)]
             if len(time_masked) == 0:
                 continue
 
