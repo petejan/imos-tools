@@ -88,13 +88,20 @@ def parse(file):
 
     row = cur.fetchone()
 
-    instrument_model = str(row[0].encode("ascii"))
+    # dance around to force ascii as retured result is UTF-8 and this causes netCDF to use string types instead of char arrays
+    instrument_model = row[2].encode('ascii', 'ignore').decode('ascii')
+
     instrument_serial_number = str(row[1])
     ncOut.instrument = 'RBR ; ' + instrument_model
     ncOut.instrument_model = instrument_model
     ncOut.instrument_serial_number = instrument_serial_number
     ncOut.instrument_firmware_version = row[2]
     ncOut.instrument_part_number = row[3]
+
+    print('instrument model :', instrument_model)
+    print('instrument serial number :', instrument_serial_number)
+
+    return
 
     # create the netCDF TIME, PROFILE, PROFILE_SAMPLE variables
 
