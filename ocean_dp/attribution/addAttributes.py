@@ -15,13 +15,13 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
+import re
 
 from netCDF4 import Dataset
 import sys
 import numpy as np
 import csv
 from datetime import datetime
-from dateutil import parser
 from fuzzywuzzy import fuzz
 
 match_threshold = 90
@@ -47,8 +47,8 @@ def add(netCDFfile, metadatafiles):
 
     ds = Dataset(netCDFfile, 'a')
 
-    time_start = parser.parse(ds.time_coverage_start, ignoretz=True, yearfirst=True, dayfirst=False)
-    time_end = parser.parse(ds.time_coverage_end, ignoretz=True,  yearfirst=True, dayfirst=False)
+    time_start = datetime.strptime(ds.time_coverage_start, '%Y-%m-%dT%H:%M:%SZ')
+    time_end = datetime.strptime(ds.time_coverage_end, '%Y-%m-%dT%H:%M:%SZ')
     instrument_model = ds.instrument_model
     instrument_serial_number = ds.instrument_serial_number
 
@@ -92,12 +92,28 @@ def add(netCDFfile, metadatafiles):
                     # match time
                     if 'time_deployment' in dict1:
                         if len(dict1['time_deployment']) > 0:
-                            if time_end < parser.parse(dict1['time_deployment'], ignoretz=True, dayfirst=False):
+                            td = None
+                            if re.match('\d{1,2}\/\d{1,2}\/\d{1,2}', dict1['time_deployment']):
+                                td = datetime.strptime(dict1['time_deployment'], '%d/%m/%y')
+                            elif re.match('20\d{2}-\d{1,2}-\d{1,2} \d{1,2}:\d{2}', dict1['time_deployment']):
+                                td = datetime.strptime(dict1['time_deployment'], '%Y-%m-%d %H:%M')
+                            else:
+                                td = datetime.strptime(dict1['time_deployment'], '%Y-%m-%d')
+
+                            if time_end < td:
                                 match = False
-                                #print("Time end before deployment ", time_end, dict1['time_deployment'])
+                                print("Time end before deployment ", time_end, dict1['time_deployment'])
                     if 'time_recovery' in dict1:
                         if len(dict1['time_recovery']) > 0:
-                            if time_start > parser.parse(dict1['time_recovery'], ignoretz=True, dayfirst=False):
+                            tr = None
+                            if re.match('\d{1,2}\/\d{1,2}\/\d{1,2}', dict1['time_recovery']):
+                                tr = datetime.strptime(dict1['time_recovery'], '%d/%m/%y')
+                            elif re.match('20\d{2}-\d{1,2}-\d{1,2} \d{1,2}:\d{2}', dict1['time_recovery']):
+                                tr = datetime.strptime(dict1['time_recovery'], '%Y-%m-%d %H:%M')
+                            else:
+                                tr = datetime.strptime(dict1['time_recovery'], '%Y-%m-%d')
+
+                            if time_start > tr:
                                 match = False
                                 #print("Time start after recovery ", time_start, dict1['time_recovery'], parser.parse(dict1['time_recovery'], ignoretz=True, dayfirst=False))
 
