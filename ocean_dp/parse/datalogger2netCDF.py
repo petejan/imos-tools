@@ -122,8 +122,8 @@ def datalogger(files):
     dataset.instrument_imu_model = "3DM-GX1"
     dataset.instrument_imu_serial_number = "unknown"
 
-    time = dataset.createDimension('TIME', None)
-    sample_d = dataset.createDimension('SAMPLE', 3072)
+    time_dim = dataset.createDimension('TIME', None)
+    sample_dim = dataset.createDimension('SAMPLE', 3072)
 
     f = dataset.createDimension('FREQ', 256)
     v = dataset.createDimension('VECTOR', 3)
@@ -145,17 +145,12 @@ def datalogger(files):
     mag_var = dataset.createVariable('mag_field', np.float32, ('TIME', 'SAMPLE', 'VECTOR'), fill_value=np.nan)
     gyro_var = dataset.createVariable('gyro_rate', np.float32, ('TIME', 'SAMPLE', 'VECTOR'), fill_value=np.nan)
     quat_var = dataset.createVariable('quaternion', np.float32, ('TIME', 'SAMPLE', 'QUAT'), fill_value=np.nan)
+    quat_var.comment = 'quaternion order is W, X, Y, Z'
 
     obp_var = None
 
     load_var = dataset.createVariable('load', np.float32, ('TIME', 'SAMPLE'), fill_value=np.nan)
 
-    accel_samples = np.zeros([3072, 3])
-    mag_samples = np.zeros([3072, 3])
-    gyro_samples = np.zeros([3072, 3])
-    quat_samples = np.zeros([3072, 4])
-
-    load_samples = np.zeros([3072])
 
     # TODO: process the output of this parser into frequency spectra, wave height
 
@@ -171,6 +166,8 @@ def datalogger(files):
     last_sample = -1
     times_dict = {}
     n_times = -1
+    start_time = None
+    end_time = None
 
     for file in files:
         lat = np.nan
@@ -203,6 +200,14 @@ def datalogger(files):
                             # print('decode ', decode)
 
                             # save data to netCDF
+                            if sample == 0:
+                                accel_samples = np.zeros([3072, 3])
+                                mag_samples = np.zeros([3072, 3])
+                                gyro_samples = np.zeros([3072, 3])
+                                quat_samples = np.zeros([3072, 4])
+
+                                load_samples = np.zeros([3072])
+
                             accel_samples[sample, 0] = decode_scale[decode_dict['AccelX']]
                             accel_samples[sample, 1] = decode_scale[decode_dict['AccelY']]
                             accel_samples[sample, 2] = decode_scale[decode_dict['AccelZ']]
@@ -262,7 +267,7 @@ def datalogger(files):
 
                 elif byte[0] > 0x20: # start of string
                     xs = bytearray()
-                    while byte[0] != 13:
+                    while byte and (byte[0] != 13):
                         if byte[0] < 128:
                             xs.append(byte[0])
                         byte = f.read(1)
@@ -270,11 +275,13 @@ def datalogger(files):
                     #print('string : ', s)
 
                     data_time = None
+
                     # check for start of data
                     matchobj = start_data.match(s)
                     if matchobj:
                         data_time = datetime.strptime(matchobj.group(1), "%Y-%m-%d %H:%M:%S")
-                        print('data time ', data_time)
+                        print('start_data time ', data_time)
+                        start_time = data_time
 
                         sample = 0
                         samples_red = 0
@@ -282,15 +289,18 @@ def datalogger(files):
                     # check for end data
                     matchobj = end_data.match(s)
                     if matchobj:
-                        print('end data ', sample, samples_red)
+                        print('end data ', start_time, sample, samples_red)
+                        end_time = start_time
+                        data_time = end_time
 
-                    # check for done
                     done = None
+                    # check for done
                     matchobj = done_str.match(s)
                     if matchobj:
                         data_time = datetime.strptime(matchobj.group(1), "%Y-%m-%d %H:%M:%S")
                         print('done time ', data_time)
                         done = matchobj
+                        start_time = None
                         print('done', s)
 
                     # check for done_pulse
@@ -307,7 +317,7 @@ def datalogger(files):
                     matchobj = gps_fix.match(s)
                     if matchobj:
                         data_time = datetime.strptime(matchobj.group(1), "%Y-%m-%d %H:%M:%S")
-                        print('time ', data_time)
+                        #print('time ', data_time)
 
                         gps = matchobj
                         print('gps', s)
@@ -315,7 +325,7 @@ def datalogger(files):
                     matchobj = gps_fix2.match(s)
                     if matchobj:
                         data_time = datetime.strptime(matchobj.group(1), "%Y-%m-%d %H:%M:%S")
-                        print('time ', data_time)
+                        #print('time ', data_time)
 
                         gps = matchobj
                         print('gps', s)
@@ -349,7 +359,7 @@ def datalogger(files):
                             t_idx = n_times
                             times_dict[data_time] = t_idx
 
-                        # print('got time', data_time, t_idx, n_times)
+                        #print('got time', data_time, t_idx, n_times)
                         times[t_idx] = date2num(data_time, units=times.units, calendar=times.calendar)
                         if gps:
                             # xpos_var[t_idx] = -np.float(gps.group(4))
@@ -380,12 +390,16 @@ def datalogger(files):
                             bat_var[t_idx] = np.float(done_pulse.group(2))
                             mean_load_var[t_idx] = np.float(done_pulse.group(5))
 
-                        if done or done_pulse:
+                        if end_time:
+                            print('done write MRU samples', sample)
+
                             accel_var[t_idx] = accel_samples
                             gyro_var[t_idx] = gyro_samples
                             mag_var[t_idx] = mag_samples
                             quat_var[t_idx] = quat_samples
                             load_var[t_idx] = load_samples
+
+                            end_time = None
 
                         # keep time stats, start (first) and end (last), maybe should use min/max
                         ts_end = data_time
@@ -405,6 +419,8 @@ def datalogger(files):
                     pass
 
                 byte = f.read(1)
+
+    print('final times', n_times, times[0], times[-1])
 
     dataset.setncattr("time_coverage_start", ts_start.strftime(ncTimeFormat))
     dataset.setncattr("time_coverage_end", ts_end.strftime(ncTimeFormat))

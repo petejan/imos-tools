@@ -723,7 +723,7 @@ def parse_triaxys(files):
     for filepath in filelist:
         print(filepath)
 
-        if filepath.endswith('Summary.txt'):
+        if filepath.endswith('Summary.txt') or filepath.endswith('Summary-Sort.txt'):
             parse_summary(output_name, filepath)
 
         elif filepath.endswith('.WAVE'):
@@ -732,7 +732,7 @@ def parse_triaxys(files):
 
         elif filepath.endswith('.RAW'):
             print("RAW")
-            #parse_raw(output_name, filepath)
+            parse_raw(output_name, filepath)
 
         elif filepath.endswith('.DIRSPEC'):
             print("DIRSPEC")
