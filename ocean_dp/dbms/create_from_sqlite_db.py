@@ -177,8 +177,6 @@ def create(file):
     ncTimesOut.axis = "T"
     ncTimesOut[:] = row[5]
 
-    sDim = ncOut.createDimension("strlen", 256)
-
     # generate the data for each variable
     vars = cur_vars.execute(sql_select_vars)
     for var in vars:

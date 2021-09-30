@@ -39,6 +39,7 @@ import ocean_dp.qc.manual_by_date
 import ocean_dp.processing.addPSAL
 import ocean_dp.processing.add_density
 import ocean_dp.processing.add_sigma_theta0_sm
+import ocean_dp.processing.apply_scale_offset_attributes
 
 import ocean_dp.file_name.find_file_with
 
@@ -107,7 +108,7 @@ for fn in ncFiles:
 
     # Pulse 6,7,8 SOFS 1,2 Vemco Mini sensors with SN < 10000 -> flag 3
     if model == 'Minilog-T':
-        manual_flag = 3
+        manual_flag = 2
         manual_reason = 'difference to higher precision sensors'
     # Pulse 8 SBE16plusV2 battery fail (after 2012-01-30 15:25) -> flag 3 after Pressure fails
     if model == 'SBE16plus' and deployment == 'Pulse-8-2011':
@@ -190,6 +191,8 @@ for fn in ncFiles:
 
     f = ocean_dp.qc.add_qc_flags.add_qc([fn])
     f = ocean_dp.qc.in_out_water.in_out_water(f)
+
+    f = ocean_dp.processing.apply_scale_offset_attributes.apply_scale_offset(f)
 
     # temperature QC
     for q in temp_qc_params:

@@ -26,42 +26,48 @@ from datetime import datetime
 
 ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
 
-def apply_scale_offset(netCDFfile):
-    ds = Dataset(netCDFfile, 'a')
+def apply_scale_offset(netCDFfiles):
 
-    scale_vars = ds.get_variables_by_attributes(comment_scale_offset=lambda v: v is not None)
+    out_files = []
+    for netCDFfile in netCDFfiles:
+        ds = Dataset(netCDFfile, 'a')
 
-    for v in scale_vars:
-        print ("var : ", v)
-        t = v[:]
-        #t.mask = False
+        scale_vars = ds.get_variables_by_attributes(comment_scale_offset=lambda v: v is not None)
 
-        scale_offset = v.getncattr('comment_scale_offset')
-        scale_offset_split = scale_offset.split(' ')
-        scale = np.float(scale_offset_split[0])
-        offset = np.float(scale_offset_split[1])
-        v[:] = t * float(scale) + float(offset)
+        for v in scale_vars:
+            print ("var : ", v)
+            t = v[:]
+            #t.mask = False
 
-        v.renameAttribute('comment_scale_offset', 'comment_scale_offset_applied')
-        v.comment_scale_offset_applied = "scale = " + str(scale) + " offset = " + str(offset)
+            scale_offset = v.getncattr('comment_scale_offset')
+            scale_offset_split = scale_offset.split(' ')
+            scale = np.float(scale_offset_split[0])
+            offset = np.float(scale_offset_split[1])
+            v[:] = t * float(scale) + float(offset)
 
-        # update the history attribute
-        try:
-            hist = ds.history + "\n"
-        except AttributeError:
-            hist = ""
+            v.renameAttribute('comment_scale_offset', 'comment_scale_offset_applied')
+            v.comment_scale_offset_applied = "scale = " + str(scale) + " offset = " + str(offset)
 
-        ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " : scale, offset variable " + v.name + "")
+            # update the history attribute
+            try:
+                hist = ds.history + "\n"
+            except AttributeError:
+                hist = ""
 
-        if v.name == 'TIME':
-            # update timespan attributes
-            ds.setncattr("time_coverage_start", num2date(v[0], units=v.units, calendar=v.calendar).strftime(ncTimeFormat))
-            ds.setncattr("time_coverage_end", num2date(v[-1], units=v.units, calendar=v.calendar).strftime(ncTimeFormat))
+            ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " : scale, offset variable " + v.name + "")
+
+            if v.name == 'TIME':
+                # update timespan attributes
+                ds.setncattr("time_coverage_start", num2date(v[0], units=v.units, calendar=v.calendar).strftime(ncTimeFormat))
+                ds.setncattr("time_coverage_end", num2date(v[-1], units=v.units, calendar=v.calendar).strftime(ncTimeFormat))
 
 
-    ds.close()
+        ds.close()
 
-    return netCDFfile
+        out_files.append(netCDFfile)
+
+    return out_files
+
 
 if __name__ == "__main__":
-    apply_scale_offset(sys.argv[1])
+    apply_scale_offset(sys.argv[1,:])

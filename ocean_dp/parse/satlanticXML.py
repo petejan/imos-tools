@@ -16,18 +16,15 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
+import os
 import sys
 
 from datetime import datetime, timedelta
 from netCDF4 import num2date, date2num
 from netCDF4 import Dataset
 import numpy as np
-import struct
-import xml.etree.ElementTree as ET
-import untangle
 import xmltodict
 
-from collections import OrderedDict
 
 def parse_xml(files):
 
@@ -66,6 +63,9 @@ def parse_xml(files):
     ncFrameOut = ncOut.createVariable('FRAME_TYPE', "f4", ("TIME",), fill_value=np.nan, zlib=False)  # fill_value=nan otherwise defaults to max
     ncFrameOut.units = '1'
     ncFrameOut.comment = '0 = dark frame, 1 = light frame'
+
+    ts_start = None
+    ts_end = None
 
     fields = []
     # create netCDF variables for each sensorField in frame
@@ -111,6 +111,8 @@ def parse_xml(files):
                         frame_type = 1
                     split = line.split(',')
                     dt = datetime.strptime(split[1], '%Y%j') + timedelta(hours=float(split[2]))
+                    if not ts_start:
+                        ts_start = dt
                     print(dt)
                     ncTimesOut[num_samples] = date2num(dt, calendar=ncTimesOut.calendar, units=ncTimesOut.units)
                     ncFrameOut[num_samples] = frame_type
@@ -128,6 +130,14 @@ def parse_xml(files):
 
                     num_samples += 1
                 line = fp.readline()
+    ts_end = dt
+
+    ncOut.setncattr("time_coverage_start", ts_start.strftime(ncTimeFormat))
+    ncOut.setncattr("time_coverage_end", ts_end.strftime(ncTimeFormat))
+
+    # add creating and history entry
+    ncOut.setncattr("date_created", datetime.utcnow().strftime(ncTimeFormat))
+    ncOut.setncattr("history", datetime.utcnow().strftime("%Y-%m-%d") + " created from file " + os.path.basename(files[0]))
 
     ncOut.close()
 
@@ -136,5 +146,5 @@ def parse_xml(files):
 
 if __name__ == "__main__":
 
-    # arguments are <mooring> <xml file> <files....(or zip file)>
+    # arguments are <xml file> <files....(or zip file)>
     parse_xml(sys.argv[1:])

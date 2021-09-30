@@ -102,7 +102,7 @@ def add(netCDFfile, metadatafiles):
 
                             if time_end < td:
                                 match = False
-                                print("Time end before deployment ", time_end, dict1['time_deployment'])
+                                # print("Time end before deployment ", time_end, dict1['time_deployment'])
                     if 'time_recovery' in dict1:
                         if len(dict1['time_recovery']) > 0:
                             tr = None
