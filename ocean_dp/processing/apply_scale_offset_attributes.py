@@ -15,7 +15,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
-
+from glob2 import glob
 from netCDF4 import Dataset, num2date
 import sys
 import gsw
@@ -25,6 +25,7 @@ from datetime import datetime
 # add OXSOL to a data file with TEMP, PSAL, PRES variables, many assumptions are made about the input file
 
 ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
+
 
 def apply_scale_offset(netCDFfiles):
 
@@ -70,4 +71,8 @@ def apply_scale_offset(netCDFfiles):
 
 
 if __name__ == "__main__":
-    apply_scale_offset(sys.argv[1,:])
+    files = []
+    for f in sys.argv[1:]:
+        files.extend(glob(f))
+
+    apply_scale_offset(files)

@@ -179,7 +179,7 @@ def add(netCDFfile, metadatafiles):
         print('no attributes added, file not changed')
         ds.close()
 
-        return None
+        return netCDFfile
 
     # update the history attribute
     try:
