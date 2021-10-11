@@ -40,6 +40,8 @@ import ocean_dp.processing.addPSAL
 import ocean_dp.processing.add_density
 import ocean_dp.processing.add_sigma_theta0_sm
 import ocean_dp.processing.apply_scale_offset_attributes
+from ocean_dp.processing.resampler import resample
+
 
 import ocean_dp.file_name.find_file_with
 
@@ -247,7 +249,10 @@ for fn in ncFiles:
 
     ds = Dataset(f[0], 'a')
     ds.references += '; Jansen P, Weeding B, Shadwick EH and Trull TW (2020). Southern Ocean Time Series (SOTS) Quality Assessment and Control Report Temperature Records Version 1.0. CSIRO, Australia. DOI: 10.26198/gfgr-fq47 (https://doi.org/10.26198/gfgr-fq47)'
+    ds.references += '; Jansen P, Shadwick E and Trull TW (2021). Southern Ocean Time Series (SOTS) Quality Assessment and Control Report Temperature Records Version 1.0. CSIRO, Australia.'
     ds.close()
+
+    resample(f, 'nearest', resample=True, hours=1)
 
     #f = ocean_dp.processing.loess_smoother.smooth(f)
 

@@ -18,6 +18,10 @@
 
 
 import sys
+from datetime import datetime, timedelta
+
+import numpy as np
+from cftime import date2num, num2date
 from netCDF4 import Dataset
 #print('Python %s on %s' % (sys.version, sys.platform))
 
@@ -31,7 +35,7 @@ for f in sys.argv[1:]:
     #print(f)
     ncFiles.extend(glob.glob(f))
 
-atts_to_list = ['file', 'platform_code', 'deployment_code', 'instrument', 'instrument_serial_number', 'instrument_nominal_depth', 'time_coverage_end', 'time_coverage_start', 'time_deployment_end', 'time_deployment_start']
+atts_to_list = ['file', 'platform_code', 'deployment_code', 'instrument', 'instrument_model', 'instrument_serial_number', 'instrument_nominal_depth', 'time_coverage_end', 'time_coverage_start', 'time_deployment_end', 'time_deployment_start']
 
 pump_map = r"SBE16plus|SBE37SMP"
 
@@ -40,6 +44,7 @@ hdr.extend(atts_to_list)
 hdr.append('has conductivity')
 hdr.append('conductivity calibration date')
 hdr.append('is pumped')
+hdr.append('sample period')
 
 print(','.join(hdr))
 
@@ -66,6 +71,35 @@ for fn in ncFiles:
     else:
         att_list.append('')
 
+    # deal with TIME
+    var_time = nc.variables["TIME"]
+
+    # create the time window around the time_deployment_start and time_deployment_end
+    datetime_deploy_start = datetime.strptime(nc.getncattr('time_deployment_start'), '%Y-%m-%dT%H:%M:%SZ')
+    datetime_deploy_end = datetime.strptime(nc.getncattr('time_deployment_end'), '%Y-%m-%dT%H:%M:%SZ')
+
+    num_deploy_start = date2num(datetime_deploy_start, units=var_time.units)
+    num_deploy_end = date2num(datetime_deploy_end, units=var_time.units)
+
+    # read existing times, find sample rate
+    time = var_time[:]
+
+    # create mask for deployment time
+    deployment_msk = (time > num_deploy_start) & (time < num_deploy_end)
+
+    datetime_time = num2date(time, units=var_time.units)
+    datetime_time_deployment = datetime_time[deployment_msk]
+    time_deployment = time[deployment_msk]
+
+    # use the mid point sample rate, as it may change at start/end
+    n_mid = np.int(len(time_deployment)/2)
+    t_mid0 = datetime_time_deployment[n_mid]
+    t_mid1 = datetime_time_deployment[n_mid+1]
+
+    sample_rate_mid = t_mid1 - t_mid0
+    #print('sample rate mid', sample_rate_mid.total_seconds(), '(seconds)')
+
+    att_list.append(str(sample_rate_mid.total_seconds()))
 
     print(','.join(att_list))
 

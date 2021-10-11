@@ -15,7 +15,7 @@ import statsmodels.api as sm
 np.set_printoptions(linewidth=256)
 
 
-def smooth(files, method, resample='True', hours=12):
+def resample(files, method, resample='True', hours=12):
     output_names = []
 
     now = datetime.utcnow()
@@ -141,16 +141,6 @@ def smooth(files, method, resample='True', hours=12):
 
             ncVariableOut[:] = maVariable  # copy the data
 
-        # interpolate the time to get the distance to the nearest point
-        f = interp1d(np.array(time_deployment), np.array(time_deployment), kind='nearest', bounds_error=False, fill_value=np.nan)
-        y = (f(sample_datenum) - sample_datenum) * 24 * 3600
-
-        print('sample distance', y, '(seconds)')
-        # create a variable to save distance to nearest point
-        var_resample_out = ds_new.createVariable('SAMPLE_TIME_DIFF', 'f4', 'TIME', fill_value=np.NaN, zlib=True)
-        var_resample_out.comment = 'seconds to actual sample timestamp'
-        var_resample_out[:] = y
-
         # variable to smooth
         in_vars = set([x for x in ds.variables])
         # print('input file vars', in_vars)
@@ -215,6 +205,16 @@ def smooth(files, method, resample='True', hours=12):
             var_resample_out.setncatts(attr_dict)
             var_resample_out[:] = y
 
+            # interpolate the time to get the distance to the nearest point
+            f = interp1d(np.array(time_deployment), np.array(time_deployment), kind='nearest', bounds_error=False, fill_value=np.nan)
+            y = (f(sample_datenum) - sample_datenum) * 24 * 3600
+
+            print('sample distance', y, '(seconds)')
+            # create a variable to save distance to nearest point
+            var_resample_out = ds_new.createVariable(resample_var + '_SAMPLE_TIME_DIFF', 'f4', 'TIME', fill_value=np.NaN, zlib=True)
+            var_resample_out.comment = 'seconds to actual sample timestamp, abs max='+str(max(abs(y)))
+            var_resample_out[:] = y
+
         #  create history
         ds_new.history += '\n' + now.strftime("%Y-%m-%d : ") + 'resampled data created from ' + os.path.basename(filepath) + ' window=' + str(window) + ' method=' + method
 
@@ -243,6 +243,8 @@ if __name__ == "__main__":
     method = 'nearest'
     files = []
     for f in sys.argv[1:]:
+        if f.startswith('--method='):
+            method = f.replace('--method=', '')
         files.extend(glob(f))
 
-    smooth(files, method, resample=True, hours=1)
+    resample(files, method, resample=True, hours=1)

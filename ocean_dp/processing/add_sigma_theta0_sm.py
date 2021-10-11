@@ -23,6 +23,7 @@ from datetime import datetime
 
 from statsmodels.nonparametric.smoothers_lowess import lowess
 
+# TODO: separate of the QC parts of this into a QC test
 
 def add_sigma_theta0_sm(netCDFfile, limit=0.02):
     # loads the netcdf file
