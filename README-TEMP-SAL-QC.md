@@ -1,6 +1,8 @@
 # Temperature and Salinity
 Temperature and Salinity data processing and QC
 
+Create a working data directory to store downloaded files, in the examples below this is data/SOFS-9-2020
+
 ## processing RAW files
 
 	python3 ocean_dp\parse\sbeCNV2netCDF.py data\SOFS-9-2020\*.cnv      
@@ -589,7 +591,7 @@ variables:
                 :deployment_code = "SOFS-9-2020" ;
                 :disclaimer = "Data, products and services from IMOS are provided \"as is\" without any warranty as to fitness for a particular purpose." ;
                 :featureType = "timeSeries" ;
-                string :file_version = "Level 2 ÔÇô Derived Products" ;
+                :file_version = "Level 2 - Derived Products" ;
                 :file_version_quality_control = "Raw data is defined as unprocessed data and data products that have not undergone quality control. The data may be in engineering physical units, time and location details can be in relative units and values can be pre-calibration measurements." ;
                 :firmware_date = "May 20 2013 08:04:08" ;
                 :firmware_version = "2.3.1" ;

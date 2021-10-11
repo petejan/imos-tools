@@ -61,7 +61,7 @@ def create(file):
     cur_att = con.cursor()
     cur_files = con.cursor()
 
-    ncOut = Dataset(file+'.nc', "w", format='NETCDF4')
+    ncOut = Dataset(file+'.nc', "w", format='NETCDF4_CLASSIC')
 
     # add the global attributes
     att_sql = 'SELECT count(*) FROM file'

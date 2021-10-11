@@ -102,7 +102,7 @@ def smooth(files, method, resample='True', hours=12):
         print('output file : ', fn_new)
 
         # output data to new file
-        ds_new = Dataset(fn_new, 'w')
+        ds_new = Dataset(fn_new, 'w', format='NETCDF4_CLASSIC')
 
         #  copy global attributes
         attr_dict = {}
@@ -209,7 +209,7 @@ def smooth(files, method, resample='True', hours=12):
             var_resample_out = ds_new.createVariable(resample_var, 'f4', 'TIME', fill_value=np.NaN, zlib=True)
             attr_dict = {}
             for a in var_to_resample_in.ncattrs():
-                if a != 'ancillary_variables': # don't copy these for now
+                if a != 'ancillary_variables' and a != '_FillValue' : # don't copy these for now
                     attr_dict[a] = var_to_resample_in.getncattr(a)
 
             var_resample_out.setncatts(attr_dict)
@@ -218,7 +218,7 @@ def smooth(files, method, resample='True', hours=12):
         #  create history
         ds_new.history += '\n' + now.strftime("%Y-%m-%d : ") + 'resampled data created from ' + os.path.basename(filepath) + ' window=' + str(window) + ' method=' + method
 
-        ds_new.file_version = 'Level 2 – Derived Products'
+        ds_new.file_version = 'Level 2 - Derived Products'
         ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
         ds_new.time_coverage_start = sample_datetime[0].strftime(ncTimeFormat)
         ds_new.time_coverage_end = sample_datetime[-1].strftime(ncTimeFormat)
@@ -240,7 +240,7 @@ def plot():
 
 
 if __name__ == "__main__":
-    method = 'interp'
+    method = 'nearest'
     files = []
     for f in sys.argv[1:]:
         files.extend(glob(f))

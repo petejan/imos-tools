@@ -461,13 +461,13 @@ def parse(files):
         if instrument_serialnumber:
             ncOut.instrument_serial_number = instrument_serialnumber
         if firmware_version:
-            ncOut.firmware_version = firmware_version
+            ncOut.sea_bird_firmware_version = firmware_version
         if firmware_date:
-            ncOut.firmware_date = firmware_date
+            ncOut.sea_bird_firmware_date = firmware_date
         if mfg_date:
-            ncOut.manufacture_date = mfg_date
+            ncOut.sea_bird_manufacture_date = mfg_date
         if cast:
-            ncOut.instrument_cast = cast
+            ncOut.sea_bird_instrument_cast = cast
 
         if adv_pri:
             ncOut.setncattr("sea_bird_advance_pri", adv_pri.strip() )
