@@ -130,7 +130,10 @@ def resample(files, method, resample='True', hours=12):
         # copy the NOMINAL_DEPTH, LATITUDE, and LONGITUDE
         # TODO: check _FillValue
         varList = ds.variables
-        for v in ['NOMINAL_DEPTH', 'LATITUDE', 'LONGITUDE']:
+        in_vars = set([x for x in ds.variables])
+
+        z = in_vars.intersection(['NOMINAL_DEPTH', 'LATITUDE', 'LONGITUDE'])
+        for v in z:
             maVariable = ds.variables[v][:]  # get the data
             varDims = varList[v].dimensions
 
@@ -142,78 +145,67 @@ def resample(files, method, resample='True', hours=12):
             ncVariableOut[:] = maVariable  # copy the data
 
         # variable to smooth
-        in_vars = set([x for x in ds.variables])
         # print('input file vars', in_vars)
-        z = in_vars.intersection(['PRES', 'TEMP', 'PSAL', 'CNDC', 'DENSITY', 'SIGMA_T0', 'DOX2', 'ATMP', 'AIRT', 'WSPD', 'SW', 'LW', 'UWIND', 'VWIND'])
+        z = in_vars.intersection(['PRES', 'TEMP', 'PSAL', 'CNDC', 'DENSITY', 'SIGMA_T0', 'DOX2', 'ATMP', 'AIRT', 'WSPD', 'SW', 'LW', 'UWIND', 'VWIND', 'CPHL', 'BB'])
         print ('vars to smooth', z)
         qc = np.ones_like(datetime_time)
         lowess = sm.nonparametric.lowess
 
-        qc_in_level = 4
+        qc_in_level = 2
         for resample_var in z:
 
             var_to_resample_in = ds.variables[resample_var]
+            only_qc = False
             if resample_var + '_quality_control' in ds.variables:
                 print('using qc : ', resample_var + "_quality_control")
                 qc = ds.variables[resample_var + "_quality_control"][:]
+                only_qc = True
 
             data_in = var_to_resample_in[deployment_msk & (qc <= qc_in_level)]
-            time_deployment = var_time[deployment_msk & (qc <= qc_in_level)]
 
-            print(resample_var, 'input data : ', data_in)
-            #print('times', time_deployment)
-            #print('new times', new_times)
+            if only_qc and len(data_in) > 0:
+                time_deployment = var_time[deployment_msk & (qc <= qc_in_level)]
 
-            # do the smoothing
-            if method == 'lowess':
-                y = lowess(np.array(data_in), np.array(time_deployment), frac=frac, it=2, is_sorted=True, xvals=sample_datenum)
-                print('isnan', sum(np.isnan(y)))
-            elif method == 'interp':
-                f = interp1d(np.array(time_deployment), np.array(data_in), bounds_error=False, kind='linear')
-                y = f(sample_datenum)
-            else: # assume nearest
-                method = 'nearest'
-                f = interp1d(np.array(time_deployment), np.array(data_in), kind='nearest', bounds_error=False, fill_value=np.nan)
-                y = f(sample_datenum)
+                print(resample_var, 'input data : ', data_in)
+                #print('times', time_deployment)
+                #print('new times', new_times)
 
-            print(resample_var, 'interpolated data', y)
+                # do the smoothing
+                if method == 'lowess':
+                    y = lowess(np.array(data_in), np.array(time_deployment), frac=frac, it=2, is_sorted=True, xvals=sample_datenum)
+                    print('isnan', sum(np.isnan(y)))
+                elif method == 'interp':
+                    f = interp1d(np.array(time_deployment), np.array(data_in), bounds_error=False, kind='linear')
+                    y = f(sample_datenum)
+                else: # assume nearest
+                    method = 'nearest'
+                    f = interp1d(np.array(time_deployment), np.array(data_in), kind='nearest', bounds_error=False, fill_value=np.nan)
+                    y = f(sample_datenum)
 
-            # mark time cells bad where there are less than 3 samples in +/- 2.2 hours
-            # bad = 0
-            # for v in range(0, len(sample_datenum)):
-            #     time_cell_min = np.where(time_deployment > (sample_datenum[v] - 2.2/24)) # TODO: only works when time.units='days since .....'
-            #     time_cell_max = np.where(time_deployment < (sample_datenum[v] + 2.2/24))
-            #     # print(np.shape(time_cell_max), np.shape(time_cell_min))
-            #     if np.shape(time_cell_min)[1] > 0 and np.shape(time_cell_max)[1] > 0:
-            #         #print(v, time_cell_max[0][-1], time_cell_min[0][0], time_cell_max[0][-1]-time_cell_min[0][0])
-            #         #print(dy[0][-1]-dx[0][0])
-            #         if (time_cell_max[0][-1]-time_cell_min[0][0]) < 3:
-            #             y[v] = np.nan
-            #             bad += 1
-            #     else:
-            #         y[v] = np.nan
-            #         bad += 1
-            # print('number bad', bad)
+                print(resample_var, 'interpolated data', y)
 
-            #  create output variables
-            var_resample_out = ds_new.createVariable(resample_var, 'f4', 'TIME', fill_value=np.NaN, zlib=True)
-            attr_dict = {}
-            for a in var_to_resample_in.ncattrs():
-                if a != 'ancillary_variables' and a != '_FillValue' : # don't copy these for now
-                    attr_dict[a] = var_to_resample_in.getncattr(a)
+                #  create output variables
+                var_resample_out = ds_new.createVariable(resample_var, 'f4', 'TIME', fill_value=np.NaN, zlib=True)
+                attr_dict = {}
+                for a in var_to_resample_in.ncattrs():
+                    if a != 'ancillary_variables' and a != '_FillValue' : # don't copy these for now
+                        attr_dict[a] = var_to_resample_in.getncattr(a)
 
-            var_resample_out.setncatts(attr_dict)
-            var_resample_out[:] = y
+                var_resample_out.setncatts(attr_dict)
 
-            # interpolate the time to get the distance to the nearest point
-            f = interp1d(np.array(time_deployment), np.array(time_deployment), kind='nearest', bounds_error=False, fill_value=np.nan)
-            y = (f(sample_datenum) - sample_datenum) * 24 * 3600
+                # interpolate the time to get the distance to the nearest point
+                f = interp1d(np.array(time_deployment), np.array(time_deployment), kind='nearest', bounds_error=False, fill_value=np.nan)
+                sample_time_dist = (f(sample_datenum) - sample_datenum) * 24 * 3600
 
-            print('sample distance', y, '(seconds)')
-            # create a variable to save distance to nearest point
-            var_resample_out = ds_new.createVariable(resample_var + '_SAMPLE_TIME_DIFF', 'f4', 'TIME', fill_value=np.NaN, zlib=True)
-            var_resample_out.comment = 'seconds to actual sample timestamp, abs max='+str(max(abs(y)))
-            var_resample_out[:] = y
+                print('sample distance', sample_time_dist, '(seconds)')
+                # create a variable to save distance to nearest point
+                var_resample_dist_out = ds_new.createVariable(resample_var + '_SAMPLE_TIME_DIFF', 'f4', 'TIME', fill_value=np.NaN, zlib=True)
+                var_resample_dist_out.comment = 'seconds to actual sample timestamp, abs max='+str(max(abs(y)))
+                var_resample_dist_out[:] = sample_time_dist
+
+                # only use data where sample time is less than 3 hrs from the gridded time
+                sample_time_dist_msk = abs(sample_time_dist) < 3 * 60 * 60
+                var_resample_out[sample_time_dist_msk] = y[sample_time_dist_msk]
 
         #  create history
         ds_new.history += '\n' + now.strftime("%Y-%m-%d : ") + 'resampled data created from ' + os.path.basename(filepath) + ' window=' + str(window) + ' method=' + method
@@ -241,10 +233,13 @@ def plot():
 
 if __name__ == "__main__":
     method = 'nearest'
+    hours = 1
     files = []
     for f in sys.argv[1:]:
         if f.startswith('--method='):
             method = f.replace('--method=', '')
+        if f.startswith('--hours='):
+            hours = float(f.replace('--hours=', ''))
         files.extend(glob(f))
 
-    resample(files, method, resample=True, hours=1)
+    resample(files, method, resample=True, hours=hours)

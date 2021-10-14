@@ -115,11 +115,13 @@ for fn in ncFiles:
     # Pulse 8 SBE16plusV2 battery fail (after 2012-01-30 15:25) -> flag 3 after Pressure fails
     if model == 'SBE16plus' and deployment == 'Pulse-8-2011':
         manual_flag = 4
+        manual_var = None
         manual_reason = 'battery failed'
         maunal_date_start = '2012-01-30 15:25:00'
     # Pulse 9 SBE16plusV2 battery fail (after 2012-12-29 12:30) -> flag 3 after Pressure fails
     if model == 'SBE16plusV2' and deployment == 'Pulse-9-2012':
         manual_flag = 4
+        manual_var = None
         manual_reason = 'battery failed'
         maunal_date_start = '2012-12-29 12:30:00'
     # SOFS-7.5 70 and 75m Starmon mini -> flag 4

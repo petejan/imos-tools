@@ -104,9 +104,15 @@ def create(file):
     while row:
         print('create-file-name', n, row[1])
         file_names[n] = row[1]
-        instrument[n] = row[2] + ' ; ' + row[3]
+        if row[2] and row[3]:
+            instrument[n] = row[2] + ' ; ' + row[3]
+        else:
+            instrument[n] = 'unknown'
         varOutIdxFn[n] = int(row[0])
-        varOutNdFn[n] = float(row[4])
+        if row[4]:
+            varOutNdFn[n] = float(row[4])
+        else:
+            varOutFn[n] = np.nan
 
         row = cur_files.fetchone()
 
@@ -115,7 +121,7 @@ def create(file):
     varOutFn[:] = stringtochar(file_names)
     varOutInst[:] = stringtochar(instrument)
 
-    sql_select_vars = 'SELECT name, COUNT(*) FROM variables v WHERE dimensions LIKE "TIME[%]" and name != "TIME" and name != "SAMPLE_TIME_DIFF" GROUP BY name ORDER BY name'
+    sql_select_vars = 'SELECT name, COUNT(*) FROM variables v WHERE dimensions LIKE "TIME[%]" and name != "TIME" and name not like "%_SAMPLE_TIME_DIFF" GROUP BY name ORDER BY name'
 
     # generate the FILE instance variables
     vars = cur_vars.execute(sql_select_vars)

@@ -77,6 +77,7 @@ def sqlite_insert(files):
                     "FROM file"
                     " LEFT join attributes AS dep ON (file.file_id = dep.file_id and dep.name == 'deployment_code')"
                     " LEFT join attributes AS nd ON (file.file_id = nd.file_id and nd.name == 'instrument_nominal_depth')")
+
         cur.execute("CREATE VIEW IF NOT EXISTS variable_depth AS "
                     "SELECT file.file_id, file.name AS file_name, variables.name, variables.dimensions, variables.type, variables.data, nd.value AS nominal_depth "
                     "FROM variables"
@@ -91,7 +92,7 @@ def sqlite_insert(files):
 
         # load all global attributes
         for at in nc.ncattrs():
-            print('global attribute', at)
+            #print('global attribute', at)
             name = at
             value = nc.getncattr(at)
             at_type = type(value).__name__
@@ -100,15 +101,17 @@ def sqlite_insert(files):
 
         # get list of auxcilliary variables as we don't load these
         aux_vars = []
+        vars_have_aux = []
         for var_name in nc.variables:
-            print('variable', var_name)
+            #print('aux-data variable', var_name)
+            vars_have_aux.append(var_name)
             try:
                 aux_vars.extend(nc.variables[var_name].ancillary_variables.split(' '))
             except AttributeError:
                 pass
 
         # load variables
-        for var_name in nc.variables:
+        for var_name in vars_have_aux: #nc.variables:
             print('variable', var_name)
             if var_name not in aux_vars:
                 var = nc.variables[var_name]
@@ -130,7 +133,7 @@ def sqlite_insert(files):
 
                 # load variable attributes
                 for at in var.ncattrs():
-                    print('variable-atribute', at)
+                    #print('variable-atribute', at)
                     name = at
                     value = var.getncattr(at)
                     at_type = type(value).__name__
