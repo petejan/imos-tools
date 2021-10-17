@@ -65,6 +65,7 @@ def add_sigma_theta0_sm(netCDFfile, limit=0.02):
     ncVarOutQc[qc_abs < limit] = 1
     ncVarOutQc.long_name = "sigma-theta0-not-smooth flag for sea_water_sigma_theta"
     ncVarOutQc.units = "1"
+    ncVarOutQc.coordinates = var_to_resample_in.coordinates
     ncVarOutQc.comment = "data flagged when sigma-theta0 jumps "+str(limit)+" more than the 30 point smoothed data"
 
     if 'PSAL_quality_control_dst' not in ds.variables:
@@ -76,6 +77,7 @@ def add_sigma_theta0_sm(netCDFfile, limit=0.02):
     ncVarOutQc[qc_abs < limit] = 1
     ncVarOutQc.long_name = "sigma-theta0-not-smooth flag for sea_water_practical_salinity"
     ncVarOutQc.units = "1"
+    ncVarOutQc.coordinates = var_to_resample_in.coordinates
     ncVarOutQc.comment = "data flagged 3 when sigma-theta0 jumps "+str(limit)+" more than the 30 point smoothed data"
 
     var_psal = ds.variables['PSAL']

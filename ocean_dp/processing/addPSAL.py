@@ -77,6 +77,7 @@ def add_psal(netCDFfile):
     ncVarOut.valid_max = np.float32(40)  # this is just the limits that the file will hold
     ncVarOut.valid_min = np.float32(-1)
     ncVarOut.comment = "calculated using gsw-python https://teos-10.github.io/GSW-Python/index.html" + comment
+    ncVarOut.coordinates = "TIME LATITUDE LONGITUDE NOMINAL_DEPTH"
 
     # update the history attribute
     try:

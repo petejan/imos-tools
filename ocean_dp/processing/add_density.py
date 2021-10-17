@@ -83,6 +83,7 @@ def add_density(netCDFfile):
     ncVarOut.standard_name = "sea_water_density"
     ncVarOut.valid_max = np.float32(1100) # https://oceanobservatories.org/wp-content/uploads/2015/09/1341-10004_Data_Product_SPEC_GLBLRNG_OOI.pdf
     ncVarOut.valid_min = np.float32(1000)
+    ncVarOut.coordinates = var_psal.coordinates
 
     ncVarOut.comment = "calculated using gsw-python https://teos-10.github.io/GSW-Python/index.html"
 
@@ -103,6 +104,7 @@ def add_density(netCDFfile):
     ncVarOut.reference_pressure = "0 dbar"
     ncVarOut.valid_max = np.float32(100)
     ncVarOut.valid_min = np.float32(0)
+    ncVarOut.coordinates = var_psal.coordinates
 
     ncVarOut.comment = "calculated using gsw-python https://teos-10.github.io/GSW-Python/index.html"
 
