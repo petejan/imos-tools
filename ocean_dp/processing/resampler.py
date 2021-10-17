@@ -64,15 +64,11 @@ def resample(files, method, resample='True', hours=12):
         sample_rate_mid = t_mid1 - t_mid0
         print('sample rate mid', sample_rate_mid.total_seconds(), '(seconds)')
 
-        # find number of samples to make 2.2 hrs of data
-        i = n_mid
-        while (datetime_time_deployment[i] - t_mid0) < timedelta(hours=hours):
-            i = i + 1
-        i = i - n_mid
-
-        window = np.max([i, 30])
-        print('window (points)', window)
-        frac = window/len(time_deployment)
+        # find number of samples to make sample interval hrs of data
+        window = n_mid
+        while (datetime_time_deployment[window] - t_mid0) < timedelta(hours=hours):
+            window = window + 1
+        window = window - n_mid
 
         # create the new time array to sample to
         if resample:
@@ -172,6 +168,10 @@ def resample(files, method, resample='True', hours=12):
 
                 # do the smoothing
                 if method == 'lowess':
+                    window = np.max([window, 5])
+                    print('window (points)', window)
+                    frac = window / len(time_deployment)
+
                     y = lowess(np.array(data_in), np.array(time_deployment), frac=frac, it=2, is_sorted=True, xvals=sample_datenum)
                     print('isnan', sum(np.isnan(y)))
                 elif method == 'interp':
@@ -208,7 +208,7 @@ def resample(files, method, resample='True', hours=12):
                 var_resample_out[sample_time_dist_msk] = y[sample_time_dist_msk]
 
         #  create history
-        ds_new.history += '\n' + now.strftime("%Y-%m-%d : ") + 'resampled data created from ' + os.path.basename(filepath) + ' window=' + str(window) + ' method=' + method
+        ds_new.history += '\n' + now.strftime("%Y-%m-%d : ") + 'resampled data created from ' + os.path.basename(filepath) + ', window has' + str(window) + 'points, method ' + method
 
         ds_new.file_version = 'Level 2 - Derived Products'
         ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
