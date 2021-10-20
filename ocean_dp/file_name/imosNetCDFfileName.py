@@ -63,7 +63,7 @@ def rename(netCDFfile):
     nominal_depth = ds.variables["NOMINAL_DEPTH"][:]
 
     fv = 'FV00'
-    if file_version == 'Level 1 - Quality Controlled data':
+    if file_version.startswith('Level 1'):
         fv = 'FV01'
 
     product_code = deployment + "-" + instrument + "-" + instrument_sn + "-" + "{0:.0f}".format(np.abs(nominal_depth)) + "m"

@@ -84,8 +84,11 @@ def add(netCDFfile, metadatafiles):
                     # match deployment_code, time_in, time_end
                     match = True
                     # match deployment if we have one
-                    if 'deployment_code' in dict1:
-                        if len(dict1['deployment_code']) > 0 and dict1['deployment_code'] != deployment_code:
+                    if ('deployment_code' in dict1):
+                        if len(dict1['deployment_code']) > 0 and not deployment_code:
+                            match = False
+                        elif len(dict1['deployment_code']) > 0 and not re.search(dict1['deployment_code'], deployment_code): #dict1['deployment_code'] != deployment_code:
+                        #if len(dict1['deployment_code']) > 0 and dict1['deployment_code'] != deployment_code:
                             match = False
                             #print("deployment not match : ", dict1['deployment_code'])
 

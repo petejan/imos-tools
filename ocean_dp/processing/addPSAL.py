@@ -89,6 +89,8 @@ def add_psal(netCDFfile):
 
     ds.close()
 
+    return netCDFfile
+
 
 if __name__ == "__main__":
     for f in sys.argv[1:]:

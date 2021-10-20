@@ -55,6 +55,8 @@ def add_sigma_theta0_sm(netCDFfile, limit=0.02):
     ncVarOut.reference_pressure = "0 dbar"
     ncVarOut.valid_max = np.float32(100)
     ncVarOut.valid_min = np.float32(0)
+    ncVarOut.coordinates = "TIME LATITUDE LONGITUDE NOMINAL_DEPTH"
+    ncVarOut.ancillary_variables = "SIGMA_T0_quality_control_dst"
 
     if 'SIGMA_T0_quality_control_dst' not in ds.variables:
         ncVarOutQc = ds.createVariable("SIGMA_T0_quality_control_dst", "i1", ("TIME",), fill_value=99, zlib=True)  # fill_value=nan otherwise defaults to max
@@ -65,7 +67,6 @@ def add_sigma_theta0_sm(netCDFfile, limit=0.02):
     ncVarOutQc[qc_abs < limit] = 1
     ncVarOutQc.long_name = "sigma-theta0-not-smooth flag for sea_water_sigma_theta"
     ncVarOutQc.units = "1"
-    ncVarOutQc.coordinates = var_to_resample_in.coordinates
     ncVarOutQc.comment = "data flagged when sigma-theta0 jumps "+str(limit)+" more than the 30 point smoothed data"
 
     if 'PSAL_quality_control_dst' not in ds.variables:
@@ -77,7 +78,6 @@ def add_sigma_theta0_sm(netCDFfile, limit=0.02):
     ncVarOutQc[qc_abs < limit] = 1
     ncVarOutQc.long_name = "sigma-theta0-not-smooth flag for sea_water_practical_salinity"
     ncVarOutQc.units = "1"
-    ncVarOutQc.coordinates = var_to_resample_in.coordinates
     ncVarOutQc.comment = "data flagged 3 when sigma-theta0 jumps "+str(limit)+" more than the 30 point smoothed data"
 
     var_psal = ds.variables['PSAL']

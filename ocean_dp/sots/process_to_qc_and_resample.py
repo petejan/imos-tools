@@ -40,6 +40,7 @@ import ocean_dp.processing.add_density
 import ocean_dp.processing.add_sigma_theta0_sm
 import ocean_dp.processing.apply_scale_offset_attributes
 from ocean_dp.processing.resampler import resample
+import ocean_dp.file_name.imosNetCDFfileName
 
 
 import ocean_dp.file_name.find_file_with
@@ -63,14 +64,14 @@ psal_qc_params = [
 
 
 ncFiles = []
-for f in sys.argv[1:]:
-    ncFiles.extend(glob.glob(f))
+for fv01_file_list in sys.argv[1:]:
+    ncFiles.extend(glob.glob(fv01_file_list))
 
 qc_files = []
-for fn in ncFiles:
+for fv00_file in ncFiles:
 
-    print ("processing ", fn)
-    ds = Dataset(fn, 'r')
+    print ("processing ", fv00_file)
+    ds = Dataset(fv00_file, 'r')
 
     ndepth_var = ds.variables['NOMINAL_DEPTH']
     ndepth = ndepth_var[:]
@@ -109,12 +110,17 @@ for fn in ncFiles:
 
     print('nominal depth', ndepth)
 
+    fv01_file_list = ocean_dp.qc.add_qc_flags.add_qc([fv00_file])
+    if has_cndc and not has_psal:
+        ocean_dp.processing.addPSAL.add_psal(fv01_file_list[0])
+        ocean_dp.qc.add_qc_flags.add_qc(fv01_file_list, 'PSAL')
+        fv01_file_list[0] = ocean_dp.file_name.imosNetCDFfileName.rename(fv01_file_list[0])
+
+    fv01_file_list = ocean_dp.qc.in_out_water.in_out_water(fv01_file_list)
+
+    fv01_file_list = ocean_dp.processing.apply_scale_offset_attributes.apply_scale_offset(fv01_file_list)
+
     if has_temp:
-
-        f = ocean_dp.qc.add_qc_flags.add_qc([fn])
-        f = ocean_dp.qc.in_out_water.in_out_water(f)
-
-        f = ocean_dp.processing.apply_scale_offset_attributes.apply_scale_offset(f)
 
         # temperature QC
         for q in temp_qc_params:
@@ -123,13 +129,13 @@ for fn in ncFiles:
 
         print('temp_qc:', q)
 
-        f = ocean_dp.qc.global_range.global_range(f, 'TEMP', q['global_max'], q['global_min'])
-        f = ocean_dp.qc.global_range.global_range(f, 'TEMP', q['climate_max'], q['climate_min'], 3)
-        f = ocean_dp.qc.spike_test.spike_test(f, 'TEMP', q['spike_height'], 3)
-        f = ocean_dp.qc.rate_of_change.rate_of_change(f, 'TEMP', q['rate_max'], 3)
+        fv01_file_list = ocean_dp.qc.global_range.global_range(fv01_file_list, 'TEMP', q['global_max'], q['global_min'])
+        fv01_file_list = ocean_dp.qc.global_range.global_range(fv01_file_list, 'TEMP', q['climate_max'], q['climate_min'], 3)
+        fv01_file_list = ocean_dp.qc.spike_test.spike_test(fv01_file_list, 'TEMP', q['spike_height'], 3)
+        fv01_file_list = ocean_dp.qc.rate_of_change.rate_of_change(fv01_file_list, 'TEMP', q['rate_max'], 3)
 
     if has_cndc:
-        f = ocean_dp.qc.global_range.global_range(f, 'CNDC', 4.5, 3)
+        fv01_file_list = ocean_dp.qc.global_range.global_range(fv01_file_list, 'CNDC', 4.5, 3)
 
         # salinity QC
         for q in psal_qc_params:
@@ -138,21 +144,18 @@ for fn in ncFiles:
 
         print('psal_qc:', q)
 
-        if has_psal == False:
-            f = ocean_dp.processing.addPSAL.add_psal(f[0])
-
-        f = ocean_dp.qc.global_range.global_range(f, 'PSAL', q['global_max'], q['global_min'])
-        f = ocean_dp.qc.global_range.global_range(f, 'PSAL', q['climate_max'], q['climate_min'], 3)
-        f = ocean_dp.qc.spike_test.spike_test(f, 'PSAL', q['spike_height'], 3)
-        f = ocean_dp.qc.rate_of_change.rate_of_change(f, 'PSAL', q['rate_max'], 3)
+        fv01_file_list = ocean_dp.qc.global_range.global_range(fv01_file_list, 'PSAL', q['global_max'], q['global_min'])
+        fv01_file_list = ocean_dp.qc.global_range.global_range(fv01_file_list, 'PSAL', q['climate_max'], q['climate_min'], 3)
+        fv01_file_list = ocean_dp.qc.spike_test.spike_test(fv01_file_list, 'PSAL', q['spike_height'], 3)
+        fv01_file_list = ocean_dp.qc.rate_of_change.rate_of_change(fv01_file_list, 'PSAL', q['rate_max'], 3)
 
         if not is_pumped:
-            f = ocean_dp.processing.add_density.add_density(f[0])
+            fv01_file_list = ocean_dp.processing.add_density.add_density(fv01_file_list[0])
             if ndepth > 4000:
                 limit = 0.001
             else:
                 limit = 0.02
-            f = ocean_dp.processing.add_sigma_theta0_sm.add_sigma_theta0_sm(f[0], limit=limit)
+            fv01_file_list = ocean_dp.processing.add_sigma_theta0_sm.add_sigma_theta0_sm(fv01_file_list[0], limit=limit)
 
     # Pulse 6,7,8 SOFS 1,2 Vemco Mini sensors with SN < 10000 -> flag 3
     if model == 'Minilog-T':
@@ -235,24 +238,25 @@ for fn in ncFiles:
         manual_reason = 'sensor data noisy'
 
     if manual_flag:
-        f = ocean_dp.qc.manual_by_date.maunal(f, manual_var, maunal_date_start, manual_flag, manual_reason, end_str=maunal_date_end)
+        fv01_file_list = ocean_dp.qc.manual_by_date.maunal(fv01_file_list, manual_var, maunal_date_start, manual_flag, manual_reason, end_str=maunal_date_end)
     if model == 'SBE37SMP-ODO-RS232' and deployment == 'SOFS-9-2020' and sn == '03715971':
         manual_flag = 2
         manual_var = 'PSAL'
         manual_reason = 'high salinity at start, rest of data suspect'
-        f = ocean_dp.qc.manual_by_date.maunal(f, manual_var, None, manual_flag, manual_reason, end_str=None)
+        fv01_file_list = ocean_dp.qc.manual_by_date.maunal(fv01_file_list, manual_var, None, manual_flag, manual_reason, end_str=None)
     if model == 'SBE37SMP-ODO-RS232' and deployment == 'SOFS-7.5-2018' and sn == '03715971':
         manual_flag = 2
         manual_var = 'PSAL'
         manual_reason = 'high salinity at end, reset of data suspect'
-        f = ocean_dp.qc.manual_by_date.maunal(f, manual_var, None, manual_flag, manual_reason, end_str=None)
+        fv01_file_list = ocean_dp.qc.manual_by_date.maunal(fv01_file_list, manual_var, None, manual_flag, manual_reason, end_str=None)
 
     # need to propagate flags from temp -> PSAL, SIGMA-THETA0, OXSOL, DOX2
     #                              PSAL -> CNDC, SIGMA-THETA0, OXSOL, DOX2
 
-    ds = Dataset(f[0], 'a')
+    ds = Dataset(fv01_file_list[0], 'a')
     ds.references += '; Jansen P, Weeding B, Shadwick EH and Trull TW (2020). Southern Ocean Time Series (SOTS) Quality Assessment and Control Report Temperature Records Version 1.0. CSIRO, Australia. DOI: 10.26198/gfgr-fq47 (https://doi.org/10.26198/gfgr-fq47)'
-    ds.references += '; Jansen P, Shadwick E and Trull TW (2021). Southern Ocean Time Series (SOTS) Quality Assessment and Control Report Temperature Records Version 1.0. CSIRO, Australia.'
+    if has_cndc:
+        ds.references += '; Jansen P, Shadwick E and Trull TW (2021). Southern Ocean Time Series (SOTS) Quality Assessment and Control Report Salinity Records Version 1.0. CSIRO, Australia.'
     ds.close()
 
-    resample(f, 'nearest', resample=True, hours=1)
+    resample(fv01_file_list, 'nearest', resample=True, hours=1)
