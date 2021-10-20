@@ -4,4 +4,4 @@ data
 *.pyc
 *.DS_Store
 *~
-.idea/imos-tools.iml
+.idea/*
