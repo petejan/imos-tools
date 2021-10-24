@@ -8,34 +8,34 @@ VAR_ATT,TIME,Pulse-8-2011,MDS-MKVL,200665,,,,,,comment_scale_offset,str,1.0 -0.4
 VAR_ATT,TIME,Pulse-8-2011,SBE16plusV2,01606330,,,,,,comment_scale_offset,str,1.0 0.41666666666667
 VAR_ATT,TIME,Pulse-8-2011,SBE37SM-RS232,6962,,,,,,comment_scale_offset,str,1.0 0.41666666666667
 
-VAR_ATT,TIME,SOFS-6-2017,SBE37SM-RS485,03710136,20/3/16,8/11/16,,,,comment_scale_offset,str,"1 366"
-VAR_ATT,TIME,SOFS-6-2017,SBE37SM-RS485,03708764,20/3/16,8/11/16,,,,comment_scale_offset,str,"1 367"
+VAR_ATT,TIME,SOFS-6-2017,SBE37SM-RS485,03710136,2016-03-20,2016-11-08,,,,comment_scale_offset,str,"1 366"
+VAR_ATT,TIME,SOFS-6-2017,SBE37SM-RS485,03708764,2016-03-20,2016-11-08,,,,comment_scale_offset,str,"1 367"
 
 VAR_ATT,TIME,,SBE37,1778,2013-05-05,2015-03-27,,,,comment_scale_offset,str,"1 -1"
 
 VAR_ATT,TIME,SOFS-7-2018,MS9,0027,2018-03-06,2018-07-16,,,,comment_scale_offset,str,"1 -120"
 
-VAR_ATT,TIME,SOFS-7.5-2018,Starmon mini,4035,23/8/18,10/4/19,,,,comment_scale_offset,str,1.0 -0.416666666666667
-VAR_ATT,TIME,SOFS-7.5-2018,Starmon mini,4039,23/8/18,10/4/19,,,,comment_scale_offset,str,1.0 -0.416666666666667
-VAR_ATT,TIME,SOFS-7.5-2018,Starmon mini,4047,23/8/18,10/4/19,,,,comment_scale_offset,str,1.0 -0.416666666666667
-VAR_ATT,TIME,SOFS-7.5-2018,Starmon mini,4048,23/8/18,10/4/19,,,,comment_scale_offset,str,1.0 -0.416666666666667
-VAR_ATT,TIME,SOFS-7.5-2018,Starmon mini,4049,23/8/18,10/4/19,,,,comment_scale_offset,str,1.0 -0.416666666666667
-VAR_ATT,TIME,SOFS-7.5-2018,Starmon mini,4050,23/8/18,10/4/19,,,,comment_scale_offset,str,1.0 -0.416666666666667
-VAR_ATT,TIME,SOFS-7.5-2018,Starmon mini,4051,23/8/18,10/4/19,,,,comment_scale_offset,str,1.0 -0.416666666666667
-VAR_ATT,TIME,SOFS-7.5-2018,Starmon mini,4052,23/8/18,10/4/19,,,,comment_scale_offset,str,1.0 -0.416666666666667
-VAR_ATT,TIME,SOFS-7.5-2018,Starmon mini,4053,23/8/18,10/4/19,,,,comment_scale_offset,str,1.0 -0.416666666666667
-VAR_ATT,TIME,SOFS-7.5-2018,Starmon mini,4058,23/8/18,10/4/19,,,,comment_scale_offset,str,1.0 -0.416666666666667
-VAR_ATT,TIME,SOFS-7.5-2018,Starmon mini,4060,23/8/18,10/4/19,,,,comment_scale_offset,str,1.0 -0.416666666666667
-VAR_ATT,TIME,SOFS-7.5-2018,Starmon mini,4061,23/8/18,10/4/19,,,,comment_scale_offset,str,1.0 -0.416666666666667
-VAR_ATT,TIME,SOFS-7.5-2018,Starmon mini,4062,23/8/18,10/4/19,,,,comment_scale_offset,str,1.0 -0.416666666666667
-VAR_ATT,TIME,SOFS-7.5-2018,Starmon mini,4063,23/8/18,10/4/19,,,,comment_scale_offset,str,1.0 -0.416666666666667
-VAR_ATT,TIME,SOFS-7.5-2018,Starmon mini,4066,23/8/18,10/4/19,,,,comment_scale_offset,str,1.0 -0.416666666666667
-VAR_ATT,TIME,SOFS-7.5-2018,Starmon mini,4068,23/8/18,10/4/19,,,,comment_scale_offset,str,1.0 -0.416666666666667
-VAR_ATT,TIME,SOFS-7.5-2018,Starmon mini,4069,23/8/18,10/4/19,,,,comment_scale_offset,str,1.0 -0.416666666666667
-VAR_ATT,TIME,SOFS-7.5-2018,Starmon mini,4070,23/8/18,10/4/19,,,,comment_scale_offset,str,1.0 -0.416666666666667
-VAR_ATT,TIME,SOFS-7.5-2018,Starmon mini,4071,23/8/18,10/4/19,,,,comment_scale_offset,str,1.0 -0.416666666666667
-VAR_ATT,TIME,SOFS-7.5-2018,Starmon mini,4077,23/8/18,10/4/19,,,,comment_scale_offset,str,1.0 -0.416666666666667
-VAR_ATT,TIME,SOFS-7.5-2018,Starmon mini,4778,23/8/18,10/4/19,,,,comment_scale_offset,str,1.0 -0.416666666666667
+VAR_ATT,TIME,SOFS-7.5-2018,Starmon mini,4035,2018-08-23,2019-04-10,,,,comment_scale_offset,str,1.0 -0.416666666666667
+VAR_ATT,TIME,SOFS-7.5-2018,Starmon mini,4039,2018-08-23,2019-04-10,,,,comment_scale_offset,str,1.0 -0.416666666666667
+VAR_ATT,TIME,SOFS-7.5-2018,Starmon mini,4047,2018-08-23,2019-04-10,,,,comment_scale_offset,str,1.0 -0.416666666666667
+VAR_ATT,TIME,SOFS-7.5-2018,Starmon mini,4048,2018-08-23,2019-04-10,,,,comment_scale_offset,str,1.0 -0.416666666666667
+VAR_ATT,TIME,SOFS-7.5-2018,Starmon mini,4049,2018-08-23,2019-04-10,,,,comment_scale_offset,str,1.0 -0.416666666666667
+VAR_ATT,TIME,SOFS-7.5-2018,Starmon mini,4050,2018-08-23,2019-04-10,,,,comment_scale_offset,str,1.0 -0.416666666666667
+VAR_ATT,TIME,SOFS-7.5-2018,Starmon mini,4051,2018-08-23,2019-04-10,,,,comment_scale_offset,str,1.0 -0.416666666666667
+VAR_ATT,TIME,SOFS-7.5-2018,Starmon mini,4052,2018-08-23,2019-04-10,,,,comment_scale_offset,str,1.0 -0.416666666666667
+VAR_ATT,TIME,SOFS-7.5-2018,Starmon mini,4053,2018-08-23,2019-04-10,,,,comment_scale_offset,str,1.0 -0.416666666666667
+VAR_ATT,TIME,SOFS-7.5-2018,Starmon mini,4058,2018-08-23,2019-04-10,,,,comment_scale_offset,str,1.0 -0.416666666666667
+VAR_ATT,TIME,SOFS-7.5-2018,Starmon mini,4060,2018-08-23,2019-04-10,,,,comment_scale_offset,str,1.0 -0.416666666666667
+VAR_ATT,TIME,SOFS-7.5-2018,Starmon mini,4061,2018-08-23,2019-04-10,,,,comment_scale_offset,str,1.0 -0.416666666666667
+VAR_ATT,TIME,SOFS-7.5-2018,Starmon mini,4062,2018-08-23,2019-04-10,,,,comment_scale_offset,str,1.0 -0.416666666666667
+VAR_ATT,TIME,SOFS-7.5-2018,Starmon mini,4063,2018-08-23,2019-04-10,,,,comment_scale_offset,str,1.0 -0.416666666666667
+VAR_ATT,TIME,SOFS-7.5-2018,Starmon mini,4066,2018-08-23,2019-04-10,,,,comment_scale_offset,str,1.0 -0.416666666666667
+VAR_ATT,TIME,SOFS-7.5-2018,Starmon mini,4068,2018-08-23,2019-04-10,,,,comment_scale_offset,str,1.0 -0.416666666666667
+VAR_ATT,TIME,SOFS-7.5-2018,Starmon mini,4069,2018-08-23,2019-04-10,,,,comment_scale_offset,str,1.0 -0.416666666666667
+VAR_ATT,TIME,SOFS-7.5-2018,Starmon mini,4070,2018-08-23,2019-04-10,,,,comment_scale_offset,str,1.0 -0.416666666666667
+VAR_ATT,TIME,SOFS-7.5-2018,Starmon mini,4071,2018-08-23,2019-04-10,,,,comment_scale_offset,str,1.0 -0.416666666666667
+VAR_ATT,TIME,SOFS-7.5-2018,Starmon mini,4077,2018-08-23,2019-04-10,,,,comment_scale_offset,str,1.0 -0.416666666666667
+VAR_ATT,TIME,SOFS-7.5-2018,Starmon mini,4778,2018-08-23,2019-04-10,,,,comment_scale_offset,str,1.0 -0.416666666666667
 
 VAR_ATT,TIME,SOFS-8-2019,FLNTUS,1172,2019-03-18,2020-08-01,,,,comment_scale_offset,str,1.0 -145
 VAR_ATT,TIME,SOFS-8-2019,FLNTUS,1215,2019-03-18,2020-08-01,,,,comment_scale_offset,str,1.0 -145
