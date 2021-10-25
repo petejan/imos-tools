@@ -10,6 +10,6 @@ GLOBAL,*,,,,,,,,,site_code,str,SOTS
 GLOBAL,*,,,,,,,,,geospatial_vertical_positive,str,down
 GLOBAL,*,,,,,,,,,geospatial_lat_units,str,degrees_north
 GLOBAL,*,,,,,,,,,geospatial_lon_units,str,degrees_east
-xGLOBAL,*,SOFS.*,,,,,,,,platform_code,str,SOFS
+GLOBAL,*,SOFS.*,,,,,,,,platform_code,str,SOFS
 GLOBAL,*,SAZ47,,,,,,,,platform_code,str,SAZ47
-xGLOBAL,*,Pulse.*,,,,,,,,platform_code,str,Pulse
+GLOBAL,*,Pulse.*,,,,,,,,platform_code,str,Pulse

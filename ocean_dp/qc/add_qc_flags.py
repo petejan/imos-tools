@@ -117,6 +117,7 @@ def add_qc(netCDFfile, var_name=None):
 
         # update the global attributes
         ds.file_version = "Level 1 - Quality Controlled Data"
+        ds.file_version_quality_control = "Quality controlled data have been through quality assurance procedures such as automated routines and sensor calibration and/or a level of visual inspection and flag of obvious errors. The data are in physical units using standard SI metric units with calibration and other pre- processing routines applied, all time and location values are in absolute coordinates to comply with standards and datum. Data includes flags for each measurement to indicate the estimated quality of the measurement. Metadata exists for the data or for the higher level dataset that the data belongs to. This is the standard IMOS data level and is what should be made available to AODN and to the IMOS community."
         
         ds.date_created = now.strftime("%Y-%m-%dT%H:%M:%SZ")
         

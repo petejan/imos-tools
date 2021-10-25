@@ -667,14 +667,17 @@ VAR_ATT,V0,Pulse-8-2011,SBE16plusV2,01606330,,,,,,calibration_Tau20,str,5.01
 VAR_ATT,V0,Pulse-8-2011,SBE16plusV2,01606330,,,,,,calibration_H1,str,-0.033
 VAR_ATT,V0,Pulse-8-2011,SBE16plusV2,01606330,,,,,,calibration_H2,str,5000.
 VAR_ATT,V0,Pulse-8-2011,SBE16plusV2,01606330,,,,,,calibration_H3,str,1450.
+VAR_ATT,V0,Pulse-8-2011,SBE16plusV2,01606330,,,,,,calibration_CSIRO_CalibrationDate,str,"27-Jul-2011 report 916DO"
+VAR_ATT,V0,Pulse-8-2011,SBE16plusV2,01606330,,,,,,calibration_CSIRO_Soc,str,0.455238
+VAR_ATT,V0,Pulse-8-2011,SBE16plusV2,01606330,,,,,,calibration_CSIRO_offset,str,-0.40453
 
 VAR_ATT,V0,Pulse-9-2012,SBE16plusV2,unknown,,,,,,calibration_SerialNumber,str,"1635"
-VAR_ATT,V0,Pulse-9-2012,SBE16plusV2,unknown,,,,,,calibration_CalibrationDate,str,"15-May-09"
-VAR_ATT,V0,Pulse-9-2012,SBE16plusV2,unknown,,,,,,calibration_Soc,str,0.4873
-VAR_ATT,V0,Pulse-9-2012,SBE16plusV2,unknown,,,,,,calibration_offset,str,-0.4886
-VAR_ATT,V0,Pulse-9-2012,SBE16plusV2,unknown,,,,,,calibration_A,str,-0.0024093
-VAR_ATT,V0,Pulse-9-2012,SBE16plusV2,unknown,,,,,,calibration_B,str,0.00011208
-VAR_ATT,V0,Pulse-9-2012,SBE16plusV2,unknown,,,,,,calibration_C,str,-2.4562e-06
+VAR_ATT,V0,Pulse-9-2012,SBE16plusV2,unknown,,,,,,calibration_CalibrationDate,str,"24-Sep-11"
+VAR_ATT,V0,Pulse-9-2012,SBE16plusV2,unknown,,,,,,calibration_Soc,str,0.5202
+VAR_ATT,V0,Pulse-9-2012,SBE16plusV2,unknown,,,,,,calibration_offset,str,-0.5032
+VAR_ATT,V0,Pulse-9-2012,SBE16plusV2,unknown,,,,,,calibration_A,str,-0.002596
+VAR_ATT,V0,Pulse-9-2012,SBE16plusV2,unknown,,,,,,calibration_B,str,0.00010752
+VAR_ATT,V0,Pulse-9-2012,SBE16plusV2,unknown,,,,,,calibration_C,str,-2.2866e-06
 VAR_ATT,V0,Pulse-9-2012,SBE16plusV2,unknown,,,,,,calibration_D0,str,2.5826
 VAR_ATT,V0,Pulse-9-2012,SBE16plusV2,unknown,,,,,,calibration_D1,str,0.00019263
 VAR_ATT,V0,Pulse-9-2012,SBE16plusV2,unknown,,,,,,calibration_D2,str,-0.04648
@@ -685,9 +688,9 @@ VAR_ATT,V0,Pulse-9-2012,SBE16plusV2,unknown,,,,,,calibration_H2,str,5000.
 VAR_ATT,V0,Pulse-9-2012,SBE16plusV2,unknown,,,,,,calibration_H3,str,1450.
 
 VAR_ATT,V0,Pulse-10-2013,SBE16plusV2,01606330,,,,,,calibration_SerialNumber,str,"1634"
-VAR_ATT,V0,Pulse-10-2013,SBE16plusV2,01606330,,,,,,calibration_CalibrationDate,str,"15-May-09p"
-VAR_ATT,V0,Pulse-10-2013,SBE16plusV2,01606330,,,,,,calibration_Soc,str,0.4263
-VAR_ATT,V0,Pulse-10-2013,SBE16plusV2,01606330,,,,,,calibration_offset,str,-0.4382
+VAR_ATT,V0,Pulse-10-2013,SBE16plusV2,01606330,,,,,,calibration_CalibrationDate,str,"10-Sep-2012 CSIRO report 1345DO"
+VAR_ATT,V0,Pulse-10-2013,SBE16plusV2,01606330,,,,,,calibration_Soc,str,0.43985
+VAR_ATT,V0,Pulse-10-2013,SBE16plusV2,01606330,,,,,,calibration_offset,str,-0.4303
 VAR_ATT,V0,Pulse-10-2013,SBE16plusV2,01606330,,,,,,calibration_A,str,-0.0025795
 VAR_ATT,V0,Pulse-10-2013,SBE16plusV2,01606330,,,,,,calibration_B,str,0.00016628
 VAR_ATT,V0,Pulse-10-2013,SBE16plusV2,01606330,,,,,,calibration_C,str,-3.1959e-06
@@ -701,12 +704,12 @@ VAR_ATT,V0,Pulse-10-2013,SBE16plusV2,01606330,,,,,,calibration_H2,str,5000.
 VAR_ATT,V0,Pulse-10-2013,SBE16plusV2,01606330,,,,,,calibration_H3,str,1450.
 
 VAR_ATT,V0,Pulse-11-2015,SBE16plusV2,01606330,,,,,,calibration_SerialNumber,str,"1634"
-VAR_ATT,V0,Pulse-11-2015,SBE16plusV2,01606330,,,,,,calibration_CalibrationDate,str,"15-May-09p"
-VAR_ATT,V0,Pulse-11-2015,SBE16plusV2,01606330,,,,,,calibration_Soc,str,0.4263
-VAR_ATT,V0,Pulse-11-2015,SBE16plusV2,01606330,,,,,,calibration_offset,str,-0.4382
-VAR_ATT,V0,Pulse-11-2015,SBE16plusV2,01606330,,,,,,calibration_A,str,-0.0025795
-VAR_ATT,V0,Pulse-11-2015,SBE16plusV2,01606330,,,,,,calibration_B,str,0.00016628
-VAR_ATT,V0,Pulse-11-2015,SBE16plusV2,01606330,,,,,,calibration_C,str,-3.1959e-06
+VAR_ATT,V0,Pulse-11-2015,SBE16plusV2,01606330,,,,,,calibration_CalibrationDate,str,"13-Jun-14"
+VAR_ATT,V0,Pulse-11-2015,SBE16plusV2,01606330,,,,,,calibration_Soc,str,0.4496
+VAR_ATT,V0,Pulse-11-2015,SBE16plusV2,01606330,,,,,,calibration_offset,str,-0.4568
+VAR_ATT,V0,Pulse-11-2015,SBE16plusV2,01606330,,,,,,calibration_A,str,-3.4010e-3
+VAR_ATT,V0,Pulse-11-2015,SBE16plusV2,01606330,,,,,,calibration_B,str,1.6619e-4
+VAR_ATT,V0,Pulse-11-2015,SBE16plusV2,01606330,,,,,,calibration_C,str,-2.6032e-6
 VAR_ATT,V0,Pulse-11-2015,SBE16plusV2,01606330,,,,,,calibration_D0,str,2.5826
 VAR_ATT,V0,Pulse-11-2015,SBE16plusV2,01606330,,,,,,calibration_D1,str,0.00019263
 VAR_ATT,V0,Pulse-11-2015,SBE16plusV2,01606330,,,,,,calibration_D2,str,-0.04648
