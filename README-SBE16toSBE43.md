@@ -465,7 +465,7 @@ variables:
 
 # Extract the SBE43 data
 
-    python3 ocean_dp/processing/extract-SBE16-v-to-SBE43.py data/IMOS*FV01*.nc
+    python3 ocean_dp/processing/extract-SBE16-v-to-SBE43.py data/IMOS*FV01*SBE16*.nc
 
 rename to IMOS file
 

@@ -72,7 +72,10 @@ def add_sbe43(netCDFfile):
         ncVarOut = ds_out.createVariable(v, ncVarIn.dtype, ncVarIn.dimensions, fill_value=fill, zlib=True)  # fill_value=nan otherwise defaults to max
         for a in ncVarIn.ncattrs():
             if a != '_FillValue':
-                ncVarOut.setncattr(a, ncVarIn.getncattr(a))
+                if a == 'ancillary_variables':
+                    ncVarOut.setncattr(a, v + '_quality_control') # only copying main quality control, not all individual flags
+                else:
+                    ncVarOut.setncattr(a, ncVarIn.getncattr(a))
         ncVarOut[:] = ncVarIn[:]
 
     if 'DOX2' in ds.variables:
@@ -154,6 +157,7 @@ def add_sbe43(netCDFfile):
     #ncVarOut.equation_1 = "Ox(umol/kg)=Ox(ml/l).44660/(sigma-theta(P=0,Theta,S)+1000)"
     ncVarOut.equation_1 = "Ox(umol/kg)=Soc.(V+Voffset).(1+A.T+B.T^2+V.T^3).OxSOL(T,S).exp(E.P/K) ... SeaBird (AN64)"
     ncVarOut.comment = 'OxSOL in umol/kg'
+    ncVarOut.ancillary_variables = "DOX2_quality_control DOX2_quality_control_in"
 
     # quality flags
     ncVarOut_qc = ds_out.createVariable("DOX2_quality_control", "i1", ("TIME",), fill_value=99, zlib=True)  # fill_value=99 otherwise defaults to max, imos-toolbox uses 99
@@ -175,11 +179,17 @@ def add_sbe43(netCDFfile):
         ncVarOut_qc[:] = mx
 
     ncVarOut_qc.standard_name = ncVarOut.standard_name + " status_flag"
-
     ncVarOut_qc.quality_control_conventions = "IMOS standard flags"
     ncVarOut_qc.flag_values = np.array([0, 1, 2, 3, 4, 6, 7, 9], dtype=np.int8)
     ncVarOut_qc.flag_meanings = 'unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value'
     ncVarOut_qc.comment = 'maximum of all flags'
+
+    # create a QC flag variable for the input data
+    ncVarOut_qc = ds_out.createVariable("DOX2_quality_control_in", "i1", ("TIME",), fill_value=99, zlib=True)  # fill_value=99 otherwise defaults to max, imos-toolbox uses 99
+    ncVarOut_qc[:] = mx
+    ncVarOut_qc.long_name = "input data flag for moles_of_oxygen_per_unit_mass_in_sea_water"
+    ncVarOut_qc.units = "1"
+    ncVarOut_qc.comment = "data flagged from input variables TEMP, PSAL, PRES"
 
     # save the OxSOL
     if 'OXSOL' in ds_out.variables:
