@@ -21,6 +21,7 @@ import re
 
 from datetime import datetime, timedelta
 from dateutil import parser
+from glob2 import glob
 
 from netCDF4 import date2num, num2date
 from netCDF4 import Dataset
@@ -28,6 +29,7 @@ from netCDF4 import Dataset
 import os
 
 import numpy as np
+import zipfile
 
 # source file must have 'timek' column for time
 #  flag column is excluded
@@ -71,13 +73,64 @@ import numpy as np
 
 # search expressions within file
 
-ctd_expr   = r"SATPHC.*$"
+ctd_expr = r"SATPHC.*$"
+ctd_sn = r".*CTD.*<model>(\S*)</model><sn>(\S*)</sn>"
 
 #
 # parse the file
 #
 
+instrument_model = 'SeaFETv1'
+instrument_serialnumber = "1001"
+
+instrument_ctd_model = None
+instrument_ctd_serialnumber = None
+
+
+def read(fp, times, data, number_samples):
+    global instrument_model
+    global instrument_serialnumber
+    global instrument_ctd_model
+    global instrument_ctd_serialnumber
+
+    last_dt = datetime(2000,1,1)
+    try:
+        line = fp.readline().decode()
+        while line:
+            #print(line)
+            matchObj = re.match(ctd_expr, line)
+            # print(matchObj)
+            if matchObj:
+                if line.count(",") > 0:
+                    lineSplit = line.strip().split(",")
+                    #print(lineSplit)
+                    try:
+                        dt = datetime.strptime(lineSplit[-2] + ' ' + lineSplit[-1], '%d %b %Y %H:%M:%S')
+                        if dt != last_dt:
+                            times.append(dt)
+                            data.append((float(lineSplit[1]), float(lineSplit[2]), float(lineSplit[3]), float(lineSplit[4]),
+                                         float(lineSplit[5])))
+                            number_samples += 1
+                        last_dt = dt
+                    except ValueError as ve:
+                        print(ve)
+            matchObj = re.match(ctd_sn, line)
+            if matchObj:
+                instrument_ctd_model = 'SBE'+matchObj.group(1)
+                instrument_ctd_serialnumber = matchObj.group(2)
+                #print('ctd model, serial_number', instrument_ctd_model, instrument_ctd_serialnumber)
+
+            line = fp.readline().decode()
+    except UnicodeDecodeError:
+        pass
+
+    return times, data, number_samples
+
 def sbe_phox_parse(files):
+    global instrument_model
+    global instrument_serialnumber
+    global instrument_ctd_model
+    global instrument_ctd_serialnumber
 
     outputNames = []
 
@@ -88,31 +141,20 @@ def sbe_phox_parse(files):
     units = ['degrees_Celsius', 'S/m', 'dbar', 'mg/l', '1']
 
     for filepath in files:
+        print('processing file', filepath)
 
-        with open(filepath, 'r', errors='ignore') as fp:
-            line = fp.readline()
-            while line:
-                #print(line)
-                matchObj = re.match(ctd_expr, line)
-                #print(matchObj)
-                if matchObj:
-                    if line.count(",") > 0:
-                        lineSplit = line.strip().split(",")
-                        print(lineSplit)
-                        try:
-                            times.append(datetime.strptime(lineSplit[-2] + ' ' + lineSplit[-1], '%d %b %Y %H:%M:%S'))
-                            data.append((float(lineSplit[1]), float(lineSplit[2]), float(lineSplit[3]), float(lineSplit[4]), float(lineSplit[5])))
-                            number_samples += 1
-                        except ValueError as ve:
-                            print(ve)
+        if zipfile.is_zipfile(filepath):
+            file = zipfile.ZipFile(filepath, "r")
+            for zip_name in file.namelist():
+                print('processing zip name', zip_name, number_samples)
+                fp = file.open(zip_name, 'r')
+                (times, data, number_samples) = read(fp, times, data, number_samples)
+        else:
+            fp = open(filepath, 'r', errors='ignore')
+            (times, data, number_samples) = read(fp, times, data, number_samples)
 
-                line = fp.readline()
 
     print("nSamples %d" % number_samples)
-
-    instrument_model = 'SeaFETv1'
-    instrument_serialnumber = "1001"
-    sample_interval = 3600
 
     #
     # build the netCDF file
@@ -120,17 +162,20 @@ def sbe_phox_parse(files):
 
     ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
 
-    outputName = filepath + ".nc"
+    outputName = files[0] + ".nc"
     print("output file : %s" % outputName)
     outputNames.append(outputName)
 
     ncOut = Dataset(outputName, 'w', format='NETCDF4')
 
+    if instrument_ctd_model:
+        instrument_model = instrument_ctd_model
+    if instrument_ctd_serialnumber:
+        instrument_serialnumber = instrument_ctd_serialnumber
+
     ncOut.instrument = 'Sea-Bird Electronics ; ' + instrument_model
     ncOut.instrument_model = instrument_model
     ncOut.instrument_serial_number = instrument_serialnumber
-    ncOut.instrument_sample_interval = np.float(sample_interval)
-    #ncOut.instrument_model = instrument_model
 
     #     TIME:axis = "T";
     #     TIME:calendar = "gregorian";
@@ -169,4 +214,8 @@ def sbe_phox_parse(files):
 
 
 if __name__ == "__main__":
-    sbe_phox_parse(sys.argv[1:])
+    files = []
+    for f in sys.argv[1:]:
+        files.extend(glob(f))
+
+    sbe_phox_parse(files)

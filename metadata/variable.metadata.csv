@@ -37,6 +37,12 @@ VAR_ATT,DOX2,,,,,,,,,standard_name,str,moles_of_oxygen_per_unit_mass_in_sea_wate
 VAR_ATT,DOX2,,,,,,,,,valid_max,float32,400
 VAR_ATT,DOX2,,,,,,,,,valid_min,float32,0
 
+VAR_ATT,DOX,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,DOX,,,,,,,,,long_name,str,volume_concentration_of_dissolved_molecular_oxygen_in_sea_water
+VAR_ATT,DOX,,,,,,,,,valid_max,float32,20
+VAR_ATT,DOX,,,,,,,,,valid_min,float32,0
+VAR_ATT,DOX,,,,,,,,,units,str,ml/l
+
 VAR_ATT,DOXY,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
 VAR_ATT,DOXY,,,,,,,,,long_name,str,mass_concentration_of_oxygen_in_sea_water
 VAR_ATT,DOXY,,,,,,,,,standard_name,str,mass_concentration_of_oxygen_in_sea_water

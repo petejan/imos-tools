@@ -436,6 +436,9 @@ def parse(files):
                 line = fp.readline()
                 cnt += 1
 
+        #print('variables in file', name)
+        #print('calibration tags', cal_tags)
+
         if nVariables < 1:
             print('No Variables, exiting')
             exit(-1)

@@ -35,6 +35,7 @@ import ocean_dp.qc.global_range
 import ocean_dp.qc.spike_test
 import ocean_dp.qc.rate_of_change
 import ocean_dp.qc.manual_by_date
+import ocean_dp.qc.propogate_flags
 import ocean_dp.processing.addPSAL
 import ocean_dp.processing.add_density
 import ocean_dp.processing.add_sigma_theta0_sm
@@ -252,6 +253,8 @@ for fv00_file in ncFiles:
 
     # need to propagate flags from temp -> PSAL, SIGMA-THETA0, OXSOL, DOX2
     #                              PSAL -> CNDC, SIGMA-THETA0, OXSOL, DOX2
+
+    #fv01_file_list = ocean_dp.qc.propogate_flags.propogate(fv01_file_list)
 
     ds = Dataset(fv01_file_list[0], 'a')
     ds.references += '; Jansen P, Weeding B, Shadwick EH and Trull TW (2020). Southern Ocean Time Series (SOTS) Quality Assessment and Control Report Temperature Records Version 1.0. CSIRO, Australia. DOI: 10.26198/gfgr-fq47 (https://doi.org/10.26198/gfgr-fq47)'

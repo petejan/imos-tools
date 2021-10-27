@@ -69,7 +69,12 @@ def oxygen(netCDFfile):
         ncVarOut = ds.variables['DOX2']
 
     ncVarOut[:] = dox2
+    ncVarOut.standard_name = "moles_of_oxygen_per_unit_mass_in_sea_water"
+    ncVarOut.long_name = "moles_of_oxygen_per_unit_mass_in_sea_water"
     ncVarOut.units = "umol/kg"
+    ncVarOut.valid_max = np.float32(400)
+    ncVarOut.valid_min = np.float32(0)
+    ncVarOut.coordinates = "TIME LATITUDE LONGITUDE NOMINAL_DEPTH"
     ncVarOut.comment = "calculated from DOX using https://www.seabird.com/asset-get.download.jsa?code=251036"
 
     # finish off, and close file

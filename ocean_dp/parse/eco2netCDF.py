@@ -54,9 +54,15 @@ import re
 # parse the file
 #
 
-def eco_parse(files):
+
+def eco_parse(files, model='FLNTUS', serial='1215'):
     time = []
     value = []
+
+    if not model:
+        model = 'FLNTUS'
+    if not serial:
+        serial = '1215'
 
     filepath = files[0]
     number_samples = 0
@@ -76,14 +82,17 @@ def eco_parse(files):
 
             t = line_split[1][0:4] + " 20" + line_split[1][4:] + " " + line_split[2]
             #print(t)
-            ts = datetime.strptime(t, "%m%d %Y %H%M%S")
-            #print(ts)
-            v = [float(x) for x in line_split[3:]]
-            if len(v) == len(hdr):
-                time.append(ts)
-                value.append(v)
-                number_samples += 1
-
+            try:
+                ts = datetime.strptime(t, "%m%d %Y %H%M%S")
+                #print(ts)
+                v = [float(x) for x in line_split[3:]]
+                if len(v) == len(hdr):
+                    time.append(ts)
+                    value.append(v)
+                    number_samples += 1
+            except ValueError:
+                pass
+            
             line = fp.readline()
 
     print("nSamples %d " % number_samples)
@@ -98,11 +107,11 @@ def eco_parse(files):
 
     print("output file : %s" % outputName)
 
-    ncOut = Dataset(outputName, 'w', format='NETCDF4')
+    ncOut = Dataset(outputName, 'w', format='NETCDF4_CLASSIC')
 
-    ncOut.instrument = "WetLABs ; FLNTUS"
-    ncOut.instrument_model = "FLNTUS"
-    ncOut.instrument_serial_number = "1215"
+    ncOut.instrument = "WetLABs ; " + model
+    ncOut.instrument_model = model
+    ncOut.instrument_serial_number = serial
 
     #     TIME:axis = "T";
     #     TIME:calendar = "gregorian";
@@ -136,4 +145,14 @@ def eco_parse(files):
 
 
 if __name__ == "__main__":
-    eco_parse(sys.argv[1:])
+    files = []
+    serial = None
+    model = None
+    for arg in sys.argv[1:]:
+        if arg.startswith('-model='):
+            model = arg.replace('-model=', '')
+        elif arg.startswith('-serial='):
+            serial = arg.replace('-serial=', '')
+        else:
+            files.append(arg)
+    eco_parse(files, serial=serial, model=model)
