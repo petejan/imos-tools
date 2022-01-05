@@ -85,7 +85,7 @@ def create(file):
     varOutFn = ncOut.createVariable("FILE_NAME", "S1", ('FILE_NAME', 'strlen'))
     varOutInst = ncOut.createVariable("INSTRUMENT", "S1", ('FILE_NAME', 'strlen'))
     varOutIdxFn = ncOut.createVariable("IDX_FILE_NAME", "i4", ("FILE_NAME"))
-    varOutNdFn = ncOut.createVariable("DEPTH_FILE_NAME", "i4", ("FILE_NAME"))
+    varOutNdFn = ncOut.createVariable("DEPTH_FILE_NAME", "f4", ("FILE_NAME"))
 
     sql_select_files = 'select file.file_id, file.name, a_inst.value, a_sn.value, CAST(a_nd.value AS REAL) AS nom_depth FROM file ' \
                        'left join "attributes" a_inst on (file.file_id = a_inst.file_id and a_inst.name = "instrument_model") ' \

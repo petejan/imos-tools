@@ -13,3 +13,7 @@ GLOBAL,*,,,,,,,,,geospatial_lon_units,str,degrees_east
 GLOBAL,*,SOFS.*,,,,,,,,platform_code,str,SOFS
 GLOBAL,*,SAZ47,,,,,,,,platform_code,str,SAZ47
 GLOBAL,*,Pulse.*,,,,,,,,platform_code,str,Pulse
+GLOBAL,*,FluxPulse.*,,,,,,,,platform_code,str,FluxPulse
+
+GLOBAL,*,SOFS.*,,,,,,"","",wmo_platform_code,str,"58450"
+GLOBAL,*,FluxPulse.*,,,,,,"","",wmo_platform_code,str,"58450"

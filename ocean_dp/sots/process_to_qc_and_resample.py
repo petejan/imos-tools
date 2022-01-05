@@ -259,7 +259,7 @@ for fv00_file in ncFiles:
     ds = Dataset(fv01_file_list[0], 'a')
     ds.references += '; Jansen P, Weeding B, Shadwick EH and Trull TW (2020). Southern Ocean Time Series (SOTS) Quality Assessment and Control Report Temperature Records Version 1.0. CSIRO, Australia. DOI: 10.26198/gfgr-fq47 (https://doi.org/10.26198/gfgr-fq47)'
     if has_cndc:
-        ds.references += '; Jansen P, Shadwick E and Trull TW (2021). Southern Ocean Time Series (SOTS) Quality Assessment and Control Report Salinity Records Version 1.0. CSIRO, Australia.'
+        ds.references += '; Jansen P, Shadwick EH and Trull TW (2021). Southern Ocean Time Series (SOTS) Quality Assessment and Control Report Salinity Records Version 1.0. CSIRO, Australia. DOI: 10.26198/rv8y-2q14 (https://doi.org/10.26198/rv8y-2q14)'
     ds.close()
 
     resample(fv01_file_list, 'nearest', resample=True, hours=1)

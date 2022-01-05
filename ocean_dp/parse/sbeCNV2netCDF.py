@@ -519,7 +519,11 @@ def parse(files):
                     print("time is seconds")
                     ncTimesOut[:] = (odata[:, v['col']]/ 3600 / 24) + t_epoc
             else:
-                ncVarOut = ncOut.createVariable(varName, "f4", ("TIME",), fill_value=np.nan, zlib=True) # fill_value=nan otherwise defaults to max
+                if varName not in ncOut.variables:
+                  ncVarOut = ncOut.createVariable(varName, "f4", ("TIME",), fill_value=np.nan, zlib=True) # fill_value=nan otherwise defaults to max
+                else:
+                  ncVarOut = ncOut.variables[varName]
+
                 ncVarOut.comment = v['comment']
                 if v['unit']:
                     ncVarOut.units = v['unit']

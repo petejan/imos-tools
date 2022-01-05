@@ -10,7 +10,7 @@ VAR_ATT,TEMP,,,,,,,,,valid_min,float32,-2.5
 VAR_ATT,CNDC,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
 VAR_ATT,CNDC,,,,,,,,,long_name,str,sea_water_electrical_conductivity
 VAR_ATT,CNDC,,,,,,,,,standard_name,str,sea_water_electrical_conductivity
-VAR_ATT,CNDC,,,,,,,,,valid_max,float32,50000
+VAR_ATT,CNDC,,,,,,,,,valid_max,float32,40
 VAR_ATT,CNDC,,,,,,,,,valid_min,float32,0
 VAR_ATT,PRES,,,,,,,,,applied_offset,float32,-10.135297
 VAR_ATT,PRES,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
