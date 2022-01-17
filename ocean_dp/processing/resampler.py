@@ -27,6 +27,7 @@ def resample(files, method, resample='True', hours=12):
         basename = os.path.basename(fn_new)
 
         ds = Dataset(filepath, 'r')
+        ds.set_auto_mask(False)
 
         # deal with TIME
         var_time = ds.variables["TIME"]
@@ -91,6 +92,8 @@ def resample(files, method, resample='True', hours=12):
             # Change the creation date in the filename to today
             fn_split[8] = now.strftime("C-%Y%m%d.nc")
             fn_new = os.path.join(dirname, 'resample', "_".join(fn_split))
+        else:
+            fn_new = basename + "-resample.nc"
 
         # Add the new file name to the list of new file names
         output_names.append(fn_new)
@@ -130,32 +133,49 @@ def resample(files, method, resample='True', hours=12):
 
         z = in_vars.intersection(['NOMINAL_DEPTH', 'LATITUDE', 'LONGITUDE'])
         for v in z:
+            print("processing coord", v)
             maVariable = ds.variables[v][:]  # get the data
             varDims = varList[v].dimensions
 
             ncVariableOut = ds_new.createVariable(v, varList[v].dtype, varDims, zlib=True)
 
             for a in varList[v].ncattrs():
-                ncVariableOut.setncattr(a, varList[v].getncattr(a))
+                if a not in ['_FillValue']:
+                    ncVariableOut.setncattr(a, varList[v].getncattr(a))
 
-            ncVariableOut[:] = maVariable  # copy the data
+            print('shape', maVariable.shape, ncVariableOut.shape)
+            if len(maVariable.shape) and maVariable.shape[0] != 1:
+                f = interp1d(np.array(time_deployment), np.array(maVariable[deployment_msk]), kind='nearest', bounds_error=False, fill_value=np.nan)
+                ncVariableOut[:] = f(sample_datenum)
+            else:
+                ncVariableOut[:] = maVariable  # copy the data
 
         # variable to smooth
         # print('input file vars', in_vars)
-        z = in_vars.intersection(['PRES', 'TEMP', 'PSAL', 'CNDC', 'DENSITY', 'SIGMA_T0', 'DOX2', 'ATMP', 'AIRT', 'WSPD', 'SW', 'LW', 'UWIND', 'VWIND', 'CPHL', 'BB'])
+        z = in_vars.intersection(['PRES', 'PRES_REL', 'TEMP', 'PSAL', 'CNDC', 'DENSITY', 'SIGMA_T0', 'DOX2', 'ATMP', 'AIRT', 'AIRT2_0M', 'AIRT1_5M',
+                                  'RELH', 'RELH1_5M', 'RELH2_0M', 'HL', 'HS', 'PL_CMP', 'WSPD10M', 'WSPD', 'WDIR', 'RAIN_AMOUNT',
+                                  'H_RAIN', 'TAU', 'SST', 'HEAT_NET', 'MASS_NET', 'LW_NET', 'SW_NET',
+                                  'SW', 'LW', 'UWIND', 'VWIND', 'CPHL', 'BB',
+                                  'VAVH', 'SWH'
+                                  'UCUR', 'VCUR', 'WCUR',
+                                  'xCO2_SW', 'xCO2_AIR',
+                                  'PAR',
+                                  'NTRI_CONC', 'ALKA_CONC', 'PHOS_CONC', 'SLCA_CONC', 'TCO2',
+                                  'WEIGHT', 'NTRI', 'PHOS', 'SLCA', 'TALK'])
         print ('vars to smooth', z)
-        qc = np.ones_like(datetime_time)
         lowess = sm.nonparametric.lowess
 
         qc_in_level = 2
-        for resample_var in z:
+        for resample_var in sorted(z):
 
             var_to_resample_in = ds.variables[resample_var]
-            only_qc = False
+            only_qc = True
             if resample_var + '_quality_control' in ds.variables:
                 print('using qc : ', resample_var + "_quality_control")
                 qc = ds.variables[resample_var + "_quality_control"][:]
                 only_qc = True
+            else:
+                qc = np.ones_like(datetime_time)
 
             data_in = var_to_resample_in[deployment_msk & (qc <= qc_in_level)]
 
@@ -204,7 +224,7 @@ def resample(files, method, resample='True', hours=12):
                 var_resample_dist_out[:] = sample_time_dist
 
                 # only use data where sample time is less than 3 hrs from the gridded time
-                sample_time_dist_msk = abs(sample_time_dist) < 3 * 60 * 60
+                sample_time_dist_msk = abs(sample_time_dist) < 0.75 * 60 * 60
                 var_resample_out[sample_time_dist_msk] = y[sample_time_dist_msk]
 
         #  create history

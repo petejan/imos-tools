@@ -41,7 +41,7 @@ def sqlite_insert(http, opendap):
     nc = Dataset(opendap, "r")
 
     cur = con.cursor()
-    cur.execute("CREATE TABLE IF NOT EXISTS file (file_id integer primary key autoincrement, name UNIQUE, http TEXT, opendap TEXT)")
+    cur.execute("CREATE TABLE IF NOT EXISTS file (file_id integer primary key autoincrement, name TEXT, http TEXT, opendap TEXT)")
     con.commit()
     cur.execute("CREATE TABLE IF NOT EXISTS attributes (file_id, name TEXT, type TEXT, value TEXT)")
     con.commit()
@@ -126,15 +126,16 @@ if __name__ == "__main__":
         if not path.endswith('/'):
             path = path + '/'
     else:
-        path = '/'
+        path = ''
 
     print('path', path)
 
-    skips = Crawl.SKIPS + [".*realtime", ".*Real-time", ".*daily", ".*REAL_TIME", ".*regridded", ".*burst", ".*gridded", ".*long-timeseries"]
+    #skips = Crawl.SKIPS + [".*realtime", ".*Real-time", ".*daily", ".*REAL_TIME", ".*regridded", ".*burst", ".*gridded", ".*long-timeseries"]
 
-    crawl_path = 'http://thredds.aodn.org.au/thredds/catalog/IMOS/DWM/SOTS/'+path+'catalog.xml'
+    crawl_path = 'http://thredds.aodn.org.au/thredds/catalog/IMOS/DWM/ASFS/'+path+'catalog.xml'
 
-    c = Crawl(crawl_path, select=['.*'], skip=skips)
+    #c = Crawl(crawl_path, select=['.*'], skip=skips)
+    c = Crawl(crawl_path, select=['.*'])
 
     # create a list of urls to catalog, save the opendap url and the http links
     urls = []

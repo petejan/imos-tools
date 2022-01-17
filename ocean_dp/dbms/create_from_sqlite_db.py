@@ -121,7 +121,8 @@ def create(file):
     varOutFn[:] = stringtochar(file_names)
     varOutInst[:] = stringtochar(instrument)
 
-    sql_select_vars = 'SELECT name, COUNT(*) FROM variables v WHERE dimensions LIKE "TIME[%]" and name != "TIME" and name not like "%_SAMPLE_TIME_DIFF" GROUP BY name ORDER BY name'
+    sql_select_vars = 'SELECT name, COUNT(*) FROM variables v WHERE dimensions LIKE "TIME[%]" and name != "TIME" and name != "LATITUDE" AND name != "LONGITUDE"' \
+                      'and name not like "%_SAMPLE_TIME_DIFF" GROUP BY name ORDER BY name'
 
     # generate the FILE instance variables
     vars = cur_vars.execute(sql_select_vars)
@@ -139,7 +140,7 @@ def create(file):
         varOutFn = ncOut.createVariable("IDX_"+var_name, "i4", ("INSTANCE_"+var_name))
         n = 0
         while row:
-            print('create-file-index', row[1], row[6])
+            print(n, 'create-file-index', row[1], row[6])
             varOutFn[n] = row[0]
             row = cur.fetchone()
 

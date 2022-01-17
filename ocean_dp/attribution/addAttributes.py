@@ -15,6 +15,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
+import os.path
 import re
 
 from netCDF4 import Dataset
@@ -44,6 +45,14 @@ def parseTypeValue(att_type, v):
 
 
 def add(netCDFfile, metadatafiles):
+
+    if not os.path.isfile(metadatafiles[0]):
+        file_path=os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), '..')
+        md = []
+        for v in metadatafiles:
+            md.append(os.path.join(file_path, v))
+
+        metadatafiles = md
 
     ds = Dataset(netCDFfile, 'a')
 
