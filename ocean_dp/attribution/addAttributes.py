@@ -74,7 +74,9 @@ def add(netCDFfile, metadatafiles):
     #print(ds_variables)
     dict1 = {}
 
+    files = []
     for filepath in metadatafiles:
+        files.append(os.path.basename(filepath))
         with open(filepath, mode='r') as csv_file:
             csv_reader = csv.reader(csv_file, quotechar='"', delimiter=',', quoting=csv.QUOTE_ALL, skipinitialspace=True)
             headers = next(csv_reader)
@@ -199,7 +201,7 @@ def add(netCDFfile, metadatafiles):
     except AttributeError:
         hist = ""
 
-    ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " attributes added from file(s) [" + format(', '.join(metadatafiles)) + "]")
+    ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " attributes added from file(s) [" + format(', '.join(files)) + "]")
 
     ds.close()
 

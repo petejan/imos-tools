@@ -84,55 +84,43 @@ data_hdr_expr    = r"^.*Temp.*Pres.*$"
 pres_hdr_expr    = r"^.*Pres.*$"
 host_time_expr   = r"Host time\s*(.*)"
 
-def parse(file):
 
-    hdr = True
-    dataLine = 0
-    name = []
-    number_samples_read = 0
-    nVars = 0
-    data = []
-    ts = []
-    logger_time = None
-    file_created = None
+def parse(files):
 
-    filepath = file[0]
+    output_files = []
+    for filepath in files:
+        hdr = True
+        dataLine = 0
+        name = []
+        number_samples_read = 0
+        nVars = 0
+        data = []
+        ts = []
+        logger_time = None
+        file_created = None
 
-    with open(filepath, 'r', errors='ignore') as fp:
-        line = fp.readline()
-        matchObj = re.match(first_line_expr, line)
-        if not matchObj:
-            print("Not a RBR .DAT file !")
-            return None
-        else:
-            instrument_model = matchObj.group(1)
-            instrument_serial_number = matchObj.group(2)
-            print("instrument ", instrument_model, " : ", instrument_serial_number)
+        with open(filepath, 'r', errors='ignore') as fp:
+            line = fp.readline()
+            matchObj = re.match(first_line_expr, line)
+            if not matchObj:
+                print("Not a RBR .DAT file !")
+                return None
+            else:
+                instrument_model = matchObj.group(1)
+                instrument_serial_number = matchObj.group(2)
+                print("instrument ", instrument_model, " : ", instrument_serial_number)
 
-        cnt = 1
-        while line:
-            # print("Line n {}: data lines {} count {} : {}".format(cnt, dataLine, len(line),     line.strip()))
-            if hdr:
-                matchObj = re.match(host_time_expr, line)
-                if matchObj:
-                    #print("host_time_expr:matchObj.group() : ", matchObj.group())
-                    print("host_time_expr:matchObj.group(1) : ", matchObj.group(1))
-                    file_created = matchObj.group(1)
+            cnt = 1
+            while line:
+                # print("Line n {}: data lines {} count {} : {}".format(cnt, dataLine, len(line),     line.strip()))
+                if hdr:
+                    matchObj = re.match(host_time_expr, line)
+                    if matchObj:
+                        #print("host_time_expr:matchObj.group() : ", matchObj.group())
+                        print("host_time_expr:matchObj.group(1) : ", matchObj.group(1))
+                        file_created = matchObj.group(1)
 
-                matchObj = re.match(data_hdr_expr, line)
-                if matchObj:
-                    data_split = line.split()
-
-                    print('data header', data_split)
-
-                    # TODO: extract these from the data_split variable, and the channel expression
-
-                    name.append({'var_name': 'TEMP', 'unit':'degrees_Celsius', 'col':2})
-                    name.append({'var_name': 'PRES', 'unit':'dbar', 'col':3})
-
-                    hdr = False
-                else:
-                    matchObj = re.match(pres_hdr_expr, line)
+                    matchObj = re.match(data_hdr_expr, line)
                     if matchObj:
                         data_split = line.split()
 
@@ -140,97 +128,112 @@ def parse(file):
 
                         # TODO: extract these from the data_split variable, and the channel expression
 
-                        name.append({'var_name': 'PRES', 'unit': 'dbar', 'col': 2})
+                        name.append({'var_name': 'TEMP', 'unit':'degrees_Celsius', 'col':2})
+                        name.append({'var_name': 'PRES', 'unit':'dbar', 'col':3})
 
                         hdr = False
-            else:
+                    else:
+                        matchObj = re.match(pres_hdr_expr, line)
+                        if matchObj:
+                            data_split = line.split()
 
-                lineSplit = line.split()
-                if len(lineSplit) == 0:
-                    break
-                #print(lineSplit)
+                            print('data header', data_split)
 
-                d = np.zeros(len(name))
-                d.fill(np.nan)
+                            # TODO: extract these from the data_split variable, and the channel expression
 
-                t = parser.parse(lineSplit[0] + ' ' + lineSplit[1], yearfirst = True, dayfirst=False)
-                ts.append(t)
-                #print("timestamp %s" % t)
+                            name.append({'var_name': 'PRES', 'unit': 'dbar', 'col': 2})
 
-                splitVarNo = 0
-                for v in name:
-                    #print("{} : {}".format(splitVarNo, v))
-                    d[splitVarNo] = float(lineSplit[v['col']])
-                    splitVarNo = splitVarNo + 1
-                data.append(d)
+                            hdr = False
+                else:
 
-                #print(t, d)
-                number_samples_read = number_samples_read + 1
+                    lineSplit = line.split()
+                    if len(lineSplit) == 0:
+                        break
+                    #print(lineSplit)
 
-                dataLine = dataLine + 1
+                    d = np.zeros(len(name))
+                    d.fill(np.nan)
 
-            line = fp.readline()
-            cnt += 1
+                    t = parser.parse(lineSplit[0] + ' ' + lineSplit[1], yearfirst = True, dayfirst=False)
+                    ts.append(t)
+                    #print("timestamp %s" % t)
 
-    # trim data
-    print("samplesRead %d data shape %s" % (number_samples_read, len(name)))
+                    splitVarNo = 0
+                    for v in name:
+                        #print("{} : {}".format(splitVarNo, v))
+                        d[splitVarNo] = float(lineSplit[v['col']])
+                        splitVarNo = splitVarNo + 1
+                    data.append(d)
 
-    #
-    # build the netCDF file
-    #
+                    #print(t, d)
+                    number_samples_read = number_samples_read + 1
 
-    ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
+                    dataLine = dataLine + 1
 
-    outputName = filepath + ".nc"
+                line = fp.readline()
+                cnt += 1
 
-    print("output file : %s" % outputName)
+        # trim data
+        print("samplesRead %d data shape %s" % (number_samples_read, len(name)))
 
-    ncOut = Dataset(outputName, 'w', format='NETCDF4')
+        #
+        # build the netCDF file
+        #
 
-    ncOut.instrument = 'RBR ; ' + instrument_model
-    ncOut.instrument_model = instrument_model
-    ncOut.instrument_serial_number = instrument_serial_number
+        ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
 
-    if logger_time:
-        ncOut.logger_time = logger_time
+        outputName = filepath + ".nc"
 
-    if file_created:
-        ncOut.stop_time = file_created
+        print("output file : %s" % outputName)
 
-    #     TIME:axis = "T";
-    #     TIME:calendar = "gregorian";
-    #     TIME:long_name = "time";
-    #     TIME:units = "days since 1950-01-01 00:00:00 UTC";
+        ncOut = Dataset(outputName, 'w', format='NETCDF4')
 
-    tDim = ncOut.createDimension("TIME", number_samples_read)
-    ncTimesOut = ncOut.createVariable("TIME", "d", ("TIME",), zlib=True)
-    ncTimesOut.long_name = "time"
-    ncTimesOut.units = "days since 1950-01-01 00:00:00 UTC"
-    ncTimesOut.calendar = "gregorian"
-    ncTimesOut.axis = "T"
-    ncTimesOut[:] = date2num(ts, units=ncTimesOut.units, calendar=ncTimesOut.calendar)
+        ncOut.instrument = 'RBR ; ' + instrument_model
+        ncOut.instrument_model = instrument_model
+        ncOut.instrument_serial_number = instrument_serial_number
 
-    i = 0
-    for v in name:
-        print("Variable %s : unit %s" % (v['var_name'], v['unit']))
-        varName = v['var_name']
-        ncVarOut = ncOut.createVariable(varName, "f4", ("TIME",), fill_value=np.nan, zlib=True) # fill_value=nan otherwise defaults to max
-        if v['unit']:
-            ncVarOut.units = v['unit']
-        x = np.array([d[i] for d in data])
-        print ("var", x.shape, x)
-        ncVarOut[:] = x
+        if logger_time:
+            ncOut.logger_time = logger_time
 
-        i += 1
+        if file_created:
+            ncOut.stop_time = file_created
 
-    ncOut.setncattr("time_coverage_start", num2date(ncTimesOut[0], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
-    ncOut.setncattr("time_coverage_end", num2date(ncTimesOut[-1], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
-    ncOut.setncattr("date_created", datetime.utcnow().strftime(ncTimeFormat))
-    ncOut.setncattr("history", datetime.utcnow().strftime("%Y-%m-%d") + " created from file " + os.path.basename(filepath) + " source file created " + file_created)
+        #     TIME:axis = "T";
+        #     TIME:calendar = "gregorian";
+        #     TIME:long_name = "time";
+        #     TIME:units = "days since 1950-01-01 00:00:00 UTC";
 
-    ncOut.close()
+        tDim = ncOut.createDimension("TIME", number_samples_read)
+        ncTimesOut = ncOut.createVariable("TIME", "d", ("TIME",), zlib=True)
+        ncTimesOut.long_name = "time"
+        ncTimesOut.units = "days since 1950-01-01 00:00:00 UTC"
+        ncTimesOut.calendar = "gregorian"
+        ncTimesOut.axis = "T"
+        ncTimesOut[:] = date2num(ts, units=ncTimesOut.units, calendar=ncTimesOut.calendar)
 
-    return outputName
+        i = 0
+        for v in name:
+            print("Variable %s : unit %s" % (v['var_name'], v['unit']))
+            varName = v['var_name']
+            ncVarOut = ncOut.createVariable(varName, "f4", ("TIME",), fill_value=np.nan, zlib=True) # fill_value=nan otherwise defaults to max
+            if v['unit']:
+                ncVarOut.units = v['unit']
+            x = np.array([d[i] for d in data])
+            print ("var", x.shape, x)
+            ncVarOut[:] = x
+
+            i += 1
+
+        ncOut.setncattr("time_coverage_start", num2date(ncTimesOut[0], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
+        ncOut.setncattr("time_coverage_end", num2date(ncTimesOut[-1], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
+        ncOut.setncattr("date_created", datetime.utcnow().strftime(ncTimeFormat))
+        ncOut.setncattr("history", datetime.utcnow().strftime("%Y-%m-%d") + " created from file " + os.path.basename(filepath) + " source file created " + file_created)
+
+        ncOut.close()
+
+        output_files.append(outputName)
+
+    return output_files
 
 
 if __name__ == "__main__":

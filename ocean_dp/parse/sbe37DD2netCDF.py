@@ -114,163 +114,165 @@ cal_val_expr      = r"^\s*(\S*) = ([0-9e+-\.]*)"
 #
 
 def parse(files):
+    output_files = []
+    for filepath in files:
 
-    filepath = files[0]
+        dataLine = 0
+        d = []
 
-    dataLine = 0
-    d = []
+        temp_cal = False
+        cond_cal = False
+        pres_cal = False
+        data_lines = False
 
-    temp_cal = False
-    cond_cal = False
-    pres_cal = False
-    data_lines = False
+        nVariables = 0
+        number_samples = 0
+        data = []
+        times = []
+        instrument_model = "unknown"
+        instrument_serialnumber = "unknown"
+        type = 0
 
-    nVariables = 0
-    number_samples = 0
-    data = []
-    times = []
-    instrument_model = "unknown"
-    instrument_serialnumber = "unknown"
-    type = 0
-
-    with open(filepath, 'r', errors='ignore') as fp:
-        cnt = 1
-        line = fp.readline()
-
-        while line:
-            #print('line dataline ', data_lines, " : ", line)
-            if ~data_lines:
-                # match calibrations
-                # temp
-                if temp_cal:
-                    matchObj = re.match(cal_val_expr, line)
-                    if matchObj:
-                        #print("cal_val_expr:matchObj.group() : ", matchObj.group())
-                        var_temp['attributes']['calibration_'+matchObj.group(1)] = float(matchObj.group(2))
-                    else:
-                        temp_cal = False
-                matchObj = re.match(temp_cal_expr, line)
-                if matchObj:
-                    temp_cal = True
-                    var_temp['attributes']['calibration_date'] =  matchObj.group(1)
-
-                # conductivity
-                if cond_cal:
-                    matchObj = re.match(cal_val_expr, line)
-                    if matchObj:
-                        #print("cal_val_expr:matchObj.group() : ", matchObj.group())
-                        var_cndc['attributes']['calibration_'+matchObj.group(1)] = float(matchObj.group(2))
-                    else:
-                        cond_cal = False
-                matchObj = re.match(cond_cal_expr, line)
-                if matchObj:
-                    cond_cal = True
-                    var_cndc['attributes']['calibration_date'] =  matchObj.group(1)
-
-                # pressure
-                if pres_cal:
-                    matchObj = re.match(cal_val_expr, line)
-                    if matchObj:
-                        #print("cal_val_expr:matchObj.group() : ", matchObj.group())
-                        var_pres['attributes']['calibration_'+matchObj.group(1)] = float(matchObj.group(2))
-                    else:
-                        pres_cal = False
-                matchObj = re.match(pres_cal_expr, line)
-                if matchObj:
-                    pres_cal = True
-                    var_pres['attributes']['calibration_date'] =  matchObj.group(3)
-                    var_pres['attributes']['calibration_range_psia'] =  matchObj.group(2)
-                    var_pres['attributes']['calibration_SN'] =  matchObj.group(1)
-
-                # match the serial number expression
-                #print("Line {}: {} : {}".format(cnt, dataLine, line.strip()))
-                matchObj = re.match(model_serial_expr, line)
-                # print("match ", matchObj)
-                if matchObj:
-                    #print("model_serial_expr:matchObj.group() : ", matchObj.group())
-                    print("model_serial_expr:matchObj.group(1) : ", matchObj.group(1))
-                    #print("model_serial_expr:matchObj.group(1) : ", matchObj.group(2))
-                    print("model_serial_expr:matchObj.group(3) : ", matchObj.group(3))
-                    instrument_model = matchObj.group(1)
-                    instrument_serialnumber = matchObj.group(3)
-
-            line_split = line.split(',')
-
-            #print("splits ", len(line_split))
-
-            if len(line_split) >= 5 and line[0] == ' ':
-                ts = datetime.strptime(line_split[-2].strip() + ' ' + line_split[-1].strip(), "%d %b %Y %H:%M:%S")
-                d = [float(v) for v in line_split[0:-2]]
-                nVariables = len(d)
-
-                #print(ts, d)
-
-                times.append(ts)
-                data.append(d)
-
-                data_lines = True # we're now in the data section, stop looking for headers
-
-                number_samples += 1
-
+        with open(filepath, 'r', errors='ignore') as fp:
+            cnt = 1
             line = fp.readline()
-            cnt += 1
 
-    # trim data to what was read
-    print("nSamples %d nVariables %d" % (number_samples, nVariables))
+            while line:
+                #print('line dataline ', data_lines, " : ", line)
+                if ~data_lines:
+                    # match calibrations
+                    # temp
+                    if temp_cal:
+                        matchObj = re.match(cal_val_expr, line)
+                        if matchObj:
+                            #print("cal_val_expr:matchObj.group() : ", matchObj.group())
+                            var_temp['attributes']['calibration_'+matchObj.group(1)] = float(matchObj.group(2))
+                        else:
+                            temp_cal = False
+                    matchObj = re.match(temp_cal_expr, line)
+                    if matchObj:
+                        temp_cal = True
+                        var_temp['attributes']['calibration_date'] =  matchObj.group(1)
 
-    print('instrument ', instrument_model, ':', instrument_serialnumber)
+                    # conductivity
+                    if cond_cal:
+                        matchObj = re.match(cal_val_expr, line)
+                        if matchObj:
+                            #print("cal_val_expr:matchObj.group() : ", matchObj.group())
+                            var_cndc['attributes']['calibration_'+matchObj.group(1)] = float(matchObj.group(2))
+                        else:
+                            cond_cal = False
+                    matchObj = re.match(cond_cal_expr, line)
+                    if matchObj:
+                        cond_cal = True
+                        var_cndc['attributes']['calibration_date'] =  matchObj.group(1)
 
-    #
-    # build the netCDF file
-    #
+                    # pressure
+                    if pres_cal:
+                        matchObj = re.match(cal_val_expr, line)
+                        if matchObj:
+                            #print("cal_val_expr:matchObj.group() : ", matchObj.group())
+                            var_pres['attributes']['calibration_'+matchObj.group(1)] = float(matchObj.group(2))
+                        else:
+                            pres_cal = False
+                    matchObj = re.match(pres_cal_expr, line)
+                    if matchObj:
+                        pres_cal = True
+                        var_pres['attributes']['calibration_date'] =  matchObj.group(3)
+                        var_pres['attributes']['calibration_range_psia'] =  matchObj.group(2)
+                        var_pres['attributes']['calibration_SN'] =  matchObj.group(1)
 
-    ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
+                    # match the serial number expression
+                    #print("Line {}: {} : {}".format(cnt, dataLine, line.strip()))
+                    matchObj = re.match(model_serial_expr, line)
+                    # print("match ", matchObj)
+                    if matchObj:
+                        #print("model_serial_expr:matchObj.group() : ", matchObj.group())
+                        print("model_serial_expr:matchObj.group(1) : ", matchObj.group(1))
+                        #print("model_serial_expr:matchObj.group(1) : ", matchObj.group(2))
+                        print("model_serial_expr:matchObj.group(3) : ", matchObj.group(3))
+                        instrument_model = matchObj.group(1)
+                        instrument_serialnumber = matchObj.group(3)
 
-    outputName = filepath + ".nc"
+                line_split = line.split(',')
 
-    print("output file : %s" % outputName)
+                #print("splits ", len(line_split))
 
-    ncOut = Dataset(outputName, 'w', format='NETCDF4')
+                if len(line_split) >= 5 and line[0] == ' ':
+                    ts = datetime.strptime(line_split[-2].strip() + ' ' + line_split[-1].strip(), "%d %b %Y %H:%M:%S")
+                    d = [float(v) for v in line_split[0:-2]]
+                    nVariables = len(d)
 
-    ncOut.instrument = 'Sea-Bird Electronics ; ' + instrument_model
-    ncOut.instrument_model = instrument_model
-    ncOut.instrument_serial_number = instrument_serialnumber
+                    #print(ts, d)
 
-    #     TIME:axis = "T";
-    #     TIME:calendar = "gregorian";
-    #     TIME:long_name = "time";
-    #     TIME:units = "days since 1950-01-01 00:00:00 UTC";
+                    times.append(ts)
+                    data.append(d)
 
-    tDim = ncOut.createDimension("TIME", number_samples)
-    ncTimesOut = ncOut.createVariable("TIME", "d", ("TIME",), zlib=True)
-    ncTimesOut.long_name = "time"
-    ncTimesOut.units = "days since 1950-01-01 00:00:00 UTC"
-    ncTimesOut.calendar = "gregorian"
-    ncTimesOut.axis = "T"
-    ncTimesOut[:] = date2num(times, calendar=ncTimesOut.calendar, units=ncTimesOut.units)
+                    data_lines = True # we're now in the data section, stop looking for headers
 
-    var_names = var_names3
-    if nVariables == 5:
-        var_names = var_names5
+                    number_samples += 1
 
-    # for each variable in the data file, create a netCDF variable
-    for v in range(0, nVariables):
-        ncVarOut = ncOut.createVariable(var_names[v]["name"], "f4", ("TIME",), fill_value=np.nan, zlib=True) # fill_value=nan otherwise defaults to max
-        for a in var_names[v]["attributes"]:
-            ncVarOut.setncattr(a, var_names[v]["attributes"][a])
-        ncVarOut[:] = np.array([d[v] for d in data])
+                line = fp.readline()
+                cnt += 1
 
-    # add timespan attributes
-    ncOut.setncattr("time_coverage_start", num2date(ncTimesOut[0], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
-    ncOut.setncattr("time_coverage_end", num2date(ncTimesOut[-1], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
+        # trim data to what was read
+        print("nSamples %d nVariables %d" % (number_samples, nVariables))
 
-    # add creating and history entry
-    ncOut.setncattr("date_created", datetime.utcnow().strftime(ncTimeFormat))
-    ncOut.setncattr("history", datetime.utcnow().strftime("%Y-%m-%d") + " created from file " + os.path.basename(filepath))
+        print('instrument ', instrument_model, ':', instrument_serialnumber)
 
-    ncOut.close()
+        #
+        # build the netCDF file
+        #
 
-    return outputName
+        ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
+
+        outputName = filepath + ".nc"
+
+        print("output file : %s" % outputName)
+
+        ncOut = Dataset(outputName, 'w', format='NETCDF4')
+
+        ncOut.instrument = 'Sea-Bird Electronics ; ' + instrument_model
+        ncOut.instrument_model = instrument_model
+        ncOut.instrument_serial_number = instrument_serialnumber
+
+        #     TIME:axis = "T";
+        #     TIME:calendar = "gregorian";
+        #     TIME:long_name = "time";
+        #     TIME:units = "days since 1950-01-01 00:00:00 UTC";
+
+        tDim = ncOut.createDimension("TIME", number_samples)
+        ncTimesOut = ncOut.createVariable("TIME", "d", ("TIME",), zlib=True)
+        ncTimesOut.long_name = "time"
+        ncTimesOut.units = "days since 1950-01-01 00:00:00 UTC"
+        ncTimesOut.calendar = "gregorian"
+        ncTimesOut.axis = "T"
+        ncTimesOut[:] = date2num(times, calendar=ncTimesOut.calendar, units=ncTimesOut.units)
+
+        var_names = var_names3
+        if nVariables == 5:
+            var_names = var_names5
+
+        # for each variable in the data file, create a netCDF variable
+        for v in range(0, nVariables):
+            ncVarOut = ncOut.createVariable(var_names[v]["name"], "f4", ("TIME",), fill_value=np.nan, zlib=True) # fill_value=nan otherwise defaults to max
+            for a in var_names[v]["attributes"]:
+                ncVarOut.setncattr(a, var_names[v]["attributes"][a])
+            ncVarOut[:] = np.array([d[v] for d in data])
+
+        # add timespan attributes
+        ncOut.setncattr("time_coverage_start", num2date(ncTimesOut[0], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
+        ncOut.setncattr("time_coverage_end", num2date(ncTimesOut[-1], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
+
+        # add creating and history entry
+        ncOut.setncattr("date_created", datetime.utcnow().strftime(ncTimeFormat))
+        ncOut.setncattr("history", datetime.utcnow().strftime("%Y-%m-%d") + " created from file " + os.path.basename(filepath))
+
+        ncOut.close()
+
+        output_files.append(outputName)
+
+    return output_files
 
 
 if __name__ == "__main__":

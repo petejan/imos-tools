@@ -12,6 +12,7 @@ GLOBAL,*,,,,,,,,,geospatial_lat_units,str,degrees_north
 GLOBAL,*,,,,,,,,,geospatial_lon_units,str,degrees_east
 GLOBAL,*,SOFS.*,,,,,,,,platform_code,str,SOFS
 GLOBAL,*,SAZ47,,,,,,,,platform_code,str,SAZ47
+GLOBAL,*,SAZ54,,,,,,,,platform_code,str,SAZ54
 GLOBAL,*,Pulse.*,,,,,,,,platform_code,str,Pulse
 GLOBAL,*,FluxPulse.*,,,,,,,,platform_code,str,FluxPulse
 

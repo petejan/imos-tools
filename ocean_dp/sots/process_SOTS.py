@@ -47,11 +47,14 @@ def run_fast_scandir(dir):    # dir: str, ext: list
 
 path = sys.argv[1]
 
-subfolders, files = run_fast_scandir(path)
+files = []
+for path in sys.argv[1:]:
+    print('file path : ', path)
+
+    subfolders, f = run_fast_scandir(path)
+    files.extend(f)
 
 print('files ', files)
-
-print ('file path : ', path)
 
 print('step 1 (parse)')
 file_names = []
@@ -60,7 +63,7 @@ cap_files = list(filter(re.compile(".*SBE37.*\.cap$").match, files))
 for fn in cap_files:
     print ('cap files', fn)
     filename = ocean_dp.parse.sbe37DD2netCDF.parse([fn])
-    file_names.append((fn, filename))
+    file_names.append((fn, filename[0]))
 
 cap_files = list(filter(re.compile(".*SBE16.*\.cap$").match, files))
 for fn in cap_files:
@@ -78,43 +81,43 @@ asc_files = list(filter(re.compile(".*\.asc$").match, files))
 for fn in asc_files:
     print ('asc files', fn)
     filename = ocean_dp.parse.sbeASC2netCDF.sbe_asc_parse([fn])
-    file_names.append((fn, filename))
+    file_names.append((fn, filename[0]))
 
 rbr_files = list(filter(re.compile(".*_eng.txt$").match, files))
 for fn in rbr_files:
     print ('rbr files', fn)
     filename = ocean_dp.parse.rbr2netCDF.parse([fn])
-    file_names.append((fn, filename))
+    file_names.append((fn, filename[0]))
 
 rbr_files = list(filter(re.compile(".*RBR.*\.dat$").match, files))
 for fn in rbr_files:
     print ('rbr files', fn)
     filename = ocean_dp.parse.rbrDAT2netCDF.parse([fn])
-    file_names.append((fn, filename))
+    file_names.append((fn, filename[0]))
 
 vemco_files = list(filter(re.compile(".*/A.*\.000$").match, files))
 for fn in vemco_files:
     print ('vemco1 files', fn)
     filename = ocean_dp.parse.vemco2netCDF.parse([fn])
-    file_names.append((fn, filename))
+    file_names.append((fn, filename[0]))
 
 vemco_files = list(filter(re.compile(".*Asc.*\.txt$").match, files))
 for fn in vemco_files:
     print ('vemco2 files', fn)
     filename = ocean_dp.parse.vemco2netCDF.parse([fn])
-    file_names.append((fn, filename))
+    file_names.append((fn, filename[0]))
 
 vemco_files = list(filter(re.compile(".*Minilog-.*\.csv$").match, files))
 for fn in vemco_files:
     print ('vemco3 files', fn)
     filename = ocean_dp.parse.vemco2netCDF.parse([fn])
-    file_names.append((fn, filename))
+    file_names.append((fn, filename[0]))
 
 oddi_files = list(filter(re.compile(".*T.*\.DAT$").match, files))
 for fn in oddi_files:
     print ('oddi files', fn)
     filename = ocean_dp.parse.starmon2netCDF.parse([fn])
-    file_names.append((fn, filename))
+    file_names.append((fn, filename[0]))
 
 asimet_files = list(filter(re.compile(".*/?.*L.*\.RAW$").match, files))
 for fn in asimet_files:

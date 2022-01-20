@@ -61,6 +61,9 @@ def propogate(netCDFfile, var_name=None):
                         ds.variables[v].ancillary_variables = v + "_quality_control"
                         if 'long_name' in ds.variables[v].ncattrs():
                             ncVarFinal.long_name = "quality flag for " + ds.variables[v].long_name
+                        if 'standard_name' in ds.variables[v].ncattrs():
+                            ncVarFinal.standard_name = ds.variables[v].standard_name + " status_flag"
+
                         ncVarFinal.quality_control_conventions = "IMOS standard flags"
                         ncVarFinal.flag_values = np.array([0, 1, 2, 3, 4, 6, 7, 9], dtype=np.int8)
                         ncVarFinal.flag_meanings = 'unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value'

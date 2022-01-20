@@ -68,8 +68,9 @@ nameMap["OXSOLMMKG"] = "OXSOL"
 nameMap["DENSITY00"] = "DENSITY"
 nameMap["DEPSM"] = "DEPTH"
 nameMap["FLECOAFL"] = "CPHL"
+nameMap["TURBWETNTU0"] = "NTU"
 nameMap["GTDDOP0"] = "TOTAL_GAS_PRESSURE"
-nameMap["GTDDOT0"] = "TEMP_GTD"
+nameMap["GTDDOT0"] = "GTD_TEMP"
 nameMap["FLAG"] = None  # don't keep this variable
 
 # also map units .....
@@ -131,6 +132,7 @@ advance_sec_cond = r"\* advance secondary conductivity\s*(\S*)\s* seconds"
 #
 # parse the file
 #
+
 
 def parse(files):
 

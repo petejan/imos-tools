@@ -102,6 +102,8 @@ def parse(files):
     instrument_serialnumber = "unknown"
     type = 0
 
+    output_files = []
+
     with open(filepath, 'r', errors='ignore') as fp:
         cnt = 1
         line = fp.readline()
@@ -242,67 +244,69 @@ def parse(files):
             line = fp.readline()
             cnt += 1
 
-    if type == 0:
-        print("Unknown type")
-        exit(-1)
+        if type == 0:
+            print("Unknown type")
+            exit(-1)
 
-    if nVariables < 1:
-        print('No Variables, exiting')
-        exit(-1)
+        if nVariables < 1:
+            print('No Variables, exiting')
+            exit(-1)
 
-    # trim data to what was read
-    print("nSamples %d nVariables %d" % (number_samples, nVariables))
+        # trim data to what was read
+        print("nSamples %d nVariables %d" % (number_samples, nVariables))
 
-    #
-    # build the netCDF file
-    #
+        #
+        # build the netCDF file
+        #
 
-    ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
+        ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
 
-    outputName = filepath + ".nc"
+        outputName = filepath + ".nc"
 
-    print("output file : %s" % outputName)
+        print("output file : %s" % outputName)
 
-    ncOut = Dataset(outputName, 'w', format='NETCDF4')
+        ncOut = Dataset(outputName, 'w', format='NETCDF4')
 
-    ncOut.instrument = 'Vemco ; ' + instrument_model
-    ncOut.instrument_model = instrument_model
-    ncOut.instrument_serial_number = instrument_serialnumber
+        ncOut.instrument = 'Vemco ; ' + instrument_model
+        ncOut.instrument_model = instrument_model
+        ncOut.instrument_serial_number = instrument_serialnumber
 
-    #     TIME:axis = "T";
-    #     TIME:calendar = "gregorian";
-    #     TIME:long_name = "time";
-    #     TIME:units = "days since 1950-01-01 00:00:00 UTC";
+        #     TIME:axis = "T";
+        #     TIME:calendar = "gregorian";
+        #     TIME:long_name = "time";
+        #     TIME:units = "days since 1950-01-01 00:00:00 UTC";
 
-    tDim = ncOut.createDimension("TIME", number_samples)
-    ncTimesOut = ncOut.createVariable("TIME", "d", ("TIME",), zlib=True)
-    ncTimesOut.long_name = "time"
-    ncTimesOut.units = "days since 1950-01-01 00:00:00 UTC"
-    ncTimesOut.calendar = "gregorian"
-    ncTimesOut.axis = "T"
-    ncTimesOut[:] = date2num(times, calendar=ncTimesOut.calendar, units=ncTimesOut.units)
+        tDim = ncOut.createDimension("TIME", number_samples)
+        ncTimesOut = ncOut.createVariable("TIME", "d", ("TIME",), zlib=True)
+        ncTimesOut.long_name = "time"
+        ncTimesOut.units = "days since 1950-01-01 00:00:00 UTC"
+        ncTimesOut.calendar = "gregorian"
+        ncTimesOut.axis = "T"
+        ncTimesOut[:] = date2num(times, calendar=ncTimesOut.calendar, units=ncTimesOut.units)
 
-    # for each variable in the data file, create a netCDF variable
-    ncVarOut = ncOut.createVariable("TEMP", "f4", ("TIME",), fill_value=np.nan, zlib=True) # fill_value=nan otherwise defaults to max
-    ncVarOut.units = "degrees_Celsius"
-    ncVarOut[:] = np.array([d[0] for d in data])
+        # for each variable in the data file, create a netCDF variable
+        ncVarOut = ncOut.createVariable("TEMP", "f4", ("TIME",), fill_value=np.nan, zlib=True) # fill_value=nan otherwise defaults to max
+        ncVarOut.units = "degrees_Celsius"
+        ncVarOut[:] = np.array([d[0] for d in data])
 
-    if nVariables == 2:
-        ncVarOut = ncOut.createVariable("PRES", "f4", ("TIME",), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
-        ncVarOut.units = "dbar"
-        ncVarOut[:] = np.array([d[1] for d in data])
+        if nVariables == 2:
+            ncVarOut = ncOut.createVariable("PRES", "f4", ("TIME",), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
+            ncVarOut.units = "dbar"
+            ncVarOut[:] = np.array([d[1] for d in data])
 
-    # add timespan attributes
-    ncOut.setncattr("time_coverage_start", num2date(ncTimesOut[0], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
-    ncOut.setncattr("time_coverage_end", num2date(ncTimesOut[-1], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
+        # add timespan attributes
+        ncOut.setncattr("time_coverage_start", num2date(ncTimesOut[0], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
+        ncOut.setncattr("time_coverage_end", num2date(ncTimesOut[-1], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
 
-    # add creating and history entry
-    ncOut.setncattr("date_created", datetime.utcnow().strftime(ncTimeFormat))
-    ncOut.setncattr("history", datetime.utcnow().strftime("%Y-%m-%d") + " created from file " + os.path.basename(filepath))
+        # add creating and history entry
+        ncOut.setncattr("date_created", datetime.utcnow().strftime(ncTimeFormat))
+        ncOut.setncattr("history", datetime.utcnow().strftime("%Y-%m-%d") + " created from file " + os.path.basename(filepath))
 
-    ncOut.close()
+        ncOut.close()
 
-    return outputName
+        output_files.append(outputName)
+
+    return output_files
 
 
 if __name__ == "__main__":

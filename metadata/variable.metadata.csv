@@ -220,4 +220,24 @@ VAR_ATT,ABSIC3,,,,,,,,,long_name,str,backscatter_intensity_from_acoustic_beam_3
 VAR_ATT,ABSIC3,,,,,,,,,valid_max,int16,255
 VAR_ATT,ABSIC3,,,,,,,,,valid_min,int16,0
 
+VAR_ATT,DOX_TEMP,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,DOX_TEMP,,,,,,,,,long_name,str,oxygen_sensor_temperature
 
+VAR_ATT,V0,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,V1,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,V2,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,V3,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,V4,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,V5,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,GTD_TEMP,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,TOTAL_GAS_PRESSURE,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+
+VAR_ATT,V0,,,,,,,,,long_name,str,SBE43_DOX2_voltage
+VAR_ATT,V1,,,,,,,,,long_name,str,PAR_sensor_volyage
+VAR_ATT,V2,,,,,,,,,long_name,str,FLNTUS_CHL_sensor_voltage
+VAR_ATT,V3,,,,,,,,,long_name,str,FLNTUS_NTU_sensor_voltage
+VAR_ATT,GTD_TEMP,,,,,,,,,long_name,str,gas_tension_device_sensor_temperature
+VAR_ATT,TOTAL_GAS_PRESSURE,,,,,,,,,long_name,str,gas_tension_device_total_gas_pressure
+
+VAR_ATT,TURBWETNTU0,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,TURBWETNTU0,,,,,,,,,long_name,str,turbidity_raw

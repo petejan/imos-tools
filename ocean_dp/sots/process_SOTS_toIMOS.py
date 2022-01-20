@@ -39,7 +39,9 @@ for fn in ncFiles:
         print('file-name', filename)
         filename = ocean_dp.processing.apply_scale_offset_attributes.apply_scale_offset([filename])
 
-        filename = ocean_dp.attribution.add_geospatial_attributes.add_spatial_attr(filename[0])
+        filename = ocean_dp.attribution.addAttributes.add(filename[0], ['metadata/minilog-temp-offsets.metadata.csv'])
+
+        filename = ocean_dp.attribution.add_geospatial_attributes.add_spatial_attr(filename)
         filename = ocean_dp.attribution.format_attributes.format_attributes(filename)
 
         print('step 2 (attributes) filename : ', filename)

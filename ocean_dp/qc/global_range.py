@@ -33,6 +33,8 @@ create_sub_qc = True
 def global_range(netCDFfiles, variable, max, min, qc_value=4):
 
     for netCDFfile in netCDFfiles:
+        print('global range, processing', netCDFfile)
+
         ds = Dataset(netCDFfile, 'a')
 
         nc_var = ds.variables[variable]
@@ -104,7 +106,7 @@ def global_range(netCDFfiles, variable, max, min, qc_value=4):
         marked = np.zeros_like(new_qc_flags)
         marked[mask] = 1
         count = sum(marked)
-        print('marked records ', count, mask, existing_qc_flags)
+        print('global range marked records ', count, mask, existing_qc_flags)
 
         # write flags back to main QC variable
         var_qc[:] = existing_qc_flags
@@ -114,7 +116,7 @@ def global_range(netCDFfiles, variable, max, min, qc_value=4):
             hist = ds.history + "\n"
         except AttributeError:
             hist = ""
-        ds.setncattr("history", hist + datetime.utcnow().strftime("%Y-%m-%d") + " " + variable + " global range min = " + str(min) + " max = " + str(max) + " marked " + str(count))
+        ds.setncattr("history", hist + datetime.utcnow().strftime("%Y-%m-%d") + " " + variable + " global range min = " + str(min) + " max = " + str(max) + " marked " + str(int(count)))
 
         ds.close()
 

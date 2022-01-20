@@ -21,6 +21,7 @@ import sys
 import gsw
 import numpy as np
 from datetime import datetime
+import os
 
 # add PSAL to a data file with TEMP, CNDC, PRES variables, many assumptions are made about the input file
 
@@ -31,11 +32,27 @@ def add_psal(netCDFfile):
 
     if not overwrite and "PSAL" in ds.variables:
         print("file already has salinity variable")
-        return
+        return netCDFfile
 
     if "CNDC" not in ds.variables:
         print("no conductivity")
-        return
+        return netCDFfile
+
+    fn_new = netCDFfile
+    dirname = os.path.dirname(fn_new)
+    basename = os.path.basename(fn_new)
+    now = datetime.utcnow()
+    if basename.startswith("IMOS"):
+        fn_split = basename.split('_')
+
+        # IMOS_DWM-SOTS_CPT_20090922_SOFS_FV01_Pulse-6-2009-SBE37SM-RS232-6962-100m_END-20100323_C-20200227.nc
+        # 0    1         2   3        4    5    6                                    7            8
+        # rename the file FV00 to FV01
+        fn_split[2] += 'S'
+
+        if len(fn_split) > 8:
+            fn_split[8] = now.strftime("C-%Y%m%d.nc")
+        fn_new = os.path.join(dirname, "_".join(fn_split))
 
     var_temp = ds.variables["TEMP"]
     var_cndc = ds.variables["CNDC"]
@@ -89,7 +106,9 @@ def add_psal(netCDFfile):
 
     ds.close()
 
-    return netCDFfile
+    os.rename(netCDFfile, fn_new)
+
+    return fn_new
 
 
 if __name__ == "__main__":

@@ -49,7 +49,7 @@ def in_out_water(netCDFfile, var_name=None):
             for v in nc_vars:
                 if 'ancillary_variables' in nc_vars[v].ncattrs():
                     remove = nc_vars[v].getncattr('ancillary_variables').split(' ')
-                    print("remove ", remove)
+                    print("in/out water remove ", remove)
                     for r in remove:
                         to_add.remove(r)
 
@@ -59,7 +59,7 @@ def in_out_water(netCDFfile, var_name=None):
         time_deploy = parser.parse(ds.time_deployment_start, ignoretz=True)
         time_recovery = parser.parse(ds.time_deployment_end, ignoretz=True)
 
-        print('file', fn)
+        print('in/out water file', fn)
         print('deployment time', time_deploy)
 
         print('var to add', to_add)
@@ -69,7 +69,7 @@ def in_out_water(netCDFfile, var_name=None):
         count = -1
         for v in to_add:
             if v in nc_vars:
-                print("var", v, ' dimensions ', nc_vars[v].dimensions)
+                print("qc for var", v, ' dimensions ', nc_vars[v].dimensions)
 
                 ncVarOut = nc_vars[v + "_quality_control"]
                 ncVarOut[mask] = 6

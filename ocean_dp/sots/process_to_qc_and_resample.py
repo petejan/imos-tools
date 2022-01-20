@@ -113,12 +113,13 @@ for fv00_file in ncFiles:
 
     fv01_file_list = ocean_dp.qc.add_qc_flags.add_qc([fv00_file])
     if has_cndc and not has_psal:
-        ocean_dp.processing.addPSAL.add_psal(fv01_file_list[0])
+        fv01_file_list[0] = ocean_dp.processing.addPSAL.add_psal(fv01_file_list[0])
         ocean_dp.qc.add_qc_flags.add_qc(fv01_file_list, 'PSAL')
         fv01_file_list[0] = ocean_dp.file_name.imosNetCDFfileName.rename(fv01_file_list[0])
 
     fv01_file_list = ocean_dp.qc.in_out_water.in_out_water(fv01_file_list)
 
+    # scale/offset needs to be applied before range/spike/rate of change tests
     fv01_file_list = ocean_dp.processing.apply_scale_offset_attributes.apply_scale_offset(fv01_file_list)
 
     if has_temp:
@@ -152,6 +153,7 @@ for fv00_file in ncFiles:
 
         if not is_pumped:
             fv01_file_list = ocean_dp.processing.add_density.add_density(fv01_file_list[0])
+
             if ndepth > 4000:
                 limit = 0.001
             else:

@@ -55,7 +55,7 @@ var_volt4 = {'name': 'V3', 'attributes': {'units' : 'V'}}
 var_volt5 = {'name': 'V4', 'attributes': {'units' : 'V'}}
 var_volt6 = {'name': 'V5', 'attributes': {'units' : 'V'}}
 var_tgp = {'name': 'TOTAL_GAS_PRESSURE', 'attributes': {'units' : 'millibars'}}
-var_tgtd = {'name': 'TEMP_GTD', 'attributes': {'units' : 'degrees_Celsius'}}
+var_tgtd = {'name': 'GTD_TEMP', 'attributes': {'units' : 'degrees_Celsius'}}
 var_psal = {'name': 'PSAL', 'attributes': {'units' : '1'}}
 
 var_names11 = [var_temp, var_cndc, var_pres, var_volt1, var_volt2, var_volt3, var_volt4, var_volt5, var_volt6, var_tgp, var_tgtd]
