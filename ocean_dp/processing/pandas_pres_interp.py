@@ -38,7 +38,7 @@ def interpolator(target_files=None, pres_file=None):
         print('target_files = none')
         # Load the filenames of the fv01 files in the current folder
         target_files = glob.glob('*FV01*.nc')
-        #target_files = ['/Users/pete/cloudstor/SOTS-Temp-Raw-Data/Pulse-7-2010/netCDF/IMOS_ABOS-SOTS_T_20100908_SOFS_FV00_Pulse-7-2010-Minilog-T-6098-45m_END-20110222_C-20200129.nc']
+        #target_files = ['/Users/pete/cloudstor/SOTS-Temp-Raw-Data/Pulse-7-2010/netCDF/IMOS_DWM-SOTS_T_20100908_SOFS_FV00_Pulse-7-2010-Minilog-T-6098-45m_END-20110222_C-20200129.nc']
         # target_files = '../../pres_interp_test_no_pres.nc'
 
     # get the pressure aggregate file, default to the first Aggregate file
@@ -46,7 +46,7 @@ def interpolator(target_files=None, pres_file=None):
         print('pres_file = none')
         # Extract the aggregate file data
         pres_file = glob.glob('*Aggregate*.nc')[0]
-        #pres_file = '/Users/pete/cloudstor/SOTS-Temp-Raw-Data/Pulse-7-2010/netCDF/IMOS_ABOS-SOTS_PT_20100817_SOFS_FV02_Pulse-Aggregate-P_END-20110430_C-20200130.nc'
+        #pres_file = '/Users/pete/cloudstor/SOTS-Temp-Raw-Data/Pulse-7-2010/netCDF/IMOS_DWM-SOTS_PT_20100817_SOFS_FV02_Pulse-Aggregate-P_END-20110430_C-20200130.nc'
         # pres_file='../../pres_interp_test.nc'
 
     out_file_list = []

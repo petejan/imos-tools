@@ -64,7 +64,7 @@ def do_plot(fn):
     var = 'PAR'
 
     #fn = sys.argv[1]
-    #fn = '/Users/pete/cloudstor/SOTS-Temp-Raw-Data/SOFS-7.5-2018/netCDF/IMOS_ABOS-SOTS_TIP_20180801_SOFS_FV01_SOFS-7.5-2018-Starmon-mini-4047-40m_END-20190331_C-20200429.nc'
+    #fn = '/Users/pete/cloudstor/SOTS-Temp-Raw-Data/SOFS-7.5-2018/netCDF/IMOS_DWM-SOTS_TIP_20180801_SOFS_FV01_SOFS-7.5-2018-Starmon-mini-4047-40m_END-20190331_C-20200429.nc'
 
     DS = xr.open_dataset(fn)
 

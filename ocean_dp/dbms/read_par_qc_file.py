@@ -29,7 +29,7 @@ data = pd.read_csv(sys.argv[1], dtype={"TIME": float, "INSTRUMENT_ID": int, "VAL
 print(data.head())
 
 # open a database connection
-conn = psycopg2.connect(host="localhost", database="ABOS", user="pete", password="password")
+conn = psycopg2.connect(host="localhost", database="DWM", user="pete", password="password")
 cur = conn.cursor()
 
 # map quality codes to text

@@ -55,11 +55,11 @@ hdr_setting     = r"(.*)=(.*),$"
 # /  to: CSIRO,
 #
 # [Head],
-# File_Name=E:\ABOS\pulse-6\surface.Csv,
+# File_Name=E:\DWM\pulse-6\surface.Csv,
 # File_Type=.CSV,
 # Read_Flag=TRUE,
 # Data_Flag=TRUE,
-# Raw_File=E:\ABOS\pulse-6\surface.Raw,
+# Raw_File=E:\DWM\pulse-6\surface.Raw,
 # Info_File=C:\WinMds5\User\WinMds5.Inf,
 # Inst_Type=L,
 # Inst_No=200341,

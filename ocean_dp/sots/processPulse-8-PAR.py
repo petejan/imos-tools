@@ -80,7 +80,7 @@ for fn in new_names:
     filename = ocean_dp.file_name.imosNetCDFfileName.rename(filename)
     print('step 3 imos name : ', filename)
 
-#     filenames = ocean_dp.processing.pandas_pres_interp.interpolator([filename], os.path.join(path, 'IMOS_ABOS-SOTS_CPT_20110729_SOFS_FV02_Pulse-Aggregate-PRES_END-20120806_C-20200427.nc'))
+#     filenames = ocean_dp.processing.pandas_pres_interp.interpolator([filename], os.path.join(path, 'IMOS_DWM-SOTS_CPT_20110729_SOFS_FV02_Pulse-Aggregate-PRES_END-20120806_C-20200427.nc'))
 #     print('step 4 pressure interpolator : ', filename)
 #
 pulse_8_files = ocean_dp.file_name.find_file_with.find_files_pattern(os.path.join(path, "../netCDF/IMOS*.nc"))

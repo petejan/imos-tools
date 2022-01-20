@@ -248,8 +248,8 @@ def add_qc(dataDIR):
 if __name__ == "__main__":
     add_qc(sys.argv[1:])
     # data = [
-    #     '../../data/PAR/raw_files/netCDF/IMOS_ABOS-SOTS_FZX_20110802_SOFS_FV01_Pulse-8-2011-MDS-MKVL-200341-50m_END-20120105_C-20200427.nc',
-    #     '../../data/PAR/raw_files/netCDF/IMOS_ABOS-SOTS_FZX_20110802_SOFS_FV01_Pulse-8-2011-MDS-MKVL-200664-27m_END-20120722_C-20200427.nc',
-    #     '../../data/PAR/raw_files/netCDF/IMOS_ABOS-SOTS_FZX_20110802_SOFS_FV01_Pulse-8-2011-MDS-MKVL-200665-0m_END-20120722_C-20200427.nc',
-    #     '../../data/PAR/raw_files/netCDF/IMOS_ABOS-SOTS_RZXF_20110725_SOFS_FV01_Pulse-8-2011-ECO-PARS-PARS-134-34m_END-20120727_C-20200427.nc']
+    #     '../../data/PAR/raw_files/netCDF/IMOS_DWM-SOTS_FZX_20110802_SOFS_FV01_Pulse-8-2011-MDS-MKVL-200341-50m_END-20120105_C-20200427.nc',
+    #     '../../data/PAR/raw_files/netCDF/IMOS_DWM-SOTS_FZX_20110802_SOFS_FV01_Pulse-8-2011-MDS-MKVL-200664-27m_END-20120722_C-20200427.nc',
+    #     '../../data/PAR/raw_files/netCDF/IMOS_DWM-SOTS_FZX_20110802_SOFS_FV01_Pulse-8-2011-MDS-MKVL-200665-0m_END-20120722_C-20200427.nc',
+    #     '../../data/PAR/raw_files/netCDF/IMOS_DWM-SOTS_RZXF_20110725_SOFS_FV01_Pulse-8-2011-ECO-PARS-PARS-134-34m_END-20120727_C-20200427.nc']
     # add_qc(data)

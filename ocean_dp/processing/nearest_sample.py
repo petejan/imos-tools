@@ -69,7 +69,7 @@ def smooth(files):
         if basename.startswith("IMOS"):
             fn_split = basename.split('_')
 
-            # IMOS_ABOS-SOTS_CPT_20090922_SOFS_FV01_Pulse-6-2009-SBE37SM-RS232-6962-100m_END-20100323_C-20200227.nc
+            # IMOS_DWM-SOTS_CPT_20090922_SOFS_FV01_Pulse-6-2009-SBE37SM-RS232-6962-100m_END-20100323_C-20200227.nc
             # 0    1         2   3        4    5    6                                    7            8
             # rename the file FV00 to FV01
             fn_split[3] = sample_datetime[0].strftime('%Y%m%d')
@@ -224,9 +224,9 @@ def plot():
 
 
 if __name__ == "__main__":
-    # netCDFfile = '../../data/TEMP/netcdf-surface/IMOS_ABOS-SOTS_CST_20130328_SOFS_FV00_SOFS-4-2013-SBE37SM-RS485-03707409-1m_END-20131028_C-20200317.nc'
-    # netCDFfile = '../../data/TEMP/netCDF-upper/IMOS_ABOS-SOTS_CFPST_20100817_SOFS_FV00_Pulse-7-2010-SBE16plus-01606331-31m_END-20110430_C-20200428.nc'
-    #netCDFfile = '../../data/TEMP/netCDF-upper/IMOS_ABOS-SOTS_CPT_20110729_SOFS_FV00_Pulse-8-2011-SBE16plusV2-01606330-34m_END-20120711_C-20200427.nc'
+    # netCDFfile = '../../data/TEMP/netcdf-surface/IMOS_DWM-SOTS_CST_20130328_SOFS_FV00_SOFS-4-2013-SBE37SM-RS485-03707409-1m_END-20131028_C-20200317.nc'
+    # netCDFfile = '../../data/TEMP/netCDF-upper/IMOS_DWM-SOTS_CFPST_20100817_SOFS_FV00_Pulse-7-2010-SBE16plus-01606331-31m_END-20110430_C-20200428.nc'
+    #netCDFfile = '../../data/TEMP/netCDF-upper/IMOS_DWM-SOTS_CPT_20110729_SOFS_FV00_Pulse-8-2011-SBE16plusV2-01606330-34m_END-20120711_C-20200427.nc'
 
     # netCDFfile = sys.argv[1]
 

@@ -20,7 +20,7 @@ import glob
 # file sets to test against
 # http://thredds.aodn.org.au/thredds/catalog/IMOS/ANMN/NRS/NRSKAI/Temperature/catalog.html
 # http://thredds.aodn.org.au/thredds/catalog/IMOS/ANMN/NRS/NRSKAI/Biogeochem_profiles/catalog.html
-# http://thredds.aodn.org.au/thredds/catalog/IMOS/ABOS/DA/EAC2000/catalog.html
+# http://thredds.aodn.org.au/thredds/catalog/IMOS/DWM/DA/EAC2000/catalog.html
 
 from dateutil.parser import parse
 

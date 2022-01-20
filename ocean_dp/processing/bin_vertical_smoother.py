@@ -25,7 +25,7 @@ def smooth(files):
         if basename.startswith("IMOS"):
             fn_split = basename.split('_')
 
-            # IMOS_ABOS-SOTS_CPT_20090922_SOFS_FV01_Pulse-6-2009-SBE37SM-RS232-6962-100m_END-20100323_C-20200227.nc
+            # IMOS_DWM-SOTS_CPT_20090922_SOFS_FV01_Pulse-6-2009-SBE37SM-RS232-6962-100m_END-20100323_C-20200227.nc
             # 0    1         2   3        4    5    6                                    7            8
             # rename the file FV00 to FV01
             fn_split[6] = fn_split[6] + "-binned-5dbar"

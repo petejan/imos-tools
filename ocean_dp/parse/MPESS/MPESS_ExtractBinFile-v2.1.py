@@ -66,7 +66,7 @@ if (Flag_PlotData == False):
 
 
 # Mini-Logger
-# DeploymentFilePath = r'/Users/pete/ABOS/MPESS/MPESS_U%02u_D%03u' %(UnitNr, DeploymentNr)
+# DeploymentFilePath = r'/Users/pete/DWM/MPESS/MPESS_U%02u_D%03u' %(UnitNr, DeploymentNr)
 #
 # if (UnitNr == 1):
 #     DeploymentFileName = 'MPESS_U01_S24C6C99A_D%03u_Data.bin' % DeploymentNr

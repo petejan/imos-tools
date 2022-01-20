@@ -24,7 +24,7 @@ par_files = ocean_dp.file_name.find_file_with.find_variable(pulse_files, 'PAR')
 for f in par_files:
     print('file', f)
 
-    #file_par = '/Users/pete/cloudstor/PAR/raw_files/netCDF/IMOS_ABOS-SOTS_CPSTR_20090922_SOFS_FV02_Pulse-Aggregate-PAR_END-20190328_C-20200616.nc'
+    #file_par = '/Users/pete/cloudstor/PAR/raw_files/netCDF/IMOS_DWM-SOTS_CPSTR_20090922_SOFS_FV02_Pulse-Aggregate-PAR_END-20190328_C-20200616.nc'
     ds_par = xr.open_dataset(f, drop_variables=['LONGITUDE', 'LATITUDE', 'NOMINAL_DEPTH'])
     df_par = ds_par.to_dataframe()
     df_par_sort = df_par.sort_values(by=['TIME'])

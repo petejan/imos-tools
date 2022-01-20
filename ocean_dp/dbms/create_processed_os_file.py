@@ -91,7 +91,7 @@ def create(mooring):
     #
 
     try:
-        conn = psycopg2.connect(host="localhost", database="ABOS", user="pete", password="password")
+        conn = psycopg2.connect(host="localhost", database="DWM", user="pete", password="password")
 
         # get mooring info
         mooring_cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
@@ -290,7 +290,7 @@ def create(mooring):
 
             # add creating and history entry
             ncOut.setncattr("date_created", datetime.utcnow().strftime(ncTimeFormat))
-            ncOut.setncattr("history", datetime.utcnow().strftime("%Y-%m-%d") + " created from ABOS database")
+            ncOut.setncattr("history", datetime.utcnow().strftime("%Y-%m-%d") + " created from DWM database")
 
             ncOut.close()
 

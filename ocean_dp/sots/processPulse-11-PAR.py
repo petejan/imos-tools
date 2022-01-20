@@ -82,7 +82,7 @@ for fn in new_names:
     print('step 3 imos name : ', filename)
 
 print('step SBE16 data')
-sbe16_file = ocean_dp.processing.extract_SBE16_PAR.extract([os.path.join(path, 'IMOS_ABOS-SOTS_CPST_20150327_SOFS_FV01_Pulse-11-2015-SBE16plus-01606330-28m_END-20160329_C-20200428.nc')], sbe16_var='V1')
+sbe16_file = ocean_dp.processing.extract_SBE16_PAR.extract([os.path.join(path, 'IMOS_DWM-SOTS_CPST_20150327_SOFS_FV01_Pulse-11-2015-SBE16plus-01606330-28m_END-20160329_C-20200428.nc')], sbe16_var='V1')
 new_name = os.path.join(path, "../netCDF", os.path.basename(sbe16_file[0]))
 print("new name", sbe16_file[0], new_name)
 os.rename(sbe16_file[0], new_name)
