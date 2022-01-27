@@ -346,6 +346,23 @@ def parse_file(files):
 
                             if 'CoordSys' in d:
                                 coord_system = d['CoordSys']
+                                print("coord system", coord_systems[coord_system])
+
+                            if 'TimCtrlReg' in d:
+                                tim_ctrl_reg = d['TimCtrlReg']
+                                timing_controller_mode = "profile:continuous," if (tim_ctrl_reg & 0x02) != 0 else "profile:single,"
+                                timing_controller_mode += "mode:continuous" if (tim_ctrl_reg & 0x04) != 0 else "mode:burst"
+
+                                print("tim_ctrl_reg", tim_ctrl_reg, timing_controller_mode)
+
+                            if 'head_config' in d:
+                                head_config_reg = d['head_config']
+                                head_config = "pressure:yes," if (head_config_reg & 0x01) != 0 else "pressure:no,"
+                                head_config += "magnetometer:yes" if (head_config_reg & 0x02) != 0 else "magnetometer:no,"
+                                head_config += "tilt:yes" if (head_config_reg & 0x04) != 0 else "tilt:no,"
+                                head_config += "tilt:down" if (head_config_reg & 0x08) != 0 else "tilt:up"
+
+                                print("head_config", head_config_reg, head_config)
 
                             if 'NBins' in d:
                                 number_bins = d['NBins']
@@ -379,9 +396,19 @@ def parse_file(files):
                             if packet_id['Aquadopp Velocity Data'] == id:
                                 if not aquadopp:
                                     aquadopp = True
-                                    ucur_mag = create_netCDF_var(ncOut, "UCUR_MAG", "f4", "current east", "m/s", ("TIME", ))
-                                    vcur_mag = create_netCDF_var(ncOut, "VCUR_MAG", "f4", "current north", "m/s", ("TIME", ))
-                                    wcur = create_netCDF_var(ncOut, "WCUR", "f4", "current up", "m/s", ("TIME", ))
+                                    if coord_system == 2:
+                                        vel1 = create_netCDF_var(ncOut, "VEL_B1", "f4", "velocity beam 1", "m/s", ("TIME",))
+                                        vel2 = create_netCDF_var(ncOut, "VEL_B2", "f4", "velocity beam 2", "m/s", ("TIME",))
+                                        vel3 = create_netCDF_var(ncOut, "VEL_B3", "f4", "velocity beam 3", "m/s", ("TIME",))
+                                    elif coord_system == 1:
+                                        vel1 = create_netCDF_var(ncOut, "VEL_X", "f4", "velocity X", "m/s", ("TIME",))
+                                        vel2 = create_netCDF_var(ncOut, "VEL_Y", "f4", "velocity Y", "m/s", ("TIME",))
+                                        vel3 = create_netCDF_var(ncOut, "VEL_Z", "f4", "velocity Z", "m/s", ("TIME",))
+                                    else:
+                                        vel1 = create_netCDF_var(ncOut, "UCUR_MAG", "f4", "current east", "m/s", ("TIME",))
+                                        vel2 = create_netCDF_var(ncOut, "VCUR_MAG", "f4", "current north", "m/s", ("TIME",))
+                                        vel3 = create_netCDF_var(ncOut, "WCUR", "f4", "current up", "m/s", ("TIME",))
+
                                     head = create_netCDF_var(ncOut, "HEADING_MAG", "f4", "heading magnetic", "degrees", ("TIME", ))
                                     pitch = create_netCDF_var(ncOut, "PITCH", "f4", "pitch", "degrees", ("TIME", ))
                                     roll = create_netCDF_var(ncOut, "ROLL", "f4", "roll", "degrees", ("TIME", ))
@@ -397,9 +424,9 @@ def parse_file(files):
                                     # add global attributes
                                     instrument_model = 'Aquadopp ' + si_format(system_frequency * 1000, precision=0) + 'Hz'
 
-                                ucur_mag[sample_count] = d['vel_b1'] / 1000
-                                vcur_mag[sample_count] = d['vel_b2'] / 1000
-                                wcur[sample_count] = d['vel_b3'] / 1000
+                                vel1[sample_count] = d['vel_b1'] / 1000
+                                vel2[sample_count] = d['vel_b2'] / 1000
+                                vel3[sample_count] = d['vel_b3'] / 1000
 
                                 head[sample_count] = d['head'] / 10
                                 pitch[sample_count] = d['pitch'] / 10
@@ -481,12 +508,21 @@ def parse_file(files):
                                     pres = create_netCDF_var(ncOut, "PRES", "f4", "pres", "dbar", ("TIME", ))
                                     bat = create_netCDF_var(ncOut, "BATT", "f4", "battery voltage", "V", ("TIME", ))
                                     itemp = create_netCDF_var(ncOut, "ITEMP", "f4", "instrument temperature", "degrees_Celsius", ("TIME", ))
-                                    sspeed = create_netCDF_var(ncOut, "SSPEED", "f4", "sound speed", "m/s", ("TIME", ))
+                                    sspeed = create_netCDF_var(ncOut, "SSPEED", "f4", "sound speed or analog input 2", "m/s", ("TIME", ))
                                     analog1 = create_netCDF_var(ncOut, "ANALOG1", "f4", "analog input 1", "counts", ("TIME", ))
 
-                                    ucur_mag = create_netCDF_var(ncOut, "UCUR_MAG", "f4", "current east", "m/s", ("TIME", "CELL"))
-                                    vcur_mag = create_netCDF_var(ncOut, "VCUR_MAG", "f4", "current north", "m/s", ("TIME", "CELL"))
-                                    wcur = create_netCDF_var(ncOut, "WCUR", "f4", "current up", "m/s", ("TIME", "CELL" ))
+                                    if coord_system == 2:
+                                        vel1 = create_netCDF_var(ncOut, "VEL_B1", "f4", "velocity beam 1", "m/s", ("TIME", "CELL"))
+                                        vel2 = create_netCDF_var(ncOut, "VEL_B2", "f4", "velocity beam 2", "m/s", ("TIME", "CELL"))
+                                        vel3 = create_netCDF_var(ncOut, "VEL_B3", "f4", "velocity beam 3", "m/s", ("TIME", "CELL" ))
+                                    elif coord_system == 1:
+                                        vel1 = create_netCDF_var(ncOut, "VEL_X", "f4", "velocity X", "m/s", ("TIME", "CELL"))
+                                        vel2 = create_netCDF_var(ncOut, "VEL_Y", "f4", "velocity Y", "m/s", ("TIME", "CELL"))
+                                        vel3 = create_netCDF_var(ncOut, "VEL_Z", "f4", "velocity Z", "m/s", ("TIME", "CELL" ))
+                                    else:
+                                        vel1 = create_netCDF_var(ncOut, "UCUR_MAG", "f4", "current east", "m/s", ("TIME", "CELL"))
+                                        vel2 = create_netCDF_var(ncOut, "VCUR_MAG", "f4", "current north", "m/s", ("TIME", "CELL"))
+                                        vel3 = create_netCDF_var(ncOut, "WCUR", "f4", "current up", "m/s", ("TIME", "CELL" ))
 
                                     absci1 = create_netCDF_var(ncOut, "ABSIC1", "i2", "amplitude beam 1", "counts", ("TIME", "CELL"))
                                     absci2 = create_netCDF_var(ncOut, "ABSIC2", "i2", "amplitude beam 2", "counts", ("TIME", "CELL"))
@@ -507,9 +543,9 @@ def parse_file(files):
                                 sspeed[sample_count] = d['soundSpd_Anain2'] * 0.1
 
                                 for i in range(number_beams):
-                                    ucur_mag[sample_count, i] = d['vel_b1['+str(i)+']'] / 1000
-                                    vcur_mag[sample_count, i] = d['vel_b2['+str(i)+']'] / 1000
-                                    wcur[sample_count, i] = d['vel_b3['+str(i)+']'] / 1000
+                                    vel1[sample_count, i] = d['vel_b1['+str(i)+']'] / 1000
+                                    vel2[sample_count, i] = d['vel_b2['+str(i)+']'] / 1000
+                                    vel3[sample_count, i] = d['vel_b3['+str(i)+']'] / 1000
 
                                     absci1[sample_count, i] = d['amp1['+str(i)+']']
                                     absci2[sample_count, i] = d['amp2['+str(i)+']']
@@ -527,7 +563,25 @@ def parse_file(files):
                                     # add global attributes
                                     instrument_model = 'Vector'
                                     pres = create_netCDF_var(ncOut, "PRES", "f4", "pressure", "dbar", ("TIME", ))
-                                    analog1 = create_netCDF_var(ncOut, "ANALOG1", "f4", "pressure", "dbar", ("TIME", ))
+                                    analog1 = create_netCDF_var(ncOut, "ANALOG1", "f4", "analog input 1", "V", ("TIME", ))
+                                    analog2 = create_netCDF_var(ncOut, "ANALOG2", "f4", "analog input 2", "V", ("TIME", ))
+
+                                    if coord_system == 2:
+                                        vel1 = create_netCDF_var(ncOut, "VEL_B1", "f4", "velocity beam 1", "m/s", ("TIME", ))
+                                        vel2 = create_netCDF_var(ncOut, "VEL_B2", "f4", "velocity beam 2", "m/s", ("TIME", ))
+                                        vel3 = create_netCDF_var(ncOut, "VEL_B3", "f4", "velocity beam 3", "m/s", ("TIME", ))
+                                    else:
+                                        vel1 = create_netCDF_var(ncOut, "VEL_X", "f4", "velocity X", "m/s", ("TIME", ))
+                                        vel2 = create_netCDF_var(ncOut, "VEL_Y", "f4", "velocity Y", "m/s", ("TIME", ))
+                                        vel3 = create_netCDF_var(ncOut, "VEL_Z", "f4", "velocity Z", "m/s", ("TIME", ))
+
+                                    amp1 = create_netCDF_var(ncOut, "AMP_B1", "i1", "amplitude B1", "counts", ("TIME", ))
+                                    amp2 = create_netCDF_var(ncOut, "AMP_B2", "i1", "amplitude B2", "counts", ("TIME", ))
+                                    amp3 = create_netCDF_var(ncOut, "AMP_B3", "i1", "amplitude B3", "counts", ("TIME", ))
+
+                                    corr1 = create_netCDF_var(ncOut, "CORR_B1", "i1", "correlation B1", "%", ("TIME", ))
+                                    corr2 = create_netCDF_var(ncOut, "CORR_B2", "i1", "correlation B2", "%", ("TIME", ))
+                                    corr3 = create_netCDF_var(ncOut, "CORR_B3", "i1", "correlation B3", "%", ("TIME", ))
 
                                     vector = True
 
@@ -535,6 +589,16 @@ def parse_file(files):
 
                                 pres[sample_count] = ((d['presMSB'] * 65536) + d['presLSW']) * 0.001
                                 analog1[sample_count] = d['anaIn1']
+                                analog2[sample_count] = d['anaIn2MSB'] * 256 + d['anaIn2LSB']
+                                vel1[sample_count] = d['vel1']
+                                vel2[sample_count] = d['vel2']
+                                vel3[sample_count] = d['vel3']
+                                amp1[sample_count] = d['amp1']
+                                amp2[sample_count] = d['amp2']
+                                amp3[sample_count] = d['amp3']
+                                corr1[sample_count] = d['corr1']
+                                corr2[sample_count] = d['corr2']
+                                corr3[sample_count] = d['corr3']
 
                                 # should increment sample_count if the vector does not and IMU data
 
@@ -645,6 +709,8 @@ def parse_file(files):
         ncOut.instrument_serial_number = instrument_serialnumber
         ncOut.instrument_head_serial_number = instrument_head_serialnumber
         ncOut.coord_system = coord_systems[coord_system]
+        ncOut.timing_controller_mode = timing_controller_mode
+        ncOut.head_config = head_config
 
         # add any attributes we collected from the file
         for a in attribute_list:
