@@ -119,6 +119,7 @@ packet_decoder[7] = {'name': 'Vector and Vectrino Probe Check Data', 'keys': ['s
 packet_decoder[18] = {'name': 'Vector Velocity Data Header', 'keys': ['time_bcd', 'NRecords', 'noise1', 'noise2', 'noise3', 'spare', 'corr1', 'corr2', 'corr3', 'spare1', 'spare3', 'checksum'], 'unpack': "<6sH3BB3B1B20BH"}
 packet_decoder[17] = {'name': 'Vector System Data', 'keys': ['time_bcd', 'battery', 'soundSpeed', 'heading', 'pitch', 'roll', 'temp', 'error', 'status', 'anain', 'checksum'], 'unpack': "<6s6HBBHH"}
 packet_decoder[16] = {'name': 'Vector Velocity Data', 'keys': ['anaIn2LSB', 'count', 'presMSB', 'anaIn2MSB', 'presLSW', 'anaIn1', 'vel1', 'vel2', 'vel3', 'amp1', 'amp2', 'amp3', 'corr1', 'corr2', 'corr3', 'checksum'], 'unpack': "<BBBB5H3B3BH"}
+# AHRSid IMU data packet 0xcc (204)
 packet_decoder[113] = {'name': 'Vector With IMU', 'keys': ['EnsCnt', 'AHRSid', 'accelX', 'accelY', 'accelZ', 'angRateX', 'angRateY', 'angRateZ', 'MagX', 'MagY', 'MagZ', 'M11', 'M12', 'M13', 'M21', 'M22', 'M23', 'M31', 'M32', 'M33', 'timer', 'IMUchSum', 'checksum'], 'unpack': "<BB18fIHH"}
 
 packet_decoder[33] = {'name': 'Aquadopp Profiler Velocity Data', 'keys': ['time_bcd', 'error', 'AnaIn1', 'battery', 'soundSpd_Anain2', 'head', 'pitch', 'roll',
@@ -294,8 +295,15 @@ def parse_file(files):
                                 unpack = unpack.format(number_samples)
                                 keys = fill_var_keys(number_samples, keys)
 
+                            if packet_id['Vector With IMU'] == id:
+                                (AHRS_id,) = struct.unpack("<B", packet_data[1:2])
+                                #print("probe check", number_samples)
+                                if AHRS_id == 0xD2:
+                                    keys = ['EnsCnt', 'AHRSid', 'accelX', 'accelY', 'accelZ', 'angRateX', 'angRateY', 'angRateZ', 'MagX', 'MagY', 'MagZ', 'timer', 'IMUchSum', 'checksum']
+                                    unpack = "<BB9fIHH"
+
                             # decode the packet
-                            #print("packet size", packet_decoder[id]['name'], len(packet))
+                            #print("packet size", packet_decoder[id]['name'], len(packet_data), unpack, 'read', pkt_size)
                             packetDecode = struct.unpack(unpack, packet_data)
                             d = dict(zip(keys, packetDecode))
 
@@ -613,7 +621,8 @@ def parse_file(files):
                                     accel = create_netCDF_var(ncOut, "ACCEL", "f4", "acceleration", "m/s^2", ("TIME", "vector"))
                                     ang_rate = create_netCDF_var(ncOut, "ANG_RATE", "f4", "angular rate", "deg/s", ("TIME", "vector"))
                                     mag = create_netCDF_var(ncOut, "MAG", "f4", "magnetic", "gauss", ("TIME", "vector"))
-                                    orient = create_netCDF_var(ncOut, "ORIENTATION", "f4", "orientation matrix", "1", ("TIME", "matrix"))
+                                    if AHRS_id == 0xCC:
+                                        orient = create_netCDF_var(ncOut, "ORIENTATION", "f4", "orientation matrix", "1", ("TIME", "matrix"))
 
                                     vectorWithImu = True
 
@@ -629,15 +638,16 @@ def parse_file(files):
                                 mag[sample_count, 1] = d['MagY']
                                 mag[sample_count, 2] = d['MagZ']
 
-                                orient[sample_count, 0] = d['M11']
-                                orient[sample_count, 1] = d['M12']
-                                orient[sample_count, 2] = d['M13']
-                                orient[sample_count, 3] = d['M21']
-                                orient[sample_count, 4] = d['M22']
-                                orient[sample_count, 5] = d['M23']
-                                orient[sample_count, 6] = d['M31']
-                                orient[sample_count, 7] = d['M32']
-                                orient[sample_count, 8] = d['M33']
+                                if AHRS_id == 0xCC:
+                                    orient[sample_count, 0] = d['M11']
+                                    orient[sample_count, 1] = d['M12']
+                                    orient[sample_count, 2] = d['M13']
+                                    orient[sample_count, 3] = d['M21']
+                                    orient[sample_count, 4] = d['M22']
+                                    orient[sample_count, 5] = d['M23']
+                                    orient[sample_count, 6] = d['M31']
+                                    orient[sample_count, 7] = d['M32']
+                                    orient[sample_count, 8] = d['M33']
 
                                 sample_count += 1
 
