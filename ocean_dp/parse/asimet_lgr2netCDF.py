@@ -84,6 +84,7 @@ import numpy as np
 #    };
 
 decode = []
+# this is in order of unpacking
 decode.append({'key': 'hour', 'var_name': None, 'units': None, 'scale': 1, 'offset': 0, 'unpack': 'B'})
 decode.append({'key': 'min', 'var_name': None, 'units': None, 'scale': 1, 'offset': 0, 'unpack': 'B'})
 decode.append({'key': 'day', 'var_name': None, 'units': None, 'scale': 1, 'offset': 0, 'unpack': 'B'})
@@ -179,73 +180,111 @@ def parse(files):
 
         ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
 
-        # create decoder dictonary
-        decoder = {'unpack': '>', 'keys': []}
-        for x in decode:
-            decoder['unpack'] += x['unpack']
-            decoder['keys'].append(x['key'])
-        metadata = dict(zip(decoder['keys'], decode))
+        # create keys for data index
+        decode_idx = {}
+        unpack = '>'
+        vars = []
+        data_scale = np.zeros([len(decode)])
+        data_offset = np.zeros([len(decode)])
+        for i in range(len(decode)):
+            decode_idx[decode[i]['key']] = i
+            unpack += decode[i]['unpack']
+            data_scale[i] = decode[i]['scale']
+            data_offset[i] = decode[i]['offset']
+            if decode[i]['var_name']:
+                v = ncOut.createVariable(decode[i]['var_name'], "f4", ("TIME",), zlib=True)
+                v.units = decode[i]['units']
+            else:
+                v = None
 
-        # create a variable for the matadata with variables not None
-        for x in metadata:
-            metadata[x]['var'] = None
-            if metadata[x]['var_name']:
-                new_var = ncOut.createVariable(metadata[x]['var_name'], "f4", ("TIME",), zlib=False)
-                new_var.units = metadata[x]['units']
-                metadata[x]['var'] = new_var
+            vars.append(v)
+
+        # array to cache data, could be size(file)/64
+        file_size = os.path.getsize(filepath)
+        cache_size = int(np.floor(file_size/64))
+        data_array = np.zeros([cache_size, len(decode)])
+        print('file size, cache size', file_size, cache_size)
 
         # loop over file, adding data to netCDF file for each timestamp
         ts = None
         last_ts = None
+        sample_cache_start = 0
+        sample_cache_n = 0
+        step_back = False
+
         with open(filepath, "rb") as binary_file:
             data_raw = binary_file.read(64)
             while data_raw:
 
-                data = struct.unpack(decoder['unpack'], data_raw)
-                #print(data)
-                data_scaled = []
-                for i in range(0, len(data)):
-                    data_scaled.append((data[i] / decode[i]['scale']) + decode[i]['offset'])
-                    #print('data', i, decode[i]['key'], data[i], 'scale', decode[i]['scale'], 'offset', decode[i]['offset'], data_scaled[i])
-
-                data_decoded = dict(zip(decoder['keys'], data_scaled))
+                data = struct.unpack(unpack, data_raw)
 
                 # check that this record is a used record
-                if data_decoded['used'] == 42405 and int(data_decoded['year']) < 2040 and int(data_decoded['year']) > 2005:
+                if data[decode_idx['used']] == 42405 and data[decode_idx['year']] < 40 and data[decode_idx['year']] > 5:
 
                     # decode the time
-                    ts = datetime.datetime(int(data_decoded['year']), int(data_decoded['mon']), int(data_decoded['day']),
-                                           int(data_decoded['hour']), int(data_decoded['min']), 0)
+                    ts = datetime.datetime(int(data[decode_idx['year']]+2000), int(data[decode_idx['mon']]), int(data[decode_idx['day']]),
+                                           int(data[decode_idx['hour']]), int(data[decode_idx['min']]), 0)
 
-                    # print(ts, "data", data_decoded)
+                    # hack as sometimes the time jumps back, seems to be a fault in the logger, mostly when minutes roll over
+                    if (last_ts is not None) and (ts < last_ts) and not step_back:
+                        print('time step back', ts)
+                        ts = last_ts + datetime.timedelta(minutes=1)
+                        step_back = True
 
                     # keep the first timestamp
                     if ts_start is None:
                         ts_start = ts
                         print('start time', ts_start)
 
-                    # save data to netCDF file
-                    ncTimesOut[number_samples_read] = date2num(ts, calendar=t_cal, units=t_unit)
-                    for x in data_decoded:
-                        #print(x, data_decoded[x], metadata[x])
-                        if metadata[x]['var_name']:
-                            metadata[x]['var'][number_samples_read] = data_decoded[x]
-
                     # keep sample number, only keep data where time is increasing
                     if last_ts is None or (ts > last_ts):
-                        number_samples_read = number_samples_read + 1
+                        step_back = False
+                        # save data to cache
+                        data_array[sample_cache_n] = np.asarray(data)
+                        data_array[sample_cache_n] = data_array[sample_cache_n] / data_scale + data_offset
+                        # re-use data[0] as time (was hour)
+                        data_array[sample_cache_n, 0] = date2num(ts, calendar=t_cal, units=t_unit)
+
+                        sample_cache_n += 1
+                        number_samples_read += 1
+
+                        # cache full, write to netCDF file
+                        if sample_cache_n >= data_array.shape[0]:
+                            # some user feedback
+                            feedback = []
+                            for x in range(len(data)):
+                                feedback.append(decode[x]['key'] + '=' + str(data[x]))
+                            print(number_samples_read, ts, ','.join(feedback))
+
+                            ncTimesOut[sample_cache_start:number_samples_read] = data_array[:, 0]
+                            for x in range(len(data)):
+                                # print(x, data_decoded[x], metadata[x])
+                                if vars[x]:
+                                    vars[x][sample_cache_start:number_samples_read] = data_array[:, x]
+
+                            sample_cache_start = number_samples_read
+                            sample_cache_n = 0
+
                         last_ts = ts
                     else:
-                        print('non-monotonic time : ', ts)
-
-                    # some user feedback
-                    if number_samples_read % 1000 == 0:
-                        print(number_samples_read, ts, "data", data_decoded)
+                        print('non-monotonic time,', number_samples_read, ts, last_ts)
 
                 data_raw = binary_file.read(64)
 
-        print("file first timestamp ", ts_start)
-        print("file last timestamp ", ts)
+        # flush last of cache
+        feedback = []
+        for x in range(len(data)):
+            feedback.append(decode[x]['key'] + '=' + str(data[x]))
+        print(number_samples_read, ts, ','.join(feedback))
+        ncTimesOut[sample_cache_start:number_samples_read] = data_array[0:sample_cache_n, 0]
+        for x in range(len(data)):
+            # print(x, data_decoded[x], metadata[x])
+            if vars[x]:
+                vars[x][sample_cache_start:number_samples_read] = data_array[0:sample_cache_n, x]
+
+        print("number of samples", number_samples_read)
+        print("file first timestamp", ts_start)
+        print("file last timestamp", ts)
 
         ts_start = num2date(np.min(ncTimesOut[:]), calendar=t_cal, units=t_unit)
         ts_end = num2date(np.max(ncTimesOut[:]), calendar=t_cal, units=t_unit)
