@@ -15,6 +15,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
+import glob
 import os.path
 import sys
 import re
@@ -1149,5 +1150,10 @@ def parse_file(files):
 
 
 if __name__ == "__main__":
-    parse_file(sys.argv[1:])
+
+    files = []
+    for f in sys.argv[1:]:
+        files.extend(glob.glob(f))
+        
+    parse_file(files)
 
