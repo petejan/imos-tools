@@ -639,7 +639,7 @@ def parse_file(files):
                     vec_list.append({'netCDF': corr1, 'ids': [vvd_d['corr1']], 'scale': 1, 'array': np.empty([cache_samples, number_data_samples], dtype=np.int8)})
                     vec_list.append({'netCDF': corr2, 'ids': [vvd_d['corr2']], 'scale': 1, 'array': np.empty([cache_samples, number_data_samples], dtype=np.int8)})
                     vec_list.append({'netCDF': corr3, 'ids': [vvd_d['corr3']], 'scale': 1, 'array': np.empty([cache_samples, number_data_samples], dtype=np.int8)})
-                    
+
                     if has_IMU:
                         imu_vec_list = []
                         imu_vec_list.append({'netCDF': accel, 'ids': [vid_d['accelX'], vid_d['accelY'], vid_d['accelZ']], 'scale': 9.81, 'array': np.empty([cache_samples, number_data_samples, 3], dtype=np.float32)})
@@ -718,7 +718,7 @@ def parse_file(files):
                         if cache_sample >= cache_samples:
                             print('write cache samples', sample, cache_sample_start, cache_sample)
                             for v in vec_list:
-                                v['netCDF'][cache_sample_start:cache_sample_start + cache_sample, :, :] = v['array']
+                                v['netCDF'][cache_sample_start:cache_sample_start + cache_sample] = v['array']
 
                             for v in imu_vec_list:
                                 v['netCDF'][cache_sample_start:cache_sample_start + cache_sample] = v['array']
@@ -741,7 +741,7 @@ def parse_file(files):
                     print('post write cache samples', cache_sample)
 
                     for v in vec_list:
-                        v['netCDF'][cache_sample_start:cache_sample_start+cache_sample,:,:] = v['array'][0:cache_sample,:,:]
+                        v['netCDF'][cache_sample_start:cache_sample_start+cache_sample,:] = v['array'][0:cache_sample,:]
 
                     if has_IMU:
                         for v in imu_vec_list:
