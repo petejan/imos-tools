@@ -603,16 +603,19 @@ def parse_file(files):
 
                         vid_d = dict(zip(vid_keys, range(len(vid_keys))))
 
+                        cache_samples = 1000
+                        cache_sample = 0
+
                         imu_vec_list = []
-                        imu_vec_list.append({'netCDF': accel, 'ids': [vid_d['accelX'], vid_d['accelY'], vid_d['accelZ']], 'scale': 9.81, 'array': np.empty([number_samples, number_data_samples, 3], dtype=np.float32)})
-                        imu_vec_list.append({'netCDF': ang_rate, 'ids': [vid_d['angRateX'], vid_d['angRateY'], vid_d['angRateZ']], 'scale': 1.0, 'array': np.empty([number_samples, number_data_samples, 3], dtype=np.float32)})
-                        imu_vec_list.append({'netCDF': mag, 'ids': [vid_d['angRateX'], vid_d['MagX'], vid_d['MagX']], 'scale': 1.0, 'array': np.empty([number_samples, number_data_samples, 3], dtype=np.float32)})
+                        imu_vec_list.append({'netCDF': accel, 'ids': [vid_d['accelX'], vid_d['accelY'], vid_d['accelZ']], 'scale': 9.81, 'array': np.empty([cache_samples, number_data_samples, 3], dtype=np.float32)})
+                        imu_vec_list.append({'netCDF': ang_rate, 'ids': [vid_d['angRateX'], vid_d['angRateY'], vid_d['angRateZ']], 'scale': 1.0, 'array': np.empty([cache_samples, number_data_samples, 3], dtype=np.float32)})
+                        imu_vec_list.append({'netCDF': mag, 'ids': [vid_d['angRateX'], vid_d['MagX'], vid_d['MagX']], 'scale': 1.0, 'array': np.empty([cache_samples, number_data_samples, 3], dtype=np.float32)})
                         if has_orient:
                             imu_vec_list.append(
                                 {'netCDF': orient,
                                  'ids': [vid_d['M11'], vid_d['M12'], vid_d['M13'], vid_d['M21'], vid_d['M22'], vid_d['M23'], vid_d['M31'], vid_d['M32'], vid_d['M33']],
                                  'scale': 1.0,
-                                 'array': np.empty([number_samples, number_data_samples, 9], dtype=np.float32)})
+                                 'array': np.empty([cache_samples, number_data_samples, 9], dtype=np.float32)})
 
                     pres_array = np.empty([number_samples, number_data_samples])
                     ana1_array = np.empty([number_samples, number_data_samples])
@@ -620,6 +623,8 @@ def parse_file(files):
                     pres_array[:] = np.NaN
 
                     sample = 0
+                    cache_sample_start = 0
+
                     vvd_pkt_n = 0
                     vid_pkt_n = 0
                     time_id = d['time_bcd']
@@ -702,11 +707,19 @@ def parse_file(files):
 
                                 for v in imu_vec_list:
                                     for i in range(len(v['ids'])):
-                                        v['array'][sample, vid_sample, i] = packetDecode[v['ids'][i]]*v['scale']
+                                        v['array'][cache_sample, vid_sample, i] = packetDecode[v['ids'][i]]*v['scale']
 
                                 vid_sample += 1
                                 vid_pkt_n += 1
 
+                        cache_sample += 1
+                        if cache_sample >= cache_samples:
+                            print('write cache samples', sample, cache_sample_start, cache_sample)
+                            for v in imu_vec_list:
+                                v['netCDF'][cache_sample_start:cache_sample_start + cache_samples] = v['array']
+
+                            cache_sample = 0
+                            cache_sample_start = sample
                         sample += 1
 
                     print('read-data took', datetime.datetime.now() - time_start)
@@ -724,8 +737,9 @@ def parse_file(files):
                         v['netCDF'][:] = v['array']
 
                     if has_IMU:
+                        print('post write cache samples', cache_sample)
                         for v in imu_vec_list:
-                            v['netCDF'][:] = v['array']
+                            v['netCDF'][cache_sample_start:cache_sample_start+cache_sample,:,:] = v['array'][0:cache_sample,:,:]
 
                 if packet_id['Vector System Data'] == pkt_id:
                     number_sys_samples = len(a)
@@ -1154,6 +1168,6 @@ if __name__ == "__main__":
     files = []
     for f in sys.argv[1:]:
         files.extend(glob.glob(f))
-        
+
     parse_file(files)
 
