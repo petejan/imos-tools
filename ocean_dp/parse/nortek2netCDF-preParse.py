@@ -569,6 +569,9 @@ def parse_file(files):
                     ana1 = create_netCDF_var(ncOut, "ANALOG1", "f4", "pres", "dbar", ("TIME", "BURST" ))
                     ana2 = create_netCDF_var(ncOut, "ANALOG2", "f4", "pres", "dbar", ("TIME", "BURST" ))
 
+                    cache_samples = 1000
+                    cache_sample = 0
+
                     # deal with IMU packets
                     has_IMU = False
                     if packet_id['Vector With IMU'] in pkt_pos:
@@ -603,19 +606,6 @@ def parse_file(files):
 
                         vid_d = dict(zip(vid_keys, range(len(vid_keys))))
 
-                        cache_samples = 1000
-                        cache_sample = 0
-
-                        imu_vec_list = []
-                        imu_vec_list.append({'netCDF': accel, 'ids': [vid_d['accelX'], vid_d['accelY'], vid_d['accelZ']], 'scale': 9.81, 'array': np.empty([cache_samples, number_data_samples, 3], dtype=np.float32)})
-                        imu_vec_list.append({'netCDF': ang_rate, 'ids': [vid_d['angRateX'], vid_d['angRateY'], vid_d['angRateZ']], 'scale': 1.0, 'array': np.empty([cache_samples, number_data_samples, 3], dtype=np.float32)})
-                        imu_vec_list.append({'netCDF': mag, 'ids': [vid_d['angRateX'], vid_d['MagX'], vid_d['MagX']], 'scale': 1.0, 'array': np.empty([cache_samples, number_data_samples, 3], dtype=np.float32)})
-                        if has_orient:
-                            imu_vec_list.append(
-                                {'netCDF': orient,
-                                 'ids': [vid_d['M11'], vid_d['M12'], vid_d['M13'], vid_d['M21'], vid_d['M22'], vid_d['M23'], vid_d['M31'], vid_d['M32'], vid_d['M33']],
-                                 'scale': 1.0,
-                                 'array': np.empty([cache_samples, number_data_samples, 9], dtype=np.float32)})
 
                     pres_array = np.empty([number_samples, number_data_samples])
                     ana1_array = np.empty([number_samples, number_data_samples])
@@ -638,17 +628,29 @@ def parse_file(files):
                     ana2_lsb_id = vvd_d['AnaIn2LSB']
 
                     vec_list = []
-                    vec_list.append({'netCDF': vel1, 'ids': [vvd_d['vel1']], 'scale': 0.001, 'array': np.empty([number_samples, number_data_samples], dtype=np.float32)})
-                    vec_list.append({'netCDF': vel2, 'ids': [vvd_d['vel2']], 'scale': 0.001, 'array': np.empty([number_samples, number_data_samples], dtype=np.float32)})
-                    vec_list.append({'netCDF': vel3, 'ids': [vvd_d['vel3']], 'scale': 0.001, 'array': np.empty([number_samples, number_data_samples], dtype=np.float32)})
+                    vec_list.append({'netCDF': vel1, 'ids': [vvd_d['vel1']], 'scale': 0.001, 'array': np.empty([cache_samples, number_data_samples], dtype=np.float32)})
+                    vec_list.append({'netCDF': vel2, 'ids': [vvd_d['vel2']], 'scale': 0.001, 'array': np.empty([cache_samples, number_data_samples], dtype=np.float32)})
+                    vec_list.append({'netCDF': vel3, 'ids': [vvd_d['vel3']], 'scale': 0.001, 'array': np.empty([cache_samples, number_data_samples], dtype=np.float32)})
 
-                    vec_list.append({'netCDF': amp1, 'ids': [vvd_d['amp1']], 'scale': 1, 'array': np.empty([number_samples, number_data_samples], dtype=np.int8)})
-                    vec_list.append({'netCDF': amp2, 'ids': [vvd_d['amp2']], 'scale': 1, 'array': np.empty([number_samples, number_data_samples], dtype=np.int8)})
-                    vec_list.append({'netCDF': amp3, 'ids': [vvd_d['amp3']], 'scale': 1, 'array': np.empty([number_samples, number_data_samples], dtype=np.int8)})
+                    vec_list.append({'netCDF': amp1, 'ids': [vvd_d['amp1']], 'scale': 1, 'array': np.empty([cache_samples, number_data_samples], dtype=np.int8)})
+                    vec_list.append({'netCDF': amp2, 'ids': [vvd_d['amp2']], 'scale': 1, 'array': np.empty([cache_samples, number_data_samples], dtype=np.int8)})
+                    vec_list.append({'netCDF': amp3, 'ids': [vvd_d['amp3']], 'scale': 1, 'array': np.empty([cache_samples, number_data_samples], dtype=np.int8)})
 
-                    vec_list.append({'netCDF': corr1, 'ids': [vvd_d['corr1']], 'scale': 1, 'array': np.empty([number_samples, number_data_samples], dtype=np.int8)})
-                    vec_list.append({'netCDF': corr2, 'ids': [vvd_d['corr2']], 'scale': 1, 'array': np.empty([number_samples, number_data_samples], dtype=np.int8)})
-                    vec_list.append({'netCDF': corr3, 'ids': [vvd_d['corr3']], 'scale': 1, 'array': np.empty([number_samples, number_data_samples], dtype=np.int8)})
+                    vec_list.append({'netCDF': corr1, 'ids': [vvd_d['corr1']], 'scale': 1, 'array': np.empty([cache_samples, number_data_samples], dtype=np.int8)})
+                    vec_list.append({'netCDF': corr2, 'ids': [vvd_d['corr2']], 'scale': 1, 'array': np.empty([cache_samples, number_data_samples], dtype=np.int8)})
+                    vec_list.append({'netCDF': corr3, 'ids': [vvd_d['corr3']], 'scale': 1, 'array': np.empty([cache_samples, number_data_samples], dtype=np.int8)})
+                    
+                    if has_IMU:
+                        imu_vec_list = []
+                        imu_vec_list.append({'netCDF': accel, 'ids': [vid_d['accelX'], vid_d['accelY'], vid_d['accelZ']], 'scale': 9.81, 'array': np.empty([cache_samples, number_data_samples, 3], dtype=np.float32)})
+                        imu_vec_list.append({'netCDF': ang_rate, 'ids': [vid_d['angRateX'], vid_d['angRateY'], vid_d['angRateZ']], 'scale': 1.0, 'array': np.empty([cache_samples, number_data_samples, 3], dtype=np.float32)})
+                        imu_vec_list.append({'netCDF': mag, 'ids': [vid_d['angRateX'], vid_d['MagX'], vid_d['MagX']], 'scale': 1.0, 'array': np.empty([cache_samples, number_data_samples, 3], dtype=np.float32)})
+                        if has_orient:
+                            imu_vec_list.append(
+                                {'netCDF': orient,
+                                 'ids': [vid_d['M11'], vid_d['M12'], vid_d['M13'], vid_d['M21'], vid_d['M22'], vid_d['M23'], vid_d['M31'], vid_d['M32'], vid_d['M33']],
+                                 'scale': 1.0,
+                                 'array': np.empty([cache_samples, number_data_samples, 9], dtype=np.float32)})
 
                     while sample < len(a):
                         binary_file.seek(a[sample])
@@ -684,7 +686,7 @@ def parse_file(files):
                             ana2_array[sample, vvd_sample] = (packetDecode[ana2_msb_id] * 256) + packetDecode[ana2_lsb_id]
 
                             for v in vec_list:
-                                v['array'][sample, vvd_sample] = packetDecode[v['ids'][0]] * v['scale']
+                                v['array'][cache_sample, vvd_sample] = packetDecode[v['ids'][0]] * v['scale']
 
                             vvd_sample += 1
                             vvd_pkt_n += 1
@@ -715,8 +717,11 @@ def parse_file(files):
                         cache_sample += 1
                         if cache_sample >= cache_samples:
                             print('write cache samples', sample, cache_sample_start, cache_sample)
+                            for v in vec_list:
+                                v['netCDF'][cache_sample_start:cache_sample_start + cache_sample, :, :] = v['array']
+
                             for v in imu_vec_list:
-                                v['netCDF'][cache_sample_start:cache_sample_start + cache_samples] = v['array']
+                                v['netCDF'][cache_sample_start:cache_sample_start + cache_sample] = v['array']
 
                             cache_sample = 0
                             cache_sample_start = sample
@@ -733,11 +738,12 @@ def parse_file(files):
                     ana1[:] = ana1_array
                     ana2[:] = ana2_array
 
+                    print('post write cache samples', cache_sample)
+
                     for v in vec_list:
-                        v['netCDF'][:] = v['array']
+                        v['netCDF'][cache_sample_start:cache_sample_start+cache_sample,:,:] = v['array'][0:cache_sample,:,:]
 
                     if has_IMU:
-                        print('post write cache samples', cache_sample)
                         for v in imu_vec_list:
                             v['netCDF'][cache_sample_start:cache_sample_start+cache_sample,:,:] = v['array'][0:cache_sample,:,:]
 
@@ -751,6 +757,7 @@ def parse_file(files):
                     times_array = np.zeros([number_sys_samples])
                     sample = 0
 
+                    # TODO: check head_config for magnetometer, tilt and pressure sensor
                     head = create_netCDF_var(ncOut, "HEADING_MAG", "f4", "heading magnetic", "degrees", ("SYS_TIME", ))
                     pitch = create_netCDF_var(ncOut, "PITCH", "f4", "pitch", "degrees", ("SYS_TIME", ))
                     roll = create_netCDF_var(ncOut, "ROLL", "f4", "roll", "degrees", ("SYS_TIME", ))
@@ -817,6 +824,7 @@ def parse_file(files):
                     print('HR pro, number beams, cells, cooridnate', beams, cells, coord_system)
                     ncOut.createDimension("CELL", cells)
 
+                    # TODO: check head_config for magnetometer, tilt and pressure sensor
                     head = create_netCDF_var(ncOut, "HEADING_MAG", "f4", "heading magnetic", "degrees", ("TIME", ))
                     pitch = create_netCDF_var(ncOut, "PITCH", "f4", "pitch", "degrees", ("TIME", ))
                     roll = create_netCDF_var(ncOut, "ROLL", "f4", "roll", "degrees", ("TIME", ))
@@ -923,6 +931,7 @@ def parse_file(files):
 
                     ncOut.createDimension("CELL", number_bins)
 
+                    # TODO: check head_config for magnetometer, tilt and pressure sensor
                     head = create_netCDF_var(ncOut, "HEADING_MAG", "f4", "heading magnetic", "degrees", ("TIME", ))
                     pitch = create_netCDF_var(ncOut, "PITCH", "f4", "pitch", "degrees", ("TIME", ))
                     roll = create_netCDF_var(ncOut, "ROLL", "f4", "roll", "degrees", ("TIME", ))
@@ -1025,6 +1034,7 @@ def parse_file(files):
 
                     time_id = d['time_bcd']
 
+                    # TODO: check head_config for magnetometer, tilt and pressure sensor
                     head = create_netCDF_var(ncOut, "WAVE_HEADING_MAG", "f4", "heading magnetic", "degrees", ("WAVE_TIME", ))
                     pitch = create_netCDF_var(ncOut, "WAVE_PITCH", "f4", "pitch", "degrees", ("WAVE_TIME", ))
                     roll = create_netCDF_var(ncOut, "WAVE_ROLL", "f4", "roll", "degrees", ("WAVE_TIME", ))
