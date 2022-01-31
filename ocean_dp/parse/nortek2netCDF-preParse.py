@@ -619,7 +619,7 @@ def parse_file(files):
                     pres_array[:] = np.NaN
 
                     sample = 0
-                    wave_pkt_n = 0
+                    vvd_pkt_n = 0
                     vid_pkt_n = 0
                     time_id = d['time_bcd']
                     vvd_keys = packet_decoder[packet_id['Vector Velocity Data']]['keys']
@@ -663,25 +663,25 @@ def parse_file(files):
                         else:
                             last_pos = vvd_pos[-1]
 
-                        wave_unpack = packet_decoder[packet_id['Vector Velocity Data']]['unpack']
-                        wave_len = pkt_len[packet_id['Vector Velocity Data']] * 2 - 4
-                        wave_sample = 0
-                        while wave_pkt_n < len(vvd_pos) and vvd_pos[wave_pkt_n] < last_pos:
-                            binary_file.seek(vvd_pos[wave_pkt_n])
-                            packet_data = binary_file.read(wave_len)
-                            packetDecode = struct.unpack(wave_unpack, packet_data)
+                        vvd_unpack = packet_decoder[packet_id['Vector Velocity Data']]['unpack']
+                        vvd_len = pkt_len[packet_id['Vector Velocity Data']] * 2 - 4
+                        vvd_sample = 0
+                        while vvd_sample < number_data_samples and vvd_pkt_n < len(vvd_pos) and vvd_pos[vvd_pkt_n] < last_pos:
+                            binary_file.seek(vvd_pos[vvd_pkt_n])
+                            packet_data = binary_file.read(vvd_len)
+                            packetDecode = struct.unpack(vvd_unpack, packet_data)
 
                             #print('vector velocity sample', sample, vvd_sample, packetDecode[1], vvd_sample)
 
-                            pres_array[sample, wave_sample] = ((packetDecode[pres_msb_id] * 65536) + packetDecode[pres_lsb_id]) * 0.001
-                            ana1_array[sample, wave_sample] = packetDecode[ana1_id]
-                            ana2_array[sample, wave_sample] = (packetDecode[ana2_msb_id] * 256) + packetDecode[ana2_lsb_id]
+                            pres_array[sample, vvd_sample] = ((packetDecode[pres_msb_id] * 65536) + packetDecode[pres_lsb_id]) * 0.001
+                            ana1_array[sample, vvd_sample] = packetDecode[ana1_id]
+                            ana2_array[sample, vvd_sample] = (packetDecode[ana2_msb_id] * 256) + packetDecode[ana2_lsb_id]
 
                             for v in vec_list:
-                                v['array'][sample, wave_sample] = packetDecode[v['ids'][0]] * v['scale']
+                                v['array'][sample, vvd_sample] = packetDecode[v['ids'][0]] * v['scale']
 
-                            wave_sample += 1
-                            wave_pkt_n += 1
+                            vvd_sample += 1
+                            vvd_pkt_n += 1
 
                         if has_IMU:
                             vid_pos = pkt_pos[packet_id['Vector With IMU']]
@@ -692,7 +692,7 @@ def parse_file(files):
 
                             vid_len = pkt_len[packet_id['Vector With IMU']] * 2 - 4
                             vid_sample = 0
-                            while vid_pkt_n < len(vid_pos) and vid_pos[vid_pkt_n] < last_pos:
+                            while vid_sample < number_data_samples and vid_pkt_n < len(vid_pos) and vid_pos[vid_pkt_n] < last_pos:
                                 binary_file.seek(vid_pos[vid_pkt_n])
                                 packet_data = binary_file.read(vid_len)
                                 packetDecode = struct.unpack(vid_unpack, packet_data)
@@ -1060,21 +1060,26 @@ def parse_file(files):
                             v['array'][sample] = packetDecode[v['ids'][0]] * v['scale']
 
                         # loop through 'AWAC Wave Data'
-                        vvd_pos = pkt_pos[packet_id['AWAC Wave Data']]
+                        wave_pos = pkt_pos[packet_id['AWAC Wave Data']]
                         if (sample+1) < len(a):
                             last_pos = a[sample+1]
                         else:
-                            last_pos = vvd_pos[-1]
+                            last_pos = wave_pos[-1]
 
                         wave_unpack = packet_decoder[packet_id['AWAC Wave Data']]['unpack']
                         wave_len = pkt_len[packet_id['AWAC Wave Data']] * 2 - 4
                         wave_sample = 0
-                        while wave_pkt_n < len(vvd_pos) and vvd_pos[wave_pkt_n] < last_pos:
-                            binary_file.seek(vvd_pos[wave_pkt_n])
+                        # skip to the next position after this wave data header
+                        while wave_pos[wave_pkt_n] < a[sample]:
+                            print('skipping packet', wave_pkt_n)
+                            wave_pkt_n += 1
+                        # process all save samples, for all wave_calls, till we get past the next data header, or we run out of same samples
+                        while wave_sample < wave_cells and wave_pkt_n < len(wave_pos) and wave_pos[wave_pkt_n] < last_pos:
+                            binary_file.seek(wave_pos[wave_pkt_n])
                             packet_data = binary_file.read(wave_len)
                             packetDecode = struct.unpack(wave_unpack, packet_data)
 
-                            #print('vector velocity sample', sample, vvd_sample, packetDecode[1], vvd_sample)
+                            #print('wave sample', sample, wave_sample)
 
                             for v in vec_list:
                                 v['array'][sample, wave_sample] = packetDecode[v['ids'][0]] * v['scale']
