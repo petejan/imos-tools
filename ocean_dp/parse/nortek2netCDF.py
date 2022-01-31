@@ -211,6 +211,13 @@ def parse_file(filepath):
                                 keys_out.append(k)
                         #print(keys_out)
 
+                        if 'Vector With IMU' == packet_decoder[id]['name']:
+                            (AHRS_id,) = struct.unpack("<B", packet[1:2])
+                            # print("probe check", number_samples)
+                            if AHRS_id == 0xD2:
+                                keys = ['EnsCnt', 'AHRSid', 'accelX', 'accelY', 'accelZ', 'angRateX', 'angRateY', 'angRateZ', 'MagX', 'MagY', 'MagZ', 'timer', 'IMUchSum', 'checksum']
+                                unpack = "<BB9fIHH"
+
                         # decode the packet
                         #print("packet size", packet_decoder[id]['name'], len(packet))
                         packetDecode = struct.unpack(unpack, packet)
@@ -294,7 +301,7 @@ def parse_file(filepath):
 
                             #print(dt, d)
                         if 'Vector With IMU' == packet_decoder[id]['name']:
-                            print('Vector With IMU')
+                            #print('Vector With IMU')
 
                             # use same timestamp as the last 'Vector Velocity Data' (from sample_count)
                             vector_imu_data.append((ts, d))
@@ -302,7 +309,7 @@ def parse_file(filepath):
                             if len(vector_imu_data) % 1000 == 0:
                                 print("samples read ", len(vector_imu_data), ts, dt, (dt - ts).total_seconds(), (dt-first_time).total_seconds())
 
-                            print(dt, d)
+                            #print(dt, d)
 
                     except KeyError:
                         print('packet_decode not found ', id)
@@ -459,15 +466,16 @@ def parse_file(filepath):
                 vector_array[2][i][1] = vector_imu_data[i][1]['MagY']
                 vector_array[2][i][2] = vector_imu_data[i][1]['MagZ']
 
-                mat_array[0][i][0] = vector_imu_data[i][1]['M11']
-                mat_array[0][i][1] = vector_imu_data[i][1]['M12']
-                mat_array[0][i][2] = vector_imu_data[i][1]['M13']
-                mat_array[0][i][3] = vector_imu_data[i][1]['M21']
-                mat_array[0][i][4] = vector_imu_data[i][1]['M22']
-                mat_array[0][i][5] = vector_imu_data[i][1]['M23']
-                mat_array[0][i][6] = vector_imu_data[i][1]['M31']
-                mat_array[0][i][7] = vector_imu_data[i][1]['M32']
-                mat_array[0][i][8] = vector_imu_data[i][1]['M33']
+                if AHRS_id == 0xCC:
+                    mat_array[0][i][0] = vector_imu_data[i][1]['M11']
+                    mat_array[0][i][1] = vector_imu_data[i][1]['M12']
+                    mat_array[0][i][2] = vector_imu_data[i][1]['M13']
+                    mat_array[0][i][3] = vector_imu_data[i][1]['M21']
+                    mat_array[0][i][4] = vector_imu_data[i][1]['M22']
+                    mat_array[0][i][5] = vector_imu_data[i][1]['M23']
+                    mat_array[0][i][6] = vector_imu_data[i][1]['M31']
+                    mat_array[0][i][7] = vector_imu_data[i][1]['M32']
+                    mat_array[0][i][8] = vector_imu_data[i][1]['M33']
 
         var_names = []
         var_names.append({'data_n':  1, 'name': 'PRES', 'comment': "pressure", 'unit': 'dbar'})
