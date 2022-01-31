@@ -434,7 +434,7 @@ def parse_file(files):
 
                 if packet_id['Aquadopp Velocity Data'] == pkt_id:
                     # add global attributes
-                    instrument_model = 'Aquadopp ' + si_format(system_frequency, precision=0) + 'Hz'
+                    instrument_model = 'Aquadopp ' + si_format(head_frequency*1000, precision=0) + 'Hz'
 
                     number_samples = len(a)
                     tDim = ncOut.createDimension("TIME", number_samples)
@@ -516,7 +516,8 @@ def parse_file(files):
                     pres[:] = pres_array
 
                 if packet_id['Vector Velocity Data Header'] == pkt_id:
-                    instrument_model = 'Vector'
+                    instrument_model = 'Vector ' + si_format(head_frequency*1000, precision=0) + 'Hz'
+
                     number_samples = len(a)
                     number_data_samples = packetDecode[d['NRecords']]
                     print('Vector number of samples', number_data_samples)
@@ -596,8 +597,8 @@ def parse_file(files):
                             orient = create_netCDF_var(ncOut, "ORIENTATION", "f4", "orientation matrix", "1", ("TIME", "BURST", "matrix"))
 
                         if AHRS_id == 0xD2:
-                            keys = ['EnsCnt', 'AHRSid', 'accelX', 'accelY', 'accelZ', 'angRateX', 'angRateY', 'angRateZ', 'MagX', 'MagY', 'MagZ', 'timer', 'IMUchSum', 'checksum']
-                            unpack = "<BB9fIHH"
+                            vid_keys = ['EnsCnt', 'AHRSid', 'accelX', 'accelY', 'accelZ', 'angRateX', 'angRateY', 'angRateZ', 'MagX', 'MagY', 'MagZ', 'timer', 'IMUchSum', 'checksum']
+                            vid_unpack = "<BB9fIHH"
 
                         vid_d = dict(zip(vid_keys, range(len(vid_keys))))
 
@@ -618,7 +619,7 @@ def parse_file(files):
                     pres_array[:] = np.NaN
 
                     sample = 0
-                    vvd_pkt_n = 0
+                    wave_pkt_n = 0
                     vid_pkt_n = 0
                     time_id = d['time_bcd']
                     vvd_keys = packet_decoder[packet_id['Vector Velocity Data']]['keys']
@@ -631,13 +632,17 @@ def parse_file(files):
                     ana2_lsb_id = vvd_d['AnaIn2LSB']
 
                     vec_list = []
-                    vec_list.append({'netCDF': vel1, 'ids': [vvd_d['vel_b1']], 'scale': 0.001, 'array': np.empty([number_samples, number_data_samples], dtype=np.float32)})
-                    vec_list.append({'netCDF': vel2, 'ids': [vvd_d['vel_b2']], 'scale': 0.001, 'array': np.empty([number_samples, number_data_samples], dtype=np.float32)})
-                    vec_list.append({'netCDF': vel3, 'ids': [vvd_d['vel_b3']], 'scale': 0.001, 'array': np.empty([number_samples, number_data_samples], dtype=np.float32)})
+                    vec_list.append({'netCDF': vel1, 'ids': [vvd_d['vel1']], 'scale': 0.001, 'array': np.empty([number_samples, number_data_samples], dtype=np.float32)})
+                    vec_list.append({'netCDF': vel2, 'ids': [vvd_d['vel2']], 'scale': 0.001, 'array': np.empty([number_samples, number_data_samples], dtype=np.float32)})
+                    vec_list.append({'netCDF': vel3, 'ids': [vvd_d['vel3']], 'scale': 0.001, 'array': np.empty([number_samples, number_data_samples], dtype=np.float32)})
 
-                    vec_list.append({'netCDF': amp1, 'ids': [vvd_d['ampB1']], 'scale': 1, 'array': np.empty([number_samples, number_data_samples], dtype=np.int8)})
-                    vec_list.append({'netCDF': amp2, 'ids': [vvd_d['ampB2']], 'scale': 1, 'array': np.empty([number_samples, number_data_samples], dtype=np.int8)})
-                    vec_list.append({'netCDF': amp3, 'ids': [vvd_d['ampB3']], 'scale': 1, 'array': np.empty([number_samples, number_data_samples], dtype=np.int8)})
+                    vec_list.append({'netCDF': amp1, 'ids': [vvd_d['amp1']], 'scale': 1, 'array': np.empty([number_samples, number_data_samples], dtype=np.int8)})
+                    vec_list.append({'netCDF': amp2, 'ids': [vvd_d['amp2']], 'scale': 1, 'array': np.empty([number_samples, number_data_samples], dtype=np.int8)})
+                    vec_list.append({'netCDF': amp3, 'ids': [vvd_d['amp3']], 'scale': 1, 'array': np.empty([number_samples, number_data_samples], dtype=np.int8)})
+
+                    vec_list.append({'netCDF': corr1, 'ids': [vvd_d['corr1']], 'scale': 1, 'array': np.empty([number_samples, number_data_samples], dtype=np.int8)})
+                    vec_list.append({'netCDF': corr2, 'ids': [vvd_d['corr2']], 'scale': 1, 'array': np.empty([number_samples, number_data_samples], dtype=np.int8)})
+                    vec_list.append({'netCDF': corr3, 'ids': [vvd_d['corr3']], 'scale': 1, 'array': np.empty([number_samples, number_data_samples], dtype=np.int8)})
 
                     while sample < len(a):
                         binary_file.seek(a[sample])
@@ -658,25 +663,25 @@ def parse_file(files):
                         else:
                             last_pos = vvd_pos[-1]
 
-                        vvd_unpack = packet_decoder[packet_id['Vector Velocity Data']]['unpack']
-                        vvd_len = pkt_len[packet_id['Vector Velocity Data']] * 2 - 4
-                        vvd_sample = 0
-                        while vvd_pkt_n < len(vvd_pos) and vvd_pos[vvd_pkt_n] < last_pos:
-                            binary_file.seek(vvd_pos[vvd_pkt_n])
-                            packet_data = binary_file.read(vvd_len)
-                            packetDecode = struct.unpack(vvd_unpack, packet_data)
+                        wave_unpack = packet_decoder[packet_id['Vector Velocity Data']]['unpack']
+                        wave_len = pkt_len[packet_id['Vector Velocity Data']] * 2 - 4
+                        wave_sample = 0
+                        while wave_pkt_n < len(vvd_pos) and vvd_pos[wave_pkt_n] < last_pos:
+                            binary_file.seek(vvd_pos[wave_pkt_n])
+                            packet_data = binary_file.read(wave_len)
+                            packetDecode = struct.unpack(wave_unpack, packet_data)
 
                             #print('vector velocity sample', sample, vvd_sample, packetDecode[1], vvd_sample)
 
-                            pres_array[sample, vvd_sample] = ((packetDecode[pres_msb_id] * 65536) + packetDecode[pres_lsb_id]) * 0.001
-                            ana1_array[sample, vvd_sample] = packetDecode[ana1_id]
-                            ana2_array[sample, vvd_sample] = (packetDecode[ana2_msb_id] * 256) + packetDecode[ana2_lsb_id]
+                            pres_array[sample, wave_sample] = ((packetDecode[pres_msb_id] * 65536) + packetDecode[pres_lsb_id]) * 0.001
+                            ana1_array[sample, wave_sample] = packetDecode[ana1_id]
+                            ana2_array[sample, wave_sample] = (packetDecode[ana2_msb_id] * 256) + packetDecode[ana2_lsb_id]
 
                             for v in vec_list:
-                                v['array'][sample, vid_sample] = packetDecode[v['ids'][0]] * v['scale']
+                                v['array'][sample, wave_sample] = packetDecode[v['ids'][0]] * v['scale']
 
-                            vvd_sample += 1
-                            vvd_pkt_n += 1
+                            wave_sample += 1
+                            wave_pkt_n += 1
 
                         if has_IMU:
                             vid_pos = pkt_pos[packet_id['Vector With IMU']]
@@ -685,7 +690,6 @@ def parse_file(files):
                             else:
                                 last_pos = vvd_pos[-1]
 
-                            vid_unpack = packet_decoder[packet_id['Vector With IMU']]['unpack']
                             vid_len = pkt_len[packet_id['Vector With IMU']] * 2 - 4
                             vid_sample = 0
                             while vid_pkt_n < len(vid_pos) and vid_pos[vid_pkt_n] < last_pos:
@@ -701,7 +705,6 @@ def parse_file(files):
 
                                 vid_sample += 1
                                 vid_pkt_n += 1
-
 
                         sample += 1
 
@@ -782,7 +785,7 @@ def parse_file(files):
 
                 if packet_id['HR Aquadopp Profiler Velocity Data'] == pkt_id:
                     # add global attributes
-                    instrument_model = 'AquaProHR ' + si_format(system_frequency, precision=0) + 'Hz'
+                    instrument_model = 'AquaProHR ' + si_format(head_frequency*1000, precision=0) + 'Hz'
 
                     number_samples = len(a)
                     tDim = ncOut.createDimension("TIME", number_samples)
@@ -889,7 +892,7 @@ def parse_file(files):
 
                 if packet_id['Aquadopp Profiler Velocity Data'] == pkt_id:
                     # add global attributes
-                    instrument_model = 'AquaPro ' + si_format(system_frequency, precision=0) + 'Hz'
+                    instrument_model = 'AquaPro ' + si_format(head_frequency*1000, precision=0) + 'Hz'
 
                     number_samples = len(a)
                     tDim = ncOut.createDimension("TIME", number_samples)
@@ -989,6 +992,108 @@ def parse_file(files):
                         v[0][:] = v[3]
                     pres[:] = pres_array
 
+                if packet_id['AWAC wave Data Header'] == pkt_id:
+                    wave_samples = len(a)
+                    wave_cells = packetDecode[d['NRecords']]
+
+                    print('wave records, cells', wave_samples, wave_cells)
+
+                    ncOut.createDimension("WAVE_CELL", wave_cells)
+
+                    tDim = ncOut.createDimension("WAVE_TIME", wave_samples)
+                    nc_wave_times = ncOut.createVariable("WAVE_TIME", "d", ("WAVE_TIME",), zlib=True)
+                    nc_wave_times.long_name = "wave time"
+                    nc_wave_times.units = "days since 1950-01-01 00:00:00 UTC"
+                    nc_wave_times.calendar = "gregorian"
+                    nc_wave_times.axis = "T"
+                    times_array = np.zeros([wave_samples])
+
+                    time_id = d['time_bcd']
+
+                    head = create_netCDF_var(ncOut, "WAVE_HEADING_MAG", "f4", "heading magnetic", "degrees", ("WAVE_TIME", ))
+                    pitch = create_netCDF_var(ncOut, "WAVE_PITCH", "f4", "pitch", "degrees", ("WAVE_TIME", ))
+                    roll = create_netCDF_var(ncOut, "WAVE_ROLL", "f4", "roll", "degrees", ("WAVE_TIME", ))
+                    bat = create_netCDF_var(ncOut, "WAVE_BATT", "f4", "battery voltage", "V", ("WAVE_TIME", ))
+                    itemp = create_netCDF_var(ncOut, "WAVE_ITEMP", "f4", "instrument temperature", "degrees_Celsius", ("WAVE_TIME", ))
+
+                    wave_pres = create_netCDF_var(ncOut, "WAVE_PRES", "f4", "pres", "dbar", ("WAVE_TIME", "WAVE_CELL"))
+
+                    w_vel1 = create_netCDF_var(ncOut, "WAVE_VELOCITY1", "f4", "wave sample velocity", "m/s", ("WAVE_TIME", "WAVE_CELL"))
+                    w_vel2 = create_netCDF_var(ncOut, "WAVE_VELOCITY2", "f4", "wave sample velocity", "m/s", ("WAVE_TIME", "WAVE_CELL"))
+                    w_vel3 = create_netCDF_var(ncOut, "WAVE_VELOCITY3", "f4", "wave sample velocity", "m/s", ("WAVE_TIME", "WAVE_CELL"))
+
+                    var_list = []
+                    var_list.append({'netCDF': head, 'ids': [d['heading']], 'scale': 0.1, 'array': np.empty([wave_samples], dtype=np.float32)})
+                    var_list.append({'netCDF': pitch, 'ids': [d['pitch']], 'scale': 0.1, 'array': np.empty([wave_samples], dtype=np.float32)})
+                    var_list.append({'netCDF': roll, 'ids': [d['roll']], 'scale': 0.1, 'array': np.empty([wave_samples], dtype=np.float32)})
+                    var_list.append({'netCDF': bat, 'ids': [d['battery']], 'scale': 0.1, 'array': np.empty([wave_samples], dtype=np.float32)})
+                    var_list.append({'netCDF': itemp, 'ids': [d['temperature']], 'scale': 0.01, 'array': np.empty([wave_samples], dtype=np.float32)})
+
+                    wave_keys = packet_decoder[packet_id['AWAC Wave Data']]['keys']
+                    wave_d = dict(zip(wave_keys, range(len(wave_keys))))
+
+                    vec_list = []
+                    vec_list.append({'netCDF': wave_pres, 'ids': [wave_d['pressure']], 'scale': 0.001, 'array': np.empty([wave_samples, wave_cells], dtype=np.float32)})
+                    vec_list.append({'netCDF': w_vel1, 'ids': [wave_d['vel1']], 'scale': 0.001, 'array': np.empty([wave_samples, wave_cells], dtype=np.float32)})
+                    vec_list.append({'netCDF': w_vel2, 'ids': [wave_d['vel2']], 'scale': 0.001, 'array': np.empty([wave_samples, wave_cells], dtype=np.float32)})
+                    vec_list.append({'netCDF': w_vel3, 'ids': [wave_d['vel3']], 'scale': 0.001, 'array': np.empty([wave_samples, wave_cells], dtype=np.float32)})
+
+                    for v in var_list:
+                        if v['array'].dtype == 'float32':
+                            v['array'][:] = np.NaN
+                    for v in vec_list:
+                        if v['array'].dtype == 'float32':
+                            v['array'][:] = np.NaN
+
+                    # process all the wave packets
+                    wave_pkt_n = 0
+                    sample = 0
+                    while sample < wave_samples:
+                        binary_file.seek(a[sample])
+                        packet_data = binary_file.read(pkt_len[pkt_id] * 2 - 4)
+                        packetDecode = struct.unpack(unpack, packet_data)
+                        #print(dict(zip(keys, packetDecode)))
+
+                        dt = bcd_time_to_datetime(packetDecode[time_id])
+                        times_array[sample] = date2num(dt, calendar='gregorian', units="days since 1950-01-01 00:00:00 UTC")
+                        for v in var_list:
+                            v['array'][sample] = packetDecode[v['ids'][0]] * v['scale']
+
+                        # loop through 'AWAC Wave Data'
+                        vvd_pos = pkt_pos[packet_id['AWAC Wave Data']]
+                        if (sample+1) < len(a):
+                            last_pos = a[sample+1]
+                        else:
+                            last_pos = vvd_pos[-1]
+
+                        wave_unpack = packet_decoder[packet_id['AWAC Wave Data']]['unpack']
+                        wave_len = pkt_len[packet_id['AWAC Wave Data']] * 2 - 4
+                        wave_sample = 0
+                        while wave_pkt_n < len(vvd_pos) and vvd_pos[wave_pkt_n] < last_pos:
+                            binary_file.seek(vvd_pos[wave_pkt_n])
+                            packet_data = binary_file.read(wave_len)
+                            packetDecode = struct.unpack(wave_unpack, packet_data)
+
+                            #print('vector velocity sample', sample, vvd_sample, packetDecode[1], vvd_sample)
+
+                            for v in vec_list:
+                                v['array'][sample, wave_sample] = packetDecode[v['ids'][0]] * v['scale']
+
+                            wave_sample += 1
+                            wave_pkt_n += 1
+
+                        sample += 1
+
+
+                    print('read-data took', datetime.datetime.now() - time_start)
+
+                    nc_wave_times[:] = times_array
+                    for v in var_list:
+                        v['netCDF'][:] = v['array']
+                    for v in vec_list:
+                        v['netCDF'][:] = v['array']
+
+
                 # copy in all attribues from the list
                 for att in packet_decode2netCDF:
                     if packet_decode2netCDF[att]["decode"] in keys:
@@ -1002,135 +1107,6 @@ def parse_file(files):
                         #         print("dict ", k, " = " , d[k])
                         #         attribute_list.append(('nortek_' + packet_decoder[id]['name'].replace(" ", "_").lower() + '-' + k, str(d[k])))
 
-        #     if packet_id['Vector Velocity Data'] == id:
-        #         # calculate the sample timestamp
-        #         ts = first_time + timedelta(microseconds=int(vector_sample_count*63000)) # a sample every 63 ms, where does this come from?
-        #         vector_sample_count += 1
-        #         if not vector:
-        #             # add global attributes
-        #             instrument_model = 'Vector'
-        #             pres = create_netCDF_var(ncOut, "PRES", "f4", "pressure", "dbar", ("TIME", ))
-        #             analog1 = create_netCDF_var(ncOut, "ANALOG1", "f4", "analog input 1", "V", ("TIME", ))
-        #             analog2 = create_netCDF_var(ncOut, "ANALOG2", "f4", "analog input 2", "V", ("TIME", ))
-        #
-        #             if coord_system == 2:
-        #                 vel1 = create_netCDF_var(ncOut, "VEL_B1", "f4", "velocity beam 1", "m/s", ("TIME", ))
-        #                 vel2 = create_netCDF_var(ncOut, "VEL_B2", "f4", "velocity beam 2", "m/s", ("TIME", ))
-        #                 vel3 = create_netCDF_var(ncOut, "VEL_B3", "f4", "velocity beam 3", "m/s", ("TIME", ))
-        #             else:
-        #                 vel1 = create_netCDF_var(ncOut, "VEL_X", "f4", "velocity X", "m/s", ("TIME", ))
-        #                 vel2 = create_netCDF_var(ncOut, "VEL_Y", "f4", "velocity Y", "m/s", ("TIME", ))
-        #                 vel3 = create_netCDF_var(ncOut, "VEL_Z", "f4", "velocity Z", "m/s", ("TIME", ))
-        #
-        #             amp1 = create_netCDF_var(ncOut, "AMP_B1", "i1", "amplitude B1", "counts", ("TIME", ))
-        #             amp2 = create_netCDF_var(ncOut, "AMP_B2", "i1", "amplitude B2", "counts", ("TIME", ))
-        #             amp3 = create_netCDF_var(ncOut, "AMP_B3", "i1", "amplitude B3", "counts", ("TIME", ))
-        #
-        #             corr1 = create_netCDF_var(ncOut, "CORR_B1", "i1", "correlation B1", "%", ("TIME", ))
-        #             corr2 = create_netCDF_var(ncOut, "CORR_B2", "i1", "correlation B2", "%", ("TIME", ))
-        #             corr3 = create_netCDF_var(ncOut, "CORR_B3", "i1", "correlation B3", "%", ("TIME", ))
-        #
-        #             vector = True
-        #
-        #         ncTimesOut[sample_count] = date2num(ts, calendar='gregorian', units="days since 1950-01-01 00:00:00 UTC")
-        #
-        #         pres[sample_count] = ((d['presMSB'] * 65536) + d['presLSW']) * 0.001
-        #         analog1[sample_count] = d['anaIn1']
-        #         analog2[sample_count] = d['anaIn2MSB'] * 256 + d['anaIn2LSB']
-        #         vel1[sample_count] = d['vel1']
-        #         vel2[sample_count] = d['vel2']
-        #         vel3[sample_count] = d['vel3']
-        #         amp1[sample_count] = d['amp1']
-        #         amp2[sample_count] = d['amp2']
-        #         amp3[sample_count] = d['amp3']
-        #         corr1[sample_count] = d['corr1']
-        #         corr2[sample_count] = d['corr2']
-        #         corr3[sample_count] = d['corr3']
-        #
-        #         # should increment sample_count if the vector does not and IMU data
-        #
-        #     if packet_id['Vector With IMU'] == id:
-        #         # print('Vector With IMU')
-        #
-        #         # use same timestamp as the last 'Vector Velocity Data' (from sample_count)
-        #         if not vectorWithImu:
-        #             ncOut.createDimension("vector", 3)
-        #             ncOut.createDimension("matrix", 9)
-        #
-        #             accel = create_netCDF_var(ncOut, "ACCEL", "f4", "acceleration", "m/s^2", ("TIME", "vector"))
-        #             ang_rate = create_netCDF_var(ncOut, "ANG_RATE", "f4", "angular rate", "deg/s", ("TIME", "vector"))
-        #             mag = create_netCDF_var(ncOut, "MAG", "f4", "magnetic", "gauss", ("TIME", "vector"))
-        #             if AHRS_id == 0xCC:
-        #                 orient = create_netCDF_var(ncOut, "ORIENTATION", "f4", "orientation matrix", "1", ("TIME", "matrix"))
-        #
-        #             vectorWithImu = True
-        #
-        #         accel[sample_count, 0] = d['accelX']
-        #         accel[sample_count, 1] = d['accelX']
-        #         accel[sample_count, 2] = d['accelY']
-        #
-        #         ang_rate[sample_count, 0] = d['angRateX']
-        #         ang_rate[sample_count, 1] = d['angRateY']
-        #         ang_rate[sample_count, 2] = d['angRateZ']
-        #
-        #         mag[sample_count, 0] = d['MagX']
-        #         mag[sample_count, 1] = d['MagY']
-        #         mag[sample_count, 2] = d['MagZ']
-        #
-        #         if AHRS_id == 0xCC:
-        #             orient[sample_count, 0] = d['M11']
-        #             orient[sample_count, 1] = d['M12']
-        #             orient[sample_count, 2] = d['M13']
-        #             orient[sample_count, 3] = d['M21']
-        #             orient[sample_count, 4] = d['M22']
-        #             orient[sample_count, 5] = d['M23']
-        #             orient[sample_count, 6] = d['M31']
-        #             orient[sample_count, 7] = d['M32']
-        #             orient[sample_count, 8] = d['M33']
-        #
-        #         sample_count += 1
-        #
-        #     if packet_id['AWAC wave Data Header'] == id:
-        #         wave_sample_time += 1
-        #
-        #         if not awac_wave_data:
-        #
-        #             wave_cells = d['NRecords']
-        #
-        #             ncOut.createDimension("WAVE_CELL", wave_cells)
-        #
-        #             tDim = ncOut.createDimension("WAVE_TIME")
-        #             nc_wave_times = ncOut.createVariable("WAVE_TIME", "d", ("WAVE_TIME",), zlib=True)
-        #             nc_wave_times.long_name = "wave time"
-        #             nc_wave_times.units = "days since 1950-01-01 00:00:00 UTC"
-        #             nc_wave_times.calendar = "gregorian"
-        #             nc_wave_times.axis = "T"
-        #
-        #             wave_pres = create_netCDF_var(ncOut, "WAVE_PRES", "f4", "pres", "dbar", ("WAVE_TIME", "WAVE_CELL"))
-        #
-        #             w_vel1 = create_netCDF_var(ncOut, "VELOCITY1", "f4", "velocity", "m/s", ("WAVE_TIME", "WAVE_CELL"))
-        #             w_vel2 = create_netCDF_var(ncOut, "VELOCITY2", "f4", "velocity", "m/s", ("WAVE_TIME", "WAVE_CELL"))
-        #             w_vel3 = create_netCDF_var(ncOut, "VELOCITY3", "f4", "velocity", "m/s", ("WAVE_TIME", "WAVE_CELL"))
-        #
-        #             awac_wave_data = True
-        #
-        #         print(dt, 'wave cells', wave_cells)
-        #
-        #         nc_wave_times[wave_sample_time] = date2num(dt, calendar='gregorian', units="days since 1950-01-01 00:00:00 UTC")
-        #
-        #         wave_cell = 0
-        #
-        #     if packet_id['AWAC Wave Data'] == id:
-        #             # print('wave data', sample_count, wave_cell)
-        #
-        #             if wave_cell < wave_cells:
-        #                 wave_pres[wave_sample_time, wave_cell] = d['pressure']/1000
-        #                 w_vel1[wave_sample_time, wave_cell] = d['vel1']/1000
-        #                 w_vel2[wave_sample_time, wave_cell] = d['vel2']/1000
-        #                 w_vel3[wave_sample_time, wave_cell] = d['vel3']/1000
-        #
-        #             wave_cell += 1
-        #
 
         ncOut.instrument = 'Nortek ; ' + instrument_model
         ncOut.instrument_model = instrument_model
@@ -1140,6 +1116,8 @@ def parse_file(files):
         ncOut.timing_controller_mode = timing_controller_mode
         ncOut.head_config = head_config
 
+        print()
+        print('instrument', instrument_model)
         # add any attributes we collected from the file
         for a in attribute_list:
             print('attribute: ', a)
