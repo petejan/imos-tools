@@ -161,13 +161,14 @@ def sbe_asc_parse(files):
         no_time = False
         number_samples = 1
         times = None
+        nVariables = 0
 
         with open(filepath, 'r', errors='ignore') as fp:
             line = fp.readline()
             matchObj = re.match(first_line_expr, line)
             if not matchObj:
                 print("Not a Sea Bird ASC file !")
-                return None
+                continue
 
             cnt = 1
             while line:

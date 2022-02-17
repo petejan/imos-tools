@@ -23,6 +23,8 @@ def mld(files):
 
     if 'NOMINAL_DEPTH_TEMP' in ds.variables:
         n_depths_var = ds.variables['NOMINAL_DEPTH_TEMP']
+    elif 'DEPTH_TEMP' in ds.variables:
+        n_depths_var = ds.variables['DEPTH_TEMP']
     else:
         n_depths_var = ds.variables['NOMINAL_DEPTH']
 

@@ -40,7 +40,6 @@ def resample(merge_file, source_files):
         source_ds = Dataset(source_file, 'r')
         source_time_var = source_ds.variables["TIME"]
 
-
         # create source_file and source_time variables
         if 'SOURCE_FILE' not in merge_ds.dimensions:
             fDim = merge_ds.createDimension("SOURCE_FILE")
@@ -85,47 +84,48 @@ def resample(merge_file, source_files):
                     new_var = merge_ds.createVariable(v, var.datatype, var.dimensions, fill_value=np.nan)
 
                 # get the QC of the source variable
-                if v + '_quality_control' in merge_ds.variables:
+                if v + '_quality_control' in source_ds.variables:
                     #print('using qc : ', v + "_quality_control")
-                    qc = merge_ds.variables[v + "_quality_control"][:]
+                    qc = source_ds.variables[v + "_quality_control"][:]
 
                 # find the timestamps of the source_file
                 source_time_np = np.array(source_time_var[qc <= qc_in_level])
-                f_times = interp1d(source_time_np, source_time_np, kind='nearest', bounds_error=False, fill_value=np.nan)
+                if len(source_time_np) > 1:
+                    f_times = interp1d(source_time_np, source_time_np, kind='nearest', bounds_error=False, fill_value=np.nan)
 
-                # TODO: might be an easier way, only create the data for times where data is good
-                new_times = f_times(time_var)
-                time_msk = abs(new_times - time) > 1 / 24
+                    # TODO: might be an easier way, only create the data for times where data is good
+                    new_times = f_times(time_var)
+                    time_msk = abs(new_times - time) > 3 / 24
 
-                # find the nearest data point to the output times
-                f = interp1d(source_time_np, np.array(var[qc <= qc_in_level]), kind='nearest', bounds_error=False, fill_value=np.nan)
-                new_data = f(time_var)
+                    # find the nearest data point to the output times
+                    f = interp1d(source_time_np, np.array(var[qc <= qc_in_level]), kind='linear', bounds_error=False, fill_value=np.nan)
+                    new_data = f(time_var)
 
-                new_data[time_msk] = np.nan
+                    new_data[time_msk] = np.nan
 
-                #print(new_data)
+                    #print(new_data)
 
-                msk = ~np.isnan(new_data)
-                print(v, 'msk count', sum(msk))
-                if sum(msk) > 0:
+                    msk = ~np.isnan(new_data)
+                    print(v, 'msk count', sum(msk))
+                    if sum(msk) > 0:
 
-                    merge_ds_source_file_id[msk] = file_idx
-                    merge_ds_source_time[file_idx, msk] = new_times[msk]
+                        merge_ds_source_file_id[msk] = file_idx
+                        merge_ds_source_time[file_idx, msk] = new_times[msk]
 
-                    # copy data where new_data is not nan
-                    # TODO: only copy when the data is nan
-                    new_var[msk] = new_data[msk]
+                        # copy data where new_data is not nan
+                        # TODO: only copy when the data is nan
+                        new_var[msk] = new_data[msk]
 
-                    # copy over the source variable attributes
-                    for a in var.ncattrs():
-                        #print('source attribute', a)
-                        if a not in ('_FillValue', 'ancillary_variables') and not a.startswith('calibration_'):
-                            new_var.setncattr(a, var.getncattr(a))
+                        # copy over the source variable attributes
+                        for a in var.ncattrs():
+                            #print('source attribute', a)
+                            if a not in ('_FillValue', 'ancillary_variables') and not a.startswith('calibration_'):
+                                new_var.setncattr(a, var.getncattr(a))
 
 
-                # add the source sensor information
-                #new_var.sensor_model = source_ds.instrument_model
-                #new_var.sensor_serial_number = source_ds.instrument_serial_number
+                    # add the source sensor information
+                    #new_var.sensor_model = source_ds.instrument_model
+                    #new_var.sensor_serial_number = source_ds.instrument_serial_number
 
 
         # update the history attribute

@@ -135,8 +135,13 @@ def parse(file):
 
     ncVarOut = ncOut.createVariable('BPHASE', "f4", ("TIME",), fill_value=np.nan, zlib=True) # fill_value=nan otherwise defaults to max
     ncVarOut[:] = bphase
+    ncVarOut.units = "1"
+    ncVarOut.long_name = "optode bphase"
+
     ncVarOut = ncOut.createVariable('OTEMP', "f4", ("TIME",), fill_value=np.nan, zlib=True) # fill_value=nan otherwise defaults to max
     ncVarOut[:] = temp
+    ncVarOut.units = "degrees_Celsius"
+    ncVarOut.long_name = "optode temperature"
 
     ncOut.setncattr("time_coverage_start", num2date(ncTimesOut[0], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
     ncOut.setncattr("time_coverage_end", num2date(ncTimesOut[-1], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))

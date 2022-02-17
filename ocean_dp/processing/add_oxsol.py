@@ -69,7 +69,9 @@ def add_psal(netCDFfile):
 
     ncVarOut[:] = oxsol
     ncVarOut.units = "umol/kg"
+    ncVarOut.long_name = "moles_of_oxygen_per_unit_mass_in_sea_water_at_saturation"
     ncVarOut.comment = "calculated using gsw-python https://teos-10.github.io/GSW-Python/index.html function gsw.O2sol_SP_pt" + comment
+    ncVarOut.coordinates = 'TIME LATITUDE LONGITUDE NOMINAL_DEPTH'
 
     # update the history attribute
     try:

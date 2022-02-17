@@ -60,7 +60,7 @@ def global_range(netCDFfiles, variable, max, min, qc_value=4):
 
         # this is where the actual QC test is done
         mask = ((var_data_qc > max) | (var_data_qc < min))
-        print('mask data ', mask)
+        #print('mask data ', mask)
 
         new_qc_flags = np.ones_like(var_data_qc)
         new_qc_flags.mask = False # incase its a masked array
@@ -73,20 +73,16 @@ def global_range(netCDFfiles, variable, max, min, qc_value=4):
             else:
                 ncVarOut = ds.createVariable(nc_var.name + "_quality_control_gr", "i1", nc_var.dimensions, fill_value=99, zlib=True)  # fill_value=0 otherwise defaults to max
                 ncVarOut[:] = np.ones(nc_var.shape)
-
-                if 'long_name' in nc_var.ncattrs():
-                    ncVarOut.long_name = "global_range flag for " + nc_var.long_name
-                #if 'standard_name' in nc_var.ncattrs():
-                #    ncVarOut.standard_name = nc_var.standard_name + " global_range_flag"
-
-                #ncVarOut.flag_values = np.array([0, 1, 2, 3, 4, 6, 7, 9], dtype=np.int8)
-                #ncVarOut.quality_control_conventions = "IMOS standard flags"
-                #ncVarOut.flag_meanings = 'unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value'
                 # add new variable to list of aux variables
-                ncVarOut.units = "1"
-
                 nc_var.ancillary_variables = nc_var.ancillary_variables + " " + nc_var.name + "_quality_control_gr"
-                ncVarOut.comment = 'Test 4. gross range test'
+
+            if 'long_name' in nc_var.ncattrs():
+                ncVarOut.long_name = "global_range flag for " + nc_var.long_name
+            #if 'standard_name' in nc_var.ncattrs():
+            #    ncVarOut.standard_name = nc_var.standard_name + " global range status flag"
+            ncVarOut.units = "1"
+
+            ncVarOut.comment = 'Test 4. gross range test'
 
             # store new flags
             ncVarOut[data_to_qc_msk] = new_qc_flags
@@ -106,7 +102,7 @@ def global_range(netCDFfiles, variable, max, min, qc_value=4):
         marked = np.zeros_like(new_qc_flags)
         marked[mask] = 1
         count = sum(marked)
-        print('global range marked records ', count, mask, existing_qc_flags)
+        #print('global range marked records ', count, mask, existing_qc_flags)
 
         # write flags back to main QC variable
         var_qc[:] = existing_qc_flags

@@ -47,7 +47,7 @@ def add_sbe43(netCDFfile):
 
     ds_out.createDimension("TIME", len(ds.variables['TIME']))
     ncVarIn = ds.variables['TIME']
-    ncTimesOut = ds_out.createVariable('TIME', "f4", ("TIME",), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
+    ncTimesOut = ds_out.createVariable('TIME', "f8", ("TIME",), zlib=True)
     for a in ncVarIn.ncattrs():
         if a != '_FillValue':
             ncTimesOut.setncattr(a, ncVarIn.getncattr(a))
@@ -82,7 +82,7 @@ def add_sbe43(netCDFfile):
         ncVarIn = ds.variables['DOX2']
         ncVarOut = ds_out.createVariable('DOX2_SBE', "f4", ("TIME",), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
         for a in ncVarIn.ncattrs():
-            if a != '_FillValue':
+            if a not in ['_FillValue', 'ancillary_variables'] :
                 ncVarOut.setncattr(a, ncVarIn.getncattr(a))
         ncVarOut[:] = ncVarIn[:]
 
@@ -111,29 +111,27 @@ def add_sbe43(netCDFfile):
 
     # calc oxygen solubility
     # 0.01 % difference to sea bird calculation
-    oxsol = gsw.O2sol_SP_pt(SP, pt)
+    #oxsol = gsw.O2sol_SP_pt(SP, pt)
 
     # calc OXSOL in ml/l as per seabird application note 64
     # this method gives a 0.2 % difference to what is calculated by sea bird (and what is calculated by TEOS-10)
-    # A0 = 2.00907
-    # A1 = 3.22014
-    # A2 = 4.0501
-    # A3 = 4.94457
-    # A4 = -0.256847
-    # A5 = 3.88767
-    # B0 = -0.00624523
-    # B1 = -0.00737614
-    # B2 = -0.010341
-    # B3 = -0.00817083
-    # C0 = -0.000000488682
-    # ts = np.log((298.15 - T) / (273.15 + T))
-    #
-    # oxsol = np.exp(A0 + A1*ts + A2*(ts**2) + A3*(ts**3) + A4*(ts**4) + A5*(ts**5) + SP*[B0+B1*(ts)+B2*(ts**2) +B3*(ts**3)]+C0*(SP**2))
+    A0 = 2.00907
+    A1 = 3.22014
+    A2 = 4.0501
+    A3 = 4.94457
+    A4 = -0.256847
+    A5 = 3.88767
+    B0 = -0.00624523
+    B1 = -0.00737614
+    B2 = -0.010341
+    B3 = -0.00817083
+    C0 = -0.000000488682
+    ts = np.log((298.15 - T) / (273.15 + T))
+
+    oxsol = np.exp(A0 + A1*ts + A2*(ts**2) + A3*(ts**3) + A4*(ts**4) + A5*(ts**5) + SP*[B0+B1*(ts)+B2*(ts**2) +B3*(ts**3)]+C0*(SP**2))
 
     # calculate oxygen from V0
-    dox = calibration_Soc * (var_v0[:] + calibration_offset) * oxsol * \
-          (1 + calibration_A * T + calibration_B * T**2 + calibration_C * T**3) * \
-          np.exp(calibration_E * p / (T + 273.15))
+    dox = calibration_Soc * (var_v0[:] + calibration_offset) * oxsol * (1 + calibration_A * T + calibration_B * T**2 + calibration_C * T**3) * np.exp(calibration_E * p / (T + 273.15))
 
     # create SBE43 oxygen ml/l
     # ncVarOut = ds_out.createVariable("DOX", "f4", ("TIME",), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
@@ -148,15 +146,18 @@ def add_sbe43(netCDFfile):
     # create SBE43 oxygen in umol/kg
     ncVarOut = ds_out.createVariable("DOX2", "f4", ("TIME",), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
 
-    #ncVarOut[:] = dox * 44600 / (1000+sigma_t0)
-    ncVarOut[:] = dox
+    ncVarOut[:] = dox * 44600 / (1000+sigma_t0)
+    #ncVarOut[:] = dox
     ncVarOut.standard_name = "moles_of_oxygen_per_unit_mass_in_sea_water"
+    ncVarOut.long_name = "moles_of_oxygen_per_unit_mass_in_sea_water"
+    ncVarOut.coordinates = 'TIME LATITUDE LONGITUDE NOMINAL_DEPTH'
     ncVarOut.valid_min = 0
     ncVarOut.valid_max = 400
     ncVarOut.units = "umol/kg"
-    #ncVarOut.equation_1 = "Ox(umol/kg)=Ox(ml/l).44660/(sigma-theta(P=0,Theta,S)+1000)"
-    ncVarOut.equation_1 = "Ox(umol/kg)=Soc.(V+Voffset).(1+A.T+B.T^2+V.T^3).OxSOL(T,S).exp(E.P/K) ... SeaBird (AN64)"
-    ncVarOut.comment = 'OxSOL in umol/kg'
+    ncVarOut.equation_1 = "Ox[ml/l]=Soc.(V+Voffset).(1+A.T+B.T^2+C.T^3).OxSOL(T,S)[ml/l].exp(E.P/K) ... SeaBird (AN64)"
+    ncVarOut.equation_2 = "Ox[umol/kg]=Ox[ml/l].44660/(sigma-theta(P=0,Theta,S)+1000)"
+    #ncVarOut.equation_1 = "Ox[umol/kg]=Soc.(V+Voffset).(1+A.T+B.T^2+C.T^3).OxSOL(T,S)[umol/kg].exp(E.P/K) ... SeaBird (AN64)"
+    #ncVarOut.comment = 'OxSOL in umol/kg'
     ncVarOut.ancillary_variables = "DOX2_quality_control DOX2_quality_control_in"
 
     # quality flags
@@ -201,6 +202,8 @@ def add_sbe43(netCDFfile):
     ncVarOut[:] = oxsol
     ncVarOut.units = "umol/kg"
     ncVarOut.comment = "calculated using gsw-python https://teos-10.github.io/GSW-Python/index.html function gsw.O2sol_SP_pt"
+    ncVarOut.long_name = "moles_of_oxygen_per_unit_mass_in_sea_water_at_saturation"
+    ncVarOut.coordinates = 'TIME LATITUDE LONGITUDE NOMINAL_DEPTH'
 
     for v in ds.ncattrs():
         if not v.startswith('sea_bird'):
@@ -212,9 +215,17 @@ def add_sbe43(netCDFfile):
 
     ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
 
-    # add timespan attributes
-    ds_out.setncattr("time_coverage_start", num2date(ncTimesOut[0], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
-    ds_out.setncattr("time_coverage_end", num2date(ncTimesOut[-1], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
+    attrs = ds.ncattrs()
+    for at in attrs:
+        if at not in ['title', 'instrument', 'instrument_model', 'instrument_serial_number', 'history', 'date_created', 'title']:
+            #print('copy att', at)
+            ds_out.setncattr(at, ds.getncattr(at))
+
+    ds_out.deployment_code = ds.deployment_code
+    ds_out.instrument = 'SeaBird Electronics ; SBE43'
+    ds_out.instrument_model = 'SBE43'
+    ds_out.instrument_serial_number = ds.variables['V0'].calibration_SerialNumber
+    ds_out.title = 'Oceanographic mooring data deployment of {platform_code} at latitude {geospatial_lat_max:3.1f} longitude {geospatial_lon_max:3.1f} depth {geospatial_vertical_max:3.0f} (m) instrument {instrument} serial {instrument_serial_number}'
 
     # add creating and history entry
     ds_out.setncattr("date_created", datetime.utcnow().strftime(ncTimeFormat))

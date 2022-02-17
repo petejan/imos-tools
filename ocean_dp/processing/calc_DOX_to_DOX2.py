@@ -36,6 +36,10 @@ def oxygen(netCDFfile):
     SP = var_psal[:]
     p = var_pres[:]
 
+    if "DOX2" in ds.variables:
+        print('file already has DOX2')
+        return
+
     var_dox = None
     if "DOX" in ds.variables:
         var_dox = ds.variables["DOX"]

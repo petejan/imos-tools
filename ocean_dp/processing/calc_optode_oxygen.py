@@ -32,6 +32,7 @@ def add_optode_oxygen(netCDFfile):
     var_psal = ds.variables["PSAL"]
     var_bphase = ds.variables["BPHASE"]
     var_otemp = ds.variables["OTEMP"]
+    #var_otemp = ds.variables["TEMP"]
 
     t = var_temp[:]
     SP = var_psal[:]
@@ -104,6 +105,13 @@ def add_optode_oxygen(netCDFfile):
     out_ox_var.comment_calc2_SolB2 = -1.03410e-2
     out_ox_var.comment_calc2_SolB3 = -8.17083e-3
     out_ox_var.comment_calc2_SolC0 = -4.88682e-7
+    out_ox_var.units = "umol/kg"
+    out_ox_var.long_name = "moles_of_oxygen_per_unit_mass_in_sea_water"
+    out_ox_var.standard_name = "moles_of_oxygen_per_unit_mass_in_sea_water"
+    out_ox_var.valid_max = np.float32(400)
+    out_ox_var.valid_min = np.float32(0)
+
+    out_ox_var.coordinates = "TIME LATITUDE LONGITUDE NOMINAL_DEPTH"
 
     if 'DOXS' in ds.variables:
         out_oxs_var = ds.variables['DOXS']
@@ -120,7 +128,7 @@ def add_optode_oxygen(netCDFfile):
     except AttributeError:
         hist = ""
 
-    ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " : added oxygen and oxygen solubility")
+    ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " : calculated optode oxygen and oxygen solubility")
 
     ds.close()
 

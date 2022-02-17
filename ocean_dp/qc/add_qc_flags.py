@@ -80,6 +80,7 @@ def add_qc(netCDFfile, var_name=None):
                 if v != 'TIME':
                     to_add.append(v)
 
+            print('addinto to', to_add)
             # remove any anx variables from the list
             for v in nc_vars:
                 if 'ancillary_variables' in nc_vars[v].ncattrs():
@@ -94,26 +95,29 @@ def add_qc(netCDFfile, var_name=None):
                 if "TIME" in nc_vars[v].dimensions:
                     print("time dim ", v)
 
-                    # only add if the quality_control variable does not exist
-                    if v+"_quality_control" not in ds.variables:
-                        print("adding : ", (v+"_quality_control"))
-                        ncVarOut = ds.createVariable(v +"_quality_control", "i1", nc_vars[v].dimensions, fill_value=99, zlib=True)  # fill_value=99 otherwise defaults to max, imos-toolbox uses 99
-                        ncVarOut[:] = np.zeros(nc_vars[v].shape)
-
-                        if 'long_name' in nc_vars[v].ncattrs():
-                            ncVarOut.long_name = "quality flag for " + nc_vars[v].long_name
-                        if 'standard_name' in nc_vars[v].ncattrs():
-                            ncVarOut.standard_name = nc_vars[v].standard_name + " status_flag"
-
-                        ncVarOut.quality_control_conventions = "IMOS standard flags"
-                        ncVarOut.flag_values = np.array([0, 1, 2, 3, 4, 6, 7, 9], dtype=np.int8)
-                        ncVarOut.flag_meanings = 'unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value'
-                        ncVarOut.comment = 'maximum of all flags'
-
-                        nc_vars[v].ancillary_variables = v + "_quality_control"
+                    qc_var_name = v+"_quality_control"
+                    # add if the quality_control variable does not exist
+                    if qc_var_name in ds.variables:
+                        ncVarOut = ds.variables[qc_var_name]
                     else:
-                        ncVarOut = ds.variables[v+"_quality_control"]
+                        print("adding : ", qc_var_name)
+                        ncVarOut = ds.createVariable(qc_var_name, "i1", nc_vars[v].dimensions, fill_value=99, zlib=True)  # fill_value=99 otherwise defaults to max, imos-toolbox uses 99
                         ncVarOut[:] = np.zeros(nc_vars[v].shape)
+                        nc_vars[v].ancillary_variables = qc_var_name
+
+                    if 'long_name' in nc_vars[v].ncattrs():
+                        ncVarOut.long_name = "quality flag for " + nc_vars[v].long_name
+                    if 'standard_name' in nc_vars[v].ncattrs():
+                        ncVarOut.standard_name = nc_vars[v].standard_name + " status_flag"
+
+                    ncVarOut.quality_control_conventions = "IMOS standard flags"
+                    ncVarOut.flag_values = np.array([0, 1, 2, 3, 4, 6, 7, 9], dtype=np.int8)
+                    ncVarOut.flag_meanings = 'unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value'
+                    ncVarOut.comment = 'maximum of all flags'
+
+                    #else:
+                    #    ncVarOut = ds.variables[v+"_quality_control"]
+                    #    ncVarOut[:] = np.zeros(nc_vars[v].shape)
 
         # update the global attributes
         ds.file_version = "Level 1 - Quality Controlled Data"

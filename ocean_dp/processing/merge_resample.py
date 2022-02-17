@@ -44,18 +44,19 @@ def resample(netCDF_file, sample_file):
             else:
                 new_var = ds.createVariable(v, var.datatype, var.dimensions)
 
-            if v + '_quality_control' in ds.variables:
+            #print('var', v, 'qc', v + '_quality_control', 'in file', v + '_quality_control' in ds_sample.variables)
+            if v + '_quality_control' in ds_sample.variables:
                 print('using qc : ', v + "_quality_control")
-                qc = ds.variables[v + "_quality_control"][:]
+                qc = ds_sample.variables[v + "_quality_control"][:]
 
             new_data = np.interp(time_var[:], sample_time[qc <= qc_in_level], var[qc <= qc_in_level])
-            print(new_data)
+            #print(new_data)
             new_var.sensor_model = ds_sample.instrument_model
             new_var.sensor_serial_number = ds_sample.instrument_serial_number
             new_var[:] = new_data
 
             for a in var.ncattrs():
-                print(a)
+                #print(a)
                 if a not in ('_FillValue', 'ancillary_variables'):
                     new_var.setncattr(a, var.getncattr(a))
 

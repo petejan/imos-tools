@@ -82,29 +82,7 @@ def oxygen(netCDFfile):
     ncVarOut.units = "umol/kg"
     ncVarOut.comment = "calculated using DOX2 = DOX2_RAW * PSAL_CORRECTION / ((sigma_theta(P=0,Theta,S) + 1000).. Sea Bird AN 64, Aanderaa TD210 Optode Manual"
     ncVarOut.comment_calibration = "calibration slope " + str(slope) + " offset " + str(offset) + " umol/l"
-
-    # calculate, and write the oxygen mass/seawater mass
-    if 'DOXY' not in ds.variables:
-        ncVarOut = ds.createVariable("DOXY", "f4", ("TIME",), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
-    else:
-        ncVarOut = ds.variables['DOXY']
-
-    ncVarOut[:] = dox2_raw / 31.24872
-    ncVarOut.standard_name = "mass_concentration_of_oxygen_in_sea_water"
-    ncVarOut.long_name = "mass_concentration_of_oxygen_in_sea_water"
-    ncVarOut.units = "mg/l"
-    ncVarOut.comment = "calculated using DOXY =  * DOX2_RAW * PSAL_CORRECTION / 31.24872... Aanderaa TD210 Optode Manual"
-    ncVarOut.comment_calibration = "calibration slope " + str(slope) + " offset " + str(offset) + " umol/l"
-
-    # calculate and write oxygen solubility, ratio of disolved oxgen / oxygen solubility
-    if 'DOXS' not in ds.variables:
-        ncVarOut = ds.createVariable("DOXS", "f4", ("TIME",), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
-    else:
-        ncVarOut = ds.variables['DOXS']
-
-    ncVarOut[:] = dox2/oxsol
-    ncVarOut.units = "1"
-    ncVarOut.comment = "calculated using DOX2/OXSOL"
+    ncVarOut.coordinates = 'TIME LATITUDE LONGITUDE NOMINAL_DEPTH'
 
     # finish off, and close file
 
@@ -114,7 +92,7 @@ def oxygen(netCDFfile):
     except AttributeError:
         hist = ""
 
-    ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " added derived oxygen, DOX2, DOXS, DOXY")
+    ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " added derived oxygen, DOX2")
 
     ds.close()
 

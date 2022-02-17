@@ -8,8 +8,8 @@ VAR_ATT,TIME,Pulse-8-2011,MDS-MKVL,200665,,,,,,comment_scale_offset,str,1.0 -0.4
 VAR_ATT,TIME,Pulse-8-2011,SBE16plusV2,01606330,,,,,,comment_scale_offset,str,1.0 0.41666666666667
 VAR_ATT,TIME,Pulse-8-2011,SBE37SM-RS232,6962,,,,,,comment_scale_offset,str,1.0 0.41666666666667
 
-VAR_ATT,TIME,SOFS-6-2017,SBE37SM-RS485,03710136,2016-03-20,2016-11-08,,,,comment_scale_offset,str,"1 366"
-VAR_ATT,TIME,SOFS-6-2017,SBE37SM-RS485,03708764,2016-03-20,2016-11-08,,,,comment_scale_offset,str,"1 367"
+VAR_ATT,TIME,,SBE37SM-RS485,03710136,2016-03-20,2016-11-08,,,,comment_scale_offset,str,"1 366"
+VAR_ATT,TIME,,SBE37SM-RS485,03708764,2016-03-20,2016-11-08,,,,comment_scale_offset,str,"1 366"
 
 VAR_ATT,TIME,,SBE37,1778,2013-05-05,2015-03-27,,,,comment_scale_offset,str,"1 -1"
 
