@@ -686,6 +686,7 @@ VAR_ATT,V0,Pulse-9-2012,SBE16plusV2,unknown,,,,,,calibration_Tau20,str,5.56
 VAR_ATT,V0,Pulse-9-2012,SBE16plusV2,unknown,,,,,,calibration_H1,str,-0.033
 VAR_ATT,V0,Pulse-9-2012,SBE16plusV2,unknown,,,,,,calibration_H2,str,5000.
 VAR_ATT,V0,Pulse-9-2012,SBE16plusV2,unknown,,,,,,calibration_H3,str,1450.
+VAR_ATT,V0,Pulse-9-2012,SBE16plusV2,unknown,,,,,,oxygen_correction_slope,str,1.0486
 
 VAR_ATT,V0,Pulse-10-2013,SBE16plusV2,01606330,,,,,,calibration_SerialNumber,str,"1634"
 VAR_ATT,V0,Pulse-10-2013,SBE16plusV2,01606330,,,,,,calibration_CalibrationDate,str,"10-Sep-2012 CSIRO report 1345DO"
