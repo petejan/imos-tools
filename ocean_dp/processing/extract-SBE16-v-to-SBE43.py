@@ -93,6 +93,9 @@ def add_sbe43(netCDFfile):
     calibration_B = float(var_v0.calibration_B)
     calibration_C = float(var_v0.calibration_C)
     calibration_E = float(var_v0.calibration_E)
+    slope_correction = 1.0
+    if 'oxygen_correction_slope' in var_v0.ncattrs():
+        slope_correction = float(var_v0.oxygen_correction_slope)
 
     lat = -47
     lon = 142
@@ -131,7 +134,7 @@ def add_sbe43(netCDFfile):
     oxsol = np.exp(A0 + A1*ts + A2*(ts**2) + A3*(ts**3) + A4*(ts**4) + A5*(ts**5) + SP*[B0+B1*(ts)+B2*(ts**2) +B3*(ts**3)]+C0*(SP**2))
 
     # calculate oxygen from V0
-    dox = calibration_Soc * (var_v0[:] + calibration_offset) * oxsol * (1 + calibration_A * T + calibration_B * T**2 + calibration_C * T**3) * np.exp(calibration_E * p / (T + 273.15))
+    dox = slope_correction * calibration_Soc * (var_v0[:] + calibration_offset) * oxsol * (1 + calibration_A * T + calibration_B * T**2 + calibration_C * T**3) * np.exp(calibration_E * p / (T + 273.15))
 
     # create SBE43 oxygen ml/l
     # ncVarOut = ds_out.createVariable("DOX", "f4", ("TIME",), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
