@@ -78,49 +78,21 @@ def add_optode_oxygen(netCDFfile):
     B1 = var_bphase.calibration_B1
 
     if 'DOX2' in ds.variables:
-        out_ox_var = ds.variables['DOX2']
+        out_ox_var = ds.variables['DOX2_RAW']
     else:
-        out_ox_var = ds.createVariable("DOX2", "f4", ("TIME",), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
+        out_ox_var = ds.createVariable("DOX2_RAW", "f4", ("TIME",), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
 
     oxygen = ((A0 + A1 * otemp) / (B0 + B1 * phase) - 1) / (C0 + C1 * otemp + C2 * np.power(otemp, 2))
-    ts = np.log((298.15 - t)/(273.15 + t))
 
-    B0 = -6.24097e-3
-    B1 = -6.93498e-3
-    B2 = -6.90358e-3
-    B3 = -4.29155e-3
-
-    C0 = -3.11680e-7
-
-    sal_cor = np.exp(SP*(B0 + B1 * ts + B2 * np.power(ts, 2) + B3 * np.power(ts, 3)) + np.power(SP, 2) * C0)
-
-    out_ox_var[:] = oxygen * sal_cor / (1 + sigmat / 1000)
+    out_ox_var[:] = oxygen
 
     out_ox_var.comment_calc1 = 'calculated using ((A0 + A1 * otemp)/(B0 + B1 * phase) - 1)/(C0 + C1 * otemp + C2 * otemp * otemp)'
-    out_ox_var.comment_calc2 = 'salinity correction np.exp(SP*(SOL_B1 + SOL_B1 * ts + SOL_B2 * (ts^2) + SOL_B3 * (ts ^ 3)))+ SOL_C0 * (SP^2) (Benson and Krause, 1984)'
-    out_ox_var.comment_calc3 = 'pressure correction 1 + (0.032 * pressure)/1000'
-    out_ox_var.comment_calc4 = 'convert to oxygen(umol/kg) = oxygen (uM) / (1 + sigma-theta0/1000)'
-    out_ox_var.comment_calc2_SolB0 = -6.24523e-3
-    out_ox_var.comment_calc2_SolB1 = -7.37614e-3
-    out_ox_var.comment_calc2_SolB2 = -1.03410e-2
-    out_ox_var.comment_calc2_SolB3 = -8.17083e-3
-    out_ox_var.comment_calc2_SolC0 = -4.88682e-7
-    out_ox_var.units = "umol/kg"
-    out_ox_var.long_name = "moles_of_oxygen_per_unit_mass_in_sea_water"
-    out_ox_var.standard_name = "moles_of_oxygen_per_unit_mass_in_sea_water"
+    out_ox_var.units = "umol"
+    out_ox_var.long_name = "mole_concentration_of_dissolved_molecular_oxygen_in_sea_water (not salinity or pressure corrected)"
     out_ox_var.valid_max = np.float32(400)
     out_ox_var.valid_min = np.float32(0)
 
     out_ox_var.coordinates = "TIME LATITUDE LONGITUDE NOMINAL_DEPTH"
-
-    if 'DOXS' in ds.variables:
-        out_oxs_var = ds.variables['DOXS']
-    else:
-        out_oxs_var = ds.createVariable("DOXS", "f4", ("TIME",), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
-
-    out_oxs_var.units = '1'
-
-    out_oxs_var[:] = out_ox_var[:] / oxsol
 
     # update the history attribute
     try:

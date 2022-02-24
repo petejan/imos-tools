@@ -651,6 +651,7 @@ VAR_ATT,V0,Pulse-7-2010,SBE16plusV2,01606331,,,,,,calibration_Tau20,str,5.56
 VAR_ATT,V0,Pulse-7-2010,SBE16plusV2,01606331,,,,,,calibration_H1,str,-0.033
 VAR_ATT,V0,Pulse-7-2010,SBE16plusV2,01606331,,,,,,calibration_H2,str,5000.
 VAR_ATT,V0,Pulse-7-2010,SBE16plusV2,01606331,,,,,,calibration_H3,str,1450.
+VAR_ATT,V0,Pulse-7-2010,SBE16plusV2,01606331,,,,,,oxygen_correction_slope,str,1.0675
 
 VAR_ATT,V0,Pulse-8-2011,SBE16plusV2,01606330,,,,,,calibration_SerialNumber,str,"1634"
 VAR_ATT,V0,Pulse-8-2011,SBE16plusV2,01606330,,,,,,calibration_CalibrationDate,str,"15-May-09p"
@@ -734,6 +735,7 @@ VAR_ATT,V4,Pulse-6-2009,SBE16plusV2,unknown,,,,,,calibration_scale_offset,str,"7
 
 VAR_ATT,V4,Pulse-7-2010,SBE16plusV2,01606331,,,,,,long_name,str,optode_bphase_voltage
 VAR_ATT,V4,Pulse-7-2010,SBE16plusV2,01606331,,,,,,calibration_scale_offset,str,"12 10"
+
 VAR_ATT,V4,Pulse-8-2011,SBE16plusV2,01606330,,,,,,long_name,str,optode_bphase_voltage
 VAR_ATT,V4,Pulse-8-2011,SBE16plusV2,01606330,,,,,,calibration_scale_offset,str,"12 10"
 VAR_ATT,V4,Pulse-9-2012,SBE16plusV2,unknown,,,,,,long_name,str,optode_bphase_voltage

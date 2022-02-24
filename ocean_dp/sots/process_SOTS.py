@@ -13,7 +13,7 @@ import ocean_dp.parse.rbrDAT2netCDF
 import ocean_dp.parse.sbeCNV2netCDF
 import ocean_dp.parse.vemco2netCDF
 import ocean_dp.parse.starmon2netCDF
-import ocean_dp.parse.sbe37DD2netCDF
+import ocean_dp.parse.sbeDD2netCDF
 import ocean_dp.parse.sbe16DD2netCDF
 import ocean_dp.parse.asimet_lgr2netCDF
 
@@ -62,7 +62,7 @@ file_names = []
 cap_files = list(filter(re.compile(".*SBE37.*\.cap$").match, files))
 for fn in cap_files:
     print ('cap files', fn)
-    filename = ocean_dp.parse.sbe37DD2netCDF.parse([fn])
+    filename = ocean_dp.parse.sbeDD2netCDF.parse([fn])
     file_names.append((fn, filename[0]))
 
 cap_files = list(filter(re.compile(".*SBE16.*\.cap$").match, files))

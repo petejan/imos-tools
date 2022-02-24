@@ -34,18 +34,23 @@ def oxygen(netCDFfile):
 
     var_temp = ds.variables["TEMP"]
     var_psal = ds.variables["PSAL"]
-    var_pres = ds.variables["PRES"]
+    if 'PRES' in ds.variables:
+        var_pres = ds.variables["PRES"]
+        p = var_pres[:]
+    elif 'NOMINAL_DEPTH' in ds.variables:
+        var_pres = ds.variables["NOMINAL_DEPTH"]
+        p = var_pres[:]
+    else:
+        p = 1.0
 
     t = var_temp[:]
     SP = var_psal[:]
-    p = var_pres[:]
 
     SA = gsw.SA_from_SP(SP, p, ds.variables["LONGITUDE"][0], ds.variables["LATITUDE"][0])
     CT = gsw.CT_from_t(SA, t, p)
     pt = gsw.pt0_from_t(SA, t, p)
 
     sigma_theta0 = gsw.sigma0(SA, CT)
-    oxsol = ds.variables["OXSOL"][:]
 
     ts = np.log((298.15 - t) / (273.15 + t))
 
