@@ -25,7 +25,7 @@ from datetime import datetime
 # add OXSOL to a data file with TEMP, PSAL, PRES variables, many assumptions are made about the input file
 
 
-def oxygen(netCDFfile):
+def add_doxs(netCDFfile):
     ds = Dataset(netCDFfile, 'a')
 
     oxsol = ds.variables["OXSOL"][:]
@@ -56,6 +56,7 @@ def oxygen(netCDFfile):
 
     ds.close()
 
+    return netCDFfile
 
 if __name__ == "__main__":
-    oxygen(sys.argv[1])
+    add_doxs(sys.argv[1])

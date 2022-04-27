@@ -28,7 +28,7 @@ from datetime import datetime
 # extract V0 from SBE16 file and output DOX2_VOLT, and DOX2
 
 
-def add_sbe43(netCDFfile):
+def extract_sbe43(netCDFfile):
     ds = Dataset(netCDFfile, 'r')
     ds.set_auto_mask(False)
 
@@ -43,7 +43,8 @@ def add_sbe43(netCDFfile):
 
     print('deployment', dep_code)
 
-    ds_out = Dataset(dep_code + "-SBE43.nc", 'w', data_model='NETCDF4_CLASSIC')
+    out_file = dep_code + "-SBE43.nc"
+    ds_out = Dataset(out_file, 'w', data_model='NETCDF4_CLASSIC')
 
     ds_out.createDimension("TIME", len(ds.variables['TIME']))
     ncVarIn = ds.variables['TIME']
@@ -114,7 +115,7 @@ def add_sbe43(netCDFfile):
 
     # calc oxygen solubility
     # 0.01 % difference to sea bird calculation
-    #oxsol = gsw.O2sol_SP_pt(SP, pt)
+    #oxsol = gsw.O2sol_SP_pt(SP, pt) # umol/kg returned
 
     # calc OXSOL in ml/l as per seabird application note 64
     # this method gives a 0.2 % difference to what is calculated by sea bird (and what is calculated by TEOS-10)
@@ -132,25 +133,27 @@ def add_sbe43(netCDFfile):
     ts = np.log((298.15 - T) / (273.15 + T))
 
     oxsol = np.exp(A0 + A1*ts + A2*(ts**2) + A3*(ts**3) + A4*(ts**4) + A5*(ts**5) + SP*[B0+B1*(ts)+B2*(ts**2) +B3*(ts**3)]+C0*(SP**2))
-
-    # calculate oxygen from V0
-    dox = slope_correction * calibration_Soc * (var_v0[:] + calibration_offset) * oxsol * (1 + calibration_A * T + calibration_B * T**2 + calibration_C * T**3) * np.exp(calibration_E * p / (T + 273.15))
-
-    # create SBE43 oxygen ml/l
-    # ncVarOut = ds_out.createVariable("DOX", "f4", ("TIME",), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
     #
-    # ncVarOut[:] = dox
-    # ncVarOut.long_name = "volume_concentration_of_dissolved_molecular_oxygen_in_sea_water"
-    # ncVarOut.valid_min = 0
-    # ncVarOut.valid_max = 40
-    # ncVarOut.units = "ml/l"
-    # ncVarOut.equation_1 = "Ox(ml/l)=Soc.(V+Voffset).(1+A.T+B.T^2+V.T^3).OxSOL(T,S).exp(E.P/K) ... SeaBird (AN64-2)"
+    # # calculate oxygen from V0
+    dox = slope_correction * calibration_Soc * (var_v0[:] + calibration_offset) * oxsol * (1 + calibration_A * T + calibration_B * T**2 + calibration_C * T**3) * np.exp(calibration_E * p / (T + 273.15))
+    #
+    # # create SBE43 oxygen ml/l
+    # # ncVarOut = ds_out.createVariable("DOX", "f4", ("TIME",), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
+    # #
+    # # ncVarOut[:] = dox
+    # # ncVarOut.long_name = "volume_concentration_of_dissolved_molecular_oxygen_in_sea_water"
+    # # ncVarOut.valid_min = 0
+    # # ncVarOut.valid_max = 40
+    # # ncVarOut.units = "ml/l"
+    # # ncVarOut.equation_1 = "Ox(ml/l)=Soc.(V+Voffset).(1+A.T+B.T^2+V.T^3).OxSOL(T,S).exp(E.P/K) ... SeaBird (AN64-2)"
 
     # create SBE43 oxygen in umol/kg
     ncVarOut = ds_out.createVariable("DOX2", "f4", ("TIME",), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
 
     ncVarOut[:] = dox * 44600 / (1000+sigma_t0)
-    #ncVarOut[:] = dox
+
+    #ncVarOut[:] = dox * 44.6
+
     ncVarOut.standard_name = "moles_of_oxygen_per_unit_mass_in_sea_water"
     ncVarOut.long_name = "moles_of_oxygen_per_unit_mass_in_sea_water"
     ncVarOut.coordinates = 'TIME LATITUDE LONGITUDE NOMINAL_DEPTH'
@@ -245,6 +248,8 @@ def add_sbe43(netCDFfile):
     ds.close()
     ds_out.close()
 
+    return out_file
+
 
 if __name__ == "__main__":
     files = []
@@ -252,5 +257,5 @@ if __name__ == "__main__":
         files.extend(glob(f))
 
     for f in files:
-        add_sbe43(f)
+        extract_sbe43(f)
 

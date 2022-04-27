@@ -77,7 +77,7 @@ def add_optode_oxygen(netCDFfile):
     B0 = var_bphase.calibration_B0
     B1 = var_bphase.calibration_B1
 
-    if 'DOX2' in ds.variables:
+    if 'DOX2_RAW' in ds.variables:
         out_ox_var = ds.variables['DOX2_RAW']
     else:
         out_ox_var = ds.createVariable("DOX2_RAW", "f4", ("TIME",), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max

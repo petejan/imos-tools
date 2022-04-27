@@ -25,7 +25,7 @@ from datetime import datetime
 # extract V4 and V5 from SBE16 file and output BPHASE and OTEMP for optode processing
 
 
-def add_optode(netCDFfile):
+def extract_optode(netCDFfile):
     ds = Dataset(netCDFfile, 'r')
     ds. set_auto_mask(False)
 
@@ -38,7 +38,8 @@ def add_optode(netCDFfile):
 
     print('deployment', dep_code)
 
-    ds_out = Dataset(dep_code + "-optode.nc", 'w')
+    out_file = dep_code + "-optode.nc"
+    ds_out = Dataset(out_file, 'w')
 
     ds_out.createDimension("TIME", len(ds.variables['TIME']))
     ncVarIn = ds.variables['TIME']
@@ -136,6 +137,8 @@ def add_optode(netCDFfile):
     ds.close()
     ds_out.close()
 
+    return out_file
+
 
 if __name__ == "__main__":
-    add_optode(sys.argv[1])
+    extract_optode(sys.argv[1])

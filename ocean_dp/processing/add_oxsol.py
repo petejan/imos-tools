@@ -25,7 +25,7 @@ from datetime import datetime
 # add OXSOL to a data file with TEMP, PSAL, PRES variables, many assumptions are made about the input file
 
 
-def add_psal(netCDFfile):
+def add_oxsol(netCDFfile):
     ds = Dataset(netCDFfile, 'a')
 
     var_temp = ds.variables["TEMP"]
@@ -83,6 +83,8 @@ def add_psal(netCDFfile):
 
     ds.close()
 
+    return netCDFfile
+
 
 if __name__ == "__main__":
-    add_psal(sys.argv[1])
+    add_oxsol(sys.argv[1])

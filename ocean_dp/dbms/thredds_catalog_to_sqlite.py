@@ -59,6 +59,9 @@ def sqlite_insert(http, opendap):
                 "FROM variables"
                 " JOIN file ON (file.file_id = variables.file_id)"
                 " LEFT join attributes AS nd ON (file.file_id = nd.file_id and nd.name == 'instrument_nominal_depth')")
+    cur.execute("CREATE VIEW IF NOT EXISTS file_instrument AS select f.file_id , f.name, m.value as model, s.value as sn FROM file f "
+                "LEFT JOIN attributes m ON (f.file_id = m.file_id and m.name = 'instrument') "
+                "LEFT JOIN attributes s ON (s.file_id = f.file_id and s.name = 'instrument_serial_number')")
     con.commit()
 
     cur.execute('INSERT INTO file (name, http, opendap) VALUES (?, ?, ?)', [os.path.basename(http), http, opendap])
@@ -132,7 +135,7 @@ if __name__ == "__main__":
 
     #skips = Crawl.SKIPS + [".*realtime", ".*Real-time", ".*daily", ".*REAL_TIME", ".*regridded", ".*burst", ".*gridded", ".*long-timeseries"]
 
-    crawl_path = 'http://thredds.aodn.org.au/thredds/catalog/IMOS/DWM/ASFS/'+path+'catalog.xml'
+    crawl_path = 'http://thredds.aodn.org.au/thredds/catalog/IMOS/DWM/SOTS/'+path+'catalog.xml'
 
     #c = Crawl(crawl_path, select=['.*'], skip=skips)
     c = Crawl(crawl_path, select=['.*'])

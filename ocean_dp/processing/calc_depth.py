@@ -19,11 +19,12 @@ def make_depth(files):
     ds = Dataset(files[0], 'a')
     ds.set_auto_mask(False)
 
-    n_depths_var = ds.variables['NOMINAL_DEPTH']
+    n_depths_var = ds.variables['DEPTH_PRES']
 
     pres_var = ds.variables['PRES']
 
     pres = pres_var[:]
+
     n_depths = n_depths_var[:]
     n_depths[n_depths > 10000] = np.NaN
 
@@ -37,7 +38,8 @@ def make_depth(files):
     print("pressures (any nan) need filling", n_depths[p_any_nan & ~p_all_nan])
 
     for needs_filling_i in range(n_depths.shape[0]):
-        dist = np.zeros_like(n_depths) + 10000
+        dist = np.empty_like(n_depths) + np.nan
+
         print(needs_filling_i, p_any_nan[needs_filling_i], ~p_all_nan[needs_filling_i])
         if p_any_nan[needs_filling_i] & ~p_all_nan[needs_filling_i] & ~np.isnan(n_depths[needs_filling_i]):
             print(n_depths[needs_filling_i])
@@ -46,13 +48,18 @@ def make_depth(files):
             #print('have_data', have_data)
             p_all_not_nan = np.all(~np.isnan(pres[:, have_data]), axis=1)
             #print('p_all_not_nan', p_all_not_nan)
+            # find nearest sensor with data where we have data
+            min_dist = 10000
+            source_idx = -1
             for source_candidate_i in range(n_depths.shape[0]):
                 if p_all_not_nan[source_candidate_i] and (needs_filling_i != source_candidate_i):
                     print('candidate for fitting', n_depths[source_candidate_i], 'to', n_depths[needs_filling_i])
-                    dist[source_candidate_i] = n_depths[needs_filling_i] - n_depths[source_candidate_i]
+                    dist[source_candidate_i] = abs(n_depths[needs_filling_i] - n_depths[source_candidate_i])
+                    if min_dist > dist[source_candidate_i]:
+                        min_dist = dist[source_candidate_i]
+                        source_idx = source_candidate_i
             print('distance', dist)
-            source_idx = np.where(dist == np.min(dist))[0]
-            print('min', np.min(dist), source_idx)
+            print('min', min_dist, source_idx)
             print('source presssure', pres[source_idx, have_data])
             print('source fit presssure', pres[needs_filling_i, have_data])
             A = np.vstack([pres[source_idx, have_data], np.ones(len(pres[source_idx, have_data]))]).T
@@ -70,12 +77,17 @@ def make_depth(files):
     p_nd = np.concatenate(([0], n_depths, [5000]))
     pres_fill = np.insert(pres, 0, 0, axis=0) # add 0 to first
     pres_fill = np.insert(pres_fill, pres_fill.shape[0], 5000, axis=0) # add 5000 to end
+
     print('pres shape', pres.shape, pres_fill.shape)
 
     print("extended nominal depths", p_nd)
 
+    nominal_depth_var = ds.variables['DEPTH_FILE_NAME']
+    nominal_depth = nominal_depth_var[:]
+
     # create a depth array, from filled data and each nominal depth
-    depth = np.empty(pres_var.shape)
+    depth = np.empty([nominal_depth.shape[0], pres_var.shape[1]])
+    print('depth shape', depth.shape)
 
     # for each timestep, fill the depth record from the pressure observations
     for needs_filling_i in range(pres_var.shape[1]):
@@ -85,16 +97,14 @@ def make_depth(files):
         pres_msk = ~np.isnan(p)
 
         #print('shape', pres_msk.shape, pres_touse.shape)
-        depth[:, needs_filling_i] = np.interp(p_nd[1:-1], p_nd[pres_msk], p[pres_msk])
+        depth[:, needs_filling_i] = np.interp(nominal_depth, p_nd[pres_msk], p[pres_msk])
 
-    if 'DEPTH' not in ds.variables:
-        depth_out_var = ds.createVariable("DEPTH", 'f4', ['FILE_N', 'TIME'], fill_value=np.NaN, zlib=True)
+    if 'PRES_ALL' not in ds.variables:
+        depth_out_var = ds.createVariable("PRES_ALL", 'f4', ['INSTANCE_FILE_NAME', 'TIME'], fill_value=np.NaN, zlib=True)
     else:
-        depth_out_var = ds.variables['DEPTH']
+        depth_out_var = ds.variables['PRES_ALL']
 
     depth_out_var[:] = depth
-
-    depth_out_var.comment_depth = "filled from pressure record"
     depth_out_var.units = pres_var.units
 
     # update the history attribute

@@ -366,8 +366,8 @@ def parse_file(files):
                             if 'head_config' in d:
                                 head_config_reg = d['head_config']
                                 head_config = "pressure:yes," if (head_config_reg & 0x01) != 0 else "pressure:no,"
-                                head_config += "magnetometer:yes" if (head_config_reg & 0x02) != 0 else "magnetometer:no,"
-                                head_config += "tilt:yes" if (head_config_reg & 0x04) != 0 else "tilt:no,"
+                                head_config += "magnetometer:yes," if (head_config_reg & 0x02) != 0 else "magnetometer:no,"
+                                head_config += "tilt:yes," if (head_config_reg & 0x04) != 0 else "tilt:no,"
                                 head_config += "tilt:down" if (head_config_reg & 0x08) != 0 else "tilt:up"
 
                                 print("head_config", head_config_reg, head_config)
