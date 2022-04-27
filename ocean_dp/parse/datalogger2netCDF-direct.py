@@ -153,7 +153,7 @@ def datalogger(files):
     gps_list = []
     imu_list = []
     done_dict = None
-    imu_dict = None
+    imu_dict = {}
     gps_dict = None
 
     last_imu = False
@@ -181,7 +181,7 @@ def datalogger(files):
 
                             # scale each value in the packet
                             decode_scale = []
-                            for x in range(0,len(decode)):
+                            for x in range(0, len(decode)):
                                 d = decode[x] * scale[x]
                                 decode_scale.append(d)
                             # create a dict from the decoded data (could just use indexes, but this is clearer
@@ -197,8 +197,12 @@ def datalogger(files):
 
                             sample = int((decode['Timer'] - t0) * 5)
                             # print('time sample ', sample)
-                            for x in decode.keys():
-                                imu_dict[x][sample] = decode[x]
+                            try:
+                                for x in decode.keys():
+                                    imu_dict[x][sample] = decode[x]
+                            except KeyError:
+                                print('key error', x)
+                                pass
                             t_last = decode['Timer']
                             sample += 1 # kick along a bit so that next time its not zero
                             samples_red += 1
@@ -277,7 +281,7 @@ def datalogger(files):
                 if last_imu and imu_dict:
                     print('imu_dict dict', imu_dict)
                     imu_list.append(imu_dict)
-                    imu_dict = None
+                    imu_dict = {}
                     sample = 0
                     samples_red = 0
 
@@ -308,19 +312,26 @@ def datalogger(files):
 
         # TODO: adapt to keys found
         bat_var = dataset.createVariable('vbat', np.float32, ('TIME',), fill_value=np.nan)
-        obp_var = dataset.createVariable('optode_bphase', np.float32, ('TIME',), fill_value=np.nan)
-        otemp_var = dataset.createVariable('optode_temp', np.float32, ('TIME',), fill_value=np.nan)
-        chl_var = dataset.createVariable('CHL', np.float32, ('TIME',), fill_value=np.nan)
-        ntu_var = dataset.createVariable('NTU', np.float32, ('TIME',), fill_value=np.nan)
-        par_var = dataset.createVariable('PAR', np.float32, ('TIME',), fill_value=np.nan)
+        if 'OBP' in done_list:
+            obp_var = dataset.createVariable('optode_bphase', np.float32, ('TIME',), fill_value=np.nan)
+            otemp_var = dataset.createVariable('optode_temp', np.float32, ('TIME',), fill_value=np.nan)
+        if 'CHL' in done_list:
+            chl_var = dataset.createVariable('CHL', np.float32, ('TIME',), fill_value=np.nan)
+            ntu_var = dataset.createVariable('NTU', np.float32, ('TIME',), fill_value=np.nan)
+        if 'PAR' in done_list:
+            par_var = dataset.createVariable('PAR', np.float32, ('TIME',), fill_value=np.nan)
         mean_load_var = dataset.createVariable('mean_load', np.float32, ('TIME',), fill_value=np.nan)
 
         bat_var[idx] = np.array([data['BV'] for data in done_list])
-        obp_var[idx] = np.array([data['OBP'] for data in done_list])
-        otemp_var[idx] = np.array([data['OT'] for data in done_list])
-        chl_var[idx] = np.array([data['CHL'] for data in done_list])
-        ntu_var[idx] = np.array([data['NTU'] for data in done_list])
-        par_var[idx] = np.array([data['PAR'] for data in done_list])
+        if 'OBP' in done_list:
+            obp_var[idx] = np.array([data['OBP'] for data in done_list])
+            otemp_var[idx] = np.array([data['OT'] for data in done_list])
+        if 'CHL' in done_list:
+            chl_var[idx] = np.array([data['CHL'] for data in done_list])
+            ntu_var[idx] = np.array([data['NTU'] for data in done_list])
+        if 'PAR' in done_list:
+            par_var[idx] = np.array([data['PAR'] for data in done_list])
+
         mean_load_var[idx] = np.array([data['meanLoad'] for data in done_list])
 
     # find index IMU data timestamp in timestamps
