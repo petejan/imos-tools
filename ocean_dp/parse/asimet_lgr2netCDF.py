@@ -173,6 +173,9 @@ def parse(files):
             instrument_serialnumber = 'L' + matchObj.group(1)
         else:
             instrument_serialnumber = 'unknown'
+        matchObj = re.match(r'.*L.*(\d\d).BIN', os.path.basename(filepath))
+        if matchObj:
+            instrument_serialnumber = 'L' + matchObj.group(1)
 
         ncOut.instrument = 'WHOI ; ' + instrument_model
         ncOut.instrument_model = instrument_model

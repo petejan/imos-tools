@@ -70,7 +70,7 @@ def round_time(dt=None, roundTo=3600):
     return dt + timedelta(0, rounding-seconds, -dt.microsecond)
 
 
-def datalogger(files):
+def datalogger(outputName, files):
 
     decode_dict = {'StabQ0': 0, 'StabQ1': 1, 'StabQ2': 2, 'StabQ3': 3,
                    'MagFieldX': 4, 'MagFieldY': 5, 'MagFieldZ': 6,
@@ -106,9 +106,9 @@ def datalogger(files):
     # build the netCDF file
     #
 
-    ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
+    # TODO: sort time
 
-    outputName = files[0] + ".nc"
+    ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
 
     print("output file : %s" % outputName)
 
@@ -150,7 +150,6 @@ def datalogger(files):
     obp_var = None
 
     load_var = dataset.createVariable('load', np.float32, ('TIME', 'SAMPLE'), fill_value=np.nan)
-
 
     # TODO: process the output of this parser into frequency spectra, wave height
 
@@ -441,8 +440,11 @@ def datalogger(files):
 
 
 if __name__ == "__main__":
+
+    outfile = sys.argv[1]
+
     files = []
-    for f in sys.argv[1:]:
+    for f in sys.argv[2:]:
         files.extend(glob(f))
 
-    datalogger(files)
+    datalogger(outfile, files)

@@ -142,11 +142,10 @@ def mdl_2020(netCDFfiles):
     error_count = 0
     bad_header = 0
 
-    serial_data_file = open(fn + ".serial_data.bin", "wb")
-    serial_posdata_file = open(fn + ".serial_pos_data.bin", "wt")
+    serial_data_file = open(fn + "-serial_data.bin", "wb")
 
     # adc output file
-    outputName = 'MDL-ADC.nc'
+    outputName = fn + '-MDL-ADC.nc'
     print("adc output file : %s" % outputName)
     adc_nc = Dataset(outputName, 'w', format='NETCDF4')
 
@@ -166,7 +165,7 @@ def mdl_2020(netCDFfiles):
     adc_samples = 0
 
     # accel netcdf file
-    outputName = 'MDL-ACCEL.nc'
+    outputName = fn + '-MDL-ACCEL.nc'
     print("accel output file : %s" % outputName)
     accel_nc = Dataset(outputName, 'w', format='NETCDF4')
 
@@ -180,6 +179,8 @@ def mdl_2020(netCDFfiles):
     accel_micros_var = accel_nc.createVariable("MICROS", "i4", ("TIME",))
     accel_pos_var = accel_nc.createVariable("FILE_POS", "i8", ("TIME",))
 
+    accel_ser_pos_var = accel_nc.createVariable("SERIAL_POS", "i8", ("TIME",))
+
     accel_nc.createDimension("SAMPLE", 1476/2)
     accel_var = accel_nc.createVariable("ACCEL", "f4", ("TIME", "SAMPLE"))
     mag_var = accel_nc.createVariable("MAG", "f4", ("TIME", "SAMPLE"))
@@ -187,7 +188,7 @@ def mdl_2020(netCDFfiles):
     accel_samples = 0
 
     # gyro netcdf file
-    outputName = 'MDL-GYRO.nc'
+    outputName = fn + '-MDL-GYRO.nc'
     print("gyro output file : %s" % outputName)
     gyro_nc = Dataset(outputName, 'w', format='NETCDF4')
 
@@ -208,134 +209,139 @@ def mdl_2020(netCDFfiles):
 
     t_micros_sync = None
 
-    with open(fn, "rb") as f:
-        # hdr = f.read(1024) # read the text header
-        # hdr_lines = hdr.split(b'\n')
-        # for l in hdr_lines:
-        #     if l[0] != 0:
-        #         print (l.decode("utf-8"))
+    for fn in netCDFfiles:
+        try:
+            with open(fn, "rb") as f:
+                # hdr = f.read(1024) # read the text header
+                # hdr_lines = hdr.split(b'\n')
+                # for l in hdr_lines:
+                #     if l[0] != 0:
+                #         print (l.decode("utf-8"))
 
-        while True:
-            pos = f.tell()
+                while True:
+                    pos = f.tell()
 
-            print("pos ", pos)
+                    print("pos ", pos)
 
-            byte = f.read(6)
-            if not byte:
-                break
-            (magic, plen, type) = struct.unpack("<HHH", byte)
-            print('magic 0x%04x type %d N %d' % (magic, type, plen))
-            if magic == 0x4441 and type == 20300:
-                hdr = f.read(1024-6)
-                hdr_lines = hdr.split(b'\n')
-                for l in hdr_lines:
-                    if l[0] != 0:
-                        print (l.decode("utf-8"))
-                continue
+                    byte = f.read(6)
+                    if not byte:
+                        break
+                    (magic, plen, type) = struct.unpack("<HHH", byte)
+                    print('magic 0x%04x type %d N %d' % (magic, type, plen))
+                    if magic == 0x4441 and type == 20300:
+                        hdr = f.read(1024-6)
+                        hdr_lines = hdr.split(b'\n')
+                        for l in hdr_lines:
+                            if l[0] != 0:
+                                print (l.decode("utf-8"))
+                        continue
 
-            if magic in (0xface, 0xadc0, 0xacc1, 0xBEAF) and plen > 0:
-                # read the packet data
-                pkt = f.read(plen - 6)
-                #print("len ", plen, " read ", len(pkt) + 6)
+                    if magic in (0xface, 0xadc0, 0xacc1, 0xBEAF) and plen > 0:
+                        # read the packet data
+                        pkt = f.read(plen - 6)
+                        #print("len ", plen, " read ", len(pkt) + 6)
 
-                # read the packet CRC
-                check_bytes = f.read(4)
-                (check,) = struct.unpack("<I", check_bytes)
-                calc_crc = eeprom_crc(byte + pkt)
-                #print("check ", hex(check), " calc ", hex(calc_crc))
-                if check != calc_crc:
-                    f.seek(pos + 1)
-                    #print('skipping', pos)
+                        # read the packet CRC
+                        check_bytes = f.read(4)
+                        (check,) = struct.unpack("<I", check_bytes)
+                        calc_crc = eeprom_crc(byte + pkt)
+                        #print("check ", hex(check), " calc ", hex(calc_crc))
+                        if check != calc_crc:
+                            f.seek(pos + 1)
+                            #print('skipping', pos)
 
-                    error_count += 1
-                    continue
+                            error_count += 1
+                            continue
 
-                # decode the header
-                hdr_t = struct.unpack("<HIIHHIII", pkt[0:26])
-                samples = hdr_t[3]
-                time_sync = hdr_t[5]
-                time_sample = hdr_t[6]
-                #print(hdr_t)
-                t_utc = datetime.utcfromtimestamp(hdr_t[1])
+                        # decode the header
+                        hdr_t = struct.unpack("<HIIHHIII", pkt[0:26])
+                        no_samples = hdr_t[3]
+                        time_sync = hdr_t[5]
+                        time_sample = hdr_t[6]
+                        #print(hdr_t)
+                        t_utc = datetime.utcfromtimestamp(hdr_t[1])
 
-                packet_type = 'unknown'
-                # decode the packet data
-                if magic == 0xface:
-                    #print("GYRO packet",len(pkt[32-6:32-6+samples*4]))
-                    gyro_raw = struct.unpack("<"+str(samples)+"f", pkt[32-6:32-6+samples*4])
-                    #print(gyro_raw[0:3])
-                    (dirty,) = struct.unpack("<I", pkt[-8:-4])
-                    #print('dirty ', hex(dirty))
-                    #print("rtc ", hex(rtc), " samples ", samples, " time ", hex(time), " time1 ", hex(time1))
-                    packet_type = 'GYRO'
-                    print(time_sync, t_micros_sync, 'gyro samples', len(gyro_raw), gyro_raw[0:3])
+                        packet_type = 'unknown'
+                        # decode the packet data
+                        if magic == 0xface:
+                            #print("GYRO packet",len(pkt[32-6:32-6+no_samples*4]))
+                            gyro_raw = struct.unpack("<"+str(no_samples)+"f", pkt[32-6:32-6+no_samples*4])
+                            #print(gyro_raw[0:3])
+                            (dirty,) = struct.unpack("<I", pkt[-8:-4])
+                            #print('dirty ', hex(dirty))
+                            #print("rtc ", hex(rtc), " no_samples ", no_samples, " time ", hex(time), " time1 ", hex(time1))
+                            packet_type = 'GYRO'
+                            #print(time_sync, 'gyro no_samples', len(gyro_raw), gyro_raw[0:3])
 
-                    gyro_times[gyro_samples] = date2num(t_utc, gyro_times.units, gyro_times.calendar)
-                    gyro_var[gyro_samples] = gyro_raw
-                    gyro_micros_var[gyro_samples] = time_sync
-                    gyro_pos_var[gyro_samples] = pos
-                    gyro_samples += 1
+                            gyro_times[gyro_samples] = date2num(t_utc, gyro_times.units, gyro_times.calendar)
+                            gyro_var[gyro_samples] = gyro_raw
+                            gyro_micros_var[gyro_samples] = time_sync
+                            gyro_pos_var[gyro_samples] = pos
+                            gyro_samples += 1
 
-                elif magic == 0xadc0:
-                    #print("ADC packet",len(pkt[32-6:32-6+samples*4]))
-                    (adc_ch,) = struct.unpack("<B", pkt[32-6:32-6+1])
-                    adc_raw = struct.unpack("<"+str(samples)+"i", pkt[32-6+4:32-6+4+samples*4])
-                    #print(adc_ch, adc_raw[0:10])
-                    (dirty,) = struct.unpack("<I", pkt[-4:])
-                    #print('dirty ', hex(dirty))
-                    packet_type = 'ADC'
+                        elif magic == 0xadc0:
+                            #print("ADC packet",len(pkt[32-6:32-6+no_samples*4]))
+                            (adc_ch,) = struct.unpack("<B", pkt[32-6:32-6+1])
+                            adc_raw = struct.unpack("<"+str(no_samples)+"i", pkt[32-6+4:32-6+4+no_samples*4])
+                            #print(adc_ch, adc_raw[0:10])
+                            (dirty,) = struct.unpack("<I", pkt[-4:])
+                            #print('dirty ', hex(dirty))
+                            packet_type = 'ADC'
 
-                    print(t_utc.strftime("%Y-%m-%d %H:%M:%S"), time_sync, t_micros_sync, 'adc samples', len(adc_raw), adc_raw[0:3])
+                            #print(time_sync, 'adc no_samples', len(adc_raw), adc_raw[0:3])
 
-                    adc_times[adc_samples] = date2num(t_utc, adc_times.units, adc_times.calendar)
-                    adc_var[adc_samples] = adc_raw
-                    adc_micros_var[adc_samples] = time_sync
-                    adc_pos_var[adc_samples] = pos
-                    adc_samples += 1
+                            adc_times[adc_samples] = date2num(t_utc, adc_times.units, adc_times.calendar)
+                            adc_var[adc_samples] = adc_raw
+                            adc_micros_var[adc_samples] = time_sync
+                            adc_pos_var[adc_samples] = pos
+                            adc_samples += 1
 
-                    #for i in pkt:
-                    #    print(hex(i))
+                            #for i in pkt:
+                            #    print(hex(i))
 
-                elif magic == 0xacc1:
-                    #print("accel packet",len(pkt[32-6:32-6+samples*4*2]))
-                    accel_raw = struct.unpack("<"+str(samples*2)+"f", pkt[32-6:32-6+samples*4*2])
-                    #print(accel_raw[0:3])
-                    (dirty,) = struct.unpack("<I", pkt[-8:-4])
-                    #print('dirty ', hex(dirty))
-                    packet_type = 'ACCEL'
-                    mid = int(samples)
-                    print(time_sync, t_micros_sync, 'accel samples', samples, len(accel_raw), accel_raw[0:3], accel_raw[mid:mid+3])
+                        elif magic == 0xacc1:
+                            #print("accel packet",len(pkt[32-6:32-6+no_samples*4*2]))
+                            accel_raw = struct.unpack("<"+str(no_samples*2)+"f", pkt[32-6:32-6+no_samples*4*2])
+                            #print(accel_raw[0:3])
+                            (dirty,) = struct.unpack("<I", pkt[-8:-4])
+                            #print('dirty ', hex(dirty))
+                            packet_type = 'ACCEL'
+                            mid = int(no_samples)
+                            #print(time_sync, 'accel no_samples', no_samples, len(accel_raw), accel_raw[0:3], accel_raw[mid:mid+3])
 
-                    accel_times[accel_samples] = date2num(t_utc, adc_times.units, adc_times.calendar)
-                    accel_var[accel_samples] = accel_raw[0:mid]
-                    mag_var[accel_samples] = accel_raw[mid:samples+mid]
-                    accel_micros_var[accel_samples] = time_sync
-                    accel_pos_var[accel_samples] = pos
-                    accel_samples += 1
+                            accel_times[accel_samples] = date2num(t_utc, adc_times.units, adc_times.calendar)
+                            accel_var[accel_samples] = accel_raw[0:mid]
+                            mag_var[accel_samples] = accel_raw[mid:no_samples+mid]
+                            accel_micros_var[accel_samples] = time_sync
+                            accel_pos_var[accel_samples] = pos
+                            accel_ser_pos_var[accel_samples] = serial_data_file.tell()
+                            accel_samples += 1
 
-                elif magic == 0xBEAF:
-                    #print("serial packet")
-                    print("serial pos", serial_data_file.tell())
-                    serial_posdata_file.write(t_utc.strftime("%Y-%m-%d %H:%M:%S")+","+str(time_sync)+","+str(pos)+","+str(serial_data_file.tell())+"\n")
-                    serial_data_file.write(pkt[32-6:32-6+samples])
-                    packet_type = 'SERIAL'
-                    (dirty,) = struct.unpack("<I", pkt[-4:])
+                        elif magic == 0xBEAF:
+                            #print("serial packet")
+                            print("serial pos", serial_data_file.tell())
+                            serial_data_file.write(pkt[32-6:32-6+no_samples])
+                            packet_type = 'SERIAL'
+                            (dirty,) = struct.unpack("<I", pkt[-4:])
 
-                print(t_utc.strftime("%Y-%m-%d %H:%M:%S"), packet_type, "samples", samples,"micros_sync", time_sync, "micros_sample", time_sample, "dt", time_sync - time_sample)
+                        print(t_utc.strftime("%Y-%m-%d %H:%M:%S"), packet_type, "no_samples", no_samples,"micros_sync", time_sync, "micros_sample", time_sample, "dt", time_sync - time_sample)
 
-            else:
-                f.seek(pos+1)
-                #print('skipping', pos)
-                bad_header += 1
-                continue
+                    else:
+                        f.seek(pos+1)
+                        #print('skipping', pos)
+                        bad_header += 1
+                        continue
+        except struct.error as e:
+            print(e)
 
-    print("file errors", error_count)
+        print("file errors", error_count)
 
     serial_data_file.close()
-    serial_posdata_file.close()
     adc_nc.close()
     accel_nc.close()
+    gyro_nc.close()
 
+    print('number samples: accel, gyro, adc', accel_samples, gyro_samples, adc_samples)
 
 if __name__ == "__main__":
     mdl_2020(sys.argv[1:])
