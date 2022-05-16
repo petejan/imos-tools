@@ -21,6 +21,7 @@ import re
 
 from datetime import datetime, timedelta
 from dateutil import parser
+from glob2 import glob
 
 from netCDF4 import date2num, num2date
 from netCDF4 import Dataset
@@ -384,4 +385,7 @@ def sbe_asc_parse(files):
 
 
 if __name__ == "__main__":
-    sbe_asc_parse(sys.argv[1:])
+    files = []
+    for f in sys.argv[1:]:
+        files.extend(glob(f))
+    sbe_asc_parse(files)

@@ -15,7 +15,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
-
+from glob2 import glob
 from netCDF4 import Dataset
 import sys
 import gsw
@@ -112,8 +112,13 @@ def add_psal(netCDFfile):
 
 
 if __name__ == "__main__":
+    files = []
+
     for f in sys.argv[1:]:
         if f == '-overwrite':
             overwrite = True
         else:
+            files.extend(glob(f))
+
+    for f in files:
             add_psal(f)
