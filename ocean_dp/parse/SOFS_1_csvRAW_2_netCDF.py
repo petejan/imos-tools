@@ -15,7 +15,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
-
+import os.path
 import sys
 import re
 
@@ -126,9 +126,11 @@ def parse(filepath, sn='unknown'):
 
     ncVarOut = ncOut.createVariable("BPHASE", "f4", ("TIME",), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
     ncVarOut[:] = optode_bphase
+    ncVarOut.units = "1"
 
     ncVarOut = ncOut.createVariable("OTEMP", "f4", ("TIME",), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
     ncVarOut[:] = optode_temp
+    ncVarOut.units = 'degrees_Celsius'
 
     # add timespan attributes
     ncOut.setncattr("time_coverage_start", num2date(ncTimesOut[0], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
@@ -136,7 +138,7 @@ def parse(filepath, sn='unknown'):
 
     # add creating and history entry
     ncOut.setncattr("date_created", datetime.utcnow().strftime(ncTimeFormat))
-    ncOut.setncattr("history", datetime.utcnow().strftime("%Y-%m-%d") + " created from file " + filepath)
+    ncOut.setncattr("history", datetime.utcnow().strftime("%Y-%m-%d") + " created from file " + os.path.basename(filepath))
 
     ncOut.close()
 

@@ -32,10 +32,11 @@ def add(netCDFfile, optode_cal_file):
 
     file1 = open(optode_cal_file, 'r')
     lines = file1.readlines()
-    i = 1
+    i = 0
     for ln in lines:
-        print(float(ln))
-        bphase.setncattr('calibration_'+val_names[i], float(ln))
+        if i < len(val_names):
+            print(float(ln))
+            bphase.setncattr('calibration_'+val_names[i], float(ln))
         i += 1
 
     # update the history attribute

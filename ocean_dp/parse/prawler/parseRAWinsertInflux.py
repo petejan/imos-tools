@@ -67,8 +67,8 @@ def parse(files):
     line_number = 0
     sample_n = 0
     loc_sample = {}
-    client = InfluxDBClient(host='144.6.225.199', port=8086)
-    client.switch_database('mooringdata')
+    client = InfluxDBClient(host='localhost', port=8086, username='mooring', password='@@30$hawaii$SAVE$pure$51@@')
+    client.switch_database('prawler')
 
     last_gps = None
     for filepath in fn:
@@ -100,61 +100,68 @@ def parse(files):
                 elif line_number > 1:
                     line_split = line.split(',')
                     if len(line_split) > 1:
-                        point = {}
+                        try:
+                            point = {}
 
-                        # print("line split ", line_split)
-                        dictionary = dict(zip(hdr, line_split))
-                        dictionary['type'] = type
-                        dictionary['site'] = site
+                            # print("line split ", line_split)
+                            dictionary = dict(zip(hdr, line_split))
+                            dictionary['type'] = type
+                            dictionary['site'] = site
 
-                        if type == 'PRAWC':
-                            sec = int(dictionary['EP'], 16)
-                            dictionary['time'] = timedelta(seconds=sec) + datetime(1970,1,1)
-                            dictionary['sample'] = sample_n
-                            dictionary['profile'] = n_profile
-                            profile.append(dictionary)
-                            sample_n += 1
+                            if type == 'PRAWC':
+                                sec = int(dictionary['EP'], 16)
+                                dictionary['time'] = timedelta(seconds=sec) + datetime(1970,1,1)
+                                dictionary['sample'] = sample_n
+                                dictionary['profile'] = n_profile
+                                profile.append(dictionary)
+                                sample_n += 1
 
-                        if type == 'GPS':
-                            dictionary['time'] = datetime.strptime(dictionary['DT'], "%Y-%m-%dT%H:%M:%SZ")
-                            dictionary['latitude'] = float(dictionary['LAT'])/100
-                            dictionary['longitude'] = float(dictionary['LON'])/100
+                            if type == 'GPS':
+                                dictionary['time'] = datetime.strptime(dictionary['DT'], "%Y-%m-%dT%H:%M:%SZ")
+                                (deg, mi) = dm(float(dictionary['LAT']))
+                                #print('loc', deg, mi, decimal_degrees(deg, mi))
+                                dictionary['latitude'] = decimal_degrees(deg, mi)
+                                (deg, mi) = dm(float(dictionary['LON']))
+                                dictionary['longitude'] = decimal_degrees(deg, mi)
 
-                            locations.append(dictionary)
+                                locations.append(dictionary)
 
-                        if type == 'PRAWE':
-                            dictionary['time'] = datetime.strptime(dictionary['DT'], "%Y-%m-%dT%H:%M:%SZ")
+                            if type == 'PRAWE':
+                                dictionary['time'] = datetime.strptime(dictionary['DT'], "%Y-%m-%dT%H:%M:%SZ")
 
-                            eng.append(dictionary)
+                                eng.append(dictionary)
 
-                        #print(dictionary)
-                        point['measurement'] = dictionary['type']
-                        point['time'] = datetime.strftime(dictionary['time'], "%Y-%m-%dT%H:%M:%SZ")
-                        point['tags'] = {'site': dictionary['site']}
-                        fields = {}
-                        for i in dictionary:
-                            if (i in ['longitude', 'latitude', 'CD', 'CT', 'CC', 'OT', 'O2', 'CH', 'TB', 'T', 'LAT', 'LON', 'Q', 'S', 'H', 'M', 'MM', 'PN', 'SR', 'IR', 'UL', 'LL', 'IP', 'ET', 'TS', 'EC', 'VM', 'PT', 'WD', 'TM', 'CM', 'CL']):
-                                try:
-                                    fl = float(dictionary[i])
-                                    fields[i] = fl
-                                except ValueError:
-                                    pass
-                                except TypeError:
-                                    pass
+                            # print(dictionary)
+                            point['measurement'] = dictionary['type']
+                            point['time'] = datetime.strftime(dictionary['time'], "%Y-%m-%dT%H:%M:%SZ")
+                            point['tags'] = {'site': dictionary['site']}
+                            fields = {}
+                            for i in dictionary:
+                                if (i in ['latitude', 'longitude', 'CD', 'CT', 'CC', 'OT', 'O2', 'CH', 'TB', 'T', 'LAT', 'LON', 'Q', 'S', 'H', 'M', 'MM', 'PN', 'SR', 'IR', 'UL', 'LL', 'IP', 'ET', 'TS', 'EC', 'VM', 'PT', 'WD', 'TM', 'CM', 'CL']):
+                                    try:
+                                        fl = float(dictionary[i])
+                                        fields[i] = fl
+                                        #print('field', i, fl)
+                                    except ValueError:
+                                        pass
+                                    except TypeError:
+                                        pass
 
-                        point['fields'] = fields
+                            point['fields'] = fields
 
-                        #print(point)
+                            # print(point)
 
-                        client.write_points([point], database='mooringdata', protocol='json')
+                            client.write_points([point], database='prawler', protocol='json')
+
+                        except ValueError:
+                            pass
 
                 line_number += 1
 
             line = f.readline()
 
-    if n_profile == 0:
-        print('no profiles found, returning')
-        return None
+    return
+
 
 if __name__ == "__main__":
     parse(sys.argv[1:])

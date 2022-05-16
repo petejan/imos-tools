@@ -25,7 +25,7 @@ from datetime import datetime
 # add OXSOL to a data file with TEMP, PSAL, PRES variables, many assumptions are made about the input file
 
 
-def add_psal(netCDFfile):
+def add_oxsol(netCDFfile):
     ds = Dataset(netCDFfile, 'a')
 
     var_temp = ds.variables["TEMP"]
@@ -69,7 +69,9 @@ def add_psal(netCDFfile):
 
     ncVarOut[:] = oxsol
     ncVarOut.units = "umol/kg"
+    ncVarOut.long_name = "moles_of_oxygen_per_unit_mass_in_sea_water_at_saturation"
     ncVarOut.comment = "calculated using gsw-python https://teos-10.github.io/GSW-Python/index.html function gsw.O2sol_SP_pt" + comment
+    ncVarOut.coordinates = 'TIME LATITUDE LONGITUDE NOMINAL_DEPTH'
 
     # update the history attribute
     try:
@@ -81,6 +83,8 @@ def add_psal(netCDFfile):
 
     ds.close()
 
+    return netCDFfile
+
 
 if __name__ == "__main__":
-    add_psal(sys.argv[1])
+    add_oxsol(sys.argv[1])

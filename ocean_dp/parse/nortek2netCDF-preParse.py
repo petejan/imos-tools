@@ -576,11 +576,6 @@ def build_vector_velocity_data(ncOut, binary_file, pkt_pos, pkt_pos_list, pkt_le
     ana1_array[:] = np.NaN
     ana2_array[:] = np.NaN
 
-    sample = 0
-    cache_sample_start = 0
-
-    vvd_pkt_n = 0
-    vid_pkt_n = 0
     time_id = d['time_bcd']
     vvd_keys = packet_decoder[packet_id['Vector Velocity Data']]['keys']
     vvd_d = dict(zip(vvd_keys, range(len(vvd_keys))))
@@ -630,6 +625,11 @@ def build_vector_velocity_data(ncOut, binary_file, pkt_pos, pkt_pos_list, pkt_le
         for v in imu_vec_list:
             if v['array'].dtype == 'float32':
                 v['array'][:] = np.NaN
+    sample = 0
+    cache_sample_start = 0
+
+    vvd_pkt_n = 0
+    vid_pkt_n = 0
 
     while sample < len(pkt_pos_list):
         binary_file.seek(pkt_pos_list[sample])
@@ -705,16 +705,20 @@ def build_vector_velocity_data(ncOut, binary_file, pkt_pos, pkt_pos_list, pkt_le
 
         cache_sample += 1
         if cache_sample >= cache_samples:
-            print('write cache samples', sample, cache_sample_start, cache_sample, 'pres',
-                  pres_array[cache_sample_start, 0])
+            print('write cache samples', sample, cache_sample_start, cache_sample, 'pres', pres_array[cache_sample_start, 0])
             for v in vec_list:
                 v['netCDF'][cache_sample_start:cache_sample_start + cache_sample] = v['array']
+                if v['array'].dtype == 'float32':
+                    v['array'][:] = np.NaN
 
             for v in imu_vec_list:
                 v['netCDF'][cache_sample_start:cache_sample_start + cache_sample] = v['array']
+                if v['array'].dtype == 'float32':
+                    v['array'][:] = np.NaN
 
             cache_sample = 0
             cache_sample_start = sample
+
         sample += 1
 
     print('read-data took', datetime.datetime.now() - time_start)
@@ -873,16 +877,17 @@ def build_wave_data(ncOut, binary_file, pkt_pos, pkt_pos_list, pkt_len, pkt_id, 
 
     wave_pres = create_netCDF_var(ncOut, "WAVE_PRES", "f4", "pres", "dbar", ("WAVE_TIME", "WAVE_CELL"))
 
-    w_vel1 = create_netCDF_var(ncOut, "WAVE_VELOCITY1", "f4", "wave sample velocity", "m/s", ("WAVE_TIME", "WAVE_CELL"))
-    w_vel2 = create_netCDF_var(ncOut, "WAVE_VELOCITY2", "f4", "wave sample velocity", "m/s", ("WAVE_TIME", "WAVE_CELL"))
-    w_vel3 = create_netCDF_var(ncOut, "WAVE_VELOCITY3", "f4", "wave sample velocity", "m/s", ("WAVE_TIME", "WAVE_CELL"))
-
     var_list = []
     var_list.append({'netCDF': head, 'ids': [d['heading']], 'scale': 0.1, 'array': np.empty([wave_samples], dtype=np.float32)})
     var_list.append({'netCDF': pitch, 'ids': [d['pitch']], 'scale': 0.1,  'array': np.empty([wave_samples], dtype=np.float32)})
     var_list.append({'netCDF': roll, 'ids': [d['roll']], 'scale': 0.1, 'array': np.empty([wave_samples], dtype=np.float32)})
     var_list.append({'netCDF': bat, 'ids': [d['battery']], 'scale': 0.1, 'array': np.empty([wave_samples], dtype=np.float32)})
     var_list.append({'netCDF': itemp, 'ids': [d['temperature']], 'scale': 0.01,'array': np.empty([wave_samples], dtype=np.float32)})
+
+    # vector data
+    w_vel1 = create_netCDF_var(ncOut, "WAVE_VELOCITY1", "f4", "wave sample velocity", "m/s", ("WAVE_TIME", "WAVE_CELL"))
+    w_vel2 = create_netCDF_var(ncOut, "WAVE_VELOCITY2", "f4", "wave sample velocity", "m/s", ("WAVE_TIME", "WAVE_CELL"))
+    w_vel3 = create_netCDF_var(ncOut, "WAVE_VELOCITY3", "f4", "wave sample velocity", "m/s", ("WAVE_TIME", "WAVE_CELL"))
 
     wave_keys = packet_decoder[packet_id['AWAC Wave Data']]['keys']
     wave_d = dict(zip(wave_keys, range(len(wave_keys))))
@@ -1239,14 +1244,18 @@ def parse_file(files):
 
         ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
 
-        ncOut.setncattr("time_coverage_start", num2date(ncTimesOut[0], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
-        ncOut.setncattr("time_coverage_end", num2date(ncTimesOut[-1], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
+        ts_start = num2date(ncTimesOut[0], units=ncTimesOut.units, calendar=ncTimesOut.calendar)
+        ts_end = num2date(ncTimesOut[-1], units=ncTimesOut.units, calendar=ncTimesOut.calendar)
+        ncOut.setncattr("time_coverage_start", ts_start.strftime(ncTimeFormat))
+        ncOut.setncattr("time_coverage_end", ts_end.strftime(ncTimeFormat))
 
         # add creating and history entry
         ncOut.setncattr("date_created", datetime.datetime.utcnow().strftime(ncTimeFormat))
         ncOut.setncattr("history", datetime.datetime.utcnow().strftime("%Y-%m-%d") + " created from file " + os.path.basename(filepath))
 
         ncOut.close()
+
+        print('file time range', ts_start, 'to', ts_end)
 
         print()
         print('write took', datetime.datetime.now() - time_start)

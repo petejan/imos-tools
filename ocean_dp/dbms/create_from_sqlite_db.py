@@ -80,12 +80,12 @@ def create(file):
             elif att[2] == 'float64':
                 ncOut.setncattr(att[0], np.float(att[3]))
 
-    fDim = ncOut.createDimension("FILE_NAME", file_count)
+    fDim = ncOut.createDimension("INSTANCE_FILE_NAME", file_count)
     sDim = ncOut.createDimension("strlen", 256)
-    varOutFn = ncOut.createVariable("FILE_NAME", "S1", ('FILE_NAME', 'strlen'))
-    varOutInst = ncOut.createVariable("INSTRUMENT", "S1", ('FILE_NAME', 'strlen'))
-    varOutIdxFn = ncOut.createVariable("IDX_FILE_NAME", "i4", ("FILE_NAME"))
-    varOutNdFn = ncOut.createVariable("DEPTH_FILE_NAME", "f4", ("FILE_NAME"))
+    varOutFn = ncOut.createVariable("FILE_NAME", "S1", ('INSTANCE_FILE_NAME', 'strlen'))
+    varOutInst = ncOut.createVariable("INSTRUMENT", "S1", ('INSTANCE_FILE_NAME', 'strlen'))
+    varOutIdxFn = ncOut.createVariable("IDX_FILE_NAME", "i4", ("INSTANCE_FILE_NAME"))
+    varOutNdFn = ncOut.createVariable("DEPTH_FILE_NAME", "f4", ("INSTANCE_FILE_NAME"), fill_value=np.nan)
 
     sql_select_files = 'select file.file_id, file.name, a_inst.value, a_sn.value, CAST(a_nd.value AS REAL) AS nom_depth FROM file ' \
                        'left join "attributes" a_inst on (file.file_id = a_inst.file_id and a_inst.name = "instrument_model") ' \
@@ -109,10 +109,11 @@ def create(file):
         else:
             instrument[n] = 'unknown'
         varOutIdxFn[n] = int(row[0])
-        if row[4]:
+        if row[4] is not None:
             varOutNdFn[n] = float(row[4])
         else:
             varOutFn[n] = np.nan
+        #print('nominal depth', row[4], varOutNdFn[n])
 
         row = cur_files.fetchone()
 
@@ -235,4 +236,5 @@ def create(file):
 
 
 if __name__ == "__main__":
-    create(sys.argv[1])
+    for f in sys.argv[1:]:
+        create(f)

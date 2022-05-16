@@ -34,29 +34,34 @@ def oxygen(netCDFfile):
 
     var_temp = ds.variables["TEMP"]
     var_psal = ds.variables["PSAL"]
-    var_pres = ds.variables["PRES"]
+    if 'PRES' in ds.variables:
+        var_pres = ds.variables["PRES"]
+        p = var_pres[:]
+    elif 'NOMINAL_DEPTH' in ds.variables:
+        var_pres = ds.variables["NOMINAL_DEPTH"]
+        p = var_pres[:]
+    else:
+        p = 1.0
 
     t = var_temp[:]
     SP = var_psal[:]
-    p = var_pres[:]
 
     SA = gsw.SA_from_SP(SP, p, ds.variables["LONGITUDE"][0], ds.variables["LATITUDE"][0])
     CT = gsw.CT_from_t(SA, t, p)
     pt = gsw.pt0_from_t(SA, t, p)
 
     sigma_theta0 = gsw.sigma0(SA, CT)
-    oxsol = ds.variables["OXSOL"][:]
 
     ts = np.log((298.15 - t) / (273.15 + t))
 
-    # psal correction, from Aanderra TD-218, Gordon and Garcia oxygaen solubility salinity coefficents
+    # psal correction, from Aanderra TD-218, Gordon and Garcia oxygaen solubility salinity coefficents, salinity coeff, col 5 combined fit (ml/l).
     B0 = -6.24097e-3
     C0 = -3.11680e-7
     B1 = -6.93498e-3
     B2 = -6.90358e-3
     B3 = -4.29155e-3
 
-    psal_correction =  np.exp(SP *(B0 + B1 * ts + B2 * np.power(ts, 2) + B3 * np.power(ts, 3)) + np.power(SP, 2) * C0)
+    psal_correction = np.exp(SP *(B0 + B1 * ts + B2 * np.power(ts, 2) + B3 * np.power(ts, 3)) + np.power(SP, 2) * C0)
 
     # get correction slope, offset
     slope = 1.0
@@ -70,6 +75,7 @@ def oxygen(netCDFfile):
     # calculate disolved oxygen, umol/kg
     dox2_raw = ds.variables['DOX2_RAW'] * psal_correction * slope + offset
     dox2 = 1000 * dox2_raw / (sigma_theta0 + 1000)
+    #dox2 = dox2_raw
 
     if 'DOX2' not in ds.variables:
         ncVarOut = ds.createVariable("DOX2", "f4", ("TIME",), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
@@ -80,31 +86,10 @@ def oxygen(netCDFfile):
     ncVarOut.standard_name = "moles_of_oxygen_per_unit_mass_in_sea_water"
     ncVarOut.long_name = "moles_of_oxygen_per_unit_mass_in_sea_water"
     ncVarOut.units = "umol/kg"
-    ncVarOut.comment = "calculated using DOX2 = DOX2_RAW * PSAL_CORRECTION / ((sigma_theta(P=0,Theta,S) + 1000).. Sea Bird AN 64, Aanderaa TD210 Optode Manual"
+    ncVarOut.comment1 = "calculated using DOX2_uM = DOX2_RAW * PSAL_CORRECTION .. Aanderaa TD210 Optode Manual (optode/SBE63 only)"
+    ncVarOut.comment2 = "DOX2 = DOX2_uM / ((sigma_theta(P=0,Theta,S) + 1000).. Sea Bird AN 64 (unit conversion umol/l -> umol/kg)"
     ncVarOut.comment_calibration = "calibration slope " + str(slope) + " offset " + str(offset) + " umol/l"
-
-    # calculate, and write the oxygen mass/seawater mass
-    if 'DOXY' not in ds.variables:
-        ncVarOut = ds.createVariable("DOXY", "f4", ("TIME",), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
-    else:
-        ncVarOut = ds.variables['DOXY']
-
-    ncVarOut[:] = dox2_raw / 31.24872
-    ncVarOut.standard_name = "mass_concentration_of_oxygen_in_sea_water"
-    ncVarOut.long_name = "mass_concentration_of_oxygen_in_sea_water"
-    ncVarOut.units = "mg/l"
-    ncVarOut.comment = "calculated using DOXY =  * DOX2_RAW * PSAL_CORRECTION / 31.24872... Aanderaa TD210 Optode Manual"
-    ncVarOut.comment_calibration = "calibration slope " + str(slope) + " offset " + str(offset) + " umol/l"
-
-    # calculate and write oxygen solubility, ratio of disolved oxgen / oxygen solubility
-    if 'DOXS' not in ds.variables:
-        ncVarOut = ds.createVariable("DOXS", "f4", ("TIME",), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
-    else:
-        ncVarOut = ds.variables['DOXS']
-
-    ncVarOut[:] = dox2/oxsol
-    ncVarOut.units = "1"
-    ncVarOut.comment = "calculated using DOX2/OXSOL"
+    ncVarOut.coordinates = 'TIME LATITUDE LONGITUDE NOMINAL_DEPTH'
 
     # finish off, and close file
 
@@ -114,9 +99,11 @@ def oxygen(netCDFfile):
     except AttributeError:
         hist = ""
 
-    ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " added derived oxygen, DOX2, DOXS, DOXY")
+    ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " added derived oxygen, DOX2")
 
     ds.close()
+
+    return netCDFfile
 
 
 if __name__ == "__main__":

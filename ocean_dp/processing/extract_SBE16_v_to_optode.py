@@ -25,7 +25,7 @@ from datetime import datetime
 # extract V4 and V5 from SBE16 file and output BPHASE and OTEMP for optode processing
 
 
-def add_optode(netCDFfile):
+def extract_optode(netCDFfile):
     ds = Dataset(netCDFfile, 'r')
     ds. set_auto_mask(False)
 
@@ -38,29 +38,64 @@ def add_optode(netCDFfile):
 
     print('deployment', dep_code)
 
-    ds_out = Dataset(dep_code + "-optode.nc", 'w')
+    out_file = dep_code + "-optode.nc"
+    ds_out = Dataset(out_file, 'w')
 
     ds_out.createDimension("TIME", len(ds.variables['TIME']))
     ncVarIn = ds.variables['TIME']
-    ncVarOut = ds_out.createVariable('TIME', "f4", ("TIME",), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
+    ncVarOut = ds_out.createVariable('TIME', "f8", ("TIME",), zlib=True)
     for a in ncVarIn.ncattrs():
         if a != '_FillValue':
             ncVarOut.setncattr(a, ncVarIn.getncattr(a))
     ncVarOut[:] = ds.variables['TIME'][:]
 
+    # copy old variables into new file
+    in_vars = set([x for x in ds.variables])
+
+    z = in_vars.intersection(['TEMP', 'PSAL', 'PRES', 'V4', 'V5',
+                              'TEMP_quality_control', 'PSAL_quality_control', 'PRES_quality_control',
+                              'V4_quality_control', 'V5_quality_control',
+                              'LATITUDE', 'LONGITUDE', 'NOMINAL_DEPTH'])
+
+    for v in z:
+        print('copying',v,'dimensions', ncVarIn.dimensions)
+        ncVarIn = ds.variables[v]
+        if '_FillValue' in ncVarIn.ncattrs():
+            fill = ncVarIn._FillValue
+        else:
+            fill = None
+
+        ncVarOut = ds_out.createVariable(v, ncVarIn.dtype, ncVarIn.dimensions, fill_value=fill, zlib=True)  # fill_value=nan otherwise defaults to max
+        for a in ncVarIn.ncattrs():
+            if a != '_FillValue':
+                if a == 'ancillary_variables':
+                    ncVarOut.setncattr(a, v + '_quality_control') # only copying main quality control, not all individual flags
+                else:
+                    ncVarOut.setncattr(a, ncVarIn.getncattr(a))
+        ncVarOut[:] = ncVarIn[:]
+
+
+    is_raw = False
+    is_bphase = False
     # create optode bphase (or oxygen) from v4 variable
     if var_v4.long_name == 'optode_oxygen_voltage':
         ncVarOut = ds_out.createVariable("DOX2_RAW", "f4", ("TIME",), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
         scale_offset = [float(x) for x in var_v4.calibration_scale_offset.split(' ')]
         print('DOX2_RAW scale offset', scale_offset)
         ncVarOut[:] = var_v4[:] * scale_offset[0] + scale_offset[1]
+        #ncVarOut[:] = var_v4[:] * 75
         ncVarOut.units = "umol/l"
+        ncVarOut.long_name = "optode oxygen, uncorrected"
+        is_raw = True
     elif var_v4.long_name == 'optode_bphase_voltage':
         ncVarOut = ds_out.createVariable("BPHASE", "f4", ("TIME",), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
         scale_offset = [float(x) for x in var_v4.calibration_scale_offset.split(' ')]
         print('BPHASE scale offset', scale_offset)
         ncVarOut[:] = var_v4[:] * scale_offset[0] + scale_offset[1]
         ncVarOut.units = "1"
+        ncVarOut.long_name = "optode bphase"
+        is_bphase = True
+    ncVarOut.coordinates = 'TIME LATITUDE LONGITUDE NOMINAL_DEPTH'
 
     # create the optode temp from v5 variable
     ncVarOut = ds_out.createVariable("OTEMP", "f4", ("TIME",), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
@@ -68,15 +103,24 @@ def add_optode(netCDFfile):
     print('OTEMP scale offset', scale_offset)
     ncVarOut[:] = var_v5[:] * scale_offset[0] + scale_offset[1]
     ncVarOut.units = "degrees_Celsius"
+    ncVarOut.long_name = "optode temperature"
+    ncVarOut.coordinates = 'TIME LATITUDE LONGITUDE NOMINAL_DEPTH'
 
-    # copy old variables into new file
-    for v in ['TEMP', 'PSAL', 'PRES', 'V4', 'V5', 'TEMP_quality_control', 'PSAL_quality_control', 'PRES_quality_control']:
-        ncVarIn = ds.variables[v]
-        ncVarOut = ds_out.createVariable(v, "f4", ("TIME",), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
-        for a in ncVarIn.ncattrs():
-            if a != '_FillValue':
-                ncVarOut.setncattr(a, ncVarIn.getncattr(a))
-        ncVarOut[:] = ncVarIn[:]
+    # copy attributes forward
+    attrs = ds.ncattrs()
+    for at in attrs:
+        if at not in ['title', 'instrument', 'instrument_model', 'instrument_serial_number', 'history', 'date_created', 'title']:
+            #print('copy att', at)
+            ds_out.setncattr(at, ds.getncattr(at))
+
+    ds_out.deployment_code = ds.deployment_code
+    ds_out.instrument = 'Aanderaa ; Optode 3975'
+    ds_out.instrument_model = 'Optode 3975'
+    ds_out.instrument_serial_number = ds.variables['V4'].sensor_serial_number
+    ds_out.title = 'Oceanographic mooring data deployment of {platform_code} at latitude {geospatial_lat_max:3.1f} longitude {geospatial_lon_max:3.1f} depth {geospatial_vertical_max:3.0f} (m) instrument {instrument} serial {instrument_serial_number}'
+
+    ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
+    ds_out.setncattr("date_created", datetime.utcnow().strftime(ncTimeFormat))
 
     # update the history attribute
     try:
@@ -85,11 +129,16 @@ def add_optode(netCDFfile):
         hist = ""
 
     # keep the history so we know where it came from
-    ds_out.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " extract BPHASE, OTEMP from " + netCDFfile)
+    if is_raw:
+        ds_out.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " extract DOX2_RAW, OTEMP from " + netCDFfile)
+    else:
+        ds_out.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " extract BPHASE, OTEMP from " + netCDFfile)
 
     ds.close()
     ds_out.close()
 
+    return out_file
+
 
 if __name__ == "__main__":
-    add_optode(sys.argv[1])
+    extract_optode(sys.argv[1])

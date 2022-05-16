@@ -153,7 +153,7 @@ def add(netCDFfile, metadatafiles):
                             #print("serial_number not match : ", dict1['serial_number'])
 
                     if match:
-                        #print("match ", dict1)
+                        #print("match ", dict1, td, tr)
 
                         # global attributes
                         if dict1['rec_type'] == 'GLOBAL':

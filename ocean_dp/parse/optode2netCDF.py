@@ -39,8 +39,8 @@ import numpy as np
 #
 # parse the file
 #
-line_exp = r"(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}) INFO:.*MEASUREMENT\s*(\d*)\s*(\d*).*Temperature:\s*([0-9.]*).*BPhase:\s*([0-9.]*).*$"
-done_line_expr = r"(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}) INFO:.*done time.*OBP=\s*([0-9.]*).*OT=\s*([0-9.]*).*$"
+line_exp = r"(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}) INFO:.*MEASUREMENT\s*(\d*)\s*(\d*).*Temperature:\s*([0-9.-]*).*BPhase:\s*([0-9.-]*).*$"
+done_line_expr = r"(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}) INFO:.*done time.*OBP=\s*([0-9.-]*).*OT=\s*([0-9.-]*).*$"
 
 #2019-12-03 05:00:07 INFO: Optode Line : MEASUREMENT   3830   1419 Oxygen:     330.55 Saturation:      94.27 Temperature:      10.19 DPhase:      34.15 BPhase:      34.15 RPhase:       0.00 BAmp:     2
 #2019-12-03 06:00:07 INFO: Optode Line : MEASUREMENT   3830   1419 Oxygen:     330.59 Saturation:      94.19 Temperature:      10.15 DPhase:      34.17 BPhase:      34.17 RPhase:       0.00 BAmp:     2
@@ -76,7 +76,7 @@ def parse(file):
 
                     number_samples_read = number_samples_read + 1
                 except ValueError as v:
-                    print('Value Error:', v)
+                    print('Optode Value Error:', v)
                     print(line)
             matchObj = re.match(done_line_expr, line)
             if matchObj:
@@ -135,8 +135,13 @@ def parse(file):
 
     ncVarOut = ncOut.createVariable('BPHASE', "f4", ("TIME",), fill_value=np.nan, zlib=True) # fill_value=nan otherwise defaults to max
     ncVarOut[:] = bphase
+    ncVarOut.units = "1"
+    ncVarOut.long_name = "optode bphase"
+
     ncVarOut = ncOut.createVariable('OTEMP', "f4", ("TIME",), fill_value=np.nan, zlib=True) # fill_value=nan otherwise defaults to max
     ncVarOut[:] = temp
+    ncVarOut.units = "degrees_Celsius"
+    ncVarOut.long_name = "optode temperature"
 
     ncOut.setncattr("time_coverage_start", num2date(ncTimesOut[0], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
     ncOut.setncattr("time_coverage_end", num2date(ncTimesOut[-1], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))

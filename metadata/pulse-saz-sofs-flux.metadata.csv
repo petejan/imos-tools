@@ -651,6 +651,7 @@ VAR_ATT,V0,Pulse-7-2010,SBE16plusV2,01606331,,,,,,calibration_Tau20,str,5.56
 VAR_ATT,V0,Pulse-7-2010,SBE16plusV2,01606331,,,,,,calibration_H1,str,-0.033
 VAR_ATT,V0,Pulse-7-2010,SBE16plusV2,01606331,,,,,,calibration_H2,str,5000.
 VAR_ATT,V0,Pulse-7-2010,SBE16plusV2,01606331,,,,,,calibration_H3,str,1450.
+#VAR_ATT,V0,Pulse-7-2010,SBE16plusV2,01606331,,,,,,oxygen_correction_slope,str,1.0675
 
 VAR_ATT,V0,Pulse-8-2011,SBE16plusV2,01606330,,,,,,calibration_SerialNumber,str,"1634"
 VAR_ATT,V0,Pulse-8-2011,SBE16plusV2,01606330,,,,,,calibration_CalibrationDate,str,"15-May-09p"
@@ -686,6 +687,7 @@ VAR_ATT,V0,Pulse-9-2012,SBE16plusV2,unknown,,,,,,calibration_Tau20,str,5.56
 VAR_ATT,V0,Pulse-9-2012,SBE16plusV2,unknown,,,,,,calibration_H1,str,-0.033
 VAR_ATT,V0,Pulse-9-2012,SBE16plusV2,unknown,,,,,,calibration_H2,str,5000.
 VAR_ATT,V0,Pulse-9-2012,SBE16plusV2,unknown,,,,,,calibration_H3,str,1450.
+#VAR_ATT,V0,Pulse-9-2012,SBE16plusV2,unknown,,,,,,oxygen_correction_slope,str,1.0486
 
 VAR_ATT,V0,Pulse-10-2013,SBE16plusV2,01606330,,,,,,calibration_SerialNumber,str,"1634"
 VAR_ATT,V0,Pulse-10-2013,SBE16plusV2,01606330,,,,,,calibration_CalibrationDate,str,"10-Sep-2012 CSIRO report 1345DO"
@@ -728,15 +730,25 @@ VAR_ATT,V1,Pulse-11-2015,SBE16plusV2,01606330,,,,,,calibration_PAR_facility,str,
 VAR_ATT,V1,Pulse-11-2015,SBE16plusV2,01606330,,,,,,calibration_PAR_SN,str,PARS-134
 
 VAR_ATT,V4,Pulse-6-2009,SBE16plusV2,unknown,,,,,,long_name,str,optode_oxygen_voltage
+#VAR_ATT,V4,Pulse-6-2009,SBE16plusV2,unknown,,,,,,calibration_scale_offset,str,"100 0"
 VAR_ATT,V4,Pulse-6-2009,SBE16plusV2,unknown,,,,,,calibration_scale_offset,str,"100 0"
+
 VAR_ATT,V4,Pulse-7-2010,SBE16plusV2,01606331,,,,,,long_name,str,optode_bphase_voltage
 VAR_ATT,V4,Pulse-7-2010,SBE16plusV2,01606331,,,,,,calibration_scale_offset,str,"12 10"
+
 VAR_ATT,V4,Pulse-8-2011,SBE16plusV2,01606330,,,,,,long_name,str,optode_bphase_voltage
 VAR_ATT,V4,Pulse-8-2011,SBE16plusV2,01606330,,,,,,calibration_scale_offset,str,"12 10"
 VAR_ATT,V4,Pulse-9-2012,SBE16plusV2,unknown,,,,,,long_name,str,optode_bphase_voltage
 VAR_ATT,V4,Pulse-9-2012,SBE16plusV2,unknown,,,,,,calibration_scale_offset,str,"12 10"
-VAR_ATT,V4,Pulse-10-2013,SBE16plusV2,01606330,,,,,,long_name,str,optode_bphase_voltage
-VAR_ATT,V4,Pulse-10-2013,SBE16plusV2,01606330,,,,,,calibration_scale_offset,str,"12 10"
+
+#VAR_ATT,V4,Pulse-10-2013,SBE16plusV2,01606330,,,,,,long_name,str,optode_bphase_voltage
+#VAR_ATT,V4,Pulse-10-2013,SBE16plusV2,01606330,,,,,,calibration_scale_offset,str,"12 10"
+
+VAR_ATT,V4,Pulse-10-2013,SBE16plusV2,01606330,,,,,,long_name,str,optode_oxygen_voltage
+VAR_ATT,V4,Pulse-10-2013,SBE16plusV2,01606330,,,,,,calibration_scale_offset,str,"100 0"
+VAR_ATT,DOX2_RAW,Pulse-10-2013,SBE16plusV2,01606330,,,,,,calibration_slope,float32,1.0914
+VAR_ATT,DOX2_RAW,Pulse-10-2013,SBE16plusV2,01606330,,,,,,calibration_offset,float32,0
+
 VAR_ATT,V4,Pulse-11-2015,SBE16plusV2,01606330,,,,,,long_name,str,optode_bphase_voltage
 VAR_ATT,V4,Pulse-11-2015,SBE16plusV2,01606330,,,,,,calibration_scale_offset,str,"12 10"
 
@@ -749,7 +761,7 @@ VAR_ATT,V4,Pulse-11-2015,SBE16plusV2,01606330,,,,,,sensor_serial_number,str,1420
 
 VAR_ATT,V5,Pulse-6-2009,SBE16plusV2,unknown,,,,,,long_name,str,optode_temp_voltage
 VAR_ATT,V5,Pulse-6-2009,SBE16plusV2,unknown,,,,,,calibration_scale_offset,str,"9 -5"
-VAR_ATT,V5,Pulse-7-2010,SBE16plusV2,01606331,,,,,,log_name,str,optode_temp_voltage
+VAR_ATT,V5,Pulse-7-2010,SBE16plusV2,01606331,,,,,,long_name,str,optode_temp_voltage
 VAR_ATT,V5,Pulse-7-2010,SBE16plusV2,01606331,,,,,,calibration_scale_offset,str,"9 -5"
 VAR_ATT,V5,Pulse-8-2011,SBE16plusV2,01606330,,,,,,long_name,str,optode_temp_voltage
 VAR_ATT,V5,Pulse-8-2011,SBE16plusV2,01606330,,,,,,calibration_scale_offset,str,"9 -5"
@@ -1074,6 +1086,7 @@ VAR,NOMINAL_DEPTH,SAZ47-20-2018,XMF-11K,270,2018-03-10,2019-03-20,NOMINAL_DEPTH,
 
 GLOBAL,,,DCS,197,2010-03-17,2011-04-20,,,,deployment_code,str,SOFS-1-2010
 GLOBAL,,,DCS,212,2010-03-17,2011-04-20,,,,deployment_code,str,SOFS-1-2010
+GLOBAL,,,Optode 3830,unknown,2010-03-17,2011-04-20,,,,deployment_code,str,SOFS-1-2010
 GLOBAL,,,Optode 3975C,1157,2010-03-17,2011-04-20,,,,deployment_code,str,SOFS-1-2010
 GLOBAL,,,Seaguard RCM DW,101,2010-03-17,2011-04-20,,,,deployment_code,str,SOFS-1-2010
 GLOBAL,,,Seaguard RCM DW,103,2010-03-17,2011-04-20,,,,deployment_code,str,SOFS-1-2010
@@ -1127,8 +1140,12 @@ GLOBAL,,,SWND,213,2010-03-17,2011-04-20,,,,deployment_code,str,SOFS-1-2010
 GLOBAL,,,SWND,214,2010-03-17,2011-04-20,,,,deployment_code,str,SOFS-1-2010
 GLOBAL,,,SWR,235,2010-03-17,2011-04-20,,,,deployment_code,str,SOFS-1-2010
 GLOBAL,,,SWR,236,2010-03-17,2011-04-20,,,,deployment_code,str,SOFS-1-2010
+
 VAR,LATITUDE,SOFS-1-2010,,,2010-03-17,2011-04-20,LATITUDE,(),(),,float64,-46.72295
 VAR,LONGITUDE,SOFS-1-2010,,,2010-03-17,2011-04-20,LONGITUDE,(),(),,float64,141.9535167
+
+GLOBAL,,,Optode 3830,unknown,2010-03-17,2011-04-20,,,,instrument_serial_number,str,1157
+
 GLOBAL,,SOFS-1-2010,,,2010-03-17,2011-04-20,,,,site_nominal_depth,float64,4624
 GLOBAL,,SOFS-1-2010,,,2010-03-17,2011-04-20,,,,time_deployment_start,str,2010-03-18T00:00:00Z
 GLOBAL,,SOFS-1-2010,,,2010-03-17,2011-04-20,,,,time_deployment_end,str,2011-04-20T04:00:00Z
@@ -1136,6 +1153,7 @@ GLOBAL,,SOFS-1-2010,,,,,,,,voyage_deployment,str,http://www.cmar.csiro.au/data/t
 GLOBAL,,SOFS-1-2010,,,,,,,,voyage_recovery,str,http://www.cmar.csiro.au/data/trawler/survey_details.cfm?survey=SS2011_V01
 GLOBAL,,SOFS-1-2010,,,,,,,,comment_recovery,str,Broke mooring 2011-03-02
 GLOBAL,,SOFS-1-2010,LI-190SA,unknown,2010-03-17,2011-04-20,,,,instrument_serial_number,str,Q40966
+
 VAR_ATT,PAR,SOFS-1-2010,LI-190SA,unknown,2010-03-17,2011-04-20,,,,calibration_date,str,"May 21, 2009"
 VAR_ATT,PAR,SOFS-1-2010,LI-190SA,unknown,2010-03-17,2011-04-20,,,,calibration_units,str,umol s-1 m-2 per uamp
 VAR_ATT,PAR,SOFS-1-2010,LI-190SA,unknown,2010-03-17,2011-04-20,,,,calibration_constant,str,6.26
@@ -1146,9 +1164,11 @@ VAR_ATT,PAR,SOFS-1-2010,LI-190SA,unknown,2010-03-17,2011-04-20,,,,comment_scalin
 VAR_ATT,PAR,SOFS-1-2010,LI-190SA,unknown,2010-03-17,2011-04-20,,,,standard_name,str,surface_downwelling_photosynthetic_photon_flux_in_air
 VAR_ATT,PAR,SOFS-1-2010,LI-190SA,unknown,2010-03-17,2011-04-20,,,,long_name,str,surface_downwelling_photosynthetic_photon_flux_in_air
 VAR_ATT,PAR,SOFS-1-2010,LI-190SA,unknown,2010-03-17,2011-04-20,,,,units,str,umol/m^2/s
+
 VAR,NOMINAL_DEPTH,SOFS-1-2010,DCS,197,2010-03-17,2011-04-20,NOMINAL_DEPTH,(),(),,float64,30
 VAR,NOMINAL_DEPTH,SOFS-1-2010,DCS,212,2010-03-17,2011-04-20,NOMINAL_DEPTH,(),(),,float64,200
-VAR,NOMINAL_DEPTH,SOFS-1-2010,Optode 3975C,1157,2010-03-17,2011-04-20,NOMINAL_DEPTH,(),(),,float64,1.2
+VAR,NOMINAL_DEPTH,SOFS-1-2010,Optode 3830,1157,2010-03-17,2011-04-20,NOMINAL_DEPTH,(),(),,float64,1.2
+VAR,NOMINAL_DEPTH,SOFS-1-2010,Optode 3830,unknown,2010-03-17,2011-04-20,NOMINAL_DEPTH,(),(),,float64,1.2
 VAR,NOMINAL_DEPTH,SOFS-1-2010,Seaguard RCM DW,101,2010-03-17,2011-04-20,NOMINAL_DEPTH,(),(),,float64,200
 VAR,NOMINAL_DEPTH,SOFS-1-2010,Seaguard RCM DW,103,2010-03-17,2011-04-20,NOMINAL_DEPTH,(),(),,float64,30
 VAR,NOMINAL_DEPTH,SOFS-1-2010,MDS-MKV/L,201316,2010-03-17,2011-04-20,NOMINAL_DEPTH,(),(),,float64,20
@@ -1204,7 +1224,7 @@ VAR,NOMINAL_DEPTH,SOFS-1-2010,SWR,236,2010-03-17,2011-04-20,NOMINAL_DEPTH,(),(),
 
 GLOBAL,,,MF-AWCP,55046,2011-11-24,2012-07-19,,,,deployment_code,str,SOFS-2-2011
 GLOBAL,,,Optode 3975C,1157,2011-11-24,2012-07-19,,,,deployment_code,str,SOFS-2-2011
-GLOBAL,,,Optode 3830,unknown,2011-11-24,2012-07-19,,,,deployment_code,str,SOFS-2-2011
+GLOBAL,,,Optode 3830,unknown,2011-11-24,2012-06-19,,,,deployment_code,str,SOFS-2-2011
 GLOBAL,,,MDS-MKV/L,201316,2011-11-24,2012-07-19,,,,deployment_code,str,SOFS-2-2011
 GLOBAL,,,MDS-MKV/L,201318,2011-11-24,2012-07-19,,,,deployment_code,str,SOFS-2-2011
 GLOBAL,,,MDS-MKV/L,201319,2011-11-24,2012-07-19,,,,deployment_code,str,SOFS-2-2011
@@ -1272,7 +1292,7 @@ GLOBAL,,SOFS-2-2011,,,2011-11-24,2012-07-19,,,,time_deployment_end,str,2012-07-2
 GLOBAL,,SOFS-2-2011,,,,,,,,voyage_deployment,str,http://www.cmar.csiro.au/data/trawler/survey_details.cfm?survey=SS2011_V03
 GLOBAL,,SOFS-2-2011,,,,,,,,voyage_recovery,str,http://www.cmar.csiro.au/data/trawler/survey_details.cfm?survey=SS2012_V03
 GLOBAL,,SOFS-2-2011,LI-190SA,unknown,2011-11-24,2012-07-19,,,,instrument_serial_number,str,Q40966
-GLOBAL,,SOFS-2-2011,Optode 3830,unknown,2011-11-24,2012-07-19,,,,instrument_serial_number,str,1157
+GLOBAL,,SOFS-2-2011,Optode 3830,unknown,2011-11-24,2012-06-19,,,,instrument_serial_number,str,1157
 VAR_ATT,PAR,SOFS-2-2011,LI-190SA,unknown,2011-11-24,2012-07-19,,,,calibration_date,str,"May 21, 2009"
 VAR_ATT,PAR,SOFS-2-2011,LI-190SA,unknown,2011-11-24,2012-07-19,,,,calibration_units,str,umol s-1 m-2 per uamp
 VAR_ATT,PAR,SOFS-2-2011,LI-190SA,unknown,2011-11-24,2012-07-19,,,,calibration_constant,str,6.26
@@ -1284,7 +1304,7 @@ VAR_ATT,PAR,SOFS-2-2011,LI-190SA,unknown,2011-11-24,2012-07-19,,,,long_name,str,
 VAR_ATT,PAR,SOFS-2-2011,LI-190SA,unknown,2011-11-24,2012-07-19,,,,units,str,umol/m^2/s
 VAR,NOMINAL_DEPTH,SOFS-2-2011,MF-AWCP,55046,2011-11-24,2012-07-19,NOMINAL_DEPTH,(),(),,float64,30
 VAR,NOMINAL_DEPTH,SOFS-2-2011,Optode 3975C,1157,2011-11-24,2012-07-19,NOMINAL_DEPTH,(),(),,float64,1.5
-VAR,NOMINAL_DEPTH,SOFS-2-2011,Optode 3830,unknown,2011-11-24,2012-07-19,NOMINAL_DEPTH,(),(),,float64,1.5
+VAR,NOMINAL_DEPTH,SOFS-2-2011,Optode 3830,unknown,2011-11-24,2012-06-19,NOMINAL_DEPTH,(),(),,float64,1.5
 VAR,NOMINAL_DEPTH,SOFS-2-2011,MDS-MKV/L,201316,2011-11-24,2012-07-19,NOMINAL_DEPTH,(),(),,float64,20
 VAR,NOMINAL_DEPTH,SOFS-2-2011,MDS-MKV/L,201318,2011-11-24,2012-07-19,NOMINAL_DEPTH,(),(),,float64,40
 VAR,NOMINAL_DEPTH,SOFS-2-2011,MDS-MKV/L,201319,2011-11-24,2012-07-19,NOMINAL_DEPTH,(),(),,float64,10
@@ -1347,6 +1367,7 @@ VAR,NOMINAL_DEPTH,SOFS-2-2011,Sable,3.00E+14,2011-11-24,2012-07-19,NOMINAL_DEPTH
 
 GLOBAL,,,MF-AZFP,55052,2012-07-19,2013-01-02,,,,deployment_code,str,SOFS-3-2012
 GLOBAL,,,Optode 3975C,1420,2012-07-19,2013-01-02,,,,deployment_code,str,SOFS-3-2012
+GLOBAL,,,Optode 3830,1420,2012-07-19,2013-01-02,,,,deployment_code,str,SOFS-3-2012
 GLOBAL,,,Optode 3830,unknown,2012-07-19,2013-01-02,,,,deployment_code,str,SOFS-3-2012
 GLOBAL,,,Data Logger,2,2012-07-19,2013-01-02,,,,deployment_code,str,SOFS-3-2012
 GLOBAL,,,Mooring,Mix Layer Depth,2012-07-19,2013-01-02,,,,deployment_code,str,SOFS-3-2012
@@ -1412,8 +1433,10 @@ GLOBAL,,,SWR,240,2012-07-19,2013-01-02,,,,deployment_code,str,SOFS-3-2012
 GLOBAL,,,SWR,241,2012-07-19,2013-01-02,,,,deployment_code,str,SOFS-3-2012
 GLOBAL,,,KILO,3.00E+14,2012-07-19,2013-01-02,,,,deployment_code,str,SOFS-3-2012
 GLOBAL,,,MELO,3.00E+14,2012-07-19,2013-01-02,,,,deployment_code,str,SOFS-3-2012
+
 VAR,LATITUDE,SOFS-3-2012,,,2012-07-19,2013-01-02,LATITUDE,(),(),,float64,-46.66442
 VAR,LONGITUDE,SOFS-3-2012,,,2012-07-19,2013-01-02,LONGITUDE,(),(),,float64,142.06278
+
 GLOBAL,,SOFS-3-2012,,,2012-07-19,2013-01-02,,,,site_nominal_depth,float64,4624
 GLOBAL,,SOFS-3-2012,,,2012-07-19,2013-01-02,,,,time_deployment_start,str,2012-07-14T08:00:00Z
 GLOBAL,,SOFS-3-2012,,,2012-07-19,2013-01-02,,,,time_deployment_end,str,2013-01-02T00:00:00Z
@@ -1422,6 +1445,7 @@ GLOBAL,,SOFS-3-2012,,,,,,,,voyage_recovery_bottom,str,http://www.cmar.csiro.au/d
 GLOBAL,,SOFS-3-2012,,,,,,,,voyage_recovery_top,str,"RV Mirai MR12-05, 2 January 2013"
 GLOBAL,,SOFS-3-2012,LI-190SA,unknown,2012-07-19,2013-01-02,,,,instrument_serial_number,str,Q40966
 GLOBAL,,SOFS-3-2012,Optode 3830,unknown,2012-07-19,2013-01-02,,,,instrument_serial_number,str,1420
+
 VAR_ATT,PAR,SOFS-3-2012,LI-190SA,unknown,2012-07-19,2013-01-02,,,,calibration_date,str,"May 21, 2009"
 VAR_ATT,PAR,SOFS-3-2012,LI-190SA,unknown,2012-07-19,2013-01-02,,,,calibration_units,str,umol s-1 m-2 per uamp
 VAR_ATT,PAR,SOFS-3-2012,LI-190SA,unknown,2012-07-19,2013-01-02,,,,calibration_constant,str,6.26
@@ -1431,9 +1455,12 @@ VAR_ATT,PAR,SOFS-3-2012,LI-190SA,unknown,2012-07-19,2013-01-02,,,,comment_scale_
 VAR_ATT,PAR,SOFS-3-2012,LI-190SA,unknown,2012-07-19,2013-01-02,,,,standard_name,str,surface_downwelling_photosynthetic_photon_flux_in_air
 VAR_ATT,PAR,SOFS-3-2012,LI-190SA,unknown,2012-07-19,2013-01-02,,,,long_name,str,surface_downwelling_photosynthetic_photon_flux_in_air
 VAR_ATT,PAR,SOFS-3-2012,LI-190SA,unknown,2012-07-19,2013-01-02,,,,units,str,umol/m^2/s
+
 VAR,NOMINAL_DEPTH,SOFS-3-2012,MF-AZFP,55052,2012-07-19,2013-01-02,NOMINAL_DEPTH,(),(),,float64,30
-VAR,NOMINAL_DEPTH,SOFS-3-2012,Optode 3975C,1420,2012-07-19,2013-01-02,NOMINAL_DEPTH,(),(),,float64,2
+#VAR,NOMINAL_DEPTH,SOFS-3-2012,Optode 3975C,1420,2012-07-19,2013-01-02,NOMINAL_DEPTH,(),(),,float64,2
 VAR,NOMINAL_DEPTH,SOFS-3-2012,Optode 3830,unknown,2012-07-19,2013-01-02,NOMINAL_DEPTH,(),(),,float64,2
+#VAR,NOMINAL_DEPTH,SOFS-3-2012,Optode 3830,1420,2012-07-19,2013-01-02,NOMINAL_DEPTH,(),(),,float64,2
+
 VAR,NOMINAL_DEPTH,SOFS-3-2012,Data Logger,2,2012-07-19,2013-01-02,NOMINAL_DEPTH,(),(),,float64,0
 VAR,NOMINAL_DEPTH,SOFS-3-2012,Mooring,Mix Layer Depth,2012-07-19,2013-01-02,NOMINAL_DEPTH,(),(),,float64,0
 VAR,NOMINAL_DEPTH,SOFS-3-2012,processing_site_code,25,2012-07-19,2013-01-02,NOMINAL_DEPTH,(),(),,float64,0
@@ -1502,6 +1529,7 @@ VAR,NOMINAL_DEPTH,SOFS-3-2012,MELO,3.00E+14,2012-07-19,2013-01-02,NOMINAL_DEPTH,
 GLOBAL,,,MF-AZFP,55046,2013-04-26,2013-10-13,,,,deployment_code,str,SOFS-4-2013
 GLOBAL,,,Optode 3975C,1157,2013-04-26,2013-10-13,,,,deployment_code,str,SOFS-4-2013
 GLOBAL,,,Optode 3830,unknown,2013-04-26,2013-10-13,,,,deployment_code,str,SOFS-4-2013
+GLOBAL,,,Optode 3830,1157,2013-04-26,2013-10-13,,,,deployment_code,str,SOFS-4-2013
 GLOBAL,,,MDS-MKV/L,201316,2013-04-26,2013-10-13,,,,deployment_code,str,SOFS-4-2013
 GLOBAL,,,MDS-MKV/L,201318,2013-04-26,2013-10-13,,,,deployment_code,str,SOFS-4-2013
 GLOBAL,,,MDS-MKV/L,201319,2013-04-26,2013-10-13,,,,deployment_code,str,SOFS-4-2013
@@ -1570,8 +1598,10 @@ GLOBAL,,,SWND,214,2013-04-26,2013-10-13,,,,deployment_code,str,SOFS-4-2013
 GLOBAL,,,SWND,228,2013-04-26,2013-10-13,,,,deployment_code,str,SOFS-4-2013
 GLOBAL,,,SWR,235,2013-04-26,2013-10-13,,,,deployment_code,str,SOFS-4-2013
 GLOBAL,,,SWR,236,2013-04-26,2013-10-13,,,,deployment_code,str,SOFS-4-2013
+
 VAR,LATITUDE,SOFS-4-2013,,,2013-04-26,2013-10-13,LATITUDE,(),(),,float64,-46.77725
 VAR,LONGITUDE,SOFS-4-2013,,,2013-04-26,2013-10-13,LONGITUDE,(),(),,float64,141.99289
+
 GLOBAL,,SOFS-4-2013,,,2013-04-26,2013-10-13,,,,site_nominal_depth,float64,4624
 GLOBAL,,SOFS-4-2013,,,2013-04-26,2013-10-13,,,,time_deployment_start,str,2013-05-01T09:00:00Z
 GLOBAL,,SOFS-4-2013,,,2013-04-26,2013-10-13,,,,time_deployment_end,str,2013-10-14T19:54:45Z
@@ -1579,6 +1609,7 @@ GLOBAL,,SOFS-4-2013,,,,,,,,voyage_deployment,str,http://www.cmar.csiro.au/data/t
 GLOBAL,,SOFS-4-2013,,,,,,,,voyage_recovery,str,http://www.cmar.csiro.au/data/trawler/survey_details.cfm?survey=SS2013_V06
 GLOBAL,,SOFS-4-2013,LI-190SA,unknown,2013-04-26,2013-10-13,,,,instrument_serial_number,str,Q47470
 GLOBAL,,SOFS-4-2013,Optode 3830,unknown,2013-04-26,2013-10-13,,,,instrument_serial_number,str,1157
+
 VAR_ATT,PAR,SOFS-4-2013,LI-190SA,unknown,2013-04-26,2013-10-13,,,,calibration_date,str,"March 02, 2012"
 VAR_ATT,PAR,SOFS-4-2013,LI-190SA,unknown,2013-04-26,2013-10-13,,,,calibration_units,str,umol s-1 m-2 per uamp
 VAR_ATT,PAR,SOFS-4-2013,LI-190SA,unknown,2013-04-26,2013-10-13,,,,calibration_constant,str,8.19
@@ -1591,6 +1622,7 @@ VAR_ATT,PAR,SOFS-4-2013,LI-190SA,unknown,2013-04-26,2013-10-13,,,,units,str,umol
 VAR,NOMINAL_DEPTH,SOFS-4-2013,MF-AZFP,55046,2013-04-26,2013-10-13,NOMINAL_DEPTH,(),(),,float64,30
 VAR,NOMINAL_DEPTH,SOFS-4-2013,Optode 3975C,1157,2013-04-26,2013-10-13,NOMINAL_DEPTH,(),(),,float64,1.01
 VAR,NOMINAL_DEPTH,SOFS-4-2013,Optode 3830,unknown,2013-04-26,2013-10-13,NOMINAL_DEPTH,(),(),,float64,1.01
+VAR,NOMINAL_DEPTH,SOFS-4-2013,Optode 3830,1157,2013-04-26,2013-10-13,NOMINAL_DEPTH,(),(),,float64,1.01
 VAR,NOMINAL_DEPTH,SOFS-4-2013,MDS-MKV/L,201316,2013-04-26,2013-10-13,NOMINAL_DEPTH,(),(),,float64,10
 VAR,NOMINAL_DEPTH,SOFS-4-2013,MDS-MKV/L,201318,2013-04-26,2013-10-13,NOMINAL_DEPTH,(),(),,float64,20
 VAR,NOMINAL_DEPTH,SOFS-4-2013,MDS-MKV/L,201319,2013-04-26,2013-10-13,NOMINAL_DEPTH,(),(),,float64,40
@@ -1664,6 +1696,7 @@ GLOBAL,,,MF-AZFP,55046,2015-03-20,2016-04-14,,,,deployment_code,str,SOFS-5-2015
 GLOBAL,,,DCS,197,2015-03-20,2016-04-14,,,,deployment_code,str,SOFS-5-2015
 GLOBAL,,,DCS,212,2015-03-20,2016-04-14,,,,deployment_code,str,SOFS-5-2015
 GLOBAL,,,Optode 3830,1419,2015-03-20,2016-04-14,,,,deployment_code,str,SOFS-5-2015
+GLOBAL,,,Optode 3830,unknown,2015-03-20,2016-04-14,,,,deployment_code,str,SOFS-5-2015
 GLOBAL,,,Seaguard RCM DW,101,2015-03-20,2016-04-14,,,,deployment_code,str,SOFS-5-2015
 GLOBAL,,,Seaguard RCM DW,103,2015-03-20,2016-04-14,,,,deployment_code,str,SOFS-5-2015
 GLOBAL,,,MDS-MKV/L,201316,2015-03-20,2016-04-14,,,,deployment_code,str,SOFS-5-2015
@@ -1743,8 +1776,12 @@ GLOBAL,,,SWND,214,2015-03-20,2016-04-14,,,,deployment_code,str,SOFS-5-2015
 GLOBAL,,,SWR,235,2015-03-20,2016-04-14,,,,deployment_code,str,SOFS-5-2015
 GLOBAL,,,SWR,241,2015-03-20,2016-04-14,,,,deployment_code,str,SOFS-5-2015
 GLOBAL,,,MELO,3.00E+14,2015-03-20,2016-04-14,,,,deployment_code,str,SOFS-5-2015
+
+GLOBAL,,SOFS-5-2015,Optode 3830,unknown,2015-03-20,2016-04-14,,,,instrument_serial_number,str,1419
+
 VAR,LATITUDE,SOFS-5-2015,,,2015-03-20,2016-04-14,LATITUDE,(),(),,float64,-46.66653
 VAR,LONGITUDE,SOFS-5-2015,,,2015-03-20,2016-04-14,LONGITUDE,(),(),,float64,142.07324
+
 GLOBAL,,SOFS-5-2015,,,2015-03-20,2016-04-14,,,,site_nominal_depth,float64,4624
 GLOBAL,,SOFS-5-2015,,,2015-03-20,2016-04-14,,,,time_deployment_start,str,2015-03-24T02:34:34Z
 GLOBAL,,SOFS-5-2015,,,2015-03-20,2016-04-14,,,,time_deployment_end,str,2016-04-13T20:17:19Z
@@ -1760,10 +1797,12 @@ VAR_ATT,PAR,SOFS-5-2015,LI-190SA,unknown,2015-03-20,2016-04-14,,,,comment_scale_
 VAR_ATT,PAR,SOFS-5-2015,LI-190SA,unknown,2015-03-20,2016-04-14,,,,standard_name,str,surface_downwelling_photosynthetic_photon_flux_in_air
 VAR_ATT,PAR,SOFS-5-2015,LI-190SA,unknown,2015-03-20,2016-04-14,,,,long_name,str,surface_downwelling_photosynthetic_photon_flux_in_air
 VAR_ATT,PAR,SOFS-5-2015,LI-190SA,unknown,2015-03-20,2016-04-14,,,,units,str,umol/m^2/s
+
 VAR,NOMINAL_DEPTH,SOFS-5-2015,MF-AZFP,55046,2015-03-20,2016-04-14,NOMINAL_DEPTH,(),(),,float64,30
 VAR,NOMINAL_DEPTH,SOFS-5-2015,DCS,197,2015-03-20,2016-04-14,NOMINAL_DEPTH,(),(),,float64,200
 VAR,NOMINAL_DEPTH,SOFS-5-2015,DCS,212,2015-03-20,2016-04-14,NOMINAL_DEPTH,(),(),,float64,800
 VAR,NOMINAL_DEPTH,SOFS-5-2015,Optode 3830,1419,2015-03-20,2016-04-14,NOMINAL_DEPTH,(),(),,float64,1
+VAR,NOMINAL_DEPTH,SOFS-5-2015,Optode 3830,unknown,2015-03-20,2016-04-14,NOMINAL_DEPTH,(),(),,float64,1
 VAR,NOMINAL_DEPTH,SOFS-5-2015,Seaguard RCM DW,101,2015-03-20,2016-04-14,NOMINAL_DEPTH,(),(),,float64,800
 VAR,NOMINAL_DEPTH,SOFS-5-2015,Seaguard RCM DW,103,2015-03-20,2016-04-14,NOMINAL_DEPTH,(),(),,float64,200
 VAR,NOMINAL_DEPTH,SOFS-5-2015,MDS-MKV/L,201316,2015-03-20,2016-04-14,NOMINAL_DEPTH,(),(),,float64,10
@@ -1846,6 +1885,7 @@ VAR,NOMINAL_DEPTH,SOFS-5-2015,MELO,3.00E+14,2015-03-20,2016-04-14,NOMINAL_DEPTH,
 
 GLOBAL,,,MF-AZFP,55052,2017-03-20,2017-11-08,,,,deployment_code,str,SOFS-6-2017
 GLOBAL,,,Optode 3830,1158,2017-03-20,2017-11-08,,,,deployment_code,str,SOFS-6-2017
+GLOBAL,,,Optode 3830,unknown,2017-03-20,2017-11-08,,,,deployment_code,str,SOFS-6-2017
 GLOBAL,,,DEFI-L,082V022,2017-03-20,2017-11-08,,,,deployment_code,str,SOFS-6-2017
 GLOBAL,,,DEFI-L,OAAO010,2017-03-20,2017-11-08,,,,deployment_code,str,SOFS-6-2017
 GLOBAL,,,DEFI-L,OAAO011,2017-03-20,2017-11-08,,,,deployment_code,str,SOFS-6-2017
@@ -1865,8 +1905,8 @@ GLOBAL,,,Aquapro 1 MHz,AQP-5830 (AQD-11011),2017-03-20,2017-11-08,,,,deployment_
 GLOBAL,,,Vector,VEC-13630  (VEC-5008),2017-03-20,2017-11-08,,,,deployment_code,str,SOFS-6-2017
 GLOBAL,,,Vector,VEC-5037  (VEC-8227),2017-03-20,2017-11-08,,,,deployment_code,str,SOFS-6-2017
 GLOBAL,,,SUNA - V2,829,2017-03-20,2017-11-08,,,,deployment_code,str,SOFS-6-2017
-#GLOBAL,,,SBE37SM-RS485,03710136,2017-03-20,2017-11-08,,,,deployment_code,str,SOFS-6-2017
-#GLOBAL,,,SBE37SM-RS485,03708764,2017-03-20,2017-11-08,,,,deployment_code,str,SOFS-6-2017
+GLOBAL,,,SBE37SM-RS485,03710136,2017-03-20,2017-11-08,,,,deployment_code,str,SOFS-6-2017
+GLOBAL,,,SBE37SM-RS485,03708764,2017-03-20,2017-11-08,,,,deployment_code,str,SOFS-6-2017
 GLOBAL,,,SBE37SMP-ODO-RS232,3714700,2017-03-20,2017-11-08,,,,deployment_code,str,SOFS-6-2017
 GLOBAL,,,SBE37SMP-ODO-RS232,3709513,2017-03-20,2017-11-08,,,,deployment_code,str,SOFS-6-2017
 GLOBAL,,,SBE37SMP-ODO-RS232,3709514,2017-03-20,2017-11-08,,,,deployment_code,str,SOFS-6-2017
@@ -1901,7 +1941,7 @@ GLOBAL,,,Minilog-II-T,354211,2017-03-20,2017-11-08,,,,deployment_code,str,SOFS-6
 GLOBAL,,,Minilog-II-T,354212,2017-03-20,2017-11-08,,,,deployment_code,str,SOFS-6-2017
 GLOBAL,,,FLNTUS,1802,2017-03-20,2017-11-08,,,,deployment_code,str,SOFS-6-2017
 GLOBAL,,,ASIMET LOG53,L22,2017-03-20,2017-11-08,,,,deployment_code,str,SOFS-6-2017
-#GLOBAL,,,ASIMET LOG53,L25,2017-03-20,2017-11-08,,,,deployment_code,str,SOFS-6-2017
+GLOBAL,,,ASIMET LOG53,L25,2017-03-20,2017-11-08,,,,deployment_code,str,SOFS-6-2017
 GLOBAL,,,BPR,231,2017-03-20,2017-11-08,,,,deployment_code,str,SOFS-6-2017
 GLOBAL,,,BPR,232,2017-03-20,2017-11-08,,,,deployment_code,str,SOFS-6-2017
 GLOBAL,,,HRH,245,2017-03-20,2017-11-08,,,,deployment_code,str,SOFS-6-2017
@@ -1921,6 +1961,9 @@ GLOBAL,,,SWR,245,2017-03-20,2017-11-08,,,,deployment_code,str,SOFS-6-2017
 GLOBAL,,,KILO,3.00E+14,2017-03-20,2017-11-08,,,,deployment_code,str,SOFS-6-2017
 GLOBAL,,,MELO,3.00E+14,2017-03-20,2017-11-08,,,,deployment_code,str,SOFS-6-2017
 GLOBAL,,,LI-190SA,unknown,2017-03-20,2017-11-08,,,,deployment_code,str,SOFS-6-2017
+
+GLOBAL,,SOFS-6-2017,Optode 3830,unknown,2017-03-20,2017-11-08,,,,instrument_serial_number,str,1158
+
 VAR,LATITUDE,SOFS-6-2017,,,,,LATITUDE,(),(),,float64,-46.02652
 VAR,LONGITUDE,SOFS-6-2017,,,,,LONGITUDE,(),(),,float64,142.12901
 GLOBAL,,SOFS-6-2017,,,,,,,,site_nominal_depth,float64,4624
@@ -1943,6 +1986,7 @@ VAR_ATT,PAR,SOFS-6-2017,LI-190SA,unknown,2017-03-20,2017-11-08,,,,long_name,str,
 VAR_ATT,PAR,SOFS-6-2017,LI-190SA,unknown,2017-03-20,2017-11-08,,,,units,str,umol/m^2/s
 VAR,NOMINAL_DEPTH,SOFS-6-2017,MF-AZFP,55052,2017-03-20,2017-11-08,NOMINAL_DEPTH,(),(),,float64,0
 VAR,NOMINAL_DEPTH,SOFS-6-2017,Optode 3830,1158,2017-03-20,2017-11-08,NOMINAL_DEPTH,(),(),,float64,1
+VAR,NOMINAL_DEPTH,SOFS-6-2017,Optode 3830,unknown,2017-03-20,2017-11-08,NOMINAL_DEPTH,(),(),,float64,1
 VAR,NOMINAL_DEPTH,SOFS-6-2017,DEFI-L,082V022,2017-03-20,2017-11-08,NOMINAL_DEPTH,(),(),,float64,50
 VAR,NOMINAL_DEPTH,SOFS-6-2017,DEFI-L,OAAO010,2017-03-20,2017-11-08,NOMINAL_DEPTH,(),(),,float64,11
 VAR,NOMINAL_DEPTH,SOFS-6-2017,DEFI-L,OAAO011,2017-03-20,2017-11-08,NOMINAL_DEPTH,(),(),,float64,20
@@ -1998,7 +2042,7 @@ VAR,NOMINAL_DEPTH,SOFS-6-2017,Minilog-II-T,354211,2017-03-20,2017-11-08,NOMINAL_
 VAR,NOMINAL_DEPTH,SOFS-6-2017,Minilog-II-T,354212,2017-03-20,2017-11-08,NOMINAL_DEPTH,(),(),,float64,360
 VAR,NOMINAL_DEPTH,SOFS-6-2017,FLNTUS,1802,2017-03-20,2017-11-08,NOMINAL_DEPTH,(),(),,float64,1
 VAR,NOMINAL_DEPTH,SOFS-6-2017,ASIMET LOG53,L22,2017-03-20,2017-11-08,NOMINAL_DEPTH,(),(),,float64,0
-#VAR,NOMINAL_DEPTH,SOFS-6-2017,ASIMET LOG53,L25,2017-03-20,2017-11-08,NOMINAL_DEPTH,(),(),,float64,0
+VAR,NOMINAL_DEPTH,SOFS-6-2017,ASIMET LOG53,L25,2017-03-20,2017-11-08,NOMINAL_DEPTH,(),(),,float64,0
 VAR,NOMINAL_DEPTH,SOFS-6-2017,BPR,231,2017-03-20,2017-11-08,NOMINAL_DEPTH,(),(),,float64,-2
 VAR,NOMINAL_DEPTH,SOFS-6-2017,BPR,232,2017-03-20,2017-11-08,NOMINAL_DEPTH,(),(),,float64,-2
 VAR,NOMINAL_DEPTH,SOFS-6-2017,HRH,245,2017-03-20,2017-11-08,NOMINAL_DEPTH,(),(),,float64,-2
@@ -2887,7 +2931,7 @@ GLOBAL,,,SBE37SMP-ODO-RS232,03715969,2020-08-31,2021-04-24,,"","",deployment_cod
 GLOBAL,,,SBE37SMP-ODO-RS232,03715970,2020-08-31,2021-04-24,,"","",deployment_code,str,"SOFS-9-2020"
 GLOBAL,,,SBE37SMP-ODO-RS232,03715971,2020-08-31,2021-04-24,,"","",deployment_code,str,"SOFS-9-2020"
 GLOBAL,,,SBE37SMP-ODO-RS232,03715972,2020-08-31,2021-04-24,,"","",deployment_code,str,"SOFS-9-2020"
-GLOBAL,,,SBE37SMP-ODO-RS232,03720127,2020-08-31,2021-04-24,,"","",deployment_code,str,"SOFS-9-2020"
+GLOBAL,,,SBE37SMP-ODO-RS232,03720127,2020-10-31,2021-04-24,,"","",deployment_code,str,"SOFS-9-2020"
 GLOBAL,,,SBE39,5282,2020-08-31,2021-04-24,,"","",deployment_code,str,"SOFS-9-2020"
 GLOBAL,,,SeaFETv1,1001,2020-08-31,2021-04-24,,"","",deployment_code,str,"SOFS-9-2020"
 GLOBAL,,,Load Cell 10826-3*,002,2020-08-31,2021-04-24,,"","",deployment_code,str,"SOFS-9-2020"

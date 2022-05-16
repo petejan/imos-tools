@@ -36,6 +36,7 @@ VAR_ATT,DOX2,,,,,,,,,long_name,str,moles_of_oxygen_per_unit_mass_in_sea_water
 VAR_ATT,DOX2,,,,,,,,,standard_name,str,moles_of_oxygen_per_unit_mass_in_sea_water
 VAR_ATT,DOX2,,,,,,,,,valid_max,float32,400
 VAR_ATT,DOX2,,,,,,,,,valid_min,float32,0
+VAR_ATT,DOX2,,,,,,,,,units,str,umol/kg
 
 VAR_ATT,DOX,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
 VAR_ATT,DOX,,,,,,,,,long_name,str,volume_concentration_of_dissolved_molecular_oxygen_in_sea_water
@@ -50,7 +51,7 @@ VAR_ATT,DOXY,,,,,,,,,valid_max,float32,40
 VAR_ATT,DOXY,,,,,,,,,valid_min,float32,0
 
 VAR_ATT,OXSOL,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
-VAR_ATT,OXSOL,,,,,,,,,long_name,str,oxygen_solubility_per_unit_mass_in_seawater
+VAR_ATT,OXSOL,,,,,,,,,long_name,str,moles_of_oxygen_per_unit_mass_in_sea_water_at_saturation
 VAR_ATT,OXSOL,,,,,,,,,valid_max,float32,400
 VAR_ATT,OXSOL,,,,,,,,,valid_min,float32,0
 
@@ -114,6 +115,14 @@ VAR_ATT,DENSITY,,,,,,,,,long_name,str,sea_water_density
 VAR_ATT,DENSITY,,,,,,,,,standard_name,str,sea_water_density
 VAR_ATT,DENSITY,,,,,,,,,valid_max,float32,1200
 VAR_ATT,DENSITY,,,,,,,,,valid_min,float32,0
+
+VAR_ATT,SIGMA_T0,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,SIGMA_T0,,,,,,,,,units,str,kg/m^3
+VAR_ATT,SIGMA_T0,,,,,,,,,long_name,str,sea_water_sigma_theta
+VAR_ATT,SIGMA_T0,,,,,,,,,standard_name,str,sea_water_sigma_theta
+VAR_ATT,SIGMA_T0,,,,,,,,,reference_pressure,str,0 dbar
+VAR_ATT,SIGMA_T0,,,,,,,,,valid_max,float32,200
+VAR_ATT,SIGMA_T0,,,,,,,,,valid_min,float32,0
 
 VAR_ATT,LATITUDE,,,,,,,,,axis,str,Y
 VAR_ATT,LATITUDE,,,,,,,,,long_name,str,latitude
@@ -222,6 +231,19 @@ VAR_ATT,ABSIC3,,,,,,,,,valid_min,int16,0
 
 VAR_ATT,DOX_TEMP,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
 VAR_ATT,DOX_TEMP,,,,,,,,,long_name,str,oxygen_sensor_temperature
+VAR_ATT,DOXS,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,DOXS,,,,,,,,,long_name,str,fractional_saturation_of_oxygen_in_sea_water
+VAR_ATT,DOXS,,,,,,,,,standard_name,str,fractional_saturation_of_oxygen_in_sea_water
+
+VAR_ATT,BPHASE,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,BPHASE,,,,,,,,,long_name,str,oxygen_optode_bphase
+VAR_ATT,BPHASE,,,,,,,,,units,str,1
+VAR_ATT,OTEMP,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,OTEMP,,,,,,,,,long_name,str,oxygen_sensor_temperature
+VAR_ATT,OTEMP,,,,,,,,,units,str,degrees_Celsius
+
+VAR_ATT,DOX2_RAW,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,DOX2_RAW,,,,,,,,,long_name,str,oxygen_uncorrected
 
 VAR_ATT,V0,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
 VAR_ATT,V1,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH

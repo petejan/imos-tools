@@ -32,7 +32,8 @@ data = [{'out': 'PSAL', 'in': ('TEMP', 'PRES', 'CNDC')},
         {'out': 'SIGMA_T0', 'in': ('TEMP', 'PRES', 'PSAL')},
         {'out': 'SIGMA_T0_SM', 'in': ('TEMP', 'PRES', 'PSAL')},
         {'out': 'OXSOL', 'in': ('TEMP', 'PRES', 'PSAL')},
-        {'out': 'DOX2', 'in': ('TEMP', 'PRES', 'PSAL', 'DOX', 'OXSOL')},
+        {'out': 'DOX2', 'in': ('TEMP', 'PRES', 'PSAL', 'DOX', 'OXSOL', 'DOXS')},
+        {'out': 'DOXS', 'in': ('TEMP', 'PRES', 'PSAL', 'DOX', 'OXSOL', 'DOX2')},
         ]
 
 

@@ -25,16 +25,12 @@ from datetime import datetime
 # add OXSOL to a data file with TEMP, PSAL, PRES variables, many assumptions are made about the input file
 
 
-def oxygen(netCDFfile):
+def doxtodox2(netCDFfile):
     ds = Dataset(netCDFfile, 'a')
 
-    var_temp = ds.variables["TEMP"]
-    var_psal = ds.variables["PSAL"]
-    var_pres = ds.variables["PRES"]
-
-    t = var_temp[:]
-    SP = var_psal[:]
-    p = var_pres[:]
+    if "DOX2" in ds.variables:
+        print('file already has DOX2')
+        return
 
     var_dox = None
     if "DOX" in ds.variables:
@@ -46,6 +42,14 @@ def oxygen(netCDFfile):
     if var_dox is None:
         print("No DOX/DOXY in file")
         return
+
+    var_temp = ds.variables["TEMP"]
+    var_psal = ds.variables["PSAL"]
+    var_pres = ds.variables["PRES"]
+
+    t = var_temp[:]
+    SP = var_psal[:]
+    p = var_pres[:]
 
     lat = -47
     lon = 142
@@ -75,7 +79,7 @@ def oxygen(netCDFfile):
     ncVarOut.valid_max = np.float32(400)
     ncVarOut.valid_min = np.float32(0)
     ncVarOut.coordinates = "TIME LATITUDE LONGITUDE NOMINAL_DEPTH"
-    ncVarOut.comment = "calculated from DOX using https://www.seabird.com/asset-get.download.jsa?code=251036"
+    ncVarOut.comment = "calculated from DOX using Sea-Bird Electronics AN64 June 2013, https://www.seabird.com/asset-get.download.jsa?code=251036"
 
     # finish off, and close file
 
@@ -91,4 +95,4 @@ def oxygen(netCDFfile):
 
 
 if __name__ == "__main__":
-    oxygen(sys.argv[1])
+    doxtodox2(sys.argv[1])

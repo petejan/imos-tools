@@ -70,7 +70,7 @@ def round_time(dt=None, roundTo=3600):
     return dt + timedelta(0, rounding-seconds, -dt.microsecond)
 
 
-def datalogger(files):
+def datalogger(outputName, files):
 
     decode_dict = {'StabQ0': 0, 'StabQ1': 1, 'StabQ2': 2, 'StabQ3': 3,
                    'MagFieldX': 4, 'MagFieldY': 5, 'MagFieldZ': 6,
@@ -106,9 +106,9 @@ def datalogger(files):
     # build the netCDF file
     #
 
-    ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
+    # TODO: sort time
 
-    outputName = files[0] + ".nc"
+    ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
 
     print("output file : %s" % outputName)
 
@@ -150,7 +150,6 @@ def datalogger(files):
     obp_var = None
 
     load_var = dataset.createVariable('load', np.float32, ('TIME', 'SAMPLE'), fill_value=np.nan)
-
 
     # TODO: process the output of this parser into frequency spectra, wave height
 
@@ -208,24 +207,25 @@ def datalogger(files):
 
                                 load_samples = np.zeros([3072])
 
-                            accel_samples[sample, 0] = decode_scale[decode_dict['AccelX']]
-                            accel_samples[sample, 1] = decode_scale[decode_dict['AccelY']]
-                            accel_samples[sample, 2] = decode_scale[decode_dict['AccelZ']]
+                            if sample < 3072:
+                                accel_samples[sample, 0] = decode_scale[decode_dict['AccelX']]
+                                accel_samples[sample, 1] = decode_scale[decode_dict['AccelY']]
+                                accel_samples[sample, 2] = decode_scale[decode_dict['AccelZ']]
 
-                            quat_samples[sample, 0] = decode_scale[decode_dict['StabQ0']]
-                            quat_samples[sample, 1] = decode_scale[decode_dict['StabQ1']]
-                            quat_samples[sample, 2] = decode_scale[decode_dict['StabQ2']]
-                            quat_samples[sample, 3] = decode_scale[decode_dict['StabQ3']]
+                                quat_samples[sample, 0] = decode_scale[decode_dict['StabQ0']]
+                                quat_samples[sample, 1] = decode_scale[decode_dict['StabQ1']]
+                                quat_samples[sample, 2] = decode_scale[decode_dict['StabQ2']]
+                                quat_samples[sample, 3] = decode_scale[decode_dict['StabQ3']]
 
-                            mag_samples[sample, 0] = decode_scale[decode_dict['MagFieldX']]
-                            mag_samples[sample, 1] = decode_scale[decode_dict['MagFieldY']]
-                            mag_samples[sample, 2] = decode_scale[decode_dict['MagFieldZ']]
+                                mag_samples[sample, 0] = decode_scale[decode_dict['MagFieldX']]
+                                mag_samples[sample, 1] = decode_scale[decode_dict['MagFieldY']]
+                                mag_samples[sample, 2] = decode_scale[decode_dict['MagFieldZ']]
 
-                            gyro_samples[sample, 0] = decode_scale[decode_dict['CompAngleRateX']]
-                            gyro_samples[sample, 1] = decode_scale[decode_dict['CompAngleRateY']]
-                            gyro_samples[sample, 2] = decode_scale[decode_dict['CompAngleRateZ']]
+                                gyro_samples[sample, 0] = decode_scale[decode_dict['CompAngleRateX']]
+                                gyro_samples[sample, 1] = decode_scale[decode_dict['CompAngleRateY']]
+                                gyro_samples[sample, 2] = decode_scale[decode_dict['CompAngleRateZ']]
 
-                            load_samples[sample] = decode_scale[decode_dict['Load']]
+                                load_samples[sample] = decode_scale[decode_dict['Load']]
 
                             # accel_var[t_idx, sample, 0] = decode_scale[decode_dict['AccelX']]
                             # accel_var[t_idx, sample, 1] = decode_scale[decode_dict['AccelY']]
@@ -334,16 +334,21 @@ def datalogger(files):
                     if matchobj:
                         data_time = datetime.strptime(matchobj.group(1), "%Y-%m-%d %H:%M:%S")
                         rmc_split = matchobj.group(2).split(',')
+                        #print('rmc split', rmc_split)
                         if rmc_split[2] == 'A':
-                            lat_dm = float(rmc_split[3])
-                            lat_ns = rmc_split[4]
-                            lon_dm = float(rmc_split[5])
-                            lon_ew = rmc_split[6]
+                            try:
+                                lat_dm = float(rmc_split[3])
+                                lat_ns = rmc_split[4]
+                                lon_dm = float(rmc_split[5])
+                                lon_ew = rmc_split[6]
 
-                            lat = gps_dm_degree(lat_dm, lat_ns)
-                            lon = gps_dm_degree(lon_dm, lon_ew)
+                                lat = gps_dm_degree(lat_dm, lat_ns)
+                                lon = gps_dm_degree(lon_dm, lon_ew)
 
-                            data_time_rmc = datetime.strptime(rmc_split[9] + ' ' + rmc_split[1] + '000', "%d%m%y %H%M%S.%f")
+                                data_time_rmc = datetime.strptime(rmc_split[9] + ' ' + rmc_split[1] + '000', "%d%m%y %H%M%S.%f")
+
+                            except ValueError:
+                                pass
 
                         #print('time ', data_time, data_time_rmc, lat, lon, rmc_split)
 
@@ -435,8 +440,11 @@ def datalogger(files):
 
 
 if __name__ == "__main__":
+
+    outfile = sys.argv[1]
+
     files = []
-    for f in sys.argv[1:]:
+    for f in sys.argv[2:]:
         files.extend(glob(f))
 
-    datalogger(files)
+    datalogger(outfile, files)

@@ -102,6 +102,7 @@ var_names3 = [var_temp, var_cndc, var_pres]
 var_names5 = [var_temp, var_cndc, var_pres, var_dox, var_psal]
 
 model_serial_expr = r".*(SBE\S*) (\S*).*SERIAL NO. (\S*).*$"
+model_serial_expr2 = r".*(SBE \S*) (\S*).*SERIAL NO. (\S*).*$"
 
 temp_cal_expr     = r"^temperature: \s*(\S*)"
 cond_cal_expr     = r"^conductivity: \s*(\S*)"
@@ -193,12 +194,21 @@ def parse(files):
                         print("model_serial_expr:matchObj.group(3) : ", matchObj.group(3))
                         instrument_model = matchObj.group(1)
                         instrument_serialnumber = matchObj.group(3)
+                    matchObj = re.match(model_serial_expr2, line)
+                    # print("match ", matchObj)
+                    if matchObj:
+                        #print("model_serial_expr:matchObj.group() : ", matchObj.group())
+                        print("model_serial_expr2:matchObj.group(1) : ", matchObj.group(1))
+                        #print("model_serial_expr:matchObj.group(1) : ", matchObj.group(2))
+                        print("model_serial_expr2:matchObj.group(3) : ", matchObj.group(3))
+                        instrument_model = matchObj.group(1).replace(" ", "")
+                        instrument_serialnumber = matchObj.group(3)
 
                 line_split = line.split(',')
 
                 #print("splits ", len(line_split))
 
-                if len(line_split) >= 5 and line[0] == ' ':
+                if len(line_split) >= 3 and line[0] == ' ':
                     ts = datetime.strptime(line_split[-2].strip() + ' ' + line_split[-1].strip(), "%d %b %Y %H:%M:%S")
                     d = [float(v) for v in line_split[0:-2]]
                     nVariables = len(d)

@@ -119,7 +119,7 @@ nameMap["pressure"] = "PRES"
 first_line_expr   = r"\* Sea-Bird (.*) Data File:"
 
 end_expr          = r"\*END\*"
-model_serial_expr = r"\* (SBE.*) V (\S*).*SERIAL NO. (\S*)"
+model_serial_expr = r"\* (SBE.*) [Vv] ?(\S*).*SERIAL NO. (\S*)"
 sample_interval   = r"\* sample interval = (\d*) (\S*)"
 
 start_time_expr   = r"start time =\s*(.*)"
@@ -162,13 +162,18 @@ def sbe_asc_parse(files):
         no_time = False
         number_samples = 1
         times = None
+        nVariables = 0
+
+        instrument_model = 'unknown'
+        instrument_serialnumber = 'unknown'
+        sample_interval = None
 
         with open(filepath, 'r', errors='ignore') as fp:
             line = fp.readline()
             matchObj = re.match(first_line_expr, line)
             if not matchObj:
                 print("Not a Sea Bird ASC file !")
-                return None
+                continue
 
             cnt = 1
             while line:
@@ -323,7 +328,8 @@ def sbe_asc_parse(files):
         ncOut.instrument = 'Sea-Bird Electronics ; ' + instrument_model
         ncOut.instrument_model = instrument_model
         ncOut.instrument_serial_number = instrument_serialnumber
-        ncOut.instrument_sample_interval = np.float(sample_interval)
+        if sample_interval:
+            ncOut.instrument_sample_interval = np.float(sample_interval)
         #ncOut.instrument_model = instrument_model
 
         #     TIME:axis = "T";
