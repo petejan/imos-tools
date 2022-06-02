@@ -240,6 +240,16 @@ for fv00_file in ncFiles:
         manual_flag = 4
         manual_reason = 'sensor data noisy'
 
+    if (sn == '3854') and model == 'Starmon mini' and deployment == 'SOFS-10-2021':
+        manual_flag = 2
+        manual_reason = 'sensor data noisy'
+    if (sn == '3993') and model == 'Starmon mini' and deployment == 'SOFS-10-2021':
+        manual_flag = 3
+        manual_reason = 'sensor data noisy'
+    if (sn == '3996') and model == 'Starmon mini' and deployment == 'SOFS-10-2021':
+        manual_flag = 3
+        manual_reason = 'sensor data noisy'
+
     if manual_flag:
         fv01_file_list = ocean_dp.qc.manual_by_date.maunal(fv01_file_list, manual_var, maunal_date_start, manual_flag, manual_reason, end_str=maunal_date_end)
     if model == 'SBE37SMP-ODO-RS232' and deployment == 'SOFS-9-2020' and sn == '03715971':

@@ -1,7 +1,10 @@
 rec_type, var_name, deployment_code, model, serial_number, time_deployment, time_recovery, variable_name, variable_dims, variable_shape, attribute_name, type, value
 VAR_ATT,TIME,,,,,,,,,standard_name,str,time
+VAR_ATT,TIME,,,,,,,,,long_name,str,time
+VAR_ATT,TIME,,,,,,,,,axis,str,T
 VAR_ATT,TIME,,,,,,,,,valid_max,float64,90000
 VAR_ATT,TIME,,,,,,,,,valid_min,float64,0
+
 VAR_ATT,TEMP,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
 VAR_ATT,TEMP,,,,,,,,,long_name,str,sea_water_temperature
 VAR_ATT,TEMP,,,,,,,,,standard_name,str,sea_water_temperature
@@ -78,12 +81,14 @@ VAR_ATT,ECO_FLNTUS_CPHL,,,,,,,,,long_name,str,wetlabs_flntus_chl_counts
 VAR_ATT,ECO_FLNTUS_CPHL,,,,,,,,,valid_min,float32,0.
 VAR_ATT,ECO_FLNTUS_CPHL,,,,,,,,,valid_max,float32,4130.
 VAR_ATT,ECO_FLNTUS_CPHL,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,ECO_FLNTUS_CPHL,,,,,,,,,units,str,1
 
 VAR_ATT,ECO_FLNTUS_TURB,,,,,,,,,name,str,Eco-FLNTUS Turbidity counts
 VAR_ATT,ECO_FLNTUS_TURB,,,,,,,,,long_name,str,wetlabs_flntus_turb_counts
 VAR_ATT,ECO_FLNTUS_TURB,,,,,,,,,valid_min,float32,0.
 VAR_ATT,ECO_FLNTUS_TURB,,,,,,,,,valid_max,float32,4130.
 VAR_ATT,ECO_FLNTUS_TURB,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,ECO_FLNTUS_TURB,,,,,,,,,units,str,1
 
 VAR_ATT,CPHL,,,,,,,,,units,str,ug/l
 VAR_ATT,CPHL,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
@@ -151,15 +156,22 @@ VAR_ATT,NOMINAL_DEPTH,,,,,,,,,valid_min,float64,-5
 VAR_ATT,XPOS,,,,,,,,,long_name,str,longitude
 VAR_ATT,XPOS,,,,,,,,,reference_datum,str,WGS84 geographic coordinate system
 VAR_ATT,XPOS,,,,,,,,,units,str,degrees_east
-VAR_ATT,XPOS,,,,,,,,,valid_max,float32,360
-VAR_ATT,XPOS,,,,,,,,,valid_min,float32,-180
+VAR_ATT,XPOS,,,,,,,,,valid_max,float64,360
+VAR_ATT,XPOS,,,,,,,,,valid_min,float64,-180
 VAR_ATT,XPOS,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+
 VAR_ATT,YPOS,,,,,,,,,long_name,str,latitude
 VAR_ATT,YPOS,,,,,,,,,reference_datum,str,WGS84 geographic coordinate system
 VAR_ATT,YPOS,,,,,,,,,units,str,degrees_north
-VAR_ATT,YPOS,,,,,,,,,valid_max,float32,90
-VAR_ATT,YPOS,,,,,,,,,valid_min,float32,-90
+VAR_ATT,YPOS,,,,,,,,,valid_max,float64,90
+VAR_ATT,YPOS,,,,,,,,,valid_min,float64,-90
 VAR_ATT,YPOS,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+
+VAR_ATT,ALT,,,,,,,,,long_name,str,altitude
+VAR_ATT,ALT,,,,,,,,,comment,str,gps altitude
+VAR_ATT,ALT,,,,,,,,,reference_datum,str,WGS84 geographic coordinate system
+VAR_ATT,ALT,,,,,,,,,units,str,m
+VAR_ATT,ALT,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
 
 VAR_ATT,UCUR_MAG,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
 VAR_ATT,UCUR_MAG,,,,,,,,,long_name,str,eastward_sea_water_velocity
@@ -263,3 +275,46 @@ VAR_ATT,TOTAL_GAS_PRESSURE,,,,,,,,,long_name,str,gas_tension_device_total_gas_pr
 
 VAR_ATT,TURBWETNTU0,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
 VAR_ATT,TURBWETNTU0,,,,,,,,,long_name,str,turbidity_raw
+
+VAR_ATT,sample_time,,,,,,,,,long_name,str,time_of_sample within window
+VAR_ATT,sample_time,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,TIME_SAMPLE_START,,,,,,,,,long_name,str,time offset to start of IMU samples
+VAR_ATT,TIME_SAMPLE_START,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,acceleration,,,,,,,,,long_name,str,acceleration_vector_XYZ
+VAR_ATT,acceleration,,,,,,,,,units,str,m/s/s
+VAR_ATT,acceleration,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,magnetic,,,,,,,,,long_name,str,magnetic_direction_XYZ
+VAR_ATT,magnetic,,,,,,,,,units,str,Gauss
+VAR_ATT,magnetic,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,rotational_velocity,,,,,,,,,long_name,str,float_rotational_velocity
+VAR_ATT,rotational_velocity,,,,,,,,,units,str,degree/sec
+VAR_ATT,rotational_velocity,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,orientation,,,,,,,,,long_name,str,float_orientation_quaternion
+VAR_ATT,orientation,,,,,,,,,units,str,1
+VAR_ATT,orientation,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,load,,,,,,,,,long_name,str,mooring_wire_load
+VAR_ATT,load,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,load,,,,,,,,,units,str,kg
+VAR_ATT,battery,,,,,,,,,long_name,str,instrument_battery_voltage
+VAR_ATT,battery,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,battery,,,,,,,,,units,str,Volts
+VAR_ATT,mean_load,,,,,,,,,long_name,str,mean_mooring_wire_load
+VAR_ATT,mean_load,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,mean_load,,,,,,,,,units,str,kg
+VAR_ATT,PAR_VOLT,,,,,,,,,long_name,str,PAR_sensor_voltage
+VAR_ATT,PAR_VOLT,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,PAR_VOLT,,,,,,,,,units,str,Volts
+
+VAR_ATT,TIME_GPS_FIX,,,,,,,,,long_name,str,time_of_gps_fix_from sample_time
+VAR_ATT,TIME_GPS_FIX,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,TIME_DIFF,,,,,,,,,long_name,str,difference between sample_time and UTC gps time
+VAR_ATT,TIME_DIFF,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+
+VAR_ATT,OPTODE_BPHASE,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,OPTODE_BPHASE,,,,,,,,,long_name,str,oxygen_optode_bphase
+VAR_ATT,OPTODE_BPHASE,,,,,,,,,units,str,1
+VAR_ATT,OPTODE_TEMP,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,OPTODE_TEMP,,,,,,,,,long_name,str,oxygen_sensor_temperature
+VAR_ATT,OPTODE_TEMP,,,,,,,,,units,str,degrees_Celsius
+
+

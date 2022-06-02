@@ -80,12 +80,11 @@ def create(file):
             elif att[2] == 'float64':
                 ncOut.setncattr(att[0], np.float(att[3]))
 
-    fDim = ncOut.createDimension("INSTANCE_FILE_NAME", file_count)
+    fDim = ncOut.createDimension("IDX", file_count)
     sDim = ncOut.createDimension("strlen", 256)
-    varOutFn = ncOut.createVariable("FILE_NAME", "S1", ('INSTANCE_FILE_NAME', 'strlen'))
-    varOutInst = ncOut.createVariable("INSTRUMENT", "S1", ('INSTANCE_FILE_NAME', 'strlen'))
-    varOutIdxFn = ncOut.createVariable("IDX_FILE_NAME", "i4", ("INSTANCE_FILE_NAME"))
-    varOutNdFn = ncOut.createVariable("DEPTH_FILE_NAME", "f4", ("INSTANCE_FILE_NAME"), fill_value=np.nan)
+    varOutFn = ncOut.createVariable("FILE_NAME", "S1", ('IDX', 'strlen'))
+    varOutInst = ncOut.createVariable("INSTRUMENT", "S1", ('IDX', 'strlen'))
+    varOutNdFn = ncOut.createVariable("NOMINAL_DEPTH", "f4", ("IDX"), fill_value=np.nan)
 
     sql_select_files = 'select file.file_id, file.name, a_inst.value, a_sn.value, CAST(a_nd.value AS REAL) AS nom_depth FROM file ' \
                        'left join "attributes" a_inst on (file.file_id = a_inst.file_id and a_inst.name = "instrument_model") ' \
@@ -101,6 +100,8 @@ def create(file):
     n = 0
     file_names = np.empty(file_count, dtype='S256')
     instrument = np.empty(file_count, dtype='S256')
+    file_id_map = {}
+
     while row:
         print('create-file-name', n, row[1])
         file_names[n] = row[1]
@@ -108,12 +109,13 @@ def create(file):
             instrument[n] = row[2] + ' ; ' + row[3]
         else:
             instrument[n] = 'unknown'
-        varOutIdxFn[n] = int(row[0])
         if row[4] is not None:
             varOutNdFn[n] = float(row[4])
         else:
             varOutFn[n] = np.nan
         #print('nominal depth', row[4], varOutNdFn[n])
+
+        file_id_map[row[0]] = n
 
         row = cur_files.fetchone()
 
@@ -136,36 +138,36 @@ def create(file):
 
         print('rows', cur.rowcount, len(row[5]))
 
-        iDim = ncOut.createDimension("INSTANCE_"+var_name, var[1])
+        iDim = ncOut.createDimension("IDX_"+var_name, var[1])
 
-        varOutFn = ncOut.createVariable("IDX_"+var_name, "i4", ("INSTANCE_"+var_name))
+        varOutFnIdx = ncOut.createVariable("IDX_"+var_name, "i4", ("IDX_"+var_name))
         n = 0
         while row:
             print(n, 'create-file-index', row[1], row[6])
-            varOutFn[n] = row[0]
+            varOutFnIdx[n] = file_id_map[row[0]]
             row = cur.fetchone()
 
             n += 1
 
-    # generate the DEPTH instance variables
-    vars = cur_vars.execute(sql_select_vars)
-    for var in vars:
-        var_name = var[0]
-        print('var-name', var_name)
-
-        rows = cur.execute('SELECT * FROM variable_depth WHERE name == "'+var_name+'" ORDER BY CAST(nominal_depth AS REAL)')
-        row = cur.fetchone()
-
-        print('rows', cur.rowcount, len(row[5]))
-
-        varOutNd = ncOut.createVariable("DEPTH_"+var_name, "f4", ("INSTANCE_"+var_name))
-        n = 0
-        while row:
-            print('create-depth', row[1], row[6])
-            varOutNd[n] = row[6]
-            row = cur.fetchone()
-
-            n += 1
+    # # generate the DEPTH instance variables
+    # vars = cur_vars.execute(sql_select_vars)
+    # for var in vars:
+    #     var_name = var[0]
+    #     print('var-name', var_name)
+    #
+    #     rows = cur.execute('SELECT * FROM variable_depth WHERE name == "'+var_name+'" ORDER BY CAST(nominal_depth AS REAL)')
+    #     row = cur.fetchone()
+    #
+    #     print('rows', cur.rowcount, len(row[5]))
+    #
+    #     varOutNd = ncOut.createVariable("DEPTH_"+var_name, "f4", ("IDX_"+var_name))
+    #     n = 0
+    #     while row:
+    #         print('create-depth', row[1], row[6])
+    #         varOutNd[n] = row[6]
+    #         row = cur.fetchone()
+    #
+    #         n += 1
 
     # generate the time data
     vars = cur_vars.execute(sql_select_vars)
@@ -200,13 +202,13 @@ def create(file):
 
         #iDim = ncOut.createDimension("INSTANCE_"+var_name, var[1])
 
-        varOut = ncOut.createVariable(var_name, "f4", ("INSTANCE_"+var_name, "TIME"), fill_value=np.nan, zlib=True)
+        varOut = ncOut.createVariable(var_name, "f4", ("IDX_"+var_name, "TIME"), fill_value=np.nan, zlib=True)
 
         # add the variable attributes
         att_sql = 'SELECT name, count(*), type, value FROM variable_attributes WHERE var_name = "'+var_name+'" GROUP BY name, value'
         att_rows = cur_vatt.execute(att_sql)
         for att in att_rows:
-            if att[0] != '_FillValue':
+            if att[0] != '_FillValue' and (att[0] != 'ancillary_variables'):
                 if att[1] == var[1]:
                     if att[2] == 'str':
                         varOut.setncattr(att[0], att[3])

@@ -163,7 +163,7 @@ def sbe_phox_parse(files):
     data = []
     #Sample Number (#),Error Flags (#),Temperature (Celsius),External pH (pH),External pH (Volt),Pressure (Decibar),Salinity (psu),Conductivity (S/m),Oxygen (ml/L),Relative Humidity (%),Int Temperature (Celsius)
 
-    name = ['SAMPLE', 'ERROR', 'TEMP', 'PH', 'V_EXT_PH', 'PRES', 'PSAL', 'CNDC', 'DOXY', 'RH', 'ITEMP']
+    name = ['SAMPLE', 'ERROR', 'TEMP', 'PH', 'V_EXT_PH', 'PRES', 'PSAL', 'CNDC', 'DOXY', 'I_RH', 'I_TEMP']
     units = ['1', '1', 'degrees_Celsius', '1', 'Volts', 'dbar', '1', 'S/m', 'ml/l', '%', 'degrees_Celsius']
 
     for filepath in files:
