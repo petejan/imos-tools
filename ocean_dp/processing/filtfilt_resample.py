@@ -1,6 +1,7 @@
 import os
 import sys
 
+import scipy.signal.windows
 from glob2 import glob
 from netCDF4 import Dataset, date2num, num2date
 
@@ -13,7 +14,7 @@ from scipy import stats
 np.set_printoptions(linewidth=256)
 
 
-def down_sample(files, method):
+def down_sample(files, method, hours):
     output_names = []
 
     now = datetime.utcnow()
@@ -66,12 +67,15 @@ def down_sample(files, method):
         sample_rate_mid = t_mid1 - t_mid0
         print('sample rate mid', sample_rate_mid.total_seconds(), '(seconds)')
 
-        # # find number of samples to make sample interval hrs of data
-        # window = n_mid
-        # while (datetime_time_deployment[window] - t_mid0) < timedelta(hours=hours):
-        #     window = window + 1
-        # window = window - n_mid
-        #
+        # find number of samples to make sample interval hrs of data
+        window = n_mid
+        while (datetime_time_deployment[window] - t_mid0) < timedelta(hours=hours):
+            window = window + 1
+        window = window - n_mid
+        print("Window", window, "samples")
+        filt = scipy.signal.windows.hamming(window)
+        f_a = np.zeros_like(filt)
+        f_a[0] = sum(filt)
 
         # create the new time array to sample to
         sample_datenum = date2num(sample_datetime, units=var_time.units)
@@ -152,7 +156,7 @@ def down_sample(files, method):
         # variable to smooth
         # print('input file vars', in_vars)
         z = in_vars.intersection(['PRES', 'PRES_REL', 'TEMP', 'PSAL', 'CNDC', 'DENSITY', 'SIGMA_T0', 'DOX2', 'ATMP', 'AIRT', 'AIRT2_0M', 'AIRT1_5M',
-                                  'RELH', 'RELH1_5M', 'RELH2_0M', 'HL', 'HS', 'PL_CMP', 'WSPD10M', 'WSPD', 'WDIR', 'RAIN_AMOUNT',
+                                  'RELH', 'RELH1_5M', 'RELH2_0M', 'HL', 'HS', 'PL_CMP', 'RAIN_AMOUNT',
                                   'H_RAIN', 'TAU', 'SST', 'HEAT_NET', 'MASS_NET', 'LW_NET', 'SW_NET',
                                   'SW', 'LW', 'UWIND', 'VWIND', 'CPHL', 'BB',
                                   'VAVH', 'SWH'
@@ -175,18 +179,18 @@ def down_sample(files, method):
             else:
                 qc = np.ones_like(datetime_time)
 
-            data_in = var_to_resample_in[qc <= qc_in_level]
+            # TODO: using filter need a complete (time) record, fill with NaN where missing value
+
+            data_in = var_to_resample_in[deployment_msk]
+            #data_in[qc[deployment_msk] > qc_in_level] = np.nan
 
             if only_qc and len(data_in) > 0:
-                time_deployment = var_time[qc <= qc_in_level]
 
                 print(resample_var, 'input data : ', data_in)
 
-                y = stats.binned_statistic(np.array(time_deployment), np.array(data_in), statistic='mean', bins = bins)
-                sd = stats.binned_statistic(np.array(time_deployment), np.array(data_in), statistic='std', bins = bins)
-                n = stats.binned_statistic(np.array(time_deployment), np.array(data_in), statistic='count', bins = bins)
+                y = scipy.signal.filtfilt(filt, f_a, np.array(data_in))
 
-                print('sampled data', y)
+                print('filtered data', y)
 
                 #  create output variables
                 var_resample_out = ds_new.createVariable(resample_var, 'f4', 'TIME', fill_value=np.NaN, zlib=True)
@@ -196,30 +200,14 @@ def down_sample(files, method):
                         attr_dict[a] = var_to_resample_in.getncattr(a)
 
                 var_resample_out.setncatts(attr_dict)
-                var_resample_out.ancillary_variables = resample_var + '_standard_error ' + resample_var + '_number_of_observations'
 
-                # # interpolate the time to get the distance to the nearest point
-                # f = interp1d(np.array(time_deployment), np.array(time_deployment), kind='nearest', bounds_error=False, fill_value=np.nan)
-                # sample_time_dist = (f(sample_datenum) - sample_datenum) * 24 * 3600
-                #
-                # print('sample distance', sample_time_dist, '(seconds)')
-                # create a variable to save distance to nearest point
-                # var_resample_dist_out = ds_new.createVariable(resample_var + '_SAMPLE_TIME_DIFF', 'f4', 'TIME', fill_value=np.NaN, zlib=True)
-                # var_resample_dist_out.comment = 'seconds to actual sample timestamp, abs max='+str(max(abs(sample_time_dist)))
-                # var_resample_dist_out[:] = sample_time_dist
-                #
-                # # only use data where sample time is less than 3 hrs from the gridded time
-                # sample_time_dist_msk = abs(sample_time_dist) < 0.75 * 60 * 60
+                # interpolate the time to get the distance to the nearest point
+                f = interp1d(np.array(time_deployment), y, kind='linear', bounds_error=False, fill_value=np.nan)
+                y_sample_t = f(sample_datenum)
+                print('sampled data', y_sample_t)
 
-                var_resample_dist_out = ds_new.createVariable(resample_var + '_standard_error', 'f4', 'TIME', fill_value=np.NaN, zlib=True)
-                var_resample_dist_out.comment = 'sample bin standard deviation'
-                var_resample_dist_out[:] = sd.statistic
-                var_resample_dist_out = ds_new.createVariable(resample_var + '_number_of_observations', 'f4', 'TIME', fill_value=np.NaN, zlib=True)
-                var_resample_dist_out.comment = 'number of samples'
-                var_resample_dist_out[:] = n.statistic
-
-                print("shape", var_resample_out.shape, y.statistic.shape)
-                var_resample_out[:] = y.statistic
+                print("shape", var_resample_out.shape, y.shape, y_sample_t.shape)
+                var_resample_out[:] = y_sample_t
 
         #  create history
         ds_new.history += '\n' + now.strftime("%Y-%m-%d : ") + 'resampled data created from ' + os.path.basename(filepath) + 'points, method ' + method
@@ -237,8 +225,8 @@ def down_sample(files, method):
 
 
 if __name__ == "__main__":
-    method = 'mean'
-    hours = 1
+    method = 'filtfilt'
+    hours = 5
     files = []
     for f in sys.argv[1:]:
         if f.startswith('--method='):
@@ -247,4 +235,4 @@ if __name__ == "__main__":
             hours = float(f.replace('--hours=', ''))
         files.extend(glob(f))
 
-    down_sample(files, method)
+    down_sample(files, method, hours)
