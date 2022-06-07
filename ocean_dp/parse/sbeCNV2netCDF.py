@@ -83,6 +83,7 @@ unitMap["ITS-90, deg C"] = "degrees_Celsius"
 unitMap["db"] = "dbar"
 unitMap["salt water, m"] = "m"
 unitMap["density, kg/m^3"] = "kg/m^3"
+unitMap["sigma-t, kg/m^3"] = "kg/m^3"
 unitMap["NTU"] = "1"
 
 # search expressions within file
@@ -99,7 +100,7 @@ firmwareDateExpr = r"\*.*<FirmwareDate>(.*)<\/FirmwareDate>"
 firmwareVerExpr = r"\*.*<FirmwareVersion>(.*)<\/FirmwareVersion>"
 mfgDateExpr = r"\*.*<MfgDate>(.*)<\/MfgDate>"
 
-name_units = r"(?P<name>.*)\s\[(?P<units>.*)\]"
+name_units = r"(?P<name>[^\[]*)\[(?P<units>.*?)\].*$"
 
 nvalues_expr = r"# nvalues =\s*(\d+)"
 nquant_expr = r"# nquan = (\d+)"
@@ -379,6 +380,7 @@ def parse(files):
                         #print("name_expr:matchObj.group(1) : ", matchObj.group(1))
                         #print("name_expr:matchObj.group(2) : ", matchObj.group(2))
                         #print("name_expr:matchObj.group(3) : ", matchObj.group(3))
+                        #print(matchObj.group(3))
                         nameN = int(matchObj.group(1))
                         comment = matchObj.group(3)
 
@@ -391,7 +393,7 @@ def parse(files):
 
                         #print("unit match ", unit)
                         try:
-                            unit = unitMap[unit]
+                            unit = unitMap[unit.strip()]
                         except KeyError:
                             pass
                             #print("unit:unitObj.group(3) : ", unit)
