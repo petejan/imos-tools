@@ -19,13 +19,16 @@ def make_depth(files):
     ds = Dataset(files[0], 'a')
     ds.set_auto_mask(False)
 
-    n_depths_var = ds.variables['DEPTH_PRES']
+    nominal_depth_var = ds.variables['NOMINAL_DEPTH']
+    nominal_depth = nominal_depth_var[:]
 
     pres_var = ds.variables['PRES']
+    pres_idx_var = ds.variables['IDX_PRES']
+    pres_idx = pres_idx_var[:]
 
     pres = pres_var[:]
 
-    n_depths = n_depths_var[:]
+    n_depths = nominal_depth_var[pres_idx]
     n_depths[n_depths > 10000] = np.NaN
 
     print('PRES shape', pres_var.shape)
@@ -82,9 +85,6 @@ def make_depth(files):
 
     print("extended nominal depths", p_nd)
 
-    nominal_depth_var = ds.variables['DEPTH_FILE_NAME']
-    nominal_depth = nominal_depth_var[:]
-
     # create a depth array, from filled data and each nominal depth
     depth = np.empty([nominal_depth.shape[0], pres_var.shape[1]])
     print('depth shape', depth.shape)
@@ -100,7 +100,7 @@ def make_depth(files):
         depth[:, needs_filling_i] = np.interp(nominal_depth, p_nd[pres_msk], p[pres_msk])
 
     if 'PRES_ALL' not in ds.variables:
-        depth_out_var = ds.createVariable("PRES_ALL", 'f4', ['INSTANCE_FILE_NAME', 'TIME'], fill_value=np.NaN, zlib=True)
+        depth_out_var = ds.createVariable("PRES_ALL", 'f4', ['IDX', 'TIME'], fill_value=np.NaN, zlib=True)
     else:
         depth_out_var = ds.variables['PRES_ALL']
 

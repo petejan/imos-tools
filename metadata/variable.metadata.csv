@@ -318,3 +318,10 @@ VAR_ATT,OPTODE_TEMP,,,,,,,,,long_name,str,oxygen_sensor_temperature
 VAR_ATT,OPTODE_TEMP,,,,,,,,,units,str,degrees_Celsius
 
 
+VAR_ATT,VEXT_PH,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,VEXT_PH,,,,,,,,,valid_max,float32,5.0
+VAR_ATT,VEXT_PH,,,,,,,,,valid_min,float32,-5.0
+VAR_ATT,pHt,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,pHt,,,,,,,,,valid_max,float32,10.0
+VAR_ATT,pHt,,,,,,,,,valid_min,float32,5.0
+

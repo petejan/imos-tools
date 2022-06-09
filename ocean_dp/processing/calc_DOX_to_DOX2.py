@@ -60,6 +60,7 @@ def doxtodox2(netCDFfile):
         pass
 
     SA = gsw.SA_from_SP(SP, p, lon , lat)
+    t[t<0] = np.nan
     CT = gsw.CT_from_t(SA, t, p)
 
     sigma_theta0 = gsw.sigma0(SA, CT)

@@ -80,9 +80,6 @@ import zipfile
 
 # search expressions within file
 
-ctd_expr = r"SATPHC.*$"
-ctd_sn = r".*CTD.*<model>(\S*)</model><sn>(\S*)</sn>"
-
 deep_sea_phox = r"DSPHOX(\d*),(\d{2}/\d{2}/\d{4} \d{2}:\d{2}:\d{2}),(.*)$"
 
 #
@@ -92,8 +89,23 @@ deep_sea_phox = r"DSPHOX(\d*),(\d{2}/\d{2}/\d{4} \d{2}:\d{2}:\d{2}),(.*)$"
 instrument_model = 'SeaPHOxV2'
 instrument_serialnumber = "02016"
 
-instrument_ctd_model = None
-instrument_ctd_serialnumber = None
+instrument_ctd_model = 'SBE37SMP-ODO'
+instrument_ctd_serialnumber = '21808'
+
+hdr_map = {}
+hdr_map['FrameSync'] = {'var': None, 'long_name': None, 'units': None}
+hdr_map['DateTime (UTC+00:00)'] = {'var': None, 'long_name': None, 'units': None} # handelled separatly
+hdr_map['Sample Number (#)'] = {'var': None, 'long_name': None, 'units': None}
+hdr_map['Error Flags (#)'] = {'var': None, 'long_name': None, 'units': None}
+hdr_map['Temperature (Celsius)'] = {'var': 'TEMP', 'long_name': 'sea_water_temperature', 'standard_name': 'sea_water_temperature', 'units': 'degrees_Celsius'}
+hdr_map['External pH (pH)'] = {'var': 'pHt', 'long_name': 'sea_water_ph_reported_on_total_scale', 'units': '1', 'comment': 'pH_TS_measured (durafet)'}
+hdr_map['External pH (Volt)'] = {'var': 'VEXT_PH', 'long_name': 'voltage_external_ph', 'units': 'Volts'}
+hdr_map['Pressure (Decibar)'] = {'var': 'PRES', 'long_name': 'sea_water_pressure_due_to_sea_water', 'units': 'dbar'}
+hdr_map['Salinity (psu)'] = {'var': 'PSAL', 'long_name': 'sea_water_practical_salinity', 'units': '1'}
+hdr_map['Conductivity (S/m)'] = {'var': 'CNDC', 'long_name': 'sea_water_electrical_conductivity', 'units': 'S/m'}
+hdr_map['Oxygen (ml/L)'] = {'var': 'DOX', 'long_name': 'volume_concentration_of_dissolved_molecular_oxygen_in_sea_water', 'units': 'ml/l'}
+hdr_map['Relative Humidity (%)'] = {'var': None, 'long_name': None, 'units': None}
+hdr_map['Int Temperature (Celsius)'] = {'var': 'ITEMP', 'long_name': 'internal_temperature', 'units': 'degrees_Celsius'}
 
 
 def read(fp, times, data, number_samples):
@@ -101,33 +113,17 @@ def read(fp, times, data, number_samples):
     global instrument_serialnumber
     global instrument_ctd_model
     global instrument_ctd_serialnumber
+    global hdrline_split
+
+    hdrline = fp.readline().strip()
+    hdrline_split = hdrline.split(',')
+    print('header line', hdrline_split)
 
     last_dt = datetime(2000,1,1)
     try:
         line = fp.readline()
         while line:
             #print(line)
-            matchObj = re.match(ctd_expr, line)
-            # print(matchObj)
-            if matchObj:
-                if line.count(",") > 0:
-                    lineSplit = line.strip().split(",")
-                    #print(lineSplit)
-                    try:
-                        dt = datetime.strptime(lineSplit[-2] + ' ' + lineSplit[-1], '%d %b %Y %H:%M:%S')
-                        if dt != last_dt:
-                            times.append(dt)
-                            data.append((float(lineSplit[1]), float(lineSplit[2]), float(lineSplit[3]), float(lineSplit[4]),
-                                         float(lineSplit[5])))
-                            number_samples += 1
-                        last_dt = dt
-                    except ValueError as ve:
-                        print(ve)
-            matchObj = re.match(ctd_sn, line)
-            if matchObj:
-                instrument_ctd_model = 'SBE'+matchObj.group(1)
-                instrument_ctd_serialnumber = matchObj.group(2)
-                #print('ctd model, serial_number', instrument_ctd_model, instrument_ctd_serialnumber)
             matchObj = re.match(deep_sea_phox, line)
             if matchObj:
                 instrument_serialnumber = matchObj.group(1)
@@ -163,9 +159,6 @@ def sbe_phox_parse(files):
     data = []
     #Sample Number (#),Error Flags (#),Temperature (Celsius),External pH (pH),External pH (Volt),Pressure (Decibar),Salinity (psu),Conductivity (S/m),Oxygen (ml/L),Relative Humidity (%),Int Temperature (Celsius)
 
-    name = ['SAMPLE', 'ERROR', 'TEMP', 'PH', 'V_EXT_PH', 'PRES', 'PSAL', 'CNDC', 'DOXY', 'I_RH', 'I_TEMP']
-    units = ['1', '1', 'degrees_Celsius', '1', 'Volts', 'dbar', '1', 'S/m', 'ml/l', '%', 'degrees_Celsius']
-
     for filepath in files:
         print('processing file', filepath)
 
@@ -195,9 +188,9 @@ def sbe_phox_parse(files):
     ncOut = Dataset(outputName, 'w', format='NETCDF4')
 
     if instrument_ctd_model:
-        instrument_model = instrument_ctd_model
+        ncOut.instrument_ctd_model = instrument_ctd_model
     if instrument_ctd_serialnumber:
-        instrument_serialnumber = instrument_ctd_serialnumber
+        ncOut.instrument_ctd_serialnumber = instrument_ctd_serialnumber
 
     ncOut.instrument = 'Sea-Bird Electronics ; ' + instrument_model
     ncOut.instrument_model = instrument_model
@@ -217,12 +210,24 @@ def sbe_phox_parse(files):
     ncTimesOut[:] = date2num(times, calendar=ncTimesOut.calendar, units=ncTimesOut.units)
 
     # for each variable in the data file, create a netCDF variable
-    i = 0
-    for v in name:
-        ncVarOut = ncOut.createVariable(v, "f4", ("TIME",), fill_value=np.nan, zlib=True) # fill_value=nan otherwise defaults to max
+    i = -2
+    for v in hdrline_split:
 
-        ncVarOut[:] = [d[i] for d in data]
-        ncVarOut.units = units[i]
+        var_name = hdr_map[v]['var']
+        if var_name is not None:
+
+            print('variable:', v, hdr_map[v], i)
+            ncVarOut = ncOut.createVariable(var_name, "f4", ("TIME",), fill_value=np.nan, zlib=True) # fill_value=nan otherwise defaults to max
+
+            if 'standard_name' in hdr_map[v]:
+                ncVarOut.standard_name = hdr_map[v]['standard_name']
+            ncVarOut.long_name = hdr_map[v]['long_name']
+            if 'comment' in hdr_map[v]:
+                ncVarOut.comment = hdr_map[v]['comment']
+
+            ncVarOut.units = hdr_map[v]['units']
+
+            ncVarOut[:] = [d[i] for d in data]
 
         i = i + 1
 
