@@ -85,7 +85,7 @@ def make_depth(files):
 
     print("extended nominal depths", p_nd)
 
-    # create a depth array, from filled data and each nominal depth
+    # create a depth array, from filled data for each instrument
     depth = np.empty([nominal_depth.shape[0], pres_var.shape[1]])
     print('depth shape', depth.shape)
 

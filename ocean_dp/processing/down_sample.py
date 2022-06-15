@@ -152,7 +152,7 @@ def down_sample(files, method):
         # variable to smooth
         # print('input file vars', in_vars)
         z = in_vars.intersection(['PRES', 'PRES_REL', 'TEMP', 'PSAL', 'CNDC', 'DENSITY', 'SIGMA_T0', 'DOX2', 'ATMP', 'AIRT', 'AIRT2_0M', 'AIRT1_5M',
-                                  'RELH', 'RELH1_5M', 'RELH2_0M', 'HL', 'HS', 'PL_CMP', 'WSPD10M', 'WSPD', 'WDIR', 'RAIN_AMOUNT',
+                                  'RELH', 'RELH1_5M', 'RELH2_0M', 'HL', 'HS', 'PL_CMP', 'RAIN_AMOUNT',
                                   'H_RAIN', 'TAU', 'SST', 'HEAT_NET', 'MASS_NET', 'LW_NET', 'SW_NET',
                                   'SW', 'LW', 'UWIND', 'VWIND', 'CPHL', 'BB',
                                   'VAVH', 'SWH'
@@ -160,7 +160,7 @@ def down_sample(files, method):
                                   'xCO2_SW', 'xCO2_AIR',
                                   'PAR',
                                   'NTRI_CONC', 'ALKA_CONC', 'PHOS_CONC', 'SLCA_CONC', 'TCO2',
-                                  'WEIGHT', 'NTRI', 'PHOS', 'SLCA', 'TALK'])
+                                  'WEIGHT', 'NTRI', 'PHOS', 'SLCA', 'TALK', 'pHt'])
         print ('vars to smooth', z)
 
         qc_in_level = 2
@@ -182,9 +182,11 @@ def down_sample(files, method):
 
                 print(resample_var, 'input data : ', data_in)
 
-                y = stats.binned_statistic(np.array(time_deployment), np.array(data_in), statistic='mean', bins = bins)
-                sd = stats.binned_statistic(np.array(time_deployment), np.array(data_in), statistic='std', bins = bins)
-                n = stats.binned_statistic(np.array(time_deployment), np.array(data_in), statistic='count', bins = bins)
+                y = stats.binned_statistic(np.array(time_deployment), np.array(data_in), statistic='mean', bins=bins)
+                sd = stats.binned_statistic(np.array(time_deployment), np.array(data_in), statistic='std', bins=bins)
+                n = stats.binned_statistic(np.array(time_deployment), np.array(data_in), statistic='count', bins=bins)
+
+                qc_out = stats.binned_statistic(np.array(time_deployment), np.array(qc[qc <= qc_in_level]), statistic='max', bins=bins)
 
                 print('sampled data', y)
 
@@ -196,7 +198,7 @@ def down_sample(files, method):
                         attr_dict[a] = var_to_resample_in.getncattr(a)
 
                 var_resample_out.setncatts(attr_dict)
-                var_resample_out.ancillary_variables = resample_var + '_standard_error ' + resample_var + '_number_of_observations'
+                var_resample_out.ancillary_variables = resample_var + '_quality_control ' + resample_var + '_standard_error ' + resample_var + '_number_of_observations'
 
                 # # interpolate the time to get the distance to the nearest point
                 # f = interp1d(np.array(time_deployment), np.array(time_deployment), kind='nearest', bounds_error=False, fill_value=np.nan)
@@ -217,6 +219,9 @@ def down_sample(files, method):
                 var_resample_dist_out = ds_new.createVariable(resample_var + '_number_of_observations', 'f4', 'TIME', fill_value=np.NaN, zlib=True)
                 var_resample_dist_out.comment = 'number of samples'
                 var_resample_dist_out[:] = n.statistic
+                var_resample_dist_out = ds_new.createVariable(resample_var + '_quality_control', 'i1', 'TIME', fill_value=99, zlib=True)
+                var_resample_dist_out.comment = 'maximum of quality flags of input data'
+                var_resample_dist_out[:] = qc_out.statistic
 
                 print("shape", var_resample_out.shape, y.statistic.shape)
                 var_resample_out[:] = y.statistic

@@ -68,7 +68,7 @@ def sqlite_insert(files):
         con.commit()
         cur.execute("CREATE TABLE IF NOT EXISTS attributes (file_id, name TEXT, type TEXT, value TEXT)")
         con.commit()
-        cur.execute("CREATE TABLE IF NOT EXISTS variables (file_id, name TEXT, type TEXT, dimensions TEXT, data array)")
+        cur.execute("CREATE TABLE IF NOT EXISTS variables (file_id, name TEXT, type TEXT, dimensions TEXT, is_aux TEXT, data array)")
         con.commit()
         cur.execute("CREATE TABLE IF NOT EXISTS variable_attributes (file_id, var_name TEXT, name TEXT, type TEXT, value TEXT)")
         con.commit()
@@ -79,7 +79,7 @@ def sqlite_insert(files):
                     " LEFT join attributes AS nd ON (file.file_id = nd.file_id and nd.name == 'instrument_nominal_depth')")
 
         cur.execute("CREATE VIEW IF NOT EXISTS variable_depth AS "
-                    "SELECT file.file_id, file.name AS file_name, variables.name, variables.dimensions, variables.type, variables.data, nd.value AS nominal_depth "
+                    "SELECT file.file_id, file.name AS file_name, variables.name, variables.dimensions, variables.type, variables.is_aux, nd.value AS nominal_depth, variables.data "
                     "FROM variables"
                     " JOIN file ON (file.file_id = variables.file_id)"
                     " LEFT join attributes AS nd ON (file.file_id = nd.file_id and nd.name == 'instrument_nominal_depth')")
@@ -99,50 +99,54 @@ def sqlite_insert(files):
             cur.execute('INSERT INTO attributes (file_id, name, type, value) VALUES (?,?,?,?)', [file_id, name, at_type, str(value)])
             con.commit()
 
-        # get list of auxcilliary variables as we don't load these
-        aux_vars = []
-        vars_have_aux = []
+        # get list of variables, then indicate which are aux variables
+        vars = {}
         for var_name in nc.variables:
-            #print('aux-data variable', var_name)
-            vars_have_aux.append(var_name)
+            vars[var_name] = None
+
+        for var_name in nc.variables:
             try:
-                aux_vars.extend(nc.variables[var_name].ancillary_variables.split(' '))
+                aux_vars = nc.variables[var_name].ancillary_variables.split(' ')
+                for a in aux_vars:
+                    vars[a] = var_name
             except AttributeError:
                 pass
 
         # load variables
-        for var_name in vars_have_aux: #nc.variables:
+        for var_name in nc.variables: #nc.variables:
             print('variable', var_name)
-            if var_name not in aux_vars:
-                var = nc.variables[var_name]
-                var.set_auto_mask(False)
-                # get the dimensions
-                dims = var.dimensions
-                shape = var.shape
-                # TODO use join here
-                buf = ''
-                for index in range(len(dims)):
-                    if index > 0:
-                        buf += ','
-                    buf += '%s[%d]' % (dims[index], shape[index])
+            is_aux = vars[var_name]
 
-                data = np.array(var[:])
-                at_type = str(var.dtype)
-                cur.execute('INSERT INTO variables (file_id, name, type, dimensions, data) VALUES (?,?,?,?,?)', [file_id, var_name, at_type, buf, data])
+            var = nc.variables[var_name]
+            var.set_auto_mask(False)
+
+            # get the dimensions
+            dims = var.dimensions
+            shape = var.shape
+            # TODO use join here
+            buf = ''
+            for index in range(len(dims)):
+                if index > 0:
+                    buf += ','
+                buf += '%s[%d]' % (dims[index], shape[index])
+
+            data = np.array(var[:])
+            at_type = str(var.dtype)
+            cur.execute('INSERT INTO variables (file_id, name, type, dimensions, is_aux, data) VALUES (?,?,?,?,?,?)', [file_id, var_name, at_type, buf, is_aux, data])
+            con.commit()
+
+            # load variable attributes
+            for at in var.ncattrs():
+                #print('variable-atribute', at)
+                name = at
+                value = var.getncattr(at)
+                at_type = type(value).__name__
+                cur.execute('INSERT INTO variable_attributes (file_id, var_name, name, type, value) VALUES (?,?,?,?,?)', [file_id, var_name, name, at_type, str(value)])
                 con.commit()
-
-                # load variable attributes
-                for at in var.ncattrs():
-                    #print('variable-atribute', at)
-                    name = at
-                    value = var.getncattr(at)
-                    at_type = type(value).__name__
-                    cur.execute('INSERT INTO variable_attributes (file_id, var_name, name, type, value) VALUES (?,?,?,?,?)', [file_id, var_name, name, at_type, str(value)])
-                    con.commit()
-
 
         nc.close()
         con.close()
+
 
 if __name__ == "__main__":
     files = []

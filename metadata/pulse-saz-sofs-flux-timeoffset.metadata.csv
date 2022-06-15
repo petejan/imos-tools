@@ -40,3 +40,5 @@ VAR_ATT,TIME,SOFS-7.5-2018,Starmon mini,4778,2018-08-23,2019-04-10,,,,comment_sc
 VAR_ATT,TIME,SOFS-8-2019,FLNTUS,1172,2019-03-18,2020-08-01,,,,comment_scale_offset,str,1.0 -145
 VAR_ATT,TIME,SOFS-8-2019,FLNTUS,1215,2019-03-18,2020-08-01,,,,comment_scale_offset,str,1.0 -145
 
+VAR_ATT,TIME,SOFS-10-2021,FLNTUS,1172,2021-04-16,2022-04-01,,,,comment_scale_offset,str,1.0 -30
+
