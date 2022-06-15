@@ -28,7 +28,7 @@ import xmltodict
 
 def parse_xml(files):
 
-    instrument_model = 'ISUS'
+    instrument_model = 'SUNA-V2'
     instrument_serialnumber = '0829'
 
     with open(files[0]) as fd:
@@ -36,9 +36,9 @@ def parse_xml(files):
 
     instrument_manufacture = doc['InstrumentPackage']['Instrument']['@manufacturer']
     instrument_serialnumber = doc['InstrumentPackage']['Instrument']['@serialNumber']
-    instrument_model = doc['InstrumentPackage']['Instrument']['@identifier']
+    instrument_model = doc['InstrumentPackage']['Instrument']['@identifier'][0:4] + '-' + doc['InstrumentPackage']['Instrument']['@model']
 
-    output_name = files[1] + ".nc"
+    output_name = files[0] + ".nc"
     print("output file : %s" % output_name)
 
     #
@@ -86,7 +86,7 @@ def parse_xml(files):
                     var_name = sfg['Name']
                     print(var_name, 'length sensor field', len(sensor_field))
                     ncOut.createDimension(var_name+'_DIM', len(sensor_field))
-                    ncVarOutDim = ncOut.createVariable(var_name+'_DIM', "f4", (var_name+'_DIM', ), fill_value=np.nan, zlib=False)  # fill_value=nan otherwise defaults to max
+                    ncVarOutDim = ncOut.createVariable(var_name+'_DIM', "f4", (var_name+'_DIM', ), zlib=False)  # don't use a fillValue for a dimension
                     ncVarOut = ncOut.createVariable(var_name, "f4", ("TIME", var_name+'_DIM'), fill_value=np.nan, zlib=False)  # fill_value=nan otherwise defaults to max
                     ncVarOut.units = sfg['Units']
                     idx = 0
@@ -105,6 +105,9 @@ def parse_xml(files):
         with open(f, 'r', errors='ignore') as fp:
             line = fp.readline()
             while line:
+                if line.startswith('SATFHR'):
+                    split = line.split(',')
+                    ncOut.setncattr('instrument_setup_' + split[1].strip(" \n").replace(' ', '_'), ','.join(split[2:]).strip(" \n"))
                 if line.startswith('SATNLF') or line.startswith('SATNDF') or line.startswith('SATSLF') or line.startswith('SATSDF'):
                     frame_type = 0
                     if line.startswith('SATNLF') or line.startswith('SATSLF'):
@@ -113,7 +116,7 @@ def parse_xml(files):
                     dt = datetime.strptime(split[1], '%Y%j') + timedelta(hours=float(split[2]))
                     if not ts_start:
                         ts_start = dt
-                    print(dt)
+                    #print(dt)
                     ncTimesOut[num_samples] = date2num(dt, calendar=ncTimesOut.calendar, units=ncTimesOut.units)
                     ncFrameOut[num_samples] = frame_type
                     for field in fields:
@@ -123,7 +126,7 @@ def parse_xml(files):
                                 #print(field['idx'])
                                 array_idx[field['idx']] = float(split[field['seq']])
                                 if field['idx'] == 255:
-                                    print(array_idx[0])
+                                    #print(array_idx[0])
                                     v[num_samples] = array_idx
                             else:
                                 v[num_samples] = float(split[field['seq']])

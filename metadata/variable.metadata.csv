@@ -325,3 +325,89 @@ VAR_ATT,pHt,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
 VAR_ATT,pHt,,,,,,,,,valid_max,float32,10.0
 VAR_ATT,pHt,,,,,,,,,valid_min,float32,5.0
 
+VAR_ATT,ABS_350,,,,,,,,,units,str,1
+VAR_ATT,ABS_254,,,,,,,,,units,str,1
+VAR_ATT,NITRATE_UM,,,,,,,,,units,str,umol
+VAR_ATT,UV_DIM,,,,,,,,,units,str,nm
+VAR_ATT,UV,,,,,,,,,units,str,1
+
+VAR_ATT,ABS_350,,,,,,,,,long_name,str,absorbance 350nm
+VAR_ATT,ABS_254,,,,,,,,,long_name,str,absorbance 350nm
+VAR_ATT,FIT_S2,,,,,,,,,long_name,str,fitting aux 2
+VAR_ATT,FIT_S3,,,,,,,,,long_name,str,fitting aux 1
+VAR_ATT,FIT_B1,,,,,,,,,long_name,str,fit base 1
+VAR_ATT,FIT_B0,,,,,,,,,long_name,str,fit base 2
+VAR_ATT,CTD_TIME,,,,,,,,,long_name,str,attached CTD timestamp
+VAR_ATT,CTD_SAL,,,,,,,,,long_name,str,attached CTD salinity
+VAR_ATT,CTD_DEPTH,,,,,,,,,long_name,str,attached CTD depth (pressure)
+VAR_ATT,CTD_TEMP,,,,,,,,,long_name,str,attached CTD temperature
+VAR_ATT,NITRATE_UM,,,,,,,,,long_name,str,nitrate micro mol
+VAR_ATT,NITRATE_MG,,,,,,,,,long_name,str,nitrate milligrams
+VAR_ATT,FRAME_TYPE,,,,,,,,,long_name,str,frame type
+VAR_ATT,T_LAMP,,,,,,,,,long_name,str,temperature lamp
+VAR_ATT,T_SPEC,,,,,,,,,long_name,str,temperature spectometer
+VAR_ATT,T_INT,,,,,,,,,long_name,str,temperature internal
+VAR_ATT,RMSe,,,,,,,,,long_name,str,fitting RMS error
+VAR_ATT,DARK_AVG,,,,,,,,,long_name,str,dark used for fit
+VAR_ATT,VOLT_MAIN,,,,,,,,,long_name,str,main voltate
+VAR_ATT,VOLT_12,,,,,,,,,long_name,str,voltage 12v
+VAR_ATT,VOLT_5,,,,,,,,,long_name,str,voltage 5v
+VAR_ATT,BR_TRACE,,,,,,,,,long_name,str,bromide trace
+VAR_ATT,UV,,,,,,,,,long_name,str,transmission spectra
+VAR_ATT,LAMP_TIME,,,,,,,,,long_name,str,total instrument lamp time
+VAR_ATT,HUMIDITY,,,,,,,,,long_name,str,internal humidity
+VAR_ATT,CURRENT,,,,,,,,,long_name,str,instrument current
+VAR_ATT,SPEC_AVG,,,,,,,,,long_name,str,average spectrum
+VAR_ATT,INT_FACTOR,,,,,,,,,long_name,str,intergrating factor
+VAR_ATT,UV_DIM,,,,,,,,,long_name,str,UV wavelength
+VAR_ATT,NO3,,,,,,,,,long_name,str,nitrate absorbance
+VAR_ATT,SWA,,,,,,,,,long_name,str,sea water salinity absorbance
+VAR_ATT,TAWS,,,,,,,,,long_name,str,sea water temperature absorbance
+VAR_ATT,I0,,,,,,,,,long_name,str,milliQ transmitance
+
+VAR_ATT,ABS_350,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,ABS_254,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,FIT_S2,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,FIT_S3,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,FIT_B1,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,FIT_B0,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,CTD_TIME,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,CTD_SAL,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,CTD_DEPTH,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,CTD_TEMP,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,NITRATE_UM,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,NITRATE_MG,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,FRAME_TYPE,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,T_LAMP,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,T_SPEC,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,T_INT,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,RMSe,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,DARK_AVG,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,VOLT_MAIN,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,VOLT_12,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,VOLT_5,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,BR_TRACE,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,UV,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,LAMP_TIME,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,HUMIDITY,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,CURRENT,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,SPEC_AVG,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,INT_FACTOR,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,UV_DIM,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+
+VAR_ATT,NO3,,,,,,,,,coordinates,str,LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,SWA,,,,,,,,,coordinates,str,LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,TAWS,,,,,,,,,coordinates,str,LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,I0,,,,,,,,,coordinates,str,LATITUDE LONGITUDE NOMINAL_DEPTH
+
+VAR_ATT,NO3,,,,,,,,,units,str,1
+VAR_ATT,SWA,,,,,,,,,units,str,1
+VAR_ATT,TAWS,,,,,,,,,units,str,1
+VAR_ATT,I0,,,,,,,,,units,str,1
+
+
+VAR_ATT,CTD_DEPTH,,,,,,,,,reference_datum,str,sea surface
+VAR_ATT,CTD_DEPTH,,,,,,,,,standard_name,str,depth
+VAR_ATT,CTD_DEPTH,,,,,,,,,positive,str,down
+VAR_ATT,CTD_DEPTH,,,,,,,,,valid_min,float32,0
+VAR_ATT,CTD_DEPTH,,,,,,,,,valid_max,float32,5000
