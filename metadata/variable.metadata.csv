@@ -365,6 +365,14 @@ VAR_ATT,SWA,,,,,,,,,long_name,str,sea water salinity absorbance
 VAR_ATT,TAWS,,,,,,,,,long_name,str,sea water temperature absorbance
 VAR_ATT,I0,,,,,,,,,long_name,str,milliQ transmitance
 
+VAR_ATT,REF_STD,,,,,,,,,long_name,str,reference standard deviation
+VAR_ATT,REF_AVG,,,,,,,,,long_name,str,reference light level average
+VAR_ATT,NITRATE,,,,,,,,,long_name,str,nitrate
+VAR_ATT,AUX1,,,,,,,,,long_name,str,auxillary fitting coefficent 1
+VAR_ATT,AUX2,,,,,,,,,long_name,str,auxillary fitting coefficent 2
+VAR_ATT,AUX3,,,,,,,,,long_name,str,auxillary fitting coefficent 3
+VAR_ATT,SW_DARK,,,,,,,,,long_name,str,software dark level
+
 VAR_ATT,ABS_350,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
 VAR_ATT,ABS_254,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
 VAR_ATT,FIT_S2,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
@@ -395,6 +403,14 @@ VAR_ATT,SPEC_AVG,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
 VAR_ATT,INT_FACTOR,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
 VAR_ATT,UV_DIM,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
 
+VAR_ATT,REF_STD,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,REF_AVG,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,NITRATE,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,AUX1,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,AUX2,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,AUX3,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,SW_DARK,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+
 VAR_ATT,NO3,,,,,,,,,coordinates,str,LATITUDE LONGITUDE NOMINAL_DEPTH
 VAR_ATT,SWA,,,,,,,,,coordinates,str,LATITUDE LONGITUDE NOMINAL_DEPTH
 VAR_ATT,TAWS,,,,,,,,,coordinates,str,LATITUDE LONGITUDE NOMINAL_DEPTH
@@ -405,6 +421,13 @@ VAR_ATT,SWA,,,,,,,,,units,str,1
 VAR_ATT,TAWS,,,,,,,,,units,str,1
 VAR_ATT,I0,,,,,,,,,units,str,1
 
+VAR_ATT,REF_STD,,,,,,,,,units,str,1
+VAR_ATT,REF_AVG,,,,,,,,,units,str,1
+VAR_ATT,NITRATE,,,,,,,,,units,str,umol
+VAR_ATT,AUX1,,,,,,,,,units,str,1
+VAR_ATT,AUX2,,,,,,,,,units,str,1
+VAR_ATT,AUX3,,,,,,,,,units,str,1
+VAR_ATT,SW_DARK,,,,,,,,,units,str,1
 
 VAR_ATT,CTD_DEPTH,,,,,,,,,reference_datum,str,sea surface
 VAR_ATT,CTD_DEPTH,,,,,,,,,standard_name,str,depth
