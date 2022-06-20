@@ -41,6 +41,9 @@ import numpy as np
 #
 line_exp = r"(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}) INFO:.*MEASUREMENT\s*(\d*)\s*(\d*).*Temperature:\s*([0-9.-]*).*BPhase:\s*([0-9.-]*).*$"
 done_line_expr = r"(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}) INFO:.*done time.*OBP=\s*([0-9.-]*).*OT=\s*([0-9.-]*).*$"
+line_4831_expr = r"(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}) INFO: Optode Line : \s*(\d*)\s*(\d*) (.*)$"
+
+# 2021-03-03 02:00:04 INFO: Optode Line : 4831 506 242.692 94.008 24.952 29.995 29.995 39.004 9.009 524.5 677.6 -21.1
 
 #2019-12-03 05:00:07 INFO: Optode Line : MEASUREMENT   3830   1419 Oxygen:     330.55 Saturation:      94.27 Temperature:      10.19 DPhase:      34.15 BPhase:      34.15 RPhase:       0.00 BAmp:     2
 #2019-12-03 06:00:07 INFO: Optode Line : MEASUREMENT   3830   1419 Oxygen:     330.59 Saturation:      94.19 Temperature:      10.15 DPhase:      34.17 BPhase:      34.17 RPhase:       0.00 BAmp:     2
@@ -69,6 +72,25 @@ def parse(file):
 
                     bp = float(matchObj.group(5))
                     ot = float(matchObj.group(4))
+
+                    t.append(ts)
+                    bphase.append(bp)
+                    temp.append(ot)
+
+                    number_samples_read = number_samples_read + 1
+                except ValueError as v:
+                    print('Optode Value Error:', v)
+                    print(line)
+            matchObj = re.match(line_4831_expr, line)
+            if matchObj:
+                try:
+                    ts = datetime.strptime(matchObj.group(1), '%Y-%m-%d %H:%M:%S')
+                    instrument_model = 'Optode ' + matchObj.group(2)
+                    instrument_serial_number = matchObj.group(3)
+
+                    split = matchObj.group(4).split()
+                    bp = float(split[4])
+                    ot = float(split[2])
 
                     t.append(ts)
                     bphase.append(bp)

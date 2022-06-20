@@ -59,6 +59,8 @@ def parse_cal(netCDF, cal):
                 i0 = float(split[5])
 
                 print('file wl', ncVarUVWL[cnt], 'cal', wl)
+                ncVarUVWL[cnt] = wl
+                
                 ncVarNO3[cnt] = no3
                 ncVarSWA[cnt] = swa
                 ncVarTSWA[cnt] = tswa

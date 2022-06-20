@@ -102,12 +102,36 @@ def parse_xml(files):
     array_idx = np.zeros([256])
     for f in files[1:]:
         print('reading file', f)
+        hdr_n = 1
         with open(f, 'r', errors='ignore') as fp:
             line = fp.readline()
             while line:
                 if line.startswith('SATFHR'):
                     split = line.split(',')
-                    ncOut.setncattr('instrument_setup_' + split[1].strip(" \n").replace(' ', '_'), ','.join(split[2:]).strip(" \n"))
+                    if split[1] == 'L':
+                        uv = ncOut.variables["UV_DIM"]
+                        for j in range(256):
+                            uv[j] = float(split[2+j])
+                        print(uv[:])
+                    else:
+                        info = ",".join(split[1:]).strip(" \n")
+                        ncOut.setncattr('instrument_header_' + "{:02d}".format(hdr_n), info)
+                        hdr_n += 1
+                    # split = line.split(',')
+                    # info = split[1].strip(" \n")
+                    # info = '_'.join(info.split())
+                    # ncOut.setncattr('instrument_info_' + info, ','.join(split[2:]).strip(" \n"))
+                if line.startswith('SATNHR'):
+                    split = line.split(',')
+                    if split[1] == 'L':
+                        uv = ncOut.variables["UV_DIM"]
+                        for j in range(256):
+                            uv[j] = float(split[2+j])
+                        print(uv[:])
+                    else:
+                        info = ",".join(split[1:]).strip(" \n")
+                        ncOut.setncattr('instrument_header_' + "{:02d}".format(hdr_n), info)
+                        hdr_n += 1
                 if line.startswith('SATNLF') or line.startswith('SATNDF') or line.startswith('SATSLF') or line.startswith('SATSDF'):
                     frame_type = 0
                     if line.startswith('SATNLF') or line.startswith('SATSLF'):
