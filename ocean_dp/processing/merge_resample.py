@@ -24,7 +24,7 @@ from cftime import num2date
 from netCDF4 import Dataset
 
 
-def resample(netCDF_file, sample_file):
+def resample(netCDF_file, sample_file, vars):
 
     ds_sample = Dataset(sample_file, 'r')
     sample_time = ds_sample.variables["TIME"]
@@ -37,28 +37,29 @@ def resample(netCDF_file, sample_file):
     for v in ds_sample.variables:
         var = ds_sample.variables[v]
         if 'TIME' in (var.dimensions) and v != 'TIME' and v.find('_quality_control') == -1:
-            print('time dimension in', v)
-            qc = np.ones_like(sample_time)
-            if v in ds.variables:
-                new_var = ds.variables[v]
-            else:
-                new_var = ds.createVariable(v, var.datatype, var.dimensions)
+            if vars is None or v in vars:
+                print('time dimension in', v)
+                qc = np.ones_like(sample_time)
+                if v in ds.variables:
+                    new_var = ds.variables[v]
+                else:
+                    new_var = ds.createVariable(v, var.datatype, var.dimensions)
 
-            #print('var', v, 'qc', v + '_quality_control', 'in file', v + '_quality_control' in ds_sample.variables)
-            if v + '_quality_control' in ds_sample.variables:
-                print('using qc : ', v + "_quality_control")
-                qc = ds_sample.variables[v + "_quality_control"][:]
+                #print('var', v, 'qc', v + '_quality_control', 'in file', v + '_quality_control' in ds_sample.variables)
+                if v + '_quality_control' in ds_sample.variables:
+                    print('using qc : ', v + "_quality_control")
+                    qc = ds_sample.variables[v + "_quality_control"][:]
 
-            new_data = np.interp(time_var[:], sample_time[qc <= qc_in_level], var[qc <= qc_in_level])
-            #print(new_data)
-            new_var.sensor_model = ds_sample.instrument_model
-            new_var.sensor_serial_number = ds_sample.instrument_serial_number
-            new_var[:] = new_data
+                new_data = np.interp(time_var[:], sample_time[qc <= qc_in_level], var[qc <= qc_in_level])
+                #print(new_data)
+                new_var.sensor_model = ds_sample.instrument_model
+                new_var.sensor_serial_number = ds_sample.instrument_serial_number
+                new_var[:] = new_data
 
-            for a in var.ncattrs():
-                #print(a)
-                if a not in ('_FillValue', 'ancillary_variables'):
-                    new_var.setncattr(a, var.getncattr(a))
+                for a in var.ncattrs():
+                    #print(a)
+                    if a not in ('_FillValue', 'ancillary_variables'):
+                        new_var.setncattr(a, var.getncattr(a))
 
     # update the history attribute
     try:
@@ -75,4 +76,21 @@ def resample(netCDF_file, sample_file):
 
 
 if __name__ == "__main__":
-    resample(sys.argv[1], sys.argv[2])
+    # TODO: add argument for list of variables to add, eg --VARS TEMP,PSAL ....
+    file = None
+    data_file = None
+    v = None
+    i = 1
+    while i < len(sys.argv):
+        print('args', sys.argv[i])
+        if sys.argv[i] == '-VARS':
+            v = sys.argv[i+1].split(',')
+            print (v)
+            i += 1
+        elif file is None:
+            file = sys.argv[i]
+        elif data_file is None:
+            data_file = sys.argv[i]
+        i += 1
+
+    resample(file, data_file, v)

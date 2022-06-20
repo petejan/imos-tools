@@ -42,6 +42,7 @@ nameCode['ECHO_INT1'] = "A"
 nameCode['CPHL'] = "B"
 nameCode['BB'] = "U"
 nameCode['NITRATE_UM'] = "K"
+nameCode['NITRATE'] = "K"
 
 # IMOS_<Facility-Code>_<Data-Code>_<Start-date>_<Platform-Code>_FV<File-Version>_ <Product-Type>_END-<End-date>_C-<Creation_date>_<PARTX>.nc
 

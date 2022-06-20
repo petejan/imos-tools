@@ -124,30 +124,29 @@ def create(file):
     varOutFn[:] = stringtochar(file_names)
     varOutInst[:] = stringtochar(instrument)
 
-    sql_select_vars = 'SELECT name, COUNT(*) AS count FROM variables v WHERE dimensions LIKE "TIME[%]" and name != "TIME" and name != "LATITUDE" AND name != "LONGITUDE"' \
+    sql_select_vars = 'SELECT name, COUNT(*) AS count, is_aux FROM variables v WHERE dimensions LIKE "TIME[%]" and name != "TIME" and name != "LATITUDE" AND name != "LONGITUDE"' \
                       'and name not like "%_SAMPLE_TIME_DIFF" GROUP BY name ORDER BY name'
 
     # generate the FILE instance variables
     vars = cur_vars.execute(sql_select_vars)
     for var in vars:
         var_name = var['name']
-        print('var-name', var_name)
+        print('create dimensions for', var_name)
 
         rows = cur.execute('SELECT * FROM variable_depth WHERE name == "'+var_name+'" ORDER BY CAST(nominal_depth AS REAL)')
         row = cur.fetchone()
 
-        print('rows', cur.rowcount, len(row['data']))
+        if row['is_aux'] is None:
+            iDim = ncOut.createDimension("IDX_"+var_name, var['count'])
 
-        iDim = ncOut.createDimension("IDX_"+var_name, var['count'])
+            varOutFnIdx = ncOut.createVariable("IDX_"+var_name, "i4", ("IDX_"+var_name))
+            n = 0
+            while row:
+                print(n, 'create-file-index', row['name'], row['nominal_depth'])
+                varOutFnIdx[n] = file_id_map[row['file_id']]
+                row = cur.fetchone()
 
-        varOutFnIdx = ncOut.createVariable("IDX_"+var_name, "i4", ("IDX_"+var_name))
-        n = 0
-        while row:
-            print(n, 'create-file-index', row['name'], row['nominal_depth'])
-            varOutFnIdx[n] = file_id_map[row['file_id']]
-            row = cur.fetchone()
-
-            n += 1
+                n += 1
 
     # generate the time data
     vars = cur_vars.execute(sql_select_vars)
@@ -171,18 +170,25 @@ def create(file):
     vars = cur_vars.execute(sql_select_vars)
     for var in vars:
         var_name = var['name']
-        print('var-name', var_name)
+        print('create variable data', var_name)
 
         rows = cur.execute('SELECT * FROM variable_depth WHERE name == "'+var_name+'" ORDER BY CAST(nominal_depth AS REAL)')
         row = cur.fetchone()
 
-        print('variable_depth', cur.rowcount, len(row['data']))
+        print('variable_depth', cur.rowcount, len(row['data']), row['is_aux'], row['type'])
+        dim_name = var_name
+        if row['is_aux'] is not None:
+            dim_name = row['is_aux']
 
         number_samples_read = len(row['data'])
 
         #iDim = ncOut.createDimension("INSTANCE_"+var_name, var[1])
 
-        varOut = ncOut.createVariable(var_name, "f4", ("IDX_"+var_name, "TIME"), fill_value=np.nan, zlib=True)
+        fill_value = np.nan
+        if row['type'] == 'int8':
+            fill_value = 99
+
+        varOut = ncOut.createVariable(var_name, row['type'], ("IDX_"+dim_name, "TIME"), fill_value=fill_value, zlib=True)
 
         # add the variable attributes
         att_sql = 'SELECT name, count(*) AS count, type, value FROM variable_attributes WHERE var_name = "'+var_name+'" GROUP BY name, value'
