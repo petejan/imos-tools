@@ -112,9 +112,10 @@ def parse_xml(files):
                         uv = ncOut.variables["UV_DIM"]
                         for j in range(256):
                             uv[j] = float(split[2+j])
-                        print(uv[:])
+                        #print(uv[:])
                     else:
                         info = ",".join(split[1:]).strip(" \n")
+                        info = ' '.join(info.split())
                         ncOut.setncattr('instrument_header_' + "{:02d}".format(hdr_n), info)
                         hdr_n += 1
                     # split = line.split(',')
@@ -127,7 +128,7 @@ def parse_xml(files):
                         uv = ncOut.variables["UV_DIM"]
                         for j in range(256):
                             uv[j] = float(split[2+j])
-                        print(uv[:])
+                        #print(uv[:])
                     else:
                         info = ",".join(split[1:]).strip(" \n")
                         ncOut.setncattr('instrument_header_' + "{:02d}".format(hdr_n), info)
