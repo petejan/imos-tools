@@ -155,8 +155,6 @@ packet_decode2netCDF[7] = {'decode': 'MeasInterval', 'attrib': 'mesurement_inter
 packet_decode2netCDF[8] = {'decode': 'AvgInt', 'attrib': 'averaging_interval'}
 packet_decode2netCDF[9] = {'decode': 'FWversion', 'attrib': 'firmware_version'}
 
-attribute_list = []
-
 coord_system = None
 
 coord_systems = ['ENU', 'XYZ', 'BEAM']
@@ -1010,6 +1008,9 @@ def parse_file(files):
         pkt_count = {}
         pkt_len = {}
         pkt_pos = {}
+
+        attribute_list = []
+
         with open(filepath, "rb") as binary_file:
             current_pos_pkt_start = binary_file.tell()
             data = binary_file.read(2)

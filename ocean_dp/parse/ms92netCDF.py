@@ -118,7 +118,9 @@ def parse(file):
                         t = parser.parse(lineSplit[2] + " " + lineSplit[3], dayfirst=True)
                         ts.append(t-timedelta(hours=timezone))
                         #print("timestamp %s" % (t-timedelta(hours=timezone)))
-                        data.append([float(d) for d in lineSplit[-9:]])
+                        dat = [float(d) for d in lineSplit[-9:]]
+                        #data.append(dat)
+                        #print(t-timedelta(hours=timezone), dat)
 
                         number_samples_read = number_samples_read + 1
 
