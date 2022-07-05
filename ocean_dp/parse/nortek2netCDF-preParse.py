@@ -111,7 +111,7 @@ packet_decoder[1] = {'name': 'Aquadopp Velocity Data', 'keys': ['time_bcd', 'err
                             'presMSB', 'status', 'presLSW', 'temp', 'vel_b1', 'vel_b2', 'vel_b3', 'amp1', 'amp2', 'amp3', 'fill', 'checksum'], 'unpack': "<6s7hBBH4h4BH"}
 
 packet_decoder[128] = {'name': 'Aquadopp Diagnostics Data', 'keys': ['time_bcd', 'error', 'AnaIn1', 'battery', 'soundSpd_Anain2', 'head', 'pitch', 'roll',
-                            'presMSB', 'status', 'presLSW', 'temp', 'vel_b1', 'vel_b2', 'vel_b3', 'amp1', 'amp2', 'amp3', 'fill', 'checksum'], 'unpack': "<6s7hBB5h4BH"}
+                            'presMSB', 'status', 'presLSW', 'temp', 'vel_b1', 'vel_b2', 'vel_b3', 'amp1', 'amp2', 'amp3', 'fill', 'checksum'], 'unpack': "<6s7hBBH4h4BH"}
 
 packet_decoder[6] = {'name': 'Aquadopp Diagnostics Data Header', 'keys': ['records', 'cell', 'noise1', 'noise2', 'noise3', 'noise4', 'proc1', 'proc2',
                             'proc3', 'proc4', 'dis1', 'dis2', 'dist3', 'dist4', 'spare', 'checksum'], 'unpack': "<2H4B8H6sH"}
@@ -430,6 +430,12 @@ def build_aquadopp_data(ncOut, binary_file, pkt_pos_list, pkt_len, pkt_id, d, un
     absci2 = create_netCDF_var(ncOut, "ABSIC2", "i2", "amplitude beam 2", "counts", ("TIME",))
     absci3 = create_netCDF_var(ncOut, "ABSIC3", "i2", "amplitude beam 3", "counts", ("TIME",))
 
+    error = create_netCDF_var(ncOut, "ERROR", "i1", "error code", "counts", ("TIME",))
+    status = create_netCDF_var(ncOut, "STATUS", "i2", "status code", "counts", ("TIME",))
+
+    error.comment = '0: compass, 1:measurement data, 2: sensor data, 3: tag bit, 4: flash, 6: serial CT sensor error'
+    status.comment = '0: orientation (0 = up, 1 = down), 1: scaling (0=mm/s, 1=0.1 m/s), 2: pitch (0=ok, 1=out of range), 3: roll, 4,5: wake state, 6,7: power'
+
     sample = 0
     time_id = d['time_bcd']
     pred_msb_id = d['presMSB']
@@ -448,6 +454,9 @@ def build_aquadopp_data(ncOut, binary_file, pkt_pos_list, pkt_len, pkt_id, d, un
     var_list.append((absci1, d['amp1'], 1, np.zeros([number_samples], dtype=int)))
     var_list.append((absci2, d['amp2'], 1, np.zeros([number_samples], dtype=int)))
     var_list.append((absci3, d['amp3'], 1, np.zeros([number_samples], dtype=int)))
+
+    var_list.append((error, d['error'], 1, np.zeros([number_samples], dtype=int)))
+    var_list.append((status, d['status'], 1, np.zeros([number_samples], dtype=int)))
 
     # NaN fill any float variables
     for v in var_list:
@@ -960,7 +969,97 @@ def build_wave_data(ncOut, binary_file, pkt_pos, pkt_pos_list, pkt_len, pkt_id, 
     return
 
 
-def parse_file(files):
+def build_aquadopp_diag_data(ncOut, binary_file, pkt_pos_list, pkt_len, pkt_id, d, unpack):
+    time_start = datetime.datetime.now()
+
+    number_samples = len(pkt_pos_list)
+
+    tDim = ncOut.createDimension("TIME_DIAG", number_samples)
+    ncTimesOut = ncOut.createVariable("TIME_DIAG", "d", ("TIME_DIAG",), zlib=True)
+    ncTimesOut.long_name = "time diagnostics"
+    ncTimesOut.units = "days since 1950-01-01 00:00:00 UTC"
+    ncTimesOut.calendar = "gregorian"
+
+    times_array = np.zeros([number_samples])
+
+    pres_array = np.empty([number_samples], dtype=np.float32)
+    pres_array[:] = np.NaN
+
+    if coord_system == 2:
+        vel1 = create_netCDF_var(ncOut, "VEL_B1_DIAG", "f4", "velocity beam 1", "m/s", ("TIME_DIAG",))
+        vel2 = create_netCDF_var(ncOut, "VEL_B2_DIAG", "f4", "velocity beam 2", "m/s", ("TIME_DIAG",))
+        vel3 = create_netCDF_var(ncOut, "VEL_B3_DIAG", "f4", "velocity beam 3", "m/s", ("TIME_DIAG",))
+    elif coord_system == 1:
+        vel1 = create_netCDF_var(ncOut, "VEL_X_DIAG", "f4", "velocity X", "m/s", ("TIME_DIAG",))
+        vel2 = create_netCDF_var(ncOut, "VEL_Y_DIAG", "f4", "velocity Y", "m/s", ("TIME_DIAG",))
+        vel3 = create_netCDF_var(ncOut, "VEL_Z_DIAG", "f4", "velocity Z", "m/s", ("TIME_DIAG",))
+    else:
+        vel1 = create_netCDF_var(ncOut, "UCUR_MAG_DIAG", "f4", "current east", "m/s", ("TIME_DIAG",))
+        vel2 = create_netCDF_var(ncOut, "VCUR_MAG_DIAG", "f4", "current north", "m/s", ("TIME_DIAG",))
+        vel3 = create_netCDF_var(ncOut, "WCUR_DIAG", "f4", "current up", "m/s", ("TIME_DIAG",))
+
+    head = create_netCDF_var(ncOut, "HEADING_MAG_DIAG", "f4", "heading magnetic", "degrees", ("TIME_DIAG",))
+    pitch = create_netCDF_var(ncOut, "PITCH_DIAG", "f4", "pitch", "degrees", ("TIME_DIAG",))
+    roll = create_netCDF_var(ncOut, "ROLL_DIAG", "f4", "roll", "degrees", ("TIME_DIAG",))
+    pres = create_netCDF_var(ncOut, "PRES_DIAG", "f4", "pres", "dbar", ("TIME_DIAG",))
+    bat = create_netCDF_var(ncOut, "BATT_DIAG", "f4", "battery voltage", "V", ("TIME_DIAG",))
+
+    absci1 = create_netCDF_var(ncOut, "ABSIC1_DIAG", "i2", "amplitude beam 1", "counts", ("TIME_DIAG",))
+    absci2 = create_netCDF_var(ncOut, "ABSIC2_DIAG", "i2", "amplitude beam 2", "counts", ("TIME_DIAG",))
+    absci3 = create_netCDF_var(ncOut, "ABSIC3_DIAG", "i2", "amplitude beam 3", "counts", ("TIME_DIAG",))
+
+    error = create_netCDF_var(ncOut, "ERROR_DIAG", "i1", "error code", "1", ("TIME_DIAG",))
+    status = create_netCDF_var(ncOut, "STATUS_DIAG", "i1", "status code", "1", ("TIME_DIAG",))
+
+    sample = 0
+    time_id = d['time_bcd']
+    pred_msb_id = d['presMSB']
+    pred_lsb_id = d['presLSW']
+
+    var_list = []
+    var_list.append((vel1, d['vel_b1'], 1000, np.empty([number_samples], dtype=np.float32)))
+    var_list.append((vel2, d['vel_b2'], 1000, np.empty([number_samples], dtype=np.float32)))
+    var_list.append((vel3, d['vel_b3'], 1000, np.empty([number_samples], dtype=np.float32)))
+    var_list.append((head, d['head'], 10, np.empty([number_samples], dtype=np.float32)))
+    var_list.append((pitch, d['pitch'], 10, np.empty([number_samples], dtype=np.float32)))
+    var_list.append((roll, d['roll'], 10, np.empty([number_samples], dtype=np.float32)))
+    var_list.append((bat, d['battery'], 10, np.empty([number_samples], dtype=np.float32)))
+    var_list.append((absci1, d['amp1'], 1, np.zeros([number_samples], dtype=int)))
+    var_list.append((absci2, d['amp2'], 1, np.zeros([number_samples], dtype=int)))
+    var_list.append((absci3, d['amp3'], 1, np.zeros([number_samples], dtype=int)))
+
+    var_list.append((error, d['error'], 1, np.zeros([number_samples], dtype=int)))
+    var_list.append((status, d['status'], 1, np.zeros([number_samples], dtype=int)))
+
+    # NaN fill any float variables
+    for v in var_list:
+        if v[3].dtype == 'float32':
+            v[3][:] = np.NaN
+
+    while sample < len(pkt_pos_list):
+        binary_file.seek(pkt_pos_list[sample])
+        packet_data = binary_file.read(pkt_len[pkt_id] * 2 - 4)
+        packetDecode = struct.unpack(unpack, packet_data)
+
+        dt = bcd_time_to_datetime(packetDecode[time_id])
+        times_array[sample] = date2num(dt, calendar='gregorian', units="days since 1950-01-01 00:00:00 UTC")
+        for v in var_list:
+            v[3][sample] = packetDecode[v[1]] / v[2]
+        pres_array[sample] = ((packetDecode[pred_msb_id] * 65536) + packetDecode[pred_lsb_id]) * 0.001
+
+        sample += 1
+
+    print('read-data took', datetime.datetime.now() - time_start)
+
+    ncTimesOut[:] = times_array
+    for v in var_list:
+        v[0][:] = v[3]
+    pres[:] = pres_array
+
+    return
+
+
+def parse_file(files, include_diag):
 
     output_files = []
     for filepath in files:
@@ -1156,7 +1255,7 @@ def parse_file(files):
                     head_config = "pressure:yes," if (head_config_reg & 0x01) != 0 else "pressure:no,"
                     head_config += "magnetometer:yes," if (head_config_reg & 0x02) != 0 else "magnetometer:no,"
                     head_config += "tilt:yes," if (head_config_reg & 0x04) != 0 else "tilt:no,"
-                    head_config += "tilt:down" if (head_config_reg & 0x08) != 0 else "tilt:up"
+                    head_config += "tilt:down" if (head_config_reg & 0x08) == 0 else "tilt:up"
 
                     print("head_config", head_config_reg, head_config)
 
@@ -1184,6 +1283,17 @@ def parse_file(files):
                     instrument_model = 'Aquadopp ' + si_format(head_frequency*1000, precision=0) + 'Hz'
 
                     ncTimesOut = build_aquadopp_data(ncOut, binary_file, pkt_pos_list, pkt_len, pkt_id, d, unpack)
+
+                if include_diag:
+                    if packet_id['Aquadopp Diagnostics Data'] == pkt_id:
+
+                        build_aquadopp_diag_data(ncOut, binary_file, pkt_pos_list, pkt_len, pkt_id, d, unpack)
+
+                if packet_id['Aquadopp Diagnostics Data Header'] == pkt_id:
+                    diag_records = packetDecode[d['records']]
+                    diag_cells = packetDecode[d['cell']]
+
+                    print('diag header, records', diag_records, 'cells', diag_cells)
 
                 if packet_id['Vector Velocity Data Header'] == pkt_id:
                     instrument_model = 'Vector ' + si_format(head_frequency*1000, precision=0) + 'Hz'
@@ -1270,8 +1380,12 @@ def parse_file(files):
 if __name__ == "__main__":
 
     files = []
+    include_diag = False
     for f in sys.argv[1:]:
-        files.extend(glob.glob(f))
+        if f == '-include-diag':
+            include_diag = True
+        else:
+            files.extend(glob.glob(f))
 
-    parse_file(files)
+    parse_file(files, include_diag)
 
