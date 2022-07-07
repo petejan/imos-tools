@@ -2,8 +2,9 @@
 Temperature and Salinity data processing and QC
 
 collect files to go into the gridding, eg
-
+```
 copy ..\..\cloudstor\SOTS-Temp-Raw-Data\netCDF\IMOS*FV01*SOFS-10*.nc .
+```
 
 ## Re-sample
 
@@ -84,31 +85,21 @@ variables:
                 CNDC_quality_control:comment = "maximum of quality flags of input data" ;
 				
 ```
-
-This can be used directly in MatLAB,
+This can be used directly in MatLAB
 
 ```
-	fn = 'SOFS-10-2021.sqlite.nc'; % contains the file to use
-	var = 'TEMP'; % just for convienence
-	
     % time variable
     time = ncread(fn, 'TIME') + datetime(1950,1,1);       
 
-    % pressure variable (PRES_ALL has presssure for every instrument)
-    pres = ncread(fn, 'PRES_ALL');   
-
-	temp = ncread(fn, var);     
-	var_name = ncreadatt(fn, var, 'long_name');
-	var_units = ncreadatt(fn, var, 'units');
+	% read the temperature from the file and some of its metadata
+    temp = ncread(fn, 'TEMP');     
+    temp_qc = ncread(fn, 'TEMP_quality_control');     
+    temp_name = ncreadatt(fn, 'TEMP', 'long_name');
+    temp_units = ncreadatt(fn, 'TEMP', 'units');
 	
-	temp_idx = ncread(fn, ['IDX_' var]);
-	nominal_depth = ncread(fn, 'NOMINAL_DEPTH');
-	temp_depth = nominal_depth(temp_idx+1);
-
-	pres_temp = pres(:, temp_idx+1); % contains a pressure at each timestamp
+	msk = temp_qc <= 2; % create a mask for only good data
 	
-	instrument = ncread(fn, 'INSTRUMENT');
-	instrument_temp = instrument(:,temp_idx+1)'; % contains the instrument the data came from
+	plot(time(msk), temp(msk)); % plot only good data
 ```
 
 ## Combine into sqllite database
@@ -128,6 +119,33 @@ This can include any other data sources (PAR, FLNTUS, pCO2, ...)
 ## add mix-layer depth calculation
 
 python3 ocean_dp\processing\calc_mld.py SOFS-10-2021.sqlite.nc
+
+This can be used directly in MatLAB,
+
+```
+    fn = 'SOFS-10-2021.sqlite.nc'; % contains the file to use
+    var = 'TEMP'; % just for convienence
+	
+    % time variable
+    time = ncread(fn, 'TIME') + datetime(1950,1,1);       
+
+    % pressure variable (PRES_ALL has presssure for every instrument)
+    pres = ncread(fn, 'PRES_ALL');   
+
+    temp = ncread(fn, var);     
+    var_name = ncreadatt(fn, var, 'long_name');
+    var_units = ncreadatt(fn, var, 'units');
+	
+    temp_idx = ncread(fn, ['IDX_' var]);
+    nominal_depth = ncread(fn, 'NOMINAL_DEPTH');
+    temp_depth = nominal_depth(temp_idx+1);
+
+    pres_temp = pres(:, temp_idx+1); % contains a pressure at each timestamp
+	
+    instrument = ncread(fn, 'INSTRUMENT');
+    instrument_temp = instrument(:,temp_idx+1)'; % contains the instrument the data came from
+```
+
 
 ## bin data to WOA depth bins
 
