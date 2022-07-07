@@ -87,7 +87,7 @@ variables:
 ```
 This can be used directly in MatLAB
 
-```
+```matlab
     % time variable
     time = ncread(fn, 'TIME') + datetime(1950,1,1);       
 
@@ -122,7 +122,7 @@ python3 ocean_dp\processing\calc_mld.py SOFS-10-2021.sqlite.nc
 
 This can be used directly in MatLAB,
 
-```
+```matlab
     fn = 'SOFS-10-2021.sqlite.nc'; % contains the file to use
     var = 'TEMP'; % just for convienence
 	
@@ -149,7 +149,7 @@ This can be used directly in MatLAB,
 
 ## bin data to WOA depth bins
 
-```
+```matlab
 
 files = dir("*.sqlite.nc"); % get list of files to use
 
@@ -238,7 +238,7 @@ pres_binned = accumarray(subs, pres_flat(msk), [size(time_grid,2) size(edges,2)]
 
 ### example with vertical filling and plot
 
-```
+```matlab
 % take list of time gridded files, 
 % grid into 'standard' depth levels, and standard times
 
