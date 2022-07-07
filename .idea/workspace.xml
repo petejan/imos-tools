@@ -2,15 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="80b3b553-d940-4412-b819-ac598f2d0f79" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/matlab/plotDSGfile.m" beforeDir="false" afterPath="$PROJECT_DIR$/matlab/plotDSGfile.m" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ocean_dp/attribution/getDBmetadata.py" beforeDir="false" afterPath="$PROJECT_DIR$/ocean_dp/attribution/getDBmetadata.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ocean_dp/dbms/netcdf_insert_postgres.py" beforeDir="false" afterPath="$PROJECT_DIR$/ocean_dp/dbms/netcdf_insert_postgres.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ocean_dp/parse/mdl2020-to-netCDF.py" beforeDir="false" afterPath="$PROJECT_DIR$/ocean_dp/parse/mdl2020-to-netCDF.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ocean_dp/parse/mdl_2020.py" beforeDir="false" afterPath="$PROJECT_DIR$/ocean_dp/parse/mdl_2020.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ocean_dp/thredds-catalog/catalog.py" beforeDir="false" afterPath="$PROJECT_DIR$/ocean_dp/thredds-catalog/catalog.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ocean_dp/thredds-catalog/catalogAttrib.py" beforeDir="false" afterPath="$PROJECT_DIR$/ocean_dp/thredds-catalog/catalogAttrib.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -28,15 +20,15 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="file://$PROJECT_DIR$/ocean_dp/sots/qc_stats.py" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/ocean_dp/parse/datalogger2netCDF.py" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/ocean_dp/sots/catalog_netcdf_files_sort.py" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/ocean_dp/processing/loess_smoother.py" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/ocean_dp/sots/process_SOTS_toIMOS.py" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/ocean_dp/sots/catalog_netcdf_files.py" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/ocean_dp/parse/datalogger2netCDF.py" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/ocean_dp/attribution/addAttributes.py" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/ocean_dp/sots/process_SOTS_toIMOS.py" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/ocean_dp/sots/process_SOTS.py" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/ocean_dp/processing/addPSAL.py" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/ocean_dp/sots/qc_stats.py" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/ocean_dp/sots/catalog_netcdf_files.py" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/ocean_dp/sots/catalog_netcdf_files_sort.py" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="ProjectId" id="1xbbrpFWdwY6wQZt8NSnowYU8c2" />
   <component name="ProjectViewState">
