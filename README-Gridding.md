@@ -91,15 +91,15 @@ This can be used directly in MatLAB
     % time variable
     time = ncread(fn, 'TIME') + datetime(1950,1,1);       
 
-	% read the temperature from the file and some of its metadata
+    % read the temperature from the file and some of its metadata
     temp = ncread(fn, 'TEMP');     
     temp_qc = ncread(fn, 'TEMP_quality_control');     
     temp_name = ncreadatt(fn, 'TEMP', 'long_name');
     temp_units = ncreadatt(fn, 'TEMP', 'units');
 	
-	msk = temp_qc <= 2; % create a mask for only good data
+    msk = temp_qc <= 2; % create a mask for only good data
 	
-	plot(time(msk), temp(msk)); % plot only good data
+    plot(time(msk), temp(msk)); % plot only good data
 ```
 
 ## Combine into sqllite database
@@ -114,11 +114,11 @@ This can include any other data sources (PAR, FLNTUS, pCO2, ...)
 	
 ## add pressures to file for each instrument
 
-	python3 ocean_dp\processing\calc_depth.py SOFS-10-2021.sqlite.nc
+    python3 ocean_dp\processing\calc_depth.py SOFS-10-2021.sqlite.nc
 
 ## add mix-layer depth calculation
 
-python3 ocean_dp\processing\calc_mld.py SOFS-10-2021.sqlite.nc
+    python3 ocean_dp\processing\calc_mld.py SOFS-10-2021.sqlite.nc
 
 This can be used directly in MatLAB,
 
