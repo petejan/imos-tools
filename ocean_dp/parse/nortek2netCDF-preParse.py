@@ -1249,6 +1249,9 @@ def parse_file(files, include_diag):
                     sn = packetDecode[d['head_serial']]
                     instrument_head_serialnumber = clean_serial(sn)
                     print('instrument head serial number', instrument_head_serialnumber)
+                    sd_raw = packetDecode[d['system']]
+                    sd = struct.unpack('88h', sd_raw)
+                    print('system data', sd)
                     head_frequency = packetDecode[d['head_frequency']]
 
                     head_config_reg = packetDecode[d['head_config']]
@@ -1261,6 +1264,7 @@ def parse_file(files, include_diag):
 
                     attribute_list.append(('head_config', head_config))
                     attribute_list.append(('head_serial_number', instrument_head_serialnumber))
+                    attribute_list.append(('head_system_transform_matrix', sd[4:13]))
 
                     number_beams = packetDecode[d['NBeam']]
 
