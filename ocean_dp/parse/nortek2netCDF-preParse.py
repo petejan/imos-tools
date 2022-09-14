@@ -81,6 +81,7 @@ packet_id['User Configuration'] = 0
 packet_id['Head Configuration'] = 4
 packet_id['Hardware Configuration'] = 5
 packet_id['Aquadopp Velocity Data'] = 1
+packet_id['Aquadopp Velocity Data inc mag'] = 129
 packet_id['Aquadopp Diagnostics Data'] = 128
 packet_id['Aquadopp Diagnostics Data Header'] = 6
 packet_id['Vector and Vectrino Probe Check Data'] = 7
@@ -109,6 +110,9 @@ packet_decoder[5] = {'name': 'Hardware Configuration', 'keys': ['serial', 'confi
 
 packet_decoder[1] = {'name': 'Aquadopp Velocity Data', 'keys': ['time_bcd', 'error', 'AnaIn1', 'battery', 'soundSpd_Anain2', 'head', 'pitch', 'roll',
                             'presMSB', 'status', 'presLSW', 'temp', 'vel_b1', 'vel_b2', 'vel_b3', 'amp1', 'amp2', 'amp3', 'fill', 'checksum'], 'unpack': "<6s7hBBH4h4BH"}
+
+packet_decoder[129] = {'name': 'Aquadopp Velocity Data inc Mag', 'keys': ['time_bcd', 'error', 'AnaIn1', 'battery', 'soundSpd_Anain2', 'head', 'pitch', 'roll',
+                            'presMSB', 'status', 'presLSW', 'temp', 'sound_speed', 'ens_count', 'mag_x', 'mag_y', 'mag_z', 'vel_b1', 'vel_b2', 'vel_b3', 'amp1', 'amp2', 'amp3', 'fill', 'checksum'], 'unpack': "<6s7hBBHHHH4h4h4BH"}
 
 packet_decoder[128] = {'name': 'Aquadopp Diagnostics Data', 'keys': ['time_bcd', 'error', 'AnaIn1', 'battery', 'soundSpd_Anain2', 'head', 'pitch', 'roll',
                             'presMSB', 'status', 'presLSW', 'temp', 'vel_b1', 'vel_b2', 'vel_b3', 'amp1', 'amp2', 'amp3', 'fill', 'checksum'], 'unpack': "<6s7hBBH4h4BH"}
@@ -154,6 +158,7 @@ packet_decode2netCDF[6] = {'decode': 'NBeam', 'attrib': 'number_beams'}
 packet_decode2netCDF[7] = {'decode': 'MeasInterval', 'attrib': 'mesurement_interval'}
 packet_decode2netCDF[8] = {'decode': 'AvgInt', 'attrib': 'averaging_interval'}
 packet_decode2netCDF[9] = {'decode': 'FWversion', 'attrib': 'firmware_version'}
+packet_decode2netCDF[10] = {'decode': 'HWrevision', 'attrib': 'hardware_version'}
 
 coord_system = None
 
