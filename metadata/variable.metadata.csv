@@ -434,3 +434,49 @@ VAR_ATT,CTD_DEPTH,,,,,,,,,standard_name,str,depth
 VAR_ATT,CTD_DEPTH,,,,,,,,,positive,str,down
 VAR_ATT,CTD_DEPTH,,,,,,,,,valid_min,float32,0
 VAR_ATT,CTD_DEPTH,,,,,,,,,valid_max,float32,5000
+
+VAR_ATT,DIR_SPEC,,,,,,,,,long_name,str,wave spectrial direction
+VAR_ATT,DIR_FREQ,,,,,,,,,long_name,str,wave direction spectrial frequency 
+VAR_ATT,SPEC_FREQ,,,,,,,,,long_name,str,wave spectrial frequency 
+VAR_ATT,RAW_SAMPLE,,,,,,,,,long_name,str,sample time
+VAR_ATT,HEAVE_SAMPLE,,,,,,,,,long_name,str,heave sample time
+VAR_ATT,VEL_SAMPLE,,,,,,,,,long_name,str,heave sample time
+
+VAR_ATT,DIR_SPEC_RES_HI,,,,,,,,,coordinates,str,LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,DIR_SPEC_RES_HI,,,,,,,,,long_name,str,directional spectrum valid high range
+VAR_ATT,DIR_SPEC_RES_LOW,,,,,,,,,coordinates,str,LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,DIR_SPEC_RES_LOW,,,,,,,,,long_name,str,directional spectrum valid low range
+VAR_ATT,DIR_SPEC,,,,,,,,,coordinates,str,LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,DIR_SPEC,,,,,,,,,long_name,str,wave directional frequency spectra
+VAR_ATT,NON_DIR_SPEC,,,,,,,,,coordinates,str,LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,NON_DIR_SPEC,,,,,,,,,long_name,str,non directional frequency spectra
+VAR_ATT,WAVE_DIR_SIGMA,,,,,,,,,coordinates,str,LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,WAVE_DIR_SIGMA,,,,,,,,,long_name,str,mean spread
+VAR_ATT,WAVE_DIR_MEAN,,,,,,,,,long_name,str,sea_surface_wave_from_direction
+VAR_ATT,WAVE_DIR_MEAN,,,,,,,,,standard_name,str,sea_surface_wave_from_direction
+VAR_ATT,WAVE_DIR_MEAN,,,,,,,,,coordinates,str,LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,WM0,,,,,,,,,long_name,str,sea_surface_wave_significant_height
+VAR_ATT,WM0,,,,,,,,,standard_name,str,sea_surface_wave_significant_height
+VAR_ATT,WM0,,,,,,,,,coordinates,str,LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,WAVE_PERIOD_READ,,,,,,,,,coordinates,str,LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,WAVE_PERIOD_READ,,,,,,,,,long_name,str,peak wave period
+VAR_ATT,WAVE_PERIOD_TP,,,,,,,,,long_name,str,peak period
+VAR_ATT,WAVE_PERIOD_TP,,,,,,,,,comment,str,period where the wave spectrum is maxmimum
+VAR_ATT,WAVE_PERIOD_TP,,,,,,,,,coordinates,str,LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,WAVE_PERIOD_SIG,,,,,,,,,long_name,str,significant wave period
+VAR_ATT,WAVE_PERIOD_SIG,,,,,,,,,comment,str,average period of the significant zero down-crossing waves
+VAR_ATT,WAVE_PERIOD_SIG,,,,,,,,,coordinates,str,LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,WAVE_HEIGHT_SIG,,,,,,,,,long_name,str,sea_surface_wave_significant_height
+VAR_ATT,WAVE_HEIGHT_SIG,,,,,,,,,standard_name,str,sea_surface_wave_significant_height
+VAR_ATT,WAVE_HEIGHT_SIG,,,,,,,,,coordinates,str,LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,WAVE_HEIGHT_MAX,,,,,,,,,coordinates,str,LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,WAVE_HEIGHT_MAX,,,,,,,,,long_name,str,maximum wave height
+VAR_ATT,WAVE_PERIOD_MEAN,,,,,,,,,coordinates,str,LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,WAVE_PERIOD_MEAN,,,,,,,,,long_name,str,mean wave period
+VAR_ATT,WAVE_HEIGHT_MEAN,,,,,,,,,coordinates,str,LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,WAVE_HEIGHT_MEAN,,,,,,,,,long_name,str,average wave height
+VAR_ATT,ZCROSS,,,,,,,,,long_name,str,number of zero crossing waves
+VAR_ATT,ZCROSS,,,,,,,,,units,str,1
+VAR_ATT,ZCROSS,,,,,,,,,coordinates,str,LATITUDE LONGITUDE NOMINAL_DEPTH
+
+

@@ -430,7 +430,7 @@ def build_aquadopp_data(ncOut, binary_file, pkt_pos_list, pkt_len, pkt_id, d, un
     absci2 = create_netCDF_var(ncOut, "ABSIC2", "i2", "amplitude beam 2", "counts", ("TIME",))
     absci3 = create_netCDF_var(ncOut, "ABSIC3", "i2", "amplitude beam 3", "counts", ("TIME",))
 
-    error = create_netCDF_var(ncOut, "ERROR", "i1", "error code", "counts", ("TIME",))
+    error = create_netCDF_var(ncOut, "ERROR", "i2", "error code", "counts", ("TIME",))
     status = create_netCDF_var(ncOut, "STATUS", "i2", "status code", "counts", ("TIME",))
 
     error.comment = '0: compass, 1:measurement data, 2: sensor data, 3: tag bit, 4: flash, 6: serial CT sensor error'
@@ -787,9 +787,9 @@ def build_aquapro_data(ncOut, binary_file, pkt_pos_list, pkt_len, pkt_id, d, unp
         vel2 = create_netCDF_var(ncOut, "VEL_Y", "f4", "velocity Y", "m/s", ("TIME", "CELL"))
         vel3 = create_netCDF_var(ncOut, "VEL_Z", "f4", "velocity Z", "m/s", ("TIME", "CELL"))
     else:
-        vel1 = create_netCDF_var(ncOut, "UCUR_MAG", "f4", "current east", "m/s", ("TIME", "CELL"))
-        vel2 = create_netCDF_var(ncOut, "VCUR_MAG", "f4", "current north", "m/s", ("TIME", "CELL"))
-        vel3 = create_netCDF_var(ncOut, "WCUR", "f4", "current up", "m/s", ("TIME", "CELL"))
+        vel1 = create_netCDF_var(ncOut, "ECUR_MAG", "f4", "current east", "m/s", ("TIME", "CELL"))
+        vel2 = create_netCDF_var(ncOut, "NCUR_MAG", "f4", "current north", "m/s", ("TIME", "CELL"))
+        vel3 = create_netCDF_var(ncOut, "UCUR", "f4", "current up", "m/s", ("TIME", "CELL"))
 
     absci1 = create_netCDF_var(ncOut, "ABSIC1", "i2", "amplitude beam 1", "counts", ("TIME", "CELL"))
     absci2 = create_netCDF_var(ncOut, "ABSIC2", "i2", "amplitude beam 2", "counts", ("TIME", "CELL"))
@@ -994,9 +994,9 @@ def build_aquadopp_diag_data(ncOut, binary_file, pkt_pos_list, pkt_len, pkt_id, 
         vel2 = create_netCDF_var(ncOut, "VEL_Y_DIAG", "f4", "velocity Y", "m/s", ("TIME_DIAG",))
         vel3 = create_netCDF_var(ncOut, "VEL_Z_DIAG", "f4", "velocity Z", "m/s", ("TIME_DIAG",))
     else:
-        vel1 = create_netCDF_var(ncOut, "UCUR_MAG_DIAG", "f4", "current east", "m/s", ("TIME_DIAG",))
-        vel2 = create_netCDF_var(ncOut, "VCUR_MAG_DIAG", "f4", "current north", "m/s", ("TIME_DIAG",))
-        vel3 = create_netCDF_var(ncOut, "WCUR_DIAG", "f4", "current up", "m/s", ("TIME_DIAG",))
+        vel1 = create_netCDF_var(ncOut, "ECUR_MAG_DIAG", "f4", "current east", "m/s", ("TIME_DIAG",))
+        vel2 = create_netCDF_var(ncOut, "NCUR_MAG_DIAG", "f4", "current north", "m/s", ("TIME_DIAG",))
+        vel3 = create_netCDF_var(ncOut, "UCUR_DIAG", "f4", "current up", "m/s", ("TIME_DIAG",))
 
     head = create_netCDF_var(ncOut, "HEADING_MAG_DIAG", "f4", "heading magnetic", "degrees", ("TIME_DIAG",))
     pitch = create_netCDF_var(ncOut, "PITCH_DIAG", "f4", "pitch", "degrees", ("TIME_DIAG",))
@@ -1008,8 +1008,8 @@ def build_aquadopp_diag_data(ncOut, binary_file, pkt_pos_list, pkt_len, pkt_id, 
     absci2 = create_netCDF_var(ncOut, "ABSIC2_DIAG", "i2", "amplitude beam 2", "counts", ("TIME_DIAG",))
     absci3 = create_netCDF_var(ncOut, "ABSIC3_DIAG", "i2", "amplitude beam 3", "counts", ("TIME_DIAG",))
 
-    error = create_netCDF_var(ncOut, "ERROR_DIAG", "i1", "error code", "1", ("TIME_DIAG",))
-    status = create_netCDF_var(ncOut, "STATUS_DIAG", "i1", "status code", "1", ("TIME_DIAG",))
+    error = create_netCDF_var(ncOut, "ERROR_DIAG", "i2", "error code", "1", ("TIME_DIAG",))
+    status = create_netCDF_var(ncOut, "STATUS_DIAG", "i2", "status code", "1", ("TIME_DIAG",))
 
     sample = 0
     time_id = d['time_bcd']

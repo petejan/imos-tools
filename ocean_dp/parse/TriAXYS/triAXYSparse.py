@@ -128,15 +128,15 @@ def parse_dir_spec(output_name, file):
 
                     # create dimensions
                     # print("dimensions ", ds.dimensions)
-                    if "FREQ" not in ds.dimensions:
-                        freq_dim = ds.createDimension("FREQ", num_frequencies)
+                    if "DIR_FREQ" not in ds.dimensions:
+                        freq_dim = ds.createDimension("DIR_FREQ", num_frequencies)
                         # print(freq_dim)
-                    if "DIR" not in ds.dimensions:
-                        freq_dim = ds.createDimension("DIR", num_dir)
+                    if "DIR_SPEC" not in ds.dimensions:
+                        freq_dim = ds.createDimension("DIR_SPEC", num_dir)
 
                     # create variables if needed
                     if "DIR_SPEC" not in ds.variables:
-                        ncVarOut = ds.createVariable("DIR_SPEC", "f4", ("TIME", "FREQ", "DIR"), fill_value=np.nan)  # fill_value=nan otherwise defaults to max
+                        ncVarOut = ds.createVariable("DIR_SPEC", "f4", ("TIME", "DIR_FREQ", "DIR_SPEC"), fill_value=np.nan)  # fill_value=nan otherwise defaults to max
                         ncVarOut.units = "m^2/Hz"
                         ncVarOut.comment = "from directional spectrum processed file"
                         ncVarOut.comment_processing_version = version
@@ -157,25 +157,25 @@ def parse_dir_spec(output_name, file):
                         dir_spec_hi = ds.variables["DIR_SPEC_RES_HI"]
 
                     # create coordinate variable values
-                    if "FREQ" not in ds.variables:
-                        freq_var = ds.createVariable("FREQ", "f4", ("FREQ"), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
+                    if "DIR_FREQ" not in ds.variables:
+                        freq_var = ds.createVariable("DIR_FREQ", "f4", ("DIR_FREQ"), fill_value=None)  # no fill value for dimensions
                         freq_var.units = "Hz"
                         freq_var.comment = "specra frequency"
                         f = np.arange(0, freq_space * num_frequencies, freq_space)
                         print("f shape ", f.shape)
                         freq_var[:] = f
                     else:
-                        freq_var = ds.variables["FREQ"]
+                        freq_var = ds.variables["DIR_FREQ"]
 
-                    if "DIR" not in ds.variables:
-                        dir_var = ds.createVariable("DIR", "f4", ("DIR"), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
+                    if "DIR_SPEC" not in ds.variables:
+                        dir_var = ds.createVariable("DIR_SPEC", "f4", ("DIR_SPEC"), fill_value=None)  # no fill value for dimensions
                         dir_var.units = "Hz"
                         dir_var.comment = "specra direction"
                         d = np.arange(0, dir_space * num_dir, dir_space)
                         print("d shape ", d.shape)
                         dir_var[:] = d
                     else:
-                        dir_var = ds.variables["DIR"]
+                        dir_var = ds.variables["DIR_SPEC"]
 
                     # print (ncVarOut)
                     first = False
@@ -268,24 +268,24 @@ def parse_raw(output_name, file):
 
             # create dimensions
             # print("dimensions ", ds.dimensions)
-            if "SAMPLE" not in ds.dimensions:
-                freq_dim = ds.createDimension("SAMPLE", num_samples)
+            if "RAW_SAMPLE" not in ds.dimensions:
+                freq_dim = ds.createDimension("RAW_SAMPLE", num_samples)
                 # print(freq_dim)
-            if "VECTOR" not in ds.dimensions:
-                freq_dim = ds.createDimension("VECTOR", 3)
+            if "RAW_VECTOR" not in ds.dimensions:
+                freq_dim = ds.createDimension("RAW_VECTOR", 3)
 
             # create variables if needed
             if "ACCEL" not in ds.variables:
-                accel_var = ds.createVariable("ACCEL", "f4", ("TIME", "SAMPLE", "VECTOR"), fill_value=np.nan)  # fill_value=nan otherwise defaults to max
+                accel_var = ds.createVariable("ACCEL", "f4", ("TIME", "RAW_SAMPLE", "RAW_VECTOR"), fill_value=np.nan)  # fill_value=nan otherwise defaults to max
                 accel_var.units = "m/s^2"
-                accel_var.comment = "raw acceleration"
+                accel_var.comment = "raw acceleration, x y z"
             else:
                 accel_var = ds.variables["ACCEL"]
 
             if "GYRO" not in ds.variables:
-                gyro_var = ds.createVariable("GYRO", "f4", ("TIME", "SAMPLE", "VECTOR"), fill_value=np.nan)  # fill_value=nan otherwise defaults to max
+                gyro_var = ds.createVariable("GYRO", "f4", ("TIME", "RAW_SAMPLE", "RAW_VECTOR"), fill_value=np.nan)  # fill_value=nan otherwise defaults to max
                 gyro_var.units = "rad/s"
-                gyro_var.comment = "raw gyroscope measurement"
+                gyro_var.comment = "raw gyroscope measurement, x y z"
             else:
                 gyro_var = ds.variables["GYRO"]
 
@@ -359,24 +359,24 @@ def parse_non_dir_spec(output_name, file):
                     times_num = ds.variables["TIME"]
                     times = num2date(times_num[:], units=times_num.units, calendar=times_num.calendar)
                     # print("dimensions ", ds.dimensions)
-                    if "FREQ" not in ds.dimensions:
-                        freq_dim = ds.createDimension("FREQ", num_frequencies)
+                    if "SPEC_FREQ" not in ds.dimensions:
+                        freq_dim = ds.createDimension("SPEC_FREQ", num_frequencies)
                         # print(freq_dim)
 
                     if "NON_DIR_SPEC" not in ds.variables:
-                        ncVarOut = ds.createVariable("NON_DIR_SPEC", "f4", ("TIME", "FREQ"), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
+                        ncVarOut = ds.createVariable("NON_DIR_SPEC", "f4", ("TIME", "SPEC_FREQ"), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
                         ncVarOut.units = "m^2/Hz"
                         ncVarOut.comment = "from non-directional spectrum processed file"
                         ncVarOut.comment_processing_version = version
                     else:
                         ncVarOut = ds.variables["NON_DIR_SPEC"]
 
-                    if "FREQ" not in ds.variables:
-                        freq_var = ds.createVariable("FREQ", "f4", ("FREQ"), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
+                    if "SPEC_FREQ" not in ds.variables:
+                        freq_var = ds.createVariable("SPEC_FREQ", "f4", ("SPEC_FREQ"), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
                         freq_var.units = "Hz"
                         freq_var.comment = "spectra frequency"
                     else:
-                        freq_var = ds.variables["FREQ"]
+                        freq_var = ds.variables["SPEC_FREQ"]
 
                     # print (ncVarOut)
                     first = False
@@ -412,7 +412,7 @@ def parse_heave(output_name, file):
     # DATE→   =·2018·Feb·09·04:00¶
     # NUMBER·OF·POINTS→       =····1382¶
     # TIME·OF·FIRST·POINT·(s)→=···60.16¶
-    # SAMPLE·INTERVAL·(s)→    =····0.78¶
+    # RAW_SAMPLE·INTERVAL·(s)→    =····0.78¶
     # COLUMN·1·=·TIME·(s)¶
     # COLUMN·2·=·HEAVE·(m)¶
     # COLUMN·3·=·DSP·NORTH·(m)¶
@@ -463,26 +463,26 @@ def parse_heave(output_name, file):
                     times_num = ds.variables["TIME"]
                     times = num2date(times_num[:], units=times_num.units, calendar=times_num.calendar)
                     # print("dimensions ", ds.dimensions)
-                    if "SAMPLE_TIME" not in ds.dimensions:
-                        freq_dim = ds.createDimension("SAMPLE_TIME", num_points)
+                    if "HEAVE_SAMPLE" not in ds.dimensions:
+                        sample_dim = ds.createDimension("HEAVE_SAMPLE", num_points)
                         # print(freq_dim)
-                    if "VECTOR" not in ds.dimensions:
-                        freq_dim = ds.createDimension("VECTOR", 3)
+                    if "HEAVE_VECTOR" not in ds.dimensions:
+                        heave_vector_dim = ds.createDimension("HEAVE_VECTOR", 3)
 
                     if "HEAVE" not in ds.variables:
-                        ncVarOut = ds.createVariable("HEAVE", "f4", ("TIME", "SAMPLE_TIME", "VECTOR"), fill_value=np.nan)  # fill_value=nan otherwise defaults to max
+                        ncVarOut = ds.createVariable("HEAVE", "f4", ("TIME", "HEAVE_SAMPLE", "HEAVE_VECTOR"), fill_value=np.nan)  # fill_value=nan otherwise defaults to max
                         ncVarOut.units = "m"
-                        ncVarOut.comment = "from heave processed file, heave, north, east"
+                        ncVarOut.comment = "from heave processed file, up (heave), north, east"
                         ncVarOut.comment_processing_version = version
                     else:
                         ncVarOut = ds.variables["HEAVE"]
 
-                    if "SAMPLE_TIME" not in ds.variables:
-                        sample_t_var = ds.createVariable("SAMPLE_TIME", "f4", ("SAMPLE_TIME"), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
+                    if "VEL_RAW_SAMPLE" not in ds.variables:
+                        sample_t_var = ds.createVariable("HEAVE_RAW_SAMPLE", "f4", ("HEAVE_SAMPLE"), fill_value=None)  # fill_value=nan otherwise defaults to max
                         sample_t_var.units = "s"
-                        sample_t_var.comment = "sample time"
+                        sample_t_var.comment = "heave sample time"
                     else:
-                        sample_t_var = ds.variables["SAMPLE_TIME"]
+                        sample_t_var = ds.variables["HEAVE_SAMPLE"]
                         num_points = sample_t_var.shape[0]
 
                     # print (ncVarOut)
@@ -491,8 +491,8 @@ def parse_heave(output_name, file):
 
                     data_out = np.zeros((num_points, 3))
                     data_out.fill(np.nan)
-                    freq_out = np.zeros((num_points))
-                    freq_out.fill(np.nan)
+                    sample_time_out = np.zeros((num_points))
+                    sample_time_out.fill(np.nan)
 
                     time_idx = np.where(times == ts)
                     print("time index", time_idx, time_idx[0].shape)
@@ -500,7 +500,7 @@ def parse_heave(output_name, file):
                 # print("data_line_expr:matchObj.group() : ", matchObj.group())
                 # print("data_line_expr:matchObj.group(1) : ", matchObj.group(1))
                 # print("data_line_expr:matchObj.group(2) : ", matchObj.group(2))
-                freq_out[data_line] = float(matchObj.group(1))
+                sample_time_out[data_line] = float(matchObj.group(1))
 
                 data_out[data_line, 0] = float(matchObj.group(2))
                 data_out[data_line, 1] = float(matchObj.group(3))
@@ -512,7 +512,114 @@ def parse_heave(output_name, file):
         if time_idx[0].shape[0] > 0:
             ncVarOut[time_idx[0], :] = data_out
 
-        sample_t_var[:] = freq_out
+        sample_t_var[:] = sample_time_out
+
+    ds.close()
+
+
+def parse_velocity(output_name, file):
+    # TRIAXYS BUOY DATA REPORT - TAS04811
+    # VERSION = 6a.02.08
+    # TYPE    = UVH
+    # DATE    = 2018 Feb 19 04:00
+    # NUMBER OF POINTS        =    7761
+    # TIME OF FIRST POINT (s) =   59.98
+    # RAW_SAMPLE INTERVAL (s)     =    0.14
+    # COLUMN 1 = TIME (s)
+    # COLUMN 2 = HEAVE (m)
+    # COLUMN 3 = VEL NORTH (m/s)
+    # COLUMN 4 = VEL WEST (m/s)
+    # 59.98   0.00   0.00   0.00
+    # 60.12   0.00   0.00   0.00
+
+    data_line = 0
+    first = True
+
+    ds = Dataset(output_name, 'a')
+
+    with open(file, 'r', errors='ignore') as fp:
+        line = fp.readline()
+        matchObj = re.match(first_line_expr, line)
+        if not matchObj:
+            print("Not a TriAXYS file !")
+            exit(-1)
+
+        cnt = 1
+        while line:
+
+            matchObj = re.match(date_expr, line)
+            if matchObj:
+                # print("date_expr:matchObj.group() : ", matchObj.group())
+                # print("date_expr:matchObj.group(1) : ", matchObj.group(1))
+                # print("date_expr:matchObj.group(2) : ", matchObj.group(2))
+                ts = datetime.datetime.strptime(matchObj.group(1), "%Y %b %d %H:%M")
+                print("timestamp ", ts)
+            matchObj = re.match(num_points_expr, line)
+            if matchObj:
+                # print("num_freq_expr:matchObj.group() : ", matchObj.group())
+                # print("num_freq_expr:matchObj.group(1) : ", matchObj.group(1))
+                num_points = int(matchObj.group(1))
+            matchObj = re.match(version_expr, line)
+            if matchObj:
+                # print("freq_space_expr:matchObj.group() : ", matchObj.group())
+                # print("freq_space_expr:matchObj.group(1) : ", matchObj.group(1))
+                version = matchObj.group(1)
+
+            matchObj = re.match(data4_line_expr, line)
+            if matchObj:
+                if first:
+                    times_num = ds.variables["TIME"]
+                    times = num2date(times_num[:], units=times_num.units, calendar=times_num.calendar)
+                    # print("dimensions ", ds.dimensions)
+                    if "VEL_SAMPLE" not in ds.dimensions:
+                        velocity_sample_dim = ds.createDimension("VEL_SAMPLE", num_points)
+                        # print(freq_dim)
+                    if "VEL_XY" not in ds.dimensions:
+                        velocity_sample_dim = ds.createDimension("VEL_XY", 3)
+
+                    if "VEL" not in ds.variables:
+                        ncVarOut = ds.createVariable("VEL", "f4", ("TIME", "VEL_SAMPLE", "VEL_XY"), fill_value=np.nan)  # fill_value=nan otherwise defaults to max
+                        ncVarOut.units = "m"
+                        ncVarOut.comment = "from velocity file processed file, north, east"
+                        ncVarOut.comment_processing_version = version
+                    else:
+                        ncVarOut = ds.variables["VEL"]
+
+                    if "VEL_SAMPLE" not in ds.variables:
+                        sample_t_var = ds.createVariable("VEL_SAMPLE", "f4", ("VEL_SAMPLE"), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
+                        sample_t_var.units = "s"
+                        sample_t_var.comment = "velocity sample time"
+                    else:
+                        sample_t_var = ds.variables["VEL_SAMPLE"]
+                        num_points = sample_t_var.shape[0]
+
+                    # print (ncVarOut)
+                    first = False
+                    cnt = 0
+
+                    data_out = np.zeros((num_points, 3))
+                    data_out.fill(np.nan)
+                    sample_time_out = np.zeros((num_points))
+                    sample_time_out.fill(np.nan)
+
+                    time_idx = np.where(times == ts)
+                    print("time index", time_idx, time_idx[0].shape)
+
+                # print("data_line_expr:matchObj.group() : ", matchObj.group())
+                # print("data_line_expr:matchObj.group(1) : ", matchObj.group(1))
+                # print("data_line_expr:matchObj.group(2) : ", matchObj.group(2))
+                sample_time_out[data_line] = float(matchObj.group(1))
+
+                data_out[data_line, 0] = float(matchObj.group(3))
+                data_out[data_line, 1] = float(matchObj.group(4))
+                data_line += 1
+
+            line = fp.readline()
+
+        if time_idx[0].shape[0] > 0:
+            ncVarOut[time_idx[0], :] = data_out
+
+        sample_t_var[:] = sample_time_out
 
     ds.close()
 
@@ -734,6 +841,14 @@ def parse_triaxys(files):
             print("RAW")
             parse_raw(output_name, filepath)
 
+        elif filepath.endswith('.HNE'):
+            print("Heave")
+            parse_heave(output_name, filepath)
+
+        elif filepath.endswith('.UHV'):
+            print("Heave, Velocity")
+            parse_velocity(output_name, filepath)
+
         elif filepath.endswith('.DIRSPEC'):
             print("DIRSPEC")
             parse_dir_spec(output_name, filepath)
@@ -741,10 +856,6 @@ def parse_triaxys(files):
         elif filepath.endswith('.NONDIRSPEC'):
             print("NONDIR SPEC")
             parse_non_dir_spec(output_name, filepath)
-
-        elif filepath.endswith('.HNE'):
-            print("Heave")
-            #parse_heave(output_name, filepath)
 
     return output_name
 
