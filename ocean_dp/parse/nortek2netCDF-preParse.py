@@ -81,7 +81,7 @@ packet_id['User Configuration'] = 0
 packet_id['Head Configuration'] = 4
 packet_id['Hardware Configuration'] = 5
 packet_id['Aquadopp Velocity Data'] = 1
-packet_id['Aquadopp Velocity Data inc mag'] = 129
+packet_id['Aquadopp Velocity Data inc Mag'] = 129
 packet_id['Aquadopp Diagnostics Data'] = 128
 packet_id['Aquadopp Diagnostics Data Header'] = 6
 packet_id['Vector and Vectrino Probe Check Data'] = 7
@@ -112,7 +112,7 @@ packet_decoder[1] = {'name': 'Aquadopp Velocity Data', 'keys': ['time_bcd', 'err
                             'presMSB', 'status', 'presLSW', 'temp', 'vel_b1', 'vel_b2', 'vel_b3', 'amp1', 'amp2', 'amp3', 'fill', 'checksum'], 'unpack': "<6s7hBBH4h4BH"}
 
 packet_decoder[129] = {'name': 'Aquadopp Velocity Data inc Mag', 'keys': ['time_bcd', 'error', 'AnaIn1', 'battery', 'soundSpd_Anain2', 'head', 'pitch', 'roll',
-                            'presMSB', 'status', 'presLSW', 'temp', 'sound_speed', 'ens_count', 'mag_x', 'mag_y', 'mag_z', 'vel_b1', 'vel_b2', 'vel_b3', 'amp1', 'amp2', 'amp3', 'fill', 'checksum'], 'unpack': "<6s7hBBHHHH4h4h4BH"}
+                            'presMSB', 'status', 'presLSW', 'temp', 'sound_speed', 'ens_count', 'mag_x', 'mag_y', 'mag_z', 'vel_b1', 'vel_b2', 'vel_b3', 'amp1', 'amp2', 'amp3', 'fill', 'checksum'], 'unpack': "<6s7hBBHhHH3h3h4BH"}
 
 packet_decoder[128] = {'name': 'Aquadopp Diagnostics Data', 'keys': ['time_bcd', 'error', 'AnaIn1', 'battery', 'soundSpd_Anain2', 'head', 'pitch', 'roll',
                             'presMSB', 'status', 'presLSW', 'temp', 'vel_b1', 'vel_b2', 'vel_b3', 'amp1', 'amp2', 'amp3', 'fill', 'checksum'], 'unpack': "<6s7hBBH4h4BH"}
@@ -435,6 +435,11 @@ def build_aquadopp_data(ncOut, binary_file, pkt_pos_list, pkt_len, pkt_id, d, un
     absci2 = create_netCDF_var(ncOut, "ABSIC2", "i2", "amplitude beam 2", "counts", ("TIME",))
     absci3 = create_netCDF_var(ncOut, "ABSIC3", "i2", "amplitude beam 3", "counts", ("TIME",))
 
+    if pkt_id == 129:
+        mag_x = create_netCDF_var(ncOut, "MAG_X", "f4", "magnetic field X", "counts", ("TIME",))
+        mag_y = create_netCDF_var(ncOut, "MAG_Y", "f4", "magnetic field Y", "counts", ("TIME",))
+        mag_z = create_netCDF_var(ncOut, "MAG_Z", "f4", "magnetic field Z", "counts", ("TIME",))
+
     error = create_netCDF_var(ncOut, "ERROR", "i2", "error code", "counts", ("TIME",))
     status = create_netCDF_var(ncOut, "STATUS", "i2", "status code", "counts", ("TIME",))
 
@@ -459,6 +464,9 @@ def build_aquadopp_data(ncOut, binary_file, pkt_pos_list, pkt_len, pkt_id, d, un
     var_list.append((absci1, d['amp1'], 1, np.zeros([number_samples], dtype=int)))
     var_list.append((absci2, d['amp2'], 1, np.zeros([number_samples], dtype=int)))
     var_list.append((absci3, d['amp3'], 1, np.zeros([number_samples], dtype=int)))
+    var_list.append((mag_x, d['mag_x'], 1, np.empty([number_samples], dtype=np.float32)))
+    var_list.append((mag_y, d['mag_y'], 1, np.empty([number_samples], dtype=np.float32)))
+    var_list.append((mag_z, d['mag_z'], 1, np.empty([number_samples], dtype=np.float32)))
 
     var_list.append((error, d['error'], 1, np.zeros([number_samples], dtype=int)))
     var_list.append((status, d['status'], 1, np.zeros([number_samples], dtype=int)))
@@ -1196,7 +1204,7 @@ def parse_file(files, include_diag):
             # look though all packet types, decode each type to arrays and save to netCDF variables
             for pkt_id in pkt_count:
                 pkt_pos_list = pkt_pos[pkt_id]
-                print('id=', pkt_id, "'"+packet_decoder[pkt_id]['name']+"'", 'count=', pkt_count[pkt_id], len(pkt_pos_list), pkt_pos_list[0], 'len=', pkt_len[pkt_id])
+                #print('id=', pkt_id, "'"+packet_decoder[pkt_id]['name']+"'", 'count=', pkt_count[pkt_id], len(pkt_pos_list), pkt_pos_list[0], 'len=', pkt_len[pkt_id])
                 unpack = packet_decoder[pkt_id]['unpack']
                 keys = packet_decoder[pkt_id]['keys']
 
@@ -1288,6 +1296,12 @@ def parse_file(files, include_diag):
                     number_bins = packetDecode[d['NBins']]
 
                 if packet_id['Aquadopp Velocity Data'] == pkt_id:
+                    # add global attributes
+                    instrument_model = 'Aquadopp ' + si_format(head_frequency*1000, precision=0) + 'Hz'
+
+                    ncTimesOut = build_aquadopp_data(ncOut, binary_file, pkt_pos_list, pkt_len, pkt_id, d, unpack)
+
+                if packet_id['Aquadopp Velocity Data inc Mag'] == pkt_id:
                     # add global attributes
                     instrument_model = 'Aquadopp ' + si_format(head_frequency*1000, precision=0) + 'Hz'
 
