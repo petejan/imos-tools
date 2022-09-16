@@ -464,9 +464,10 @@ def build_aquadopp_data(ncOut, binary_file, pkt_pos_list, pkt_len, pkt_id, d, un
     var_list.append((absci1, d['amp1'], 1, np.zeros([number_samples], dtype=int)))
     var_list.append((absci2, d['amp2'], 1, np.zeros([number_samples], dtype=int)))
     var_list.append((absci3, d['amp3'], 1, np.zeros([number_samples], dtype=int)))
-    var_list.append((mag_x, d['mag_x'], 1, np.empty([number_samples], dtype=np.float32)))
-    var_list.append((mag_y, d['mag_y'], 1, np.empty([number_samples], dtype=np.float32)))
-    var_list.append((mag_z, d['mag_z'], 1, np.empty([number_samples], dtype=np.float32)))
+    if pkt_id == 129:
+        var_list.append((mag_x, d['mag_x'], 1, np.empty([number_samples], dtype=np.float32)))
+        var_list.append((mag_y, d['mag_y'], 1, np.empty([number_samples], dtype=np.float32)))
+        var_list.append((mag_z, d['mag_z'], 1, np.empty([number_samples], dtype=np.float32)))
 
     var_list.append((error, d['error'], 1, np.zeros([number_samples], dtype=int)))
     var_list.append((status, d['status'], 1, np.zeros([number_samples], dtype=int)))
