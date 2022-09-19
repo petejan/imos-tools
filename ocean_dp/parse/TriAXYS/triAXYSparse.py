@@ -45,6 +45,8 @@ data4_line_expr    = r"^\s*([0-9.]+)\s+([0-9.E+-]+)\s+([0-9.E+-]+)\s+([0-9.E+-]+
 non_dir_line_expr = r"^ ([0-9.E+-]+)"
 version_expr      = r"^VERSION.*=\s*(\S*)"
 
+times = []
+
 
 def parse_dir_spec(output_name, file):
 
@@ -128,21 +130,22 @@ def parse_dir_spec(output_name, file):
 
                     # create dimensions
                     # print("dimensions ", ds.dimensions)
-                    if "DIR_FREQ" not in ds.dimensions:
-                        freq_dim = ds.createDimension("DIR_FREQ", num_frequencies)
+                    if "FREQ" not in ds.dimensions:
+                        freq_dim = ds.createDimension("FREQ", num_frequencies)
                         # print(freq_dim)
                     if "DIR_SPEC" not in ds.dimensions:
                         freq_dim = ds.createDimension("DIR_SPEC", num_dir)
 
                     # create variables if needed
                     if "DIR_SPEC" not in ds.variables:
-                        ncVarOut = ds.createVariable("DIR_SPEC", "f4", ("TIME", "DIR_FREQ", "DIR_SPEC"), fill_value=np.nan)  # fill_value=nan otherwise defaults to max
+                        ncVarOut = ds.createVariable("DIR_SPEC", "f4", ("TIME", "FREQ", "DIR_SPEC"), fill_value=np.nan)  # fill_value=nan otherwise defaults to max
                         ncVarOut.units = "m^2/Hz"
                         ncVarOut.comment = "from directional spectrum processed file"
                         ncVarOut.comment_processing_version = version
                     else:
                         ncVarOut = ds.variables["DIR_SPEC"]
 
+                    # TODO: use these are a mask on DIR_SPEC rather than creating new variables
                     if "DIR_SPEC_RES_LOW" not in ds.variables:
                         dir_spec_low = ds.createVariable("DIR_SPEC_RES_LOW", "f4", ("TIME"), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
                         dir_spec_low.units = "Hz"
@@ -157,15 +160,15 @@ def parse_dir_spec(output_name, file):
                         dir_spec_hi = ds.variables["DIR_SPEC_RES_HI"]
 
                     # create coordinate variable values
-                    if "DIR_FREQ" not in ds.variables:
-                        freq_var = ds.createVariable("DIR_FREQ", "f4", ("DIR_FREQ"), fill_value=None)  # no fill value for dimensions
+                    if "FREQ" not in ds.variables:
+                        freq_var = ds.createVariable("FREQ", "f4", ("FREQ"), fill_value=None)  # no fill value for dimensions
                         freq_var.units = "Hz"
                         freq_var.comment = "specra frequency"
                         f = np.arange(0, freq_space * num_frequencies, freq_space)
                         print("f shape ", f.shape)
                         freq_var[:] = f
                     else:
-                        freq_var = ds.variables["DIR_FREQ"]
+                        freq_var = ds.variables["FREQ"]
 
                     if "DIR_SPEC" not in ds.variables:
                         dir_var = ds.createVariable("DIR_SPEC", "f4", ("DIR_SPEC"), fill_value=None)  # no fill value for dimensions
@@ -252,11 +255,11 @@ def parse_raw(output_name, file):
             cnt += 1
 
         num_samples = cnt
-        print("total samples", num_samples)
+        print("raw total samples", num_samples)
 
         ts = datetime.datetime.strptime(line_split[0], "%y%m%d%H%M")
 
-        print("timestamp", ts)
+        print("raw timestamp", ts)
 
         times_num = ds.variables["TIME"]
         times = num2date(times_num[:], units=times_num.units, calendar=times_num.calendar)
@@ -289,7 +292,14 @@ def parse_raw(output_name, file):
             else:
                 gyro_var = ds.variables["GYRO"]
 
-            print("size ", data_out.shape)
+            if "COMPASS" not in ds.variables:
+                comp_var = ds.createVariable("COMPASS", "f4", ("TIME", "RAW_SAMPLE"), fill_value=np.nan)  # fill_value=nan otherwise defaults to max
+                comp_var.units = "degrees"
+                comp_var.comment = "compass direction"
+            else:
+                comp_var = ds.variables["COMPASS"]
+
+            comp_var[time_idx[0], :] = data_out[:, 1]
             accel_var[time_idx[0], :, :] = data_out[:, 2:5]
             gyro_var[time_idx[0], :, :] = data_out[:, 5:8]
 
@@ -359,24 +369,26 @@ def parse_non_dir_spec(output_name, file):
                     times_num = ds.variables["TIME"]
                     times = num2date(times_num[:], units=times_num.units, calendar=times_num.calendar)
                     # print("dimensions ", ds.dimensions)
-                    if "SPEC_FREQ" not in ds.dimensions:
-                        freq_dim = ds.createDimension("SPEC_FREQ", num_frequencies)
+                    if "FREQ" not in ds.dimensions:
+                        freq_dim = ds.createDimension("FREQ", 129)
                         # print(freq_dim)
 
                     if "NON_DIR_SPEC" not in ds.variables:
-                        ncVarOut = ds.createVariable("NON_DIR_SPEC", "f4", ("TIME", "SPEC_FREQ"), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
+                        ncVarOut = ds.createVariable("NON_DIR_SPEC", "f4", ("TIME", "FREQ"), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
                         ncVarOut.units = "m^2/Hz"
                         ncVarOut.comment = "from non-directional spectrum processed file"
                         ncVarOut.comment_processing_version = version
                     else:
                         ncVarOut = ds.variables["NON_DIR_SPEC"]
 
-                    if "SPEC_FREQ" not in ds.variables:
-                        freq_var = ds.createVariable("SPEC_FREQ", "f4", ("SPEC_FREQ"), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
+                    freq = np.arange(0, 0.005 * 129, 0.005)
+                    if "FREQ" not in ds.variables:
+                        freq_var = ds.createVariable("FREQ", "f4", ("FREQ"), fill_value=None)  # fill_value=nan otherwise defaults to max
                         freq_var.units = "Hz"
-                        freq_var.comment = "spectra frequency"
+                        freq_var.comment = "frequency"
+                        freq_var[:] = freq
                     else:
-                        freq_var = ds.variables["SPEC_FREQ"]
+                        freq_var = ds.variables["FREQ"]
 
                     # print (ncVarOut)
                     first = False
@@ -397,10 +409,175 @@ def parse_non_dir_spec(output_name, file):
             line = fp.readline()
             cnt += 1
 
-        if time_idx[0].shape[0] > 0:
-            ncVarOut[time_idx[0], :] = data_out[:, 1]
+        xy, x_ind, y_ind = np.intersect1d(data_out[:, 0], freq, return_indices=True)
+        #print('freq overlap', xy)
 
-        freq_var[:] = data_out[:, 0]
+        d0 = np.zeros(129)
+        if time_idx[0].shape[0] > 0:
+            d0.fill(np.nan)
+            d0[y_ind] = data_out[x_ind, 1]
+            ncVarOut[time_idx[0], :] = d0
+
+    ds.close()
+
+
+def parse_mean_dir(output_name, file):
+    # TRIAXYS BUOY DATA REPORT
+    # VERSION = 5b.02.08
+    # TYPE    = MEAN DIRECTION
+    # DATE    = 2011 Aug 06 00:00(UTC)
+    # NUMBER OF FREQUENCIES              =      98
+    # INITIAL FREQUENCY (Hz)             =   0.030
+    # FREQUENCY SPACING (Hz)             =   0.005
+    # RESOLVABLE FREQUENCY RANGE (Hz)    =   0.030  TO  0.515
+    # S(f) WEIGHTED MEAN WAVE DIRECTION  =  307.41
+    # S(f) WEIGHTED MEAN SPREADING WIDTH =   35.98
+    # COLUMN 1 = FREQUENCY (Hz)
+    # COLUMN 2 = SPECTRAL DENSITY (M^2/Hz)
+    # COLUMN 3 = MEAN WAVE DIRECTION (DEG)
+    # COLUMN 4 = SPREADING WIDTH (DEG)
+    # 0.030  0.5485713E-05    221.77     33.13
+    # 0.035  0.8881006E-05    264.26     41.79
+    # 0.040  0.5643119E-05    339.83     34.62
+    # 0.045  0.3431466E-05    326.11     34.49
+
+    data_line = 0
+    first = True
+
+    ds = Dataset(output_name, 'a')
+
+    with open(file, 'r', errors='ignore') as fp:
+        line = fp.readline()
+        matchObj = re.match(first_line_expr, line)
+        if not matchObj:
+            print("Not a TriAXYS file !")
+            exit(-1)
+
+        cnt = 1
+        while line:
+
+            matchObj = re.match(date_expr, line)
+            if matchObj:
+                # print("date_expr:matchObj.group() : ", matchObj.group())
+                # print("date_expr:matchObj.group(1) : ", matchObj.group(1))
+                # print("date_expr:matchObj.group(2) : ", matchObj.group(2))
+                ts = datetime.datetime.strptime(matchObj.group(1), "%Y %b %d %H:%M")
+                print("timestamp ", ts)
+            matchObj = re.match(num_freq_expr, line)
+            if matchObj:
+                # print("num_freq_expr:matchObj.group() : ", matchObj.group())
+                # print("num_freq_expr:matchObj.group(1) : ", matchObj.group(1))
+                num_frequencies = int(matchObj.group(1))
+            matchObj = re.match(ini_freq_expr, line)
+            if matchObj:
+                # print("ini_freq_expr:matchObj.group() : ", matchObj.group())
+                # print("ini_freq_expr:matchObj.group(1) : ", matchObj.group(1))
+                init_freq = float(matchObj.group(1))
+                pass
+            matchObj = re.match(freq_space_expr, line)
+            if matchObj:
+                # print("freq_space_expr:matchObj.group() : ", matchObj.group())
+                # print("freq_space_expr:matchObj.group(1) : ", matchObj.group(1))
+                pass
+            matchObj = re.match(version_expr, line)
+            if matchObj:
+                # print("freq_space_expr:matchObj.group() : ", matchObj.group())
+                # print("freq_space_expr:matchObj.group(1) : ", matchObj.group(1))
+                version = matchObj.group(1)
+                pass
+            matchObj = re.match(data4_line_expr, line)
+            if matchObj:
+                if first:
+                    times_num = ds.variables["TIME"]
+                    times = num2date(times_num[:], units=times_num.units, calendar=times_num.calendar)
+                    # print("dimensions ", ds.dimensions)
+                    if "FREQ" not in ds.dimensions:
+                        freq_dim = ds.createDimension("FREQ", 129)
+                    else:
+                        freq_dim = ds.dimensions['FREQ']
+                    # print(freq_dim)
+
+                    if "MEAN_DENSITY" not in ds.variables:
+                        ncVarOut_d = ds.createVariable("MEAN_DENSITY", "f4", ("TIME", "FREQ"), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
+                        ncVarOut_d.units = "m^2/Hz"
+                        ncVarOut_d.comment = "spectral density"
+                        ncVarOut_d.comment_processing_version = version
+                    else:
+                        ncVarOut_d = ds.variables["MEAN_DENSITY"]
+                    if "MEAN_DIR" not in ds.variables:
+                        ncVarOut = ds.createVariable("MEAN_DIR", "f4", ("TIME", "FREQ"), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
+                        ncVarOut.units = "degrees"
+                        ncVarOut.comment = "mean direction"
+                        ncVarOut.comment_processing_version = version
+                    else:
+                        ncVarOut = ds.variables["MEAN_DIR"]
+
+                    if "MEAN_DIR_SPREAD" not in ds.variables:
+                        ncVarOut_s = ds.createVariable("MEAN_DIR_SPREAD", "f4", ("TIME", "FREQ"), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
+                        ncVarOut_s.units = "degrees"
+                        ncVarOut_s.comment = "mean direction spread"
+                        ncVarOut_s.comment_processing_version = version
+                    else:
+                        ncVarOut_s = ds.variables["MEAN_DIR_SPREAD"]
+
+                    freq = np.arange(0, 0.005 * 129, 0.005)
+                    if "FREQ" not in ds.variables:
+                        freq_var = ds.createVariable("FREQ", "f4", ("FREQ"), fill_value=None)  # fill_value=nan otherwise defaults to max
+                        freq_var.units = "Hz"
+                        freq_var.comment = "frequency"
+                        freq_var[:] = freq
+
+                    else:
+                        freq_var = ds.variables["FREQ"]
+
+                    # print (ncVarOut)
+                    first = False
+
+                    data_out = np.zeros((num_frequencies, 4))
+                    data_out.fill(np.nan)
+
+                    time_idx = np.where(times == ts)
+                    print("time index", time_idx, time_idx[0].shape)
+
+                # print("data_line_expr:matchObj.group() : ", matchObj.group())
+                # print("data_line_expr:matchObj.group(1) : ", matchObj.group(1))
+                # print("data_line_expr:matchObj.group(2) : ", matchObj.group(2))
+                data_out[data_line, 1] = float(matchObj.group(2))
+                data_out[data_line, 2] = float(matchObj.group(3))
+                data_out[data_line, 3] = float(matchObj.group(4))
+                data_out[data_line, 0] = float(matchObj.group(1))
+                data_line += 1
+
+            line = fp.readline()
+            cnt += 1
+
+        # match frequencies from file with ones in netCDF FREQ variable, need to be careful that
+        # frequences (which are floats) match (need to be the same type, not single and float)
+
+        #print('freq dim', freq)
+        #print('freq read', data_out[:, 0])
+
+        xy, x_ind, y_ind = np.intersect1d(data_out[:, 0], freq, return_indices=True)
+        #print('freq overlap', xy)
+        #print('freq overlap x_ind', x_ind)
+        #print('freq overlap y_ind', y_ind)
+
+        #print('shape ncVarOut', ncVarOut[:].shape)
+        #print('shape data_out', data_out.shape)
+
+        #print('data_out', data_out[x_ind, 1])
+
+        d0 = np.zeros(129)
+        if time_idx[0].shape[0] > 0:
+            d0.fill(np.nan)
+            d0[y_ind] = data_out[x_ind, 1]
+            ncVarOut_d[time_idx[0], :] = d0
+            d0.fill(np.nan)
+            d0[y_ind] = data_out[x_ind, 2]
+            ncVarOut[time_idx[0], :] = d0
+            d0.fill(np.nan)
+            d0[y_ind] = data_out[x_ind, 3]
+            ncVarOut_s[time_idx[0], :] = d0
 
     ds.close()
 
@@ -463,26 +640,26 @@ def parse_heave(output_name, file):
                     times_num = ds.variables["TIME"]
                     times = num2date(times_num[:], units=times_num.units, calendar=times_num.calendar)
                     # print("dimensions ", ds.dimensions)
-                    if "HEAVE_SAMPLE" not in ds.dimensions:
-                        sample_dim = ds.createDimension("HEAVE_SAMPLE", num_points)
+                    if "UVH_SAMPLE" not in ds.dimensions:
+                        sample_dim = ds.createDimension("UVH_SAMPLE", num_points)
                         # print(freq_dim)
-                    if "HEAVE_VECTOR" not in ds.dimensions:
-                        heave_vector_dim = ds.createDimension("HEAVE_VECTOR", 3)
+                    if "UVH_VECTOR" not in ds.dimensions:
+                        heave_vector_dim = ds.createDimension("UVH_VECTOR", 3)
 
-                    if "HEAVE" not in ds.variables:
-                        ncVarOut = ds.createVariable("HEAVE", "f4", ("TIME", "HEAVE_SAMPLE", "HEAVE_VECTOR"), fill_value=np.nan)  # fill_value=nan otherwise defaults to max
+                    if "UVH" not in ds.variables:
+                        ncVarOut = ds.createVariable("UVH", "f4", ("TIME", "UVH_SAMPLE", "UVH_VECTOR"), fill_value=np.nan)  # fill_value=nan otherwise defaults to max
                         ncVarOut.units = "m"
                         ncVarOut.comment = "from heave processed file, up (heave), north, east"
                         ncVarOut.comment_processing_version = version
                     else:
-                        ncVarOut = ds.variables["HEAVE"]
+                        ncVarOut = ds.variables["UVH"]
 
-                    if "VEL_RAW_SAMPLE" not in ds.variables:
-                        sample_t_var = ds.createVariable("HEAVE_RAW_SAMPLE", "f4", ("HEAVE_SAMPLE"), fill_value=None)  # fill_value=nan otherwise defaults to max
+                    if "UVH_SAMPLE" not in ds.variables:
+                        sample_t_var = ds.createVariable("UVH_SAMPLE", "f4", ("UVH_SAMPLE"), fill_value=None)  # fill_value=nan otherwise defaults to max
                         sample_t_var.units = "s"
                         sample_t_var.comment = "heave sample time"
                     else:
-                        sample_t_var = ds.variables["HEAVE_SAMPLE"]
+                        sample_t_var = ds.variables["UVH_SAMPLE"]
                         num_points = sample_t_var.shape[0]
 
                     # print (ncVarOut)
@@ -571,26 +748,26 @@ def parse_velocity(output_name, file):
                     times_num = ds.variables["TIME"]
                     times = num2date(times_num[:], units=times_num.units, calendar=times_num.calendar)
                     # print("dimensions ", ds.dimensions)
-                    if "VEL_SAMPLE" not in ds.dimensions:
-                        velocity_sample_dim = ds.createDimension("VEL_SAMPLE", num_points)
+                    if "HNE_SAMPLE" not in ds.dimensions:
+                        velocity_sample_dim = ds.createDimension("HNE_SAMPLE", num_points)
                         # print(freq_dim)
-                    if "VEL_XY" not in ds.dimensions:
-                        velocity_sample_dim = ds.createDimension("VEL_XY", 3)
+                    if "HNE_VECTOR" not in ds.dimensions:
+                        velocity_sample_dim = ds.createDimension("HNE_VECTOR", 3)
 
-                    if "VEL" not in ds.variables:
-                        ncVarOut = ds.createVariable("VEL", "f4", ("TIME", "VEL_SAMPLE", "VEL_XY"), fill_value=np.nan)  # fill_value=nan otherwise defaults to max
+                    if "HNE" not in ds.variables:
+                        ncVarOut = ds.createVariable("HNE", "f4", ("TIME", "HNE_SAMPLE", "HNE_VECTOR"), fill_value=np.nan)  # fill_value=nan otherwise defaults to max
                         ncVarOut.units = "m"
-                        ncVarOut.comment = "from velocity file processed file, north, east"
+                        ncVarOut.comment = "from velocity file processed file, heave, velocity north, velocity east"
                         ncVarOut.comment_processing_version = version
                     else:
-                        ncVarOut = ds.variables["VEL"]
+                        ncVarOut = ds.variables["HNE"]
 
-                    if "VEL_SAMPLE" not in ds.variables:
-                        sample_t_var = ds.createVariable("VEL_SAMPLE", "f4", ("VEL_SAMPLE"), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
+                    if "HNE_SAMPLE" not in ds.variables:
+                        sample_t_var = ds.createVariable("HNE_SAMPLE", "f4", ("HNE_SAMPLE"), fill_value=None)  # fill_value=nan otherwise defaults to max
                         sample_t_var.units = "s"
-                        sample_t_var.comment = "velocity sample time"
+                        sample_t_var.comment = "HNE sample time"
                     else:
-                        sample_t_var = ds.variables["VEL_SAMPLE"]
+                        sample_t_var = ds.variables["HNE_SAMPLE"]
                         num_points = sample_t_var.shape[0]
 
                     # print (ncVarOut)
@@ -610,8 +787,9 @@ def parse_velocity(output_name, file):
                 # print("data_line_expr:matchObj.group(2) : ", matchObj.group(2))
                 sample_time_out[data_line] = float(matchObj.group(1))
 
-                data_out[data_line, 0] = float(matchObj.group(3))
-                data_out[data_line, 1] = float(matchObj.group(4))
+                data_out[data_line, 0] = float(matchObj.group(2))
+                data_out[data_line, 1] = float(matchObj.group(3))
+                data_out[data_line, 2] = float(matchObj.group(4))
                 data_line += 1
 
             line = fp.readline()
@@ -624,13 +802,147 @@ def parse_velocity(output_name, file):
     ds.close()
 
 
+def parse_fourier(output_name, file):
+    # TRIAXYS BUOY DATA REPORT
+    # VERSION = 5b.02.08
+    # TYPE    = FOURIER COEFFICIENTS
+    # DATE    = 2013 Apr 19 06:00(UTC)
+    # NUMBER OF FREQUENCIES              =      93
+    # INITIAL FREQUENCY (Hz)             =   0.030
+    # FREQUENCY SPACING (Hz)             =   0.005
+    # RESOLVABLE FREQUENCY RANGE (Hz)    =   0.030  TO  0.490
+    # COLUMN 1 = FREQUENCY (Hz)
+    # COLUMN 2 = FOURIER COEFFICIENT a1
+    # COLUMN 3 = FOURIER COEFFICIENT b1
+    # COLUMN 4 = FOURIER COEFFICIENT a2
+    # COLUMN 5 = FOURIER COEFFICIENT b2
+    # 0.030 -0.2765341E+00 -0.2847367E+00 -0.1726459E-01  0.6567497E+00
+    # 0.035 -0.1771941E+00 -0.2597628E+00  0.3675945E-01  0.6103938E+00
+    # 0.040 -0.4989497E-01 -0.1844904E+00  0.1371254E+00  0.5349311E+00
+    # 0.045  0.5443965E-01 -0.4889831E-01  0.2872230E+00  0.4530604E+00
+    # 0.050  0.5766423E-01  0.4027935E-01  0.4134434E+00  0.4250077E+00
+    # 0.055  0.9941293E-01  0.6338648E-01  0.4903382E+00  0.3010178E+00
+
+    data_line = 0
+    first = True
+
+    ds = Dataset(output_name, 'a')
+
+    with open(file, 'r', errors='ignore') as fp:
+        line = fp.readline()
+        matchObj = re.match(first_line_expr, line)
+        if not matchObj:
+            print("Not a TriAXYS file !")
+            exit(-1)
+
+        cnt = 1
+        while line:
+
+            matchObj = re.match(date_expr, line)
+            if matchObj:
+                # print("date_expr:matchObj.group() : ", matchObj.group())
+                # print("date_expr:matchObj.group(1) : ", matchObj.group(1))
+                # print("date_expr:matchObj.group(2) : ", matchObj.group(2))
+                ts = datetime.datetime.strptime(matchObj.group(1), "%Y %b %d %H:%M")
+                print("timestamp ", ts)
+            matchObj = re.match(num_freq_expr, line)
+            if matchObj:
+                # print("num_freq_expr:matchObj.group() : ", matchObj.group())
+                # print("num_freq_expr:matchObj.group(1) : ", matchObj.group(1))
+                num_frequencies = int(matchObj.group(1))
+            matchObj = re.match(ini_freq_expr, line)
+            if matchObj:
+                # print("ini_freq_expr:matchObj.group() : ", matchObj.group())
+                # print("ini_freq_expr:matchObj.group(1) : ", matchObj.group(1))
+                pass
+            matchObj = re.match(freq_space_expr, line)
+            if matchObj:
+                # print("freq_space_expr:matchObj.group() : ", matchObj.group())
+                # print("freq_space_expr:matchObj.group(1) : ", matchObj.group(1))
+                pass
+            matchObj = re.match(version_expr, line)
+            if matchObj:
+                # print("freq_space_expr:matchObj.group() : ", matchObj.group())
+                # print("freq_space_expr:matchObj.group(1) : ", matchObj.group(1))
+                version = matchObj.group(1)
+                pass
+            matchObj = re.match(data4_line_expr, line)
+            if matchObj:
+                if first:
+                    times_num = ds.variables["TIME"]
+                    times = num2date(times_num[:], units=times_num.units, calendar=times_num.calendar)
+                    # print("dimensions ", ds.dimensions)
+                    if "FREQ" not in ds.dimensions:
+                        freq_dim = ds.createDimension("FREQ", 129)
+                    else:
+                        freq_dim = ds.dimensions['FREQ']
+                    # print(freq_dim)
+                    if "FOURIER_COEFF" not in ds.dimensions:
+                        coeff_dim = ds.createDimension("FOURIER_COEFF", 4)
+
+                    if "FOURIER_SPEC" not in ds.variables:
+                        ncVarOut = ds.createVariable("FOURIER_SPEC", "f4", ("TIME", "FREQ", "FOURIER_COEFF"), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
+                        ncVarOut.units = "m^2/Hz"
+                        ncVarOut.comment = "fourier coefficents, a1, b1, a2, b2"
+                        ncVarOut.comment_processing_version = version
+                    else:
+                        ncVarOut = ds.variables["FOURIER_SPEC"]
+
+                    freq = np.arange(0, 0.005 * 129, 0.005)
+                    if "FREQ" not in ds.variables:
+                        freq_var = ds.createVariable("FREQ", "f4", ("FREQ"), fill_value=None)
+                        freq_var.units = "Hz"
+                        freq_var.comment = "frequency"
+                        freq_var[:] = freq
+                    else:
+                        freq_var = ds.variables["FREQ"]
+
+                    # print (ncVarOut)
+                    first = False
+
+                    data_out = np.zeros((num_frequencies, 5))
+                    data_out.fill(np.nan)
+
+                    time_idx = np.where(times == ts)
+                    print("time index", time_idx, time_idx[0].shape)
+
+                # print("data_line_expr:matchObj.group() : ", matchObj.group())
+                # print("data_line_expr:matchObj.group(1) : ", matchObj.group(1))
+                # print("data_line_expr:matchObj.group(2) : ", matchObj.group(2))
+                data_out[data_line, 0] = float(matchObj.group(1))
+                data_out[data_line, 1] = float(matchObj.group(2))
+                data_out[data_line, 2] = float(matchObj.group(3))
+                data_out[data_line, 3] = float(matchObj.group(4))
+                data_out[data_line, 4] = float(matchObj.group(4))
+
+                data_line += 1
+
+            line = fp.readline()
+            cnt += 1
+
+        xy, x_ind, y_ind = np.intersect1d(data_out[:, 0], freq, return_indices=True)
+        #print('freq overlap', xy)
+        #print('freq overlap x_ind', x_ind)
+        #print('freq overlap y_ind', y_ind)
+
+        #print('shape ncVarOut', ncVarOut[:].shape)
+        #print('shape data_out', data_out.shape)
+
+        #print('data_out', data_out[x_ind, 1])
+
+        d0 = np.zeros((129, 4))
+        if time_idx[0].shape[0] > 0:
+            d0.fill(np.nan)
+            d0[y_ind, :] = data_out[x_ind, 1:5]
+            ncVarOut[time_idx[0], :] = d0
+
+    ds.close()
+
+
 def parse_summary(output_name, file):
 
-    instrument_model = 'TriAXYS'
-    instrument_serialnumber = '04811'
-    sample_interval = 0
-    number_samples_read = 0
-    times = []
+    ncOut = Dataset(output_name, 'a')
+
     odata = []
     name = {}
     name[0] = {'var_name': 'ZCROSS', 'header': 'Zero Crossings', 'units': 'count'}
@@ -658,38 +970,14 @@ def parse_summary(output_name, file):
     idx_sort = np.argsort(times)
     print(idx_sort)
 
-    #
-    # build the netCDF file
-    #
-
-    ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
-
-    ncOut = Dataset(output_name, 'w', format='NETCDF4')
-
-    ncOut.instrument = 'AXYS Technologies ; ' + instrument_model
-    ncOut.instrument_model = instrument_model
-    ncOut.instrument_serial_number = instrument_serialnumber
-
-    #     TIME:axis = "T";
-    #     TIME:calendar = "gregorian";
-    #     TIME:long_name = "time";
-    #     TIME:units = "days since 1950-01-01 00:00:00 UTC";
-
-    tDim = ncOut.createDimension("TIME", number_samples_read)
-    ncTimesOut = ncOut.createVariable("TIME", "d", ("TIME",), zlib=True)
-    ncTimesOut.long_name = "time"
-    ncTimesOut.units = "days since 1950-01-01 00:00:00 UTC"
-    ncTimesOut.calendar = "gregorian"
-    ncTimesOut.axis = "T"
-    # sort the times
-    t_unsorted = date2num(times, calendar=ncTimesOut.calendar, units=ncTimesOut.units)
-    ncTimesOut[:] = t_unsorted[idx_sort]
-
     for i in name:
         v = name[i]
         print("Variable %s (%s)" % (v['var_name'], v['units']))
         varName = v['var_name']
-        ncVarOut = ncOut.createVariable(varName, "f4", ("TIME",), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
+        if varName not in ncOut.variables:
+            ncVarOut = ncOut.createVariable(varName, "f4", ("TIME",), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
+        else:
+            ncVarOut = ncOut.variables[varName]
 
         # print("Create Variable %s : %s" % (ncVarOut, data[v[0]]))
         data = np.zeros((number_samples_read))
@@ -704,24 +992,33 @@ def parse_summary(output_name, file):
         ncVarOut[:] = data
         ncVarOut.units = v['units']
 
-    # add timespan attributes
-    ncOut.setncattr("time_coverage_start", num2date(ncTimesOut[0], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
-    ncOut.setncattr("time_coverage_end", num2date(ncTimesOut[-1], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
-
-    # add creating and history entry
-    ncOut.setncattr("date_created", datetime.datetime.utcnow().strftime(ncTimeFormat))
-    ncOut.setncattr("history", datetime.datetime.utcnow().strftime("%Y-%m-%d") + " created from file " + file)
-
     ncOut.close()
+
+    return number_samples_read
+
+
+def parse_wave_time(output_name, file):
+
+    with open(file, newline='') as csvfile:
+        reader = csv.DictReader(csvfile, delimiter='\t')
+        if 'Year' not in reader.fieldnames:
+            return
+
+        for row in reader:
+            #print(row)
+            times.append(datetime.datetime.strptime(row['Year']+' '+row['MonthDay']+' '+row['Time'], "%Y %m%d %H%M%S"))
+
+    number_samples_read = len(times)
+    print("time samples read ", number_samples_read)
+
+    return number_samples_read
 
 
 def parse_wave(output_name, file):
 
-    instrument_model = 'TriAXYS'
-    instrument_serialnumber = '04811'
-    sample_interval = 0
-    number_samples_read = 0
-    times = []
+    ncOut = Dataset(output_name, 'a')
+
+    wave_time = []
     odata = []
     name = {}
     name[0] = {'var_name': 'ZCROSS', 'header': 'Number of Zero Crossings', 'units': 'count'}
@@ -743,79 +1040,53 @@ def parse_wave(output_name, file):
 
         for row in reader:
             #print(row)
-            times.append(datetime.datetime.strptime(row['Year']+' '+row['MonthDay']+' '+row['Time'], "%Y %m%d %H%M%S"))
+            wave_time.append(datetime.datetime.strptime(row['Year']+' '+row['MonthDay']+' '+row['Time'], "%Y %m%d %H%M%S"))
             odata.append(row)
 
-    number_samples_read = len(times)
+    number_samples_read = len(wave_time)
     print("sampled read ", number_samples_read)
-
-    idx_sort = np.argsort(times)
-    print(idx_sort)
-
-    #
-    # build the netCDF file
-    #
-
-    ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
-
-    ncOut = Dataset(output_name, 'w', format='NETCDF4')
-
-    ncOut.instrument = 'AXYS Technologies ; ' + instrument_model
-    ncOut.instrument_model = instrument_model
-    ncOut.instrument_serial_number = instrument_serialnumber
-
-    #     TIME:axis = "T";
-    #     TIME:calendar = "gregorian";
-    #     TIME:long_name = "time";
-    #     TIME:units = "days since 1950-01-01 00:00:00 UTC";
-
-    tDim = ncOut.createDimension("TIME", number_samples_read)
-    ncTimesOut = ncOut.createVariable("TIME", "d", ("TIME",), zlib=True)
-    ncTimesOut.long_name = "time"
-    ncTimesOut.units = "days since 1950-01-01 00:00:00 UTC"
-    ncTimesOut.calendar = "gregorian"
-    ncTimesOut.axis = "T"
-    # sort the times
-    t_unsorted = date2num(times, calendar=ncTimesOut.calendar, units=ncTimesOut.units)
-    ncTimesOut[:] = t_unsorted[idx_sort]
 
     for i in name:
         v = name[i]
         print("Variable %s (%s)" % (v['var_name'], v['units']))
         varName = v['var_name']
-        ncVarOut = ncOut.createVariable(varName, "f4", ("TIME",), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
+        if varName not in ncOut.variables:
+            ncVarOut = ncOut.createVariable(varName, "f4", ("TIME",), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
+        else:
+            ncVarOut = ncOut.variables['varName']
 
         # print("Create Variable %s : %s" % (ncVarOut, data[v[0]]))
         data = np.zeros((number_samples_read))
         data.fill(np.nan)
         x = 0
-        for j in idx_sort:
+
+        for j in wave_time:
+            time_idx = np.where(times == j)
+            print("time index", time_idx, time_idx[0].shape)
             # print (j)
             val = odata[j]
             data[x] = val[v['header']]
             x += 1
 
-        ncVarOut[:] = data
+            if time_idx[0].shape[0] > 0:
+                ncVarOut[time_idx[0]] = data[x]
+
         ncVarOut.units = v['units']
 
-    # add timespan attributes
-    ncOut.setncattr("time_coverage_start", num2date(ncTimesOut[0], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
-    ncOut.setncattr("time_coverage_end", num2date(ncTimesOut[-1], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
-
-    # add creating and history entry
-    ncOut.setncattr("date_created", datetime.datetime.utcnow().strftime(ncTimeFormat))
-    ncOut.setncattr("history", datetime.datetime.utcnow().strftime("%Y-%m-%d") + " created from file " + os.path.basename(file))
-
     ncOut.close()
+
 
 def parse_triaxys(files):
     output_name = "TriAXYS.nc"
 
-    print("output file : %s" % output_name)
+    inc_raw = False
 
     # create a list of files, scanning any directories
     filelist = []
     for file in files:
+        if file == '--raw':
+            inc_raw = True
+            output_name = "TriAXYS-incRAW.nc"
         if isfile(file):
             filelist.append(file)
         elif isdir(file):
@@ -826,28 +1097,73 @@ def parse_triaxys(files):
                     if isfile(f):
                         filelist.append(f)
 
-    # parse each file
+    print("output file : %s" % output_name)
+
+    ncOut = Dataset(output_name, 'w', format='NETCDF4_CLASSIC')
+    tDim = ncOut.createDimension("TIME")
+    ncTimesOut = ncOut.createVariable("TIME", "d", ("TIME",), zlib=True)
+    ncTimesOut.long_name = "time"
+    ncTimesOut.units = "days since 1950-01-01 00:00:00 UTC"
+    ncTimesOut.calendar = "gregorian"
+    ncTimesOut.axis = "T"
+
+    ncOut.close()
+
+    # parse the Summary or WAVE files to get the timestamps
     for filepath in filelist:
         print(filepath)
 
+        # we either get a Summary file (SOFS-2 processor, 3.00.0005) or a .WAVE file (SOFS-4 onwards processor, 4.01.000)
         if filepath.endswith('Summary.txt') or filepath.endswith('Summary-Sort.txt'):
             parse_summary(output_name, filepath)
 
         elif filepath.endswith('.WAVE'):
             print("WAVE")
-            parse_wave(output_name, filepath)
+            parse_wave_time(output_name, filepath)
 
-        elif filepath.endswith('.RAW'):
-            print("RAW")
-            parse_raw(output_name, filepath)
+    idx_sort = np.argsort(times)
+    print(idx_sort)
 
-        elif filepath.endswith('.HNE'):
-            print("Heave")
-            parse_heave(output_name, filepath)
+    number_samples_read = len(times)
 
-        elif filepath.endswith('.UHV'):
-            print("Heave, Velocity")
-            parse_velocity(output_name, filepath)
+    #
+    # build the netCDF file
+    #
+    ncOut = Dataset(output_name, 'a')
+
+    instrument_model = 'TriAXYS'
+    instrument_serialnumber = '04811'
+
+    ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
+
+    ncOut.instrument = 'AXYS Technologies ; ' + instrument_model
+    ncOut.instrument_model = instrument_model
+    ncOut.instrument_serial_number = instrument_serialnumber
+
+    #     TIME:axis = "T";
+    #     TIME:calendar = "gregorian";
+    #     TIME:long_name = "time";
+    #     TIME:units = "days since 1950-01-01 00:00:00 UTC";
+
+    # sort the times
+    t_unsorted = date2num(times, calendar=ncTimesOut.calendar, units=ncTimesOut.units)
+    ncTimesOut[:] = t_unsorted[idx_sort]
+
+    # add timespan attributes
+    ncOut.setncattr("time_coverage_start", num2date(ncTimesOut[0], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
+    ncOut.setncattr("time_coverage_end", num2date(ncTimesOut[-1], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
+
+    # add creating and history entry
+    ncOut.setncattr("date_created", datetime.datetime.utcnow().strftime(ncTimeFormat))
+    ncOut.setncattr("history", datetime.datetime.utcnow().strftime("%Y-%m-%d") + " created from file " + os.path.basename(file))
+
+    # parse each file
+    for filepath in filelist:
+        print(filepath)
+
+        if filepath.endswith('.WAVE'):
+            print("WAVE")
+            parse_wave_time(output_name, filepath)
 
         elif filepath.endswith('.DIRSPEC'):
             print("DIRSPEC")
@@ -856,6 +1172,27 @@ def parse_triaxys(files):
         elif filepath.endswith('.NONDIRSPEC'):
             print("NONDIR SPEC")
             parse_non_dir_spec(output_name, filepath)
+
+        elif filepath.endswith('.MEANDIR'):
+            print("MEAN DIR")
+            parse_mean_dir(output_name, filepath)
+
+        if inc_raw:
+            if filepath.endswith('.RAW'):
+                print("RAW")
+                parse_raw(output_name, filepath)
+
+            elif filepath.endswith('.HNE'):
+                print("Heave")
+                parse_heave(output_name, filepath)
+
+            elif filepath.endswith('.UVH'):
+                print("Heave, Velocity")
+                parse_velocity(output_name, filepath)
+
+            elif filepath.endswith('.FOURIER'):
+                print("FOURIER")
+                parse_fourier(output_name, filepath)
 
     return output_name
 
