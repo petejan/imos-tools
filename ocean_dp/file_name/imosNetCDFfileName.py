@@ -43,7 +43,7 @@ nameCode['CPHL'] = "B"
 nameCode['BB'] = "U"
 nameCode['NITRATE_UM'] = "K"
 nameCode['NITRATE'] = "K"
-nameCode['WAVE_HEIGHT_SIG'] = "W"
+nameCode['Hm0'] = "W"
 nameCode['NON_DIR_SPEC'] = "R"
 
 # IMOS_<Facility-Code>_<Data-Code>_<Start-date>_<Platform-Code>_FV<File-Version>_ <Product-Type>_END-<End-date>_C-<Creation_date>_<PARTX>.nc

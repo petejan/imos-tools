@@ -276,7 +276,10 @@ def datalogger(outputName, files):
                                 nv = i.split('=')
                                 name = nv[0]
                                 if name in nameMap:
-                                    value = np.float(nv[1])
+                                    try:
+                                        value = np.float(nv[1])
+                                    except (ValueError, IndexError):
+                                        value = np.nan
                                     done_dict.update({nameMap[name]: value})
 
                             done_array.append(done_dict)
@@ -577,6 +580,7 @@ def datalogger(outputName, files):
 if __name__ == "__main__":
 
     outfile = sys.argv[1]
+    outfile = 'MRU.nc'
 
     files = []
     for f in sys.argv[2:]:

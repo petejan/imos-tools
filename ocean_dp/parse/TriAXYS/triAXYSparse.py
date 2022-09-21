@@ -938,29 +938,91 @@ def parse_fourier(output_name, file):
 
     ds.close()
 
+wave_params = {}
+
+# WAVE file:
+# Received
+# Year
+# MonthDay
+# Time
+# Buoy ID
+# Location
+# Number of Zero Crossings
+# Average Wave Height (Havg)
+# Tz
+# Max Wave Height (Hmax)
+# Significant Wave Height (Hsig)
+# Significant Wave Period (Tsig)
+# H 10
+# T 10
+# Mean Period
+# Peak Period
+# Tp5
+# Hm0
+# Mean Magnetic Direction
+# Mean Spread
+# Mean True Direction
+# Te
+# Wave Steepness
+wave_params['Number of Zero Crossings'] = {'var_name': 'ZC', 'units': '1', 'comment': 'Number of waves detected by zero-crossing analysis of the wave elevation record'}
+wave_params['Average Wave Height (Havg)'] = {'var_name': 'Hav', 'units': 'm', 'comment': 'Average zero down-crossing wave height (m)'}
+wave_params['Mean Period'] = {'var_name': 'Tav', 'units': 's', 'comment': 'Average zero down-crossing wave period (s)'}
+wave_params['Max Wave Height (Hmax)'] = {'var_name': 'Hmax', 'units': 'm', 'comment': 'Maximum zero down-crossing wave height (trough to peak) (m)'}
+wave_params['Significant Wave Height (Hsig)'] = {'var_name': 'Hs', 'units': 'm', 'comment': 'Zero down-crossing significant wave height, Hs, where Hs is the average height of the highest third of the waves (m)'}
+wave_params['Significant Wave Period (Tsig)'] = {'var_name': 'Ts', 'units': '1', 'comment': 'Average period of the significant zero down-crossing waves (s)'}
+wave_params['Peak Period'] = {'var_name': 'Tp', 'units': 's', 'comment': 'Peak wave period Tp in seconds. Tp = 1.0/fp where fp is the frequency at which the wave spectrum S(f) has its maximum value'}
+wave_params['Tp5'] = {'var_name': 'Tp5', 'units': 's', 'comment': 'Peak wave period in seconds as computed by the Read method. Tp5 has less statistical variability than Tp because it is based on spectral moments'}
+wave_params['Hm0'] = {'var_name': 'Hm0', 'units': 'm', 'comment': 'Significant wave height in metres as estimated from spectral moment mo. Hmo = 4.0 * SQRT(m0) where m0 is the integral of S(f)*df from f = F1 to F2'}
+wave_params['Mean Magnetic Direction'] = {'var_name': 'WAVE_DIR_MEAN', 'units': 'degree', 'comment': 'Overall mean wave direction in degrees obtained by averaging the mean wave angle θ over all frequencies with weighting function S(f). θ is calculated by the KVH method'}
+wave_params['Mean Spread'] = {'var_name': 'WAVE_DIR_SPREAD', 'units': 'degree', 'comment': 'Overall directional spreading width in degrees obtained by averaging the spreading width sigma theta, σθ, over all frequencies with weighting function S(f). σθ is calculated by the KVH method'}
+wave_params['Tz'] = {'var_name': 'Tz', 'units': 's', 'comment': 'Estimated period from spectral moments m0 and m2, where Tz = SQRT(m0/m2)'}
+wave_params['H 10'] = {'var_name': 'H10', 'units': 'm', 'comment': 'average height of highest tenth of waves'}
+wave_params['T 10'] = {'var_name': 'T10', 'units': 's', 'comment': 'average period of H10 waves'}
+
+# Summary file:
+# Date
+# Year
+# Julian Date
+# Zero Crossings
+# Ave. Ht.
+# Ave. Per.
+# Max Ht.
+# Sig. Wave
+# Sig. Per.
+# Peak Per.(Tp)
+# Peak Per.(READ)
+# HM0
+# Mean Theta
+# Sigma Theta
+# H1/10
+# T.H1/10
+# Mean Per.(Tz)
+
+wave_params['Zero Crossings'] = {'var_name': 'ZC', 'units': '1', 'comment': 'Number of waves detected by zero-crossing analysis of the wave elevation record'}
+wave_params['Ave. Ht.'] = {'var_name': 'Hav', 'units': 'm', 'comment': 'Average zero down-crossing wave height (m)'}
+wave_params['Ave. Per.'] = {'var_name': 'Tav', 'units': 's', 'comment': 'Average zero down-crossing wave period (s)'}
+wave_params['Max Ht.'] = {'var_name': 'Hmax', 'units': 'm', 'comment': 'Maximum zero down-crossing wave height (trough to peak) (m)'}
+wave_params['Sig. Wave'] = {'var_name': 'Hs', 'units': 'm', 'comment': 'Zero down-crossing significant wave height, Hs, where Hs is the average height of the highest third of the waves (m)'}
+wave_params[' Sig. Per.'] = {'var_name': 'Ts', 'units': '1', 'comment': 'Average period of the significant zero down-crossing waves (s)'}
+wave_params['Peak Per.(Tp)'] = {'var_name': 'Tp', 'units': 's', 'comment': 'Peak wave period Tp in seconds. Tp = 1.0/fp where fp is the frequency at which the wave spectrum S(f) has its maximum value'}
+wave_params['Peak Per.(READ)'] = {'var_name': 'Tp5', 'units': 's', 'comment': 'Peak wave period in seconds as computed by the Read method. Tp5 has less statistical variability than Tp because it is based on spectral moments'}
+wave_params['HM0'] = {'var_name': 'Hm0', 'units': 'm', 'comment': 'Significant wave height in metres as estimated from spectral moment mo. Hmo = 4.0 * SQRT(m0) where m0 is the integral of S(f)*df from f = F1 to F2'}
+wave_params['Mean Theta'] = {'var_name': 'WAVE_DIR_MEAN', 'units': 'degree', 'comment': 'Overall mean wave direction in degrees obtained by averaging the mean wave angle θ over all frequencies with weighting function S(f). θ is calculated by the KVH method'}
+wave_params['Sigma Theta'] = {'var_name': 'WAVE_DIR_SPREAD', 'units': 'degree', 'comment': 'Overall directional spreading width in degrees obtained by averaging the spreading width sigma theta, σθ, over all frequencies with weighting function S(f). σθ is calculated by the KVH method'}
+wave_params['Mean Per.(Tz)'] = {'var_name': 'Tz', 'units': 's', 'comment': 'Estimated period from spectral moments m0 and m2, where Tz = SQRT(m0/m2)'}
+wave_params['H1/10'] = {'var_name': 'H10', 'units': 'm', 'comment': 'average height of highest tenth of waves'}
+wave_params['T.H1/10'] = {'var_name': 'T10', 'units': 's', 'comment': 'average period of H10 waves'}
 
 def parse_summary(output_name, file):
 
     ncOut = Dataset(output_name, 'a')
 
     odata = []
-    name = {}
-    name[0] = {'var_name': 'ZCROSS', 'header': 'Zero Crossings', 'units': 'count'}
-    name[1] = {'var_name': 'WAVE_HEIGHT_MEAN', 'header': 'Ave. Ht.', 'units': 'm'}
-    name[2] = {'var_name': 'WAVE_PERIOD_MEAN', 'header': 'Ave. Per.', 'units': 's'}
-    name[3] = {'var_name': 'WAVE_HEIGHT_MAX', 'header': 'Max Ht.', 'units': 'm'}
-    name[4] = {'var_name': 'WAVE_HEIGHT_SIG', 'header': 'Sig. Wave', 'units': 'm'}
-    name[5] = {'var_name': 'WAVE_PERIOD_SIG', 'header': ' Sig. Per.', 'units': 's'}
-    name[6] = {'var_name': 'WAVE_PERIOD_TP', 'header': 'Peak Per.(Tp)', 'units': 's'}
-    name[7] = {'var_name': 'WAVE_PERIOD_READ', 'header': 'Peak Per.(READ)', 'units': 's'}
-    name[8] = {'var_name': 'WM0', 'header': 'HM0', 'units': 'm'}
-    name[9] = {'var_name': 'WAVE_DIR_MEAN', 'header': 'Mean Theta', 'units': 'degrees'}
-    name[10] = {'var_name': 'WAVE_DIR_SIGMA', 'header': 'Sigma Theta', 'units': 'degrees'}
 
     with open(file, newline='') as csvfile:
         reader = csv.DictReader(csvfile, delimiter='\t')
         for row in reader:
-            # print(row)
+            #print(row)
             times.append(datetime.datetime.strptime(row['Date'], "%Y/%m/%d %H:%M"))
             odata.append(row)
 
@@ -968,29 +1030,30 @@ def parse_summary(output_name, file):
     print("sampled read ", number_samples_read)
 
     idx_sort = np.argsort(times)
-    print(idx_sort)
+    print('sorted time idx', idx_sort)
 
-    for i in name:
-        v = name[i]
-        print("Variable %s (%s)" % (v['var_name'], v['units']))
-        varName = v['var_name']
-        if varName not in ncOut.variables:
-            ncVarOut = ncOut.createVariable(varName, "f4", ("TIME",), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
-        else:
-            ncVarOut = ncOut.variables[varName]
+    for var in odata[0]:
+        print('var', var, 'value', odata[0][var])
+        if var in wave_params:
+            v = wave_params[var]
+            print("Variable %s (%s)" % (v['var_name'], v['units']))
+            varName = v['var_name']
+            if varName not in ncOut.variables:
+                ncVarOut = ncOut.createVariable(varName, "f4", ("TIME",), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
+            else:
+                ncVarOut = ncOut.variables[varName]
 
-        # print("Create Variable %s : %s" % (ncVarOut, data[v[0]]))
-        data = np.zeros((number_samples_read))
-        data.fill(np.nan)
-        x = 0
-        for j in idx_sort:
-            # print (j)
-            val = odata[j]
-            data[x] = val[v['header']]
-            x += 1
+            data = np.zeros((number_samples_read))
+            data.fill(np.nan)
+            x = 0
+            for time_idx in idx_sort:
 
-        ncVarOut[:] = data
-        ncVarOut.units = v['units']
+                data[x] = float(odata[time_idx][var])
+                x += 1
+                ncVarOut[:] = data
+                ncVarOut.units = v['units']
+                if 'comment' in v:
+                    ncVarOut.comment = v['comment']
 
     ncOut.close()
 
@@ -1020,18 +1083,6 @@ def parse_wave(output_name, file):
 
     wave_time = []
     odata = []
-    name = {}
-    name[0] = {'var_name': 'ZCROSS', 'header': 'Number of Zero Crossings', 'units': 'count'}
-    name[1] = {'var_name': 'WAVE_HEIGHT_MEAN', 'header': 'Average Wave Height (Havg)', 'units': 'm'}
-    name[2] = {'var_name': 'WAVE_PERIOD_MEAN', 'header': 'Tz', 'units': 's'}
-    name[3] = {'var_name': 'WAVE_HEIGHT_MAX', 'header': 'Max Wave Height (Hmax)', 'units': 'm'}
-    name[4] = {'var_name': 'WAVE_HEIGHT_SIG', 'header': 'Significant Wave Height (Hsig)', 'units': 'm'}
-    name[5] = {'var_name': 'WAVE_PERIOD_SIG', 'header': 'Significant Wave Period (Tsig)', 'units': 's'}
-    name[6] = {'var_name': 'WAVE_PERIOD_TP', 'header': 'Tp5', 'units': 's'}
-    name[7] = {'var_name': 'WAVE_PERIOD_READ', 'header': 'Peak Period', 'units': 's'}
-    name[8] = {'var_name': 'WM0', 'header': 'Hm0', 'units': 'm'}
-    name[9] = {'var_name': 'WAVE_DIR_MEAN', 'header': 'Mean Magnetic Direction', 'units': 'degrees'}
-    name[10] = {'var_name': 'WAVE_DIR_SIGMA', 'header': 'Mean Spread', 'units': 'degrees'}
 
     with open(file, newline='') as csvfile:
         reader = csv.DictReader(csvfile, delimiter='\t')
@@ -1046,32 +1097,28 @@ def parse_wave(output_name, file):
     number_samples_read = len(wave_time)
     print("sampled read ", number_samples_read)
 
-    for i in name:
-        v = name[i]
-        print("Variable %s (%s)" % (v['var_name'], v['units']))
-        varName = v['var_name']
-        if varName not in ncOut.variables:
-            ncVarOut = ncOut.createVariable(varName, "f4", ("TIME",), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
-        else:
-            ncVarOut = ncOut.variables['varName']
+    for var in odata[0]:
+        print('var', var, 'value', odata[0][var])
+        if var in wave_params:
+            v = wave_params[var]
+            print("Variable %s (%s)" % (v['var_name'], v['units']))
+            varName = v['var_name']
+            if varName not in ncOut.variables:
+                ncVarOut = ncOut.createVariable(varName, "f4", ("TIME",), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
+            else:
+                ncVarOut = ncOut.variables[varName]
 
-        # print("Create Variable %s : %s" % (ncVarOut, data[v[0]]))
-        data = np.zeros((number_samples_read))
-        data.fill(np.nan)
-        x = 0
+            for sample in range(0, number_samples_read):
+                print(wave_time[sample])
+                ts = wave_time[sample]
+                time_idx = np.where(np.array(times) == ts)
+                print("time index", time_idx, time_idx[0].shape)
+                ncVarOut[time_idx[0]] = float(odata[sample][var])
 
-        for j in wave_time:
-            time_idx = np.where(times == j)
-            print("time index", time_idx, time_idx[0].shape)
-            # print (j)
-            val = odata[j]
-            data[x] = val[v['header']]
-            x += 1
+            ncVarOut.units = v['units']
+            if 'comment' in v:
+                ncVarOut.comment = v['comment']
 
-            if time_idx[0].shape[0] > 0:
-                ncVarOut[time_idx[0]] = data[x]
-
-        ncVarOut.units = v['units']
 
     ncOut.close()
 
@@ -1106,6 +1153,7 @@ def parse_triaxys(files):
     ncTimesOut.units = "days since 1950-01-01 00:00:00 UTC"
     ncTimesOut.calendar = "gregorian"
     ncTimesOut.axis = "T"
+    ncTimesOut.comment = "timestamp is at start of 20 min sampling period"
 
     ncOut.close()
 
@@ -1118,11 +1166,10 @@ def parse_triaxys(files):
             parse_summary(output_name, filepath)
 
         elif filepath.endswith('.WAVE'):
-            print("WAVE")
+            print("WAVE read times")
             parse_wave_time(output_name, filepath)
 
-    idx_sort = np.argsort(times)
-    print(idx_sort)
+    times.sort()
 
     number_samples_read = len(times)
 
@@ -1146,8 +1193,8 @@ def parse_triaxys(files):
     #     TIME:units = "days since 1950-01-01 00:00:00 UTC";
 
     # sort the times
-    t_unsorted = date2num(times, calendar=ncTimesOut.calendar, units=ncTimesOut.units)
-    ncTimesOut[:] = t_unsorted[idx_sort]
+    t_datenum = date2num(times, calendar=ncTimesOut.calendar, units=ncTimesOut.units)
+    ncTimesOut[:] = t_datenum
 
     # add timespan attributes
     ncOut.setncattr("time_coverage_start", num2date(ncTimesOut[0], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
@@ -1163,7 +1210,7 @@ def parse_triaxys(files):
 
         if filepath.endswith('.WAVE'):
             print("WAVE")
-            parse_wave_time(output_name, filepath)
+            parse_wave(output_name, filepath)
 
         elif filepath.endswith('.DIRSPEC'):
             print("DIRSPEC")
