@@ -113,6 +113,7 @@ def datalogger(outputName, files):
     start_data = re.compile(r'(\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2}) \*\*\*\*\*\* START RAW MRU DATA \*\*\*\*\*\*')
     end_data = re.compile(r'(\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2}) \*\*\*\*\*\* END DATA \*\*\*\*\*\*')
     done_str = re.compile(r'(\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2}) INFO: \d done time \d+ ,(.*)$')
+    wave_raw_str = re.compile(r'(\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2}) INFO: WAVE RAW DATA File Length = (\d+)')
 
     gps_fix = re.compile(r'(\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2}) INFO : GPS Fix (\d+) Latitude (\S+) Longitude (\S+) sats (\S+) HDOP (\S+)')
     gps_fix2 = re.compile(r'(\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2}) INFO : GPS RMC Fix (\d+) Latitude (\S+) Longitude (\S+)')
@@ -121,6 +122,7 @@ def datalogger(outputName, files):
 
     sn = re.compile(r'(\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2}) INFO: Station Name (\S+)')
     sn_imu = re.compile(r'(\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2}) INFO: MRU SerialNumber (\d+)')
+    sn_imu2 = re.compile(r'(\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2}) INFO: MRU SerialNumber 0x\S+ (\d+)')
 
     # TODO: process the output of this parser into frequency spectra, wave height
 
@@ -133,6 +135,7 @@ def datalogger(outputName, files):
     ts_end = None
 
     sample = 0
+    have_load = False
 
     done_array = []
     imu_array = []
@@ -152,8 +155,12 @@ def datalogger(outputName, files):
                 if byte[0] == 0x0c: # start of IMU stabQ packet
                     pos = f.tell()
 
-                    packet = f.read(30+4)
-                    if len(packet) == 34:
+                    p_len = 30
+                    if have_load:
+                        p_len = p_len + 4
+
+                    packet = f.read(p_len)
+                    if len(packet) == p_len:
                         # check the checksum
                         decode_s = struct.unpack('>15H', packet[0:30])
                         cksum = 12
@@ -164,7 +171,10 @@ def datalogger(outputName, files):
                             # check sum ok, decode the packet
                             samples_read += 1
 
-                            decode = struct.unpack('>4h3h3h3hHHf', packet)
+                            if have_load:
+                                decode = struct.unpack('>4h3h3h3hHHf', packet)
+                            else:
+                                decode = struct.unpack('>4h3h3h3hHH', packet)
 
                             # scale each value in the packet
                             decode_scale = []
@@ -205,7 +215,8 @@ def datalogger(outputName, files):
                                 gyro_samples[sample, 1] = decode_scale[decode_dict['CompAngleRateY']]
                                 gyro_samples[sample, 2] = decode_scale[decode_dict['CompAngleRateZ']]
 
-                                load_samples[sample] = decode_scale[decode_dict['Load']]
+                                if have_load:
+                                    load_samples[sample] = decode_scale[decode_dict['Load']]
 
                             # find the sample index from the IMU timer, need to detect missed samples in the record
                             if sample == 0:
@@ -248,13 +259,16 @@ def datalogger(outputName, files):
                                 sample = 0
 
                             data_time = datetime.strptime(matchobj.group(1), "%Y-%m-%d %H:%M:%S")
+                            if data_time > datetime(2030,1,1):
+                                data_time = data_time - timedelta(seconds=810989538)
+
                             print('start_data time ', data_time)
                             start_time = data_time
 
                         # check for end data
                         matchobj = end_data.match(s)
                         if matchobj:
-                            print('end data ', sample, 'samples read', samples_read)
+                            print('end data ', sample, 'last sample idx', samples_read)
                             if sample > 0:  # save the sample data
                                 print('end of IMU sample data', start_time, sample)
                                 imu_array.append({'time': start_time, 'accel': accel_samples, 'q': quat_samples, 'mag': mag_samples, 'gyro': gyro_samples, 'load': load_samples})
@@ -265,6 +279,9 @@ def datalogger(outputName, files):
                         matchobj = done_str.match(s)
                         if matchobj:
                             data_time = datetime.strptime(matchobj.group(1), "%Y-%m-%d %H:%M:%S")
+                            if data_time > datetime(2030,1,1):
+                                data_time = data_time - timedelta(seconds=810989538)
+
                             print('done time ', data_time)
                             start_time = data_time
 
@@ -289,18 +306,26 @@ def datalogger(outputName, files):
                         matchobj = gps_fix.match(s)
                         if matchobj:
                             data_time = datetime.strptime(matchobj.group(1), "%Y-%m-%d %H:%M:%S")
+                            if data_time > datetime(2030,1,1):
+                                data_time = data_time - timedelta(seconds=810989538)
+
                             #print('gps fix time ', data_time)
                             gps_array.append({'time': data_time, 'lon': np.float(matchobj.group(4))*-1, 'lat': np.float(matchobj.group(3))})
 
                         matchobj = gps_fix2.match(s)
                         if matchobj:
                             data_time = datetime.strptime(matchobj.group(1), "%Y-%m-%d %H:%M:%S")
+                            if data_time > datetime(2030,1,1):
+                                data_time = data_time - timedelta(seconds=810989538)
+
                             #print('gps fix time ', data_time)
                             gps_array.append({'time': data_time, 'lon': np.float(matchobj.group(4))*-1, 'lat': np.float(matchobj.group(3))})
 
                         matchobj = gps_rmc.match(s)
                         if matchobj:
                             data_time = datetime.strptime(matchobj.group(1), "%Y-%m-%d %H:%M:%S")
+                            if data_time > datetime(2030,1,1):
+                                data_time = data_time - timedelta(seconds=810989538)
 
                             rmc_split = matchobj.group(2).split(',')
                             #print('rmc split', rmc_split)
@@ -326,9 +351,22 @@ def datalogger(outputName, files):
                         if matchobj:
                             instrument_serial_number = matchobj.group(2)
 
-                        matchobj = sn_imu.match(s)
+                        matchobj = sn_imu2.match(s)
                         if matchobj:
                             instrument_imu_serial_number = matchobj.group(2)
+                        else:
+                            matchobj = sn_imu.match(s)
+                            if matchobj:
+                                instrument_imu_serial_number = matchobj.group(2)
+
+                        matchobj = wave_raw_str.match(s)
+                        if matchobj:
+                            size_wave_file = int(matchobj.group(2))
+                            print("wave file size", size_wave_file)
+                            if size_wave_file < (3072 * (30+4)):
+                                have_load = False
+                            else:
+                                have_load = True
                 else:
                     print(file, 'junk ', byte[0], 'at', f.tell())
 
@@ -338,7 +376,7 @@ def datalogger(outputName, files):
 
     # add the last record if we did not get a START_DATA
     if sample > 0:
-        print('saveing last IMU sample data', start_time, sample)
+        print('saving last IMU sample data', start_time, sample)
         imu_array.append({'time': start_time, 'accel': accel_samples, 'q': quat_samples, 'mag': mag_samples, 'gyro': gyro_samples, 'load': load_samples})
 
     # print serial number information
@@ -423,7 +461,8 @@ def datalogger(outputName, files):
         quat_var = dataset.createVariable('orientation', np.float32, ('sample_time', 'quaternion', 'TIME'), fill_value=np.nan, zlib=True)
         quat_var.comment = 'quaternion order is W, X, Y, Z'
 
-        load_var = dataset.createVariable('load', np.float32, ('sample_time', 'TIME'), fill_value=np.nan, zlib=True)
+        if have_load:
+            load_var = dataset.createVariable('load', np.float32, ('sample_time', 'TIME'), fill_value=np.nan, zlib=True)
 
     if len(gps_array) > 0:
         xpos_var = dataset.createVariable('XPOS', np.float, ('TIME',), fill_value=np.nan)
@@ -480,8 +519,9 @@ def datalogger(outputName, files):
         d_array = np.empty([3072, 4, len(done_times)])
         create_nc_var(d_array, imu_times, 'q', imu_array, quat_var, done_ind, imu_ind)
 
-        d_array = np.empty([3072, len(done_times)])
-        create_nc_var(d_array, imu_times, 'load', imu_array, load_var, done_ind, imu_ind)
+        if have_load:
+            d_array = np.empty([3072, len(done_times)])
+            create_nc_var(d_array, imu_times, 'load', imu_array, load_var, done_ind, imu_ind)
 
     if len(gps_array) > 0:
         print("write gps data samples", len(gps_array))
@@ -580,7 +620,7 @@ def datalogger(outputName, files):
 if __name__ == "__main__":
 
     outfile = sys.argv[1]
-    outfile = 'MRU.nc'
+    outfile = 'CR1000.nc'
 
     files = []
     for f in sys.argv[2:]:
