@@ -409,8 +409,8 @@ def parse_non_dir_spec(output_name, file):
             line = fp.readline()
             cnt += 1
 
-        xy, x_ind, y_ind = np.intersect1d(data_out[:, 0], freq, return_indices=True)
-        #print('freq overlap', xy)
+        xy, x_ind, y_ind = np.intersect1d(np.rint(data_out[:, 0]*1000), np.rint(freq*1000), return_indices=True)
+        print('freq overlap', xy)
 
         d0 = np.zeros(129)
         if time_idx[0].shape[0] > 0:
@@ -557,7 +557,8 @@ def parse_mean_dir(output_name, file):
         #print('freq dim', freq)
         #print('freq read', data_out[:, 0])
 
-        xy, x_ind, y_ind = np.intersect1d(data_out[:, 0], freq, return_indices=True)
+        xy, x_ind, y_ind = np.intersect1d(np.rint(data_out[:, 0]*1000), np.rint(freq*1000), return_indices=True)
+
         #print('freq overlap', xy)
         #print('freq overlap x_ind', x_ind)
         #print('freq overlap y_ind', y_ind)
@@ -920,7 +921,7 @@ def parse_fourier(output_name, file):
             line = fp.readline()
             cnt += 1
 
-        xy, x_ind, y_ind = np.intersect1d(data_out[:, 0], freq, return_indices=True)
+        xy, x_ind, y_ind = np.intersect1d(np.rint(data_out[:, 0]*1000), np.rint(freq*1000), return_indices=True)
         #print('freq overlap', xy)
         #print('freq overlap x_ind', x_ind)
         #print('freq overlap y_ind', y_ind)
