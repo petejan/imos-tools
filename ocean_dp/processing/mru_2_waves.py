@@ -28,6 +28,7 @@ from scipy import signal
 import time
 
 zl = False
+append_to_file = False
 
 # is this quicker than using the Rotation library, not really
 
@@ -46,46 +47,72 @@ def point_rotation_by_quaternion(point,q):
 
 
 def add_wave_spectra(netCDFfile):
-    ds = Dataset(netCDFfile, 'a')
-    ds.set_auto_mask(False)
+    if append_to_file:
+        dsIn = Dataset(netCDFfile, 'a')
+        dsOut = dsIn
+    else:
+        dsIn = Dataset(netCDFfile, 'r')
+        fn = dsIn.instrument_imu_model + '-' + dsIn.instrument_imu_serial_number
+        dsOut = Dataset(fn + '.nc', 'w', format='NETCDF4_CLASSIC')
+
+    dsIn.set_auto_mask(False)
+
+    var_time = dsIn.variables['TIME']
+
+    if not append_to_file:
+        dsOut.createDimension('TIME', len(dsIn.variables['TIME']))
+        dsOut.createVariable('TIME', 'f8', ("TIME", ))
+        dsOut.variables['TIME'][:] = var_time[:]
+
+        # copy global attributes
+        for ga in dsIn.ncattrs():
+            if ga not in ['instrument_imu', 'instrument_imu_model', 'instrument_imu_serial_number']:
+                dsOut.setncattr(ga, dsIn.getncattr(ga))
+
+        # copy TIME attributes
+        for a in var_time.ncattrs():
+            dsOut.variables['TIME'].setncattr(a, var_time.getncattr(a))
+
+        dsOut.instrument = dsIn.instrument_imu
+        dsOut.instrument_model = dsIn.instrument_imu_model
+        dsOut.instrument_serial_number = dsIn.instrument_imu_serial_number
 
     # create frequency dimension
-    if "FREQ" not in ds.dimensions:
-        ds.createDimension('FREQ', 256)
+    if "FREQ" not in dsOut.dimensions:
+        dsOut.createDimension('FREQ', 256)
+    if "FREQ" in dsOut.variables:
+        freq_var_var = dsOut.variables["FREQ"]
+    else:
+        freq_var_var = dsOut.createVariable("FREQ", "f4", ('FREQ',), fill_value=np.nan, zlib=zl)  # fill_value=nan otherwise defaults to max
 
     # create (or reuse) new variables WAVE_SPECTRA, FREQUENCY,  WAVE_HEIGHT
-    if "WAVE_SPECTRA" in ds.variables:
-        wave_spec_out_var = ds.variables["WAVE_SPECTRA"]
+    if "WAVE_SPECTRA" in dsOut.variables:
+        wave_spec_out_var = dsOut.variables["WAVE_SPECTRA"]
     else:
-        wave_spec_out_var = ds.createVariable("WAVE_SPECTRA", "f4", ("TIME", 'FREQ'), fill_value=np.nan, zlib=zl)  # fill_value=nan otherwise defaults to max
+        wave_spec_out_var = dsOut.createVariable("WAVE_SPECTRA", "f4", ("TIME", 'FREQ'), fill_value=np.nan, zlib=zl)  # fill_value=nan otherwise defaults to max
     wave_spec_out_var.units = "m^2/Hz"
     wave_spec_out_var.long_name = "wave_spectral_density"
+    wave_spec_out_var.comment = "calculated from world coordinate acceleration, with 512 point welch FFT, using hamming window, mean removed, zero filled where data is NaN"
 
-    if "Hm0" in ds.variables:
-        swh_out_var = ds.variables["Hm0"]
+    if "Hm0" in dsOut.variables:
+        swh_out_var = dsOut.variables["Hm0"]
     else:
-        swh_out_var = ds.createVariable("Hm0", "f4", ("TIME",), fill_value=np.nan, zlib=zl)  # fill_value=nan otherwise defaults to max
+        swh_out_var = dsOut.createVariable("Hm0", "f4", ("TIME",), fill_value=np.nan, zlib=zl)  # fill_value=nan otherwise defaults to max
 
-    if "Tz" in ds.variables:
-        apd_out_var = ds.variables["Tz"]
+    if "Tz" in dsOut.variables:
+        apd_out_var = dsOut.variables["Tz"]
     else:
-        apd_out_var = ds.createVariable("Tz", "f4", ("TIME",), fill_value=np.nan, zlib=zl)  # fill_value=nan otherwise defaults to max
-
-    if "FREQ" in ds.variables:
-        freq_var_var = ds.variables["FREQ"]
-    else:
-        freq_var_var = ds.createVariable("FREQ", "f4", ('FREQ',), fill_value=np.nan, zlib=zl)  # fill_value=nan otherwise defaults to max
+        apd_out_var = dsOut.createVariable("Tz", "f4", ("TIME",), fill_value=np.nan, zlib=zl)  # fill_value=nan otherwise defaults to max
 
     # handle for variables
-    var_q = ds.variables["orientation"]
-    var_accel = ds.variables["acceleration"]
-    var_time = ds.variables['TIME']
+    var_q = dsIn.variables["orientation"]
+    var_accel = dsIn.variables["acceleration"]
 
     # create an array for wave_displacement spectra
     wave_displacement_spectra = np.zeros(256) * np.nan
 
     accel_world = np.zeros([3072, 3])
-    for i in range(len(ds.variables['TIME'])):
+    for i in range(len(dsIn.variables['TIME'])):
         start = time.time()
         # read quaternion for this time
         q = var_q[:, :, i]
@@ -93,17 +120,18 @@ def add_wave_spectra(netCDFfile):
         for j in range(0, 3072):
             try:
                 # read the quaternion, the IMU data is in w, x, y, z where as Rotation.from_quant is in x, y, z, w
-                r = Rotation.from_quat(np.transpose([q[j, 1], q[j, 2], q[j, 3], q[j, 0]]))
-
-                accel_inst = var_accel[j, :, i]  # dimensions are sample_time, vector, TIME
-
-                accel_world[j, :] = r.apply(accel_inst)
+                #r = Rotation.from_quat(np.transpose([q[j, 1], q[j, 2], q[j, 3], q[j, 0]]))
 
                 #accel_inst = var_accel[j, :, i]  # dimensions are sample_time, vector, TIME
-                #accel_world[j, :] = point_rotation_by_quaternion(accel_inst, q[j, :])
+
+                #accel_world[j, :] = r.apply(accel_inst)
+
+                accel_inst = var_accel[j, :, i]  # dimensions are sample_time, vector, TIME
+                accel_world[j, :] = point_rotation_by_quaternion(accel_inst, q[j, :])
 
             except ValueError as v:
                 print(j, v)
+
         # convert accelerations to world coordinates
 
         print("rotation % s seconds" % (time.time() - start))
@@ -111,21 +139,14 @@ def add_wave_spectra(netCDFfile):
         start = time.time()
 
         # compute power spectral density from vertical acceleration
-        # removing mean seems to work better than detrend='linear' or detrend='constant'
-
-        #a = accel_world[:, 2]-np.nanmean(accel_world[:, 2])
-        #nana = np.isnan(a)
-        #a[nana] = 0 # zero fill
-        #f, wave_acceleration_spectra = signal.welch(a, fs=5, nfft=512, scaling='density', window='hamming', detrend=None)
-        #a = accel_world[:, 2]-np.nanmean(accel_world[:, 2])
-        #nana = np.isnan(a)
-        #a[nana] = 0 # zero fill
-        #f, wave_acceleration_spectra = signal.welch(a, fs=5, nfft=512, scaling='density', window='hamming', detrend=None)
+        # removing mean seems to work as well as detrend='linear' or detrend='constant'
 
         a = accel_world[:, 2]
+        a_mean = np.nanmean(a)
+        a = a - a_mean
         nan_a = np.isnan(a)
-        a[nan_a] = np.nanmean(a)
-        f, wave_acceleration_spectra = signal.welch(a, fs=5, nfft=512, scaling='density', window='hamming', detrend='constant')
+        a[nan_a] = 0 # zero fill
+        f, wave_acceleration_spectra = signal.welch(a, fs=5, nfft=512, scaling='density', window='hamming', detrend=None)
 
         # compute displacement spectra from wave acceleration spectra
         # by divinding by (2*pi*f) ^ 4, first point is nan as f[0] = 0
@@ -160,13 +181,17 @@ def add_wave_spectra(netCDFfile):
 
     # update the history attribute
     try:
-        hist = ds.history + "\n"
+        hist = dsIn.history + "\n"
     except AttributeError:
         hist = ""
 
-    ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " added wave spectra, and significant wave height")
+    if append_to_file:
+        dsOut.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " added wave spectra, and significant wave height")
+    else:
+        dsOut.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " created wave spectra, wave height and period from " + netCDFfile)
+        dsOut.setncattr("date_created", datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"))
 
-    ds.close()
+    dsOut.close()
 
 
 if __name__ == "__main__":

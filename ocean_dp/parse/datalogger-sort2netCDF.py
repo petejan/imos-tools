@@ -123,6 +123,9 @@ def datalogger(outputName, files):
     sn = re.compile(r'(\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2}) INFO: Station Name (\S+)')
     sn_imu = re.compile(r'(\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2}) INFO: MRU SerialNumber (\d+)')
     sn_imu2 = re.compile(r'(\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2}) INFO: MRU SerialNumber 0x\S+ (\d+)')
+    sn_imu_hex = re.compile(r'(\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2}) INFO: MRU SerialNumber (0x\S+)')
+
+    sofs_2_fn_time = re.compile(r'.*(\d{4}\-\d{2}\-\d{2}T\d{2}\d{2}\d{2}).bin')
 
     # TODO: process the output of this parser into frequency spectra, wave height
 
@@ -135,7 +138,7 @@ def datalogger(outputName, files):
     ts_end = None
 
     sample = 0
-    have_load = False
+    have_load = True
 
     done_array = []
     imu_array = []
@@ -148,6 +151,14 @@ def datalogger(outputName, files):
     xs = None
 
     for file in files:
+
+        print('file name', file)
+        sample = 0  # reset IMU sample number at start of new file, needed for SOFS-2 as it has no 'END OF DATA'
+        start_time = None
+        matchobj = sofs_2_fn_time.match(file)
+        if matchobj:
+            start_time = datetime.strptime(matchobj.group(1), "%Y-%m-%dT%H%M%S")
+            print('file name timestamp', start_time)
 
         with open(file, "rb") as f:
             byte = f.read(1)
@@ -218,17 +229,21 @@ def datalogger(outputName, files):
                                 if have_load:
                                     load_samples[sample] = decode_scale[decode_dict['Load']]
 
-                            # find the sample index from the IMU timer, need to detect missed samples in the record
-                            if sample == 0:
-                                t0 = int(decode_scale[decode_dict['Timer']] * 5)/5
+                                # find the sample index from the IMU timer, need to detect missed samples in the record
+                                if sample == 0:
+                                    t0 = int(decode_scale[decode_dict['Timer']] * 5)/5
 
-                            sample_t = int((decode_scale[decode_dict['Timer']] - t0) * 5 + 0.5)
-                            if (sample_t - sample) != 0:
-                                print('re-sync time sample', sample, sample_t, t0, decode_scale[decode_dict['Timer']], (decode_scale[decode_dict["Timer"]] - t0) * 5)
+                                sample_t = int((decode_scale[decode_dict['Timer']] - t0) * 5 + 0.5)
+                                if (sample_t - sample) != 0:
+                                    print('re-sync time sample', sample, 'sample_t', sample_t, 'first time', t0, 'timer', decode_scale[decode_dict['Timer']], 'timer since sample 0', (decode_scale[decode_dict["Timer"]] - t0) * 5)
 
-                            sample = sample_t
+                                sample = sample_t
 
-                            sample += 1
+                                sample += 1
+
+                            else:
+                                sample = 0
+
                         else:
                             print(file, 'bad checksum', f.tell())
                             f.seek(pos+1)
@@ -246,7 +261,7 @@ def datalogger(outputName, files):
                         s = xs.decode('ascii')
                         xs = None
 
-                        print('string',len(s),' :', s)
+                        print('string', len(s), ' :', s)
 
                         data_time = None
 
@@ -273,7 +288,6 @@ def datalogger(outputName, files):
                                 print('end of IMU sample data', start_time, sample)
                                 imu_array.append({'time': start_time, 'accel': accel_samples, 'q': quat_samples, 'mag': mag_samples, 'gyro': gyro_samples, 'load': load_samples})
                                 sample = 0
-
 
                         # check for done
                         matchobj = done_str.match(s)
@@ -359,6 +373,10 @@ def datalogger(outputName, files):
                             if matchobj:
                                 instrument_imu_serial_number = matchobj.group(2)
 
+                        matchobj = sn_imu_hex.match(s)
+                        if matchobj:
+                            instrument_imu_serial_number = str(int(matchobj.group(2), base=16))
+
                         matchobj = wave_raw_str.match(s)
                         if matchobj:
                             size_wave_file = int(matchobj.group(2))
@@ -374,10 +392,10 @@ def datalogger(outputName, files):
 
                 byte = f.read(1)
 
-    # add the last record if we did not get a START_DATA
-    if sample > 0:
-        print('saving last IMU sample data', start_time, sample)
-        imu_array.append({'time': start_time, 'accel': accel_samples, 'q': quat_samples, 'mag': mag_samples, 'gyro': gyro_samples, 'load': load_samples})
+        # add the last record if we did not get a START_DATA
+        if sample > 0:
+            print('end-of-file saving IMU sample data', start_time, sample)
+            imu_array.append({'time': start_time, 'accel': accel_samples, 'q': quat_samples, 'mag': mag_samples, 'gyro': gyro_samples, 'load': load_samples})
 
     # print serial number information
     print('instrument serial number', instrument_serial_number)
@@ -620,13 +638,12 @@ def datalogger(outputName, files):
 if __name__ == "__main__":
 
     outfile = sys.argv[1]
-    outfile = 'CR1000.nc'
 
     files = []
     for f in sys.argv[2:]:
         files.extend(glob(f))
 
-    files.sort()
+    #files.sort()
     for f in files:
         print(f)
 
