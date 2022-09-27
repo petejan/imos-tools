@@ -1205,6 +1205,8 @@ def parse_triaxys(files):
     ncOut.setncattr("date_created", datetime.datetime.utcnow().strftime(ncTimeFormat))
     ncOut.setncattr("history", datetime.datetime.utcnow().strftime("%Y-%m-%d") + " created from file " + os.path.basename(file))
 
+    # TODO make this able to take zip files
+
     # parse each file
     for filepath in filelist:
         print(filepath)
@@ -1246,4 +1248,4 @@ def parse_triaxys(files):
 
 
 if __name__ == "__main__":
-    parse_triaxys(sys.argv)
+    parse_triaxys(sys.argv[1:])

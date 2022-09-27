@@ -92,6 +92,7 @@ def create_nc_var(d_array, imu_times, name_name, imu_array, nc_var, done_ind, im
 
     nc_var[:] = d_array
 
+# TODO make this able to take zip files
 
 def datalogger(outputName, files):
 
@@ -127,7 +128,7 @@ def datalogger(outputName, files):
 
     sofs_2_fn_time = re.compile(r'.*(\d{4}\-\d{2}\-\d{2}T\d{2}\d{2}\d{2}).bin')
 
-    # TODO: process the output of this parser into frequency spectra, wave height
+    # process the output of this parser into frequency spectra, wave height, done with mru_2_waves.py
 
     # TODO: process all historical data, Pulse, SOFS-1 .... to SOFS-10
 

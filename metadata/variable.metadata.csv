@@ -466,13 +466,15 @@ VAR_ATT,ZC,,,,,,,,,coordinates,str,LONGITUDE LATITUDE TIME
 VAR_ATT,ZC,,,,,,,,,long_name,str,number zero crossings
 VAR_ATT,Hav,,,,,,,,,coordinates,str,LONGITUDE LATITUDE TIME
 VAR_ATT,Hav,,,,,,,,,long_name,str,average wave height
-VAR_ATT,Tz,,,,,,,,,coordinates,str,LONGITUDE LATITUDE TIME
-VAR_ATT,Tz,,,,,,,,,long_name,str,average wave period
+VAR_ATT,Ts,,,,,,,,,coordinates,str,LONGITUDE LATITUDE TIME
+VAR_ATT,Ts,,,,,,,,,long_name,str,average wave period
+VAR_ATT,Ts,,,,,,,,,comment,str,Average period of the significant zero down-crossing waves (s)
 VAR_ATT,Hmax,,,,,,,,,coordinates,str,LONGITUDE LATITUDE TIME
 VAR_ATT,Hmax,,,,,,,,,long_name,str,maximum wave height
-VAR_ATT,Ts,,,,,,,,,coordinates,str,LONGITUDE LATITUDE TIME
-VAR_ATT,Ts,,,,,,,,,long_name,str,significant wave period
-VAR_ATT,Ts,,,,,,,,,standard_name,str,sea_surface_wave_significant_period
+VAR_ATT,Tz,,,,,,,,,coordinates,str,LONGITUDE LATITUDE TIME
+VAR_ATT,Tz,,,,,,,,,comment,str,Estimated period from spectral moments m0 and m2, where Tz = SQRT(m0/m2)
+VAR_ATT,Tz,,,,,,,,,long_name,str,significant wave period
+VAR_ATT,Tz,,,,,,,,,standard_name,str,sea_surface_wave_significant_period
 VAR_ATT,H10,,,,,,,,,coordinates,str,LONGITUDE LATITUDE TIME
 VAR_ATT,H10,,,,,,,,,long_name,str,wave height 1/10 waves
 VAR_ATT,T10,,,,,,,,,coordinates,str,LONGITUDE LATITUDE TIME
