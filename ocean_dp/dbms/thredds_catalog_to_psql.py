@@ -86,8 +86,8 @@ def sqlite_insert(con, http, opendap):
     cur.execute("INSERT INTO file (name, http, opendap, title, site_code, platform_code, deployment_code, featuretype, "
                 "geospatial_lat_min, geospatial_lon_min, geospatial_vertical_min, "
                 "geospatial_lat_max, geospatial_lon_max, geospatial_vertical_max, "
-                "date_created, time_deployment_start, time_deployment_end, principal_investigator) RETURNING file_id"
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ",
+                "date_created, time_deployment_start, time_deployment_end, principal_investigator)"
+                "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING file_id",
                 (os.path.basename(http), http, opendap, title, site_code, platform_code, deployment_code, featureType,
                  geospatial_lat_min, geospatial_lon_min, geospatial_vertical_min,
                  geospatial_lat_max, geospatial_lon_max, geospatial_vertical_max,
@@ -103,7 +103,7 @@ def sqlite_insert(con, http, opendap):
         name = at
         value = nc.getncattr(at)
         at_type = type(value).__name__
-        cur.execute('INSERT INTO global_attributes (file_id, name, value, type) VALUES (?,?,?,?)', [file_id, name, str(value), at_type])
+        cur.execute('INSERT INTO global_attributes (file_id, name, value, type) VALUES (%s,%s,%s,%s)', [file_id, name, str(value), at_type])
         con.commit()
 
     # get list of auxcilliary variables as we don't load these
@@ -157,7 +157,7 @@ def sqlite_insert(con, http, opendap):
                 units = None
 
             at_type = str(var.dtype)
-            cur.execute('INSERT INTO variables (file_id, name, standard_name, long_name, units, aux_vars, dimensions, type) VALUES (?,?,?,?,?,?,?,?)',
+            cur.execute('INSERT INTO variables (file_id, name, standard_name, long_name, units, aux_vars, dimensions, type) VALUES (%s,%s,%s,%s,%s,%s,%s,%s)',
                         [file_id, var_name, standard_name, long_name, units, aux_var, var_dims, at_type])
             con.commit()
 
@@ -168,7 +168,7 @@ def sqlite_insert(con, http, opendap):
                     name = at
                     value = var.getncattr(at)
                     at_type = type(value).__name__
-                    cur.execute('INSERT INTO variable_attributes (file_id, var_name, name, type, value) VALUES (?,?,?,?,?)',
+                    cur.execute('INSERT INTO variable_attributes (file_id, var_name, name, type, value) VALUES (%s,%s,%s,%s,%s)',
                                 [file_id, var_name, name, at_type, str(value)])
                     con.commit()
 
@@ -208,18 +208,10 @@ if __name__ == "__main__":
 
 
     now = datetime.utcnow()
-    dbname = 'thredds-' + now.strftime("%Y-%m-%d") + '.sqlite'
 
-    #con = sqlite3.connect(dbname, detect_types=sqlite3.PARSE_DECLTYPES)
     con = psycopg2.connect(host='localhost', dbname='threddscat', user='postgres', password='secret')
 
     cur = con.cursor()
-    # cur.execute("CREATE TABLE IF NOT EXISTS file (file_id integer primary key autoincrement, name TEXT, http TEXT, opendap TEXT"
-    #             ", title TEXT, site_code TEXT, platform_code TEXT, deployment_code TEXT, featuretype TEXT"
-    #             ", geospatial_lat_min REAL, geospatial_lon_min REAL, geospatial_vertical_min REAL"
-    #             ", geospatial_lat_max REAL, geospatial_lon_max REAL, geospatial_vertical_max REAL"
-    #             ", date_created TEXT, time_deployment_start TEXT, time_deployment_end TEXT, principal_investigator TEXT"
-    #             ")")
     cur.execute("CREATE TABLE IF NOT EXISTS file (file_id serial primary key, name TEXT, http TEXT, opendap TEXT"
                 ", title TEXT, site_code TEXT, platform_code TEXT, deployment_code TEXT, featuretype TEXT"
                 ", geospatial_lat_min REAL, geospatial_lon_min REAL, geospatial_vertical_min REAL"
@@ -233,19 +225,6 @@ if __name__ == "__main__":
     con.commit()
     cur.execute("CREATE TABLE IF NOT EXISTS variable_attributes (file_id integer, var_name TEXT, name TEXT, type TEXT, value TEXT)")
     con.commit()
-    # cur.execute("CREATE VIEW IF NOT EXISTS file_deployment AS "
-    #             "SELECT file.file_id, file.name, dep.value AS deployment_code, nd.value AS nominal_depth "
-    #             "FROM file"
-    #             " LEFT join attributes AS dep ON (file.file_id = dep.file_id and dep.name == 'deployment_code')"
-    #             " LEFT join attributes AS nd ON (file.file_id = nd.file_id and nd.name == 'instrument_nominal_depth')")
-    # cur.execute("CREATE VIEW IF NOT EXISTS variable_depth AS "
-    #             "SELECT file.file_id, file.name AS file_name, variables.name, variables.dimensions, variables.type, variables.data, nd.value AS nominal_depth "
-    #             "FROM variables"
-    #             " JOIN file ON (file.file_id = variables.file_id)"
-    #             " LEFT join attributes AS nd ON (file.file_id = nd.file_id and nd.name == 'instrument_nominal_depth')")
-    # cur.execute("CREATE VIEW IF NOT EXISTS file_instrument AS select f.file_id , f.name, m.value as model, s.value as sn FROM file f "
-    #             "LEFT JOIN attributes m ON (f.file_id = m.file_id and m.name = 'instrument') "
-    #             "LEFT JOIN attributes s ON (s.file_id = f.file_id and s.name = 'instrument_serial_number')")
     con.commit()
 
     for url in urls:
