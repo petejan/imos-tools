@@ -83,7 +83,6 @@ def extract_optode(netCDFfile):
         scale_offset = [float(x) for x in var_v4.calibration_scale_offset.split(' ')]
         print('DOX2_RAW scale offset', scale_offset)
         ncVarOut[:] = var_v4[:] * scale_offset[0] + scale_offset[1]
-        #ncVarOut[:] = var_v4[:] * 75
         ncVarOut.units = "umol/l"
         ncVarOut.long_name = "optode oxygen, uncorrected"
         is_raw = True
@@ -109,7 +108,7 @@ def extract_optode(netCDFfile):
     # copy attributes forward
     attrs = ds.ncattrs()
     for at in attrs:
-        if at not in ['title', 'instrument', 'instrument_model', 'instrument_serial_number', 'history', 'date_created', 'title']:
+        if at not in ['title', 'instrument', 'instrument_model', 'instrument_serial_number', 'history', 'date_created', 'file_version', 'file_version_quality_control']:
             #print('copy att', at)
             ds_out.setncattr(at, ds.getncattr(at))
 
@@ -117,6 +116,10 @@ def extract_optode(netCDFfile):
     ds_out.instrument = 'Aanderaa ; Optode 3975'
     ds_out.instrument_model = 'Optode 3975'
     ds_out.instrument_serial_number = ds.variables['V4'].sensor_serial_number
+
+    ds_out.file_version = 'Level 0 - Raw data'
+    ds_out.file_version_quality_control = 'Data in this file has not been quality controlled'
+
     ds_out.title = 'Oceanographic mooring data deployment of {platform_code} at latitude {geospatial_lat_max:3.1f} longitude {geospatial_lon_max:3.1f} depth {geospatial_vertical_max:3.0f} (m) instrument {instrument} serial {instrument_serial_number}'
 
     ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"

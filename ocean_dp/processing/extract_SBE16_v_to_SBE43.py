@@ -135,7 +135,9 @@ def extract_sbe43(netCDFfile):
     oxsol = np.exp(A0 + A1*ts + A2*(ts**2) + A3*(ts**3) + A4*(ts**4) + A5*(ts**5) + SP*[B0+B1*(ts)+B2*(ts**2) +B3*(ts**3)]+C0*(SP**2))
     #
     # # calculate oxygen from V0
-    dox = slope_correction * calibration_Soc * (var_v0[:] + calibration_offset) * oxsol * (1 + calibration_A * T + calibration_B * T**2 + calibration_C * T**3) * np.exp(calibration_E * p / (T + 273.15))
+    dox = slope_correction * calibration_Soc * (var_v0[:] + calibration_offset) * oxsol * \
+          (1 + calibration_A * T + calibration_B * T**2 + calibration_C * T**3) * \
+          np.exp(calibration_E * p / (T + 273.15))
     #
     # # create SBE43 oxygen ml/l
     # # ncVarOut = ds_out.createVariable("DOX", "f4", ("TIME",), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
@@ -164,39 +166,39 @@ def extract_sbe43(netCDFfile):
     ncVarOut.equation_2 = "Ox[umol/kg]=Ox[ml/l].44660/(sigma-theta(P=0,Theta,S)+1000)"
     #ncVarOut.equation_1 = "Ox[umol/kg]=Soc.(V+Voffset).(1+A.T+B.T^2+C.T^3).OxSOL(T,S)[umol/kg].exp(E.P/K) ... SeaBird (AN64)"
     #ncVarOut.comment = 'OxSOL in umol/kg'
-    ncVarOut.ancillary_variables = "DOX2_quality_control DOX2_quality_control_in"
+    #ncVarOut.ancillary_variables = "DOX2_quality_control DOX2_quality_control_in"
 
     # quality flags
-    ncVarOut_qc = ds_out.createVariable("DOX2_quality_control", "i1", ("TIME",), fill_value=99, zlib=True)  # fill_value=99 otherwise defaults to max, imos-toolbox uses 99
-    ncVarOut_qc[:] = np.zeros(ncVarOut_qc.shape)
-    if 'V0_quality_control' in ds.variables:
-        mx = np.max([ncVarOut_qc[:], ds.variables['V0_quality_control'][:]], axis=0)
-        ncVarOut_qc[:] = mx
-    if 'TEMP_quality_control' in ds.variables:
-        mx = np.max([ncVarOut_qc[:], ds.variables['TEMP_quality_control'][:]], axis=0)
-        print('TEMP max', mx)
-        ncVarOut_qc[:] = mx
-    if 'PSAL_quality_control' in ds.variables:
-        mx = np.max([ncVarOut_qc[:], ds.variables['PSAL_quality_control'][:]], axis=0)
-        print('PSAL max', mx)
-        ncVarOut_qc[:] = mx
-    if 'PRES_quality_control' in ds.variables:
-        mx = np.max([ncVarOut_qc[:], ds.variables['PRES_quality_control'][:]], axis=0)
-        print('PRES max', mx)
-        ncVarOut_qc[:] = mx
-
-    ncVarOut_qc.standard_name = ncVarOut.standard_name + " status_flag"
-    ncVarOut_qc.quality_control_conventions = "IMOS standard flags"
-    ncVarOut_qc.flag_values = np.array([0, 1, 2, 3, 4, 6, 7, 9], dtype=np.int8)
-    ncVarOut_qc.flag_meanings = 'unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value'
-    ncVarOut_qc.comment = 'maximum of all flags'
-
-    # create a QC flag variable for the input data
-    ncVarOut_qc = ds_out.createVariable("DOX2_quality_control_in", "i1", ("TIME",), fill_value=99, zlib=True)  # fill_value=99 otherwise defaults to max, imos-toolbox uses 99
-    ncVarOut_qc[:] = mx
-    ncVarOut_qc.long_name = "input data flag for moles_of_oxygen_per_unit_mass_in_sea_water"
-    ncVarOut_qc.units = "1"
-    ncVarOut_qc.comment = "data flagged from input variables TEMP, PSAL, PRES"
+    # ncVarOut_qc = ds_out.createVariable("DOX2_quality_control", "i1", ("TIME",), fill_value=99, zlib=True)  # fill_value=99 otherwise defaults to max, imos-toolbox uses 99
+    # ncVarOut_qc[:] = np.zeros(ncVarOut_qc.shape)
+    # if 'V0_quality_control' in ds.variables:
+    #     mx = np.max([ncVarOut_qc[:], ds.variables['V0_quality_control'][:]], axis=0)
+    #     ncVarOut_qc[:] = mx
+    # if 'TEMP_quality_control' in ds.variables:
+    #     mx = np.max([ncVarOut_qc[:], ds.variables['TEMP_quality_control'][:]], axis=0)
+    #     print('TEMP max', mx)
+    #     ncVarOut_qc[:] = mx
+    # if 'PSAL_quality_control' in ds.variables:
+    #     mx = np.max([ncVarOut_qc[:], ds.variables['PSAL_quality_control'][:]], axis=0)
+    #     print('PSAL max', mx)
+    #     ncVarOut_qc[:] = mx
+    # if 'PRES_quality_control' in ds.variables:
+    #     mx = np.max([ncVarOut_qc[:], ds.variables['PRES_quality_control'][:]], axis=0)
+    #     print('PRES max', mx)
+    #     ncVarOut_qc[:] = mx
+    #
+    # ncVarOut_qc.standard_name = ncVarOut.standard_name + " status_flag"
+    # ncVarOut_qc.quality_control_conventions = "IMOS standard flags"
+    # ncVarOut_qc.flag_values = np.array([0, 1, 2, 3, 4, 6, 7, 9], dtype=np.int8)
+    # ncVarOut_qc.flag_meanings = 'unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value'
+    # ncVarOut_qc.comment = 'maximum of all flags'
+    #
+    # # create a QC flag variable for the input data
+    # ncVarOut_qc = ds_out.createVariable("DOX2_quality_control_in", "i1", ("TIME",), fill_value=99, zlib=True)  # fill_value=99 otherwise defaults to max, imos-toolbox uses 99
+    # ncVarOut_qc[:] = mx
+    # ncVarOut_qc.long_name = "input data flag for moles_of_oxygen_per_unit_mass_in_sea_water"
+    # ncVarOut_qc.units = "1"
+    # ncVarOut_qc.comment = "data flagged from input variables TEMP, PSAL, PRES"
 
     # save the OxSOL
     if 'OXSOL' in ds_out.variables:
@@ -213,25 +215,20 @@ def extract_sbe43(netCDFfile):
 
     for v in ds.ncattrs():
         if not v.startswith('sea_bird'):
-            ds_out.setncattr(v, ds.getncattr(v))
+            if v not in ['title', 'instrument', 'instrument_model', 'instrument_serial_number', 'history', 'date_created', 'file_version', 'file_version_quality_control']:
+                #print('copy att', v)
+                ds_out.setncattr(v, ds.getncattr(v))
 
     ds_out.instrument = 'Sea-Bird Electronics ; SBE43'
     ds_out.instrument_model = 'SBE43'
     ds_out.instrument_serial_number = '43' + var_v0.calibration_SerialNumber
 
-    ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
+    ds_out.file_version = 'Level 0 - Raw data'
+    ds_out.file_version_quality_control = 'Data in this file has not been quality controlled'
 
-    attrs = ds.ncattrs()
-    for at in attrs:
-        if at not in ['title', 'instrument', 'instrument_model', 'instrument_serial_number', 'history', 'date_created', 'title']:
-            #print('copy att', at)
-            ds_out.setncattr(at, ds.getncattr(at))
-
-    ds_out.deployment_code = ds.deployment_code
-    ds_out.instrument = 'SeaBird Electronics ; SBE43'
-    ds_out.instrument_model = 'SBE43'
-    ds_out.instrument_serial_number = ds.variables['V0'].calibration_SerialNumber
     ds_out.title = 'Oceanographic mooring data deployment of {platform_code} at latitude {geospatial_lat_max:3.1f} longitude {geospatial_lon_max:3.1f} depth {geospatial_vertical_max:3.0f} (m) instrument {instrument} serial {instrument_serial_number}'
+
+    ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
 
     # add creating and history entry
     ds_out.setncattr("date_created", datetime.utcnow().strftime(ncTimeFormat))
