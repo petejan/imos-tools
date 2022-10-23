@@ -83,7 +83,7 @@ def add_wave_spectra(netCDFfile):
     if "FREQ" in dsOut.variables:
         freq_var_var = dsOut.variables["FREQ"]
     else:
-        freq_var_var = dsOut.createVariable("FREQ", "f4", ('FREQ',), fill_value=np.nan, zlib=zl)  # fill_value=nan otherwise defaults to max
+        freq_var_var = dsOut.createVariable("FREQ", "f4", ('FREQ',), fill_value=None, zlib=zl)  # fill_value=nan otherwise defaults to max
 
     # create (or reuse) new variables WAVE_SPECTRA, FREQUENCY,  WAVE_HEIGHT
     if "WAVE_SPECTRA" in dsOut.variables:
@@ -113,67 +113,76 @@ def add_wave_spectra(netCDFfile):
 
     accel_world = np.zeros([3072, 3])
     for i in range(len(dsIn.variables['TIME'])):
-        start = time.time()
-        # read quaternion for this time
-        q = var_q[:, :, i]
-        accel_world.fill(np.nan)
-        for j in range(0, 3072):
-            try:
-                # read the quaternion, the IMU data is in w, x, y, z where as Rotation.from_quant is in x, y, z, w
-                #r = Rotation.from_quat(np.transpose([q[j, 1], q[j, 2], q[j, 3], q[j, 0]]))
-
-                #accel_inst = var_accel[j, :, i]  # dimensions are sample_time, vector, TIME
-
-                #accel_world[j, :] = r.apply(accel_inst)
-
-                accel_inst = var_accel[j, :, i]  # dimensions are sample_time, vector, TIME
-                accel_world[j, :] = point_rotation_by_quaternion(accel_inst, q[j, :])
-
-            except ValueError as v:
-                print(j, v)
-
-        # convert accelerations to world coordinates
-
-        print("rotation % s seconds" % (time.time() - start))
-        print('accel world nans', np.sum(np.isnan(accel_world), axis=0))
+        nans_missing = np.sum(np.isnan(var_accel[:, :, i]), axis=0)
+        print('accel inst nans', nans_missing)
         start = time.time()
 
-        # compute power spectral density from vertical acceleration
-        # removing mean seems to work as well as detrend='linear' or detrend='constant'
+        if nans_missing[2] < 1000:
+            # read quaternion for this time
+            q = var_q[:, :, i]
+            accel_world.fill(np.nan)
+            for j in range(0, 3072):
+                try:
+                    # read the quaternion, the IMU data is in w, x, y, z where as Rotation.from_quant is in x, y, z, w
+                    #r = Rotation.from_quat(np.transpose([q[j, 1], q[j, 2], q[j, 3], q[j, 0]]))
 
-        a = accel_world[:, 2]
-        a_mean = np.nanmean(a)
-        a = a - a_mean
-        nan_a = np.isnan(a)
-        a[nan_a] = 0 # zero fill
-        f, wave_acceleration_spectra = signal.welch(a, fs=5, nfft=512, scaling='density', window='hamming', detrend=None)
+                    #accel_inst = var_accel[j, :, i]  # dimensions are sample_time, vector, TIME
 
-        # compute displacement spectra from wave acceleration spectra
-        # by divinding by (2*pi*f) ^ 4, first point is nan as f[0] = 0
-        f_wave_disp = f[0:-1]
-        wave_displacement_spectra[0] = np.nan
-        wave_displacement_spectra[1:] = wave_acceleration_spectra[1:-1] / (2*np.pi*f[1:-1])**4
+                    #accel_world[j, :] = r.apply(accel_inst)
 
-        # save wave displacement spectra
-        wave_spec_out_var[i, :] = wave_displacement_spectra
+                    accel_inst = var_accel[j, :, i]  # dimensions are sample_time, vector, TIME
+                    accel_world[j, :] = point_rotation_by_quaternion(accel_inst, q[j, :])
 
-        # calculate wave height, NOAA use frequency band 0.0325 to 0.485 https://www.ndbc.noaa.gov/wavecalc.shtml
-        # 0.05 = 20 sec wave period, MRU overestimates the acceleration at this low frequency,
-        # almost 1m at 7m SWH, ~ 10% because of noise
-        # use f[1] as the delta frequency (the width of a frequency bin width)
-        msk = (f_wave_disp > 0.05) & (f_wave_disp < 0.485)
-        m0 = sum(wave_displacement_spectra[msk] * f[1])
-        swh = 4 * np.sqrt(m0)
+                except ValueError as v:
+                    print(j, v)
 
-        m2 = sum(wave_displacement_spectra[msk] * f[1] * (f_wave_disp[msk] ** 2))
+            # convert accelerations to world coordinates
 
-        apd = np.sqrt(m0/m2)
-        print("calc % s seconds" % (time.time() - start))
-        start = time.time()
+            print("rotation % s seconds" % (time.time() - start))
+            start = time.time()
 
-        print(num2date(var_time[i], calendar=var_time.calendar, units=var_time.units), 'wave height', swh, 'period', apd)
-        swh_out_var[i] = swh
-        apd_out_var[i] = apd
+            # compute power spectral density from vertical acceleration
+            # removing mean seems to work as well as detrend='linear' or detrend='constant'
+
+            a = accel_world[:, 2]
+            a_mean = np.nanmean(a)
+            a = a - a_mean
+            nan_a = np.isnan(a)
+            a[nan_a] = 0 # zero fill
+            f, wave_acceleration_spectra = signal.welch(a, fs=5, nfft=512, scaling='density', window='hamming', detrend=None)
+
+            # compute displacement spectra from wave acceleration spectra
+            # by divinding by (2*pi*f) ^ 4, first point is nan as f[0] = 0
+            f_wave_disp = f[0:-1]
+            wave_displacement_spectra[0] = np.nan
+            wave_displacement_spectra[1:] = wave_acceleration_spectra[1:-1] / (2*np.pi*f[1:-1])**4
+
+            # save wave displacement spectra
+            wave_spec_out_var[i, :] = wave_displacement_spectra
+
+            # calculate wave height, NOAA use frequency band 0.0325 to 0.485 https://www.ndbc.noaa.gov/wavecalc.shtml
+            # 0.05 = 20 sec wave period, MRU overestimates the acceleration at this low frequency,
+            # almost 1m at 7m SWH, ~ 10% because of noise
+            # use f[1] as the delta frequency (the width of a frequency bin width)
+            msk = (f_wave_disp > 0.05) & (f_wave_disp < 0.485)
+            m0 = sum(wave_displacement_spectra[msk] * f[1])
+            swh = 4 * np.sqrt(m0)
+
+            m2 = sum(wave_displacement_spectra[msk] * f[1] * (f_wave_disp[msk] ** 2))
+
+            apd = np.sqrt(m0/m2)
+            print("calc % s seconds" % (time.time() - start))
+            start = time.time()
+
+            print(num2date(var_time[i], calendar=var_time.calendar, units=var_time.units), 'wave height', swh, 'period', apd)
+            swh_out_var[i] = swh
+            apd_out_var[i] = apd
+        else:
+            print('missing data', num2date(var_time[i], calendar=var_time.calendar, units=var_time.units))
+            swh_out_var[i] = np.nan
+            apd_out_var[i] = np.nan
+            wave_spec_out_var[i, :] = np.nan
+
         print("save % s seconds" % (time.time() - start))
 
     # save the frequency

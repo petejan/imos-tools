@@ -29,6 +29,7 @@ from os import listdir, walk
 
 import re
 import os
+import zipfile
 
 first_line_expr   = r"^TRIAXYS BUOY DATA REPORT"
 raw_first_line_expr = r"^Sample"
@@ -960,7 +961,7 @@ wave_params = {}
 # Peak Period
 # Tp5
 # Hm0
-# Mean Magnetic Direction
+# Mean Magnetic Direction -- maybe a wave direction to (not wave from direction)
 # Mean Spread
 # Mean True Direction
 # Te
@@ -980,7 +981,7 @@ wave_params['Tz'] = {'var_name': 'Tz', 'units': 's', 'comment': 'Estimated perio
 wave_params['H 10'] = {'var_name': 'H10', 'units': 'm', 'comment': 'average height of highest tenth of waves'}
 wave_params['T 10'] = {'var_name': 'T10', 'units': 's', 'comment': 'average period of H10 waves'}
 
-# Summary file:
+# Summary file: (SOFS-2 data has this as a summary file, the older processing software outputs this)
 # Date
 # Year
 # Julian Date
@@ -1147,7 +1148,7 @@ def parse_triaxys(files):
 
     print("output file : %s" % output_name)
 
-    ncOut = Dataset(output_name, 'w', format='NETCDF4_CLASSIC')
+    ncOut = Dataset(output_name, 'w')  #, format='NETCDF4_CLASSIC') # CLASSIC does not allow modifting after creation
     tDim = ncOut.createDimension("TIME")
     ncTimesOut = ncOut.createVariable("TIME", "d", ("TIME",), zlib=True)
     ncTimesOut.long_name = "time"
@@ -1157,6 +1158,14 @@ def parse_triaxys(files):
     ncTimesOut.comment = "timestamp is at start of 20 min sampling period"
 
     ncOut.close()
+
+    # needs re-write to deal with files inside zip files
+    # if filelist[0].endswith(".zip"):
+    #     print('file list zero', filelist[0])
+    #     file = zipfile.ZipFile(filelist[0], "r")
+    #     filelist = file.namelist()
+    #     for f in filelist:
+    #         print('zip file, filename', f)
 
     # parse the Summary or WAVE files to get the timestamps
     for filepath in filelist:
@@ -1203,7 +1212,7 @@ def parse_triaxys(files):
 
     # add creating and history entry
     ncOut.setncattr("date_created", datetime.datetime.utcnow().strftime(ncTimeFormat))
-    ncOut.setncattr("history", datetime.datetime.utcnow().strftime("%Y-%m-%d") + " created from file " + os.path.basename(file))
+    ncOut.setncattr("history", datetime.datetime.utcnow().strftime("%Y-%m-%d") + " created from file " + os.path.basename(filelist[0]) + '...')
 
     # TODO make this able to take zip files
 

@@ -446,8 +446,10 @@ VAR_ATT,MEAN_DIR_SPREAD,,,,,,,,,coordinates,str,LONGITUDE LATITUDE TIME
 VAR_ATT,MEAN_DIR_SPREAD,,,,,,,,,long_name,str,mean wave directional spread
 VAR_ATT,FOURIER_SPEC,,,,,,,,,coordinates,str,LONGITUDE LATITUDE TIME
 VAR_ATT,FOURIER_SPEC,,,,,,,,,long_name,str,fourier coefficents
+VAR_ATT,WAVE_SPECTRA,,,,,,,,,coordinates,str,LONGITUDE LATITUDE TIME
 VAR_ATT,FREQ,,,,,,,,,coordinates,str,LONGITUDE LATITUDE TIME
 VAR_ATT,FREQ,,,,,,,,,long_name,str,spectral frequency
+VAR_ATT,FREQ,,,,,,,,,units,str,Hz
 VAR_ATT,DIR_SPEC,,,,,,,,,coordinates,str,LONGITUDE LATITUDE TIME
 VAR_ATT,DIR_SPEC,,,,,,,,,long_name,str,wave directional sprectrum
 VAR_ATT,DIR_SPEC_RES_LOW,,,,,,,,,coordinates,str,LONGITUDE LATITUDE TIME
@@ -471,6 +473,7 @@ VAR_ATT,Ts,,,,,,,,,long_name,str,average wave period
 VAR_ATT,Ts,,,,,,,,,comment,str,Average period of the significant zero down-crossing waves (s)
 VAR_ATT,Hmax,,,,,,,,,coordinates,str,LONGITUDE LATITUDE TIME
 VAR_ATT,Hmax,,,,,,,,,long_name,str,maximum wave height
+VAR_ATT,Tz,,,,,,,,,units,str,s
 VAR_ATT,Tz,,,,,,,,,coordinates,str,LONGITUDE LATITUDE TIME
 VAR_ATT,Tz,,,,,,,,,comment,str,Estimated period from spectral moments m0 and m2, where Tz = SQRT(m0/m2)
 VAR_ATT,Tz,,,,,,,,,long_name,str,significant wave period
@@ -486,6 +489,7 @@ VAR_ATT,Tp,,,,,,,,,long_name,str,peak wave period
 VAR_ATT,Tp5,,,,,,,,,coordinates,str,LONGITUDE LATITUDE TIME
 VAR_ATT,Tp5,,,,,,,,,long_name,str,peak wave period spectral method
 VAR_ATT,Tp5,,,,,,,,,comment_read,str,The Tp5 is determined from calculating Fp5 which is the average frequency computed with the weighting function S(f)**5 over the defined upper and lower frequency range. The algorithm is: Fp5= [Sum of Fi*(Ei/Epeak)^5]/[Sum of (Ei/Epeak)^5] where: For i = low frequency band(i) to high frequency band Fi is frequency of band Ei is energy of band i Epeak is Energy of Peak Frequency therefore, Tp5=1/Fp5
+VAR_ATT,Hm0,,,,,,,,,units,str,m
 VAR_ATT,Hm0,,,,,,,,,coordinates,str,LONGITUDE LATITUDE TIME
 VAR_ATT,Hm0,,,,,,,,,long_name,str,significant wave height by spectral moment
 VAR_ATT,Hm0,,,,,,,,,standard_name,str,sea_surface_wave_significant_height
