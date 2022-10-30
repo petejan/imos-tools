@@ -58,6 +58,9 @@ def rate_of_change(netCDFfiles, variable, rate, qc_value=4):
         existing_qc_flags = var_qc[:]
         data_to_qc_msk = existing_qc_flags < 3
         var_data_qc = var_data[data_to_qc_msk]
+        if sum(data_to_qc_msk) == 0:
+            print("no good data")
+            return netCDFfiles
 
         # this is where the actual QC test is done
         mask = np.empty_like(data_to_qc_msk[data_to_qc_msk], dtype=bool)

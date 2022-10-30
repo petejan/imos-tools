@@ -45,7 +45,7 @@ def add(netCDFfile, optode_cal_file):
     except AttributeError:
         hist = ""
 
-    ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " : attributes added from file " + os.path.basename(optode_cal_file))
+    ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " attributes added from file " + os.path.basename(optode_cal_file))
 
     ds.close()
 

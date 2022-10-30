@@ -110,7 +110,7 @@ def in_out_water(netCDFfile, var_name=None):
             except AttributeError:
                 hist = ""
 
-            ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + ' : ' + 'in/out marked ' + str(int(count)))
+            ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + ' in/out marked ' + str(int(count)))
 
         ds.close()
 

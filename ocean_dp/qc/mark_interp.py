@@ -27,11 +27,9 @@ from dateutil import parser
 # flag data after a date
 
 
-def maunal(netCDFfile, var_name=None, start_str=None, flag=4, reason=None, end_str=None):
+def interp(netCDFfile, var_name=None, flag=8, reason=None):
 
     out_file = []
-    if start_str == 'All':
-        start_str = None
 
     for fn in netCDFfile:
         ds = Dataset(fn, 'a')
@@ -66,14 +64,7 @@ def maunal(netCDFfile, var_name=None, start_str=None, flag=4, reason=None, end_s
         end = None
         print('time shape', time.shape)
 
-        mask = np.ones(time.shape, dtype= bool) # mark all data
-        if end_str:
-            end = parser.parse(end_str, ignoretz=True)
-            mask[time > end] = False # clear flags for data after end
-        if start_str:
-            start = parser.parse(start_str, ignoretz=True)
-            mask[time <= start] = False # clear flags for data before start
-
+        mask = np.zeros(time.shape, dtype=bool)  # mark all data
         print('mask', len(mask), mask)
 
         for v in to_add:
@@ -82,30 +73,26 @@ def maunal(netCDFfile, var_name=None, start_str=None, flag=4, reason=None, end_s
             var_qc = nc_vars[v + "_quality_control"]
             # read existing quality_control flags
             existing_qc_flags = var_qc[:]
+            mask[existing_qc_flags == 1] = True
+            mask[existing_qc_flags == 2] = True
+
+            print(existing_qc_flags)
+            print(mask)
 
             # create a qc variable just for this test flags
-            if v + "_quality_control_man" in ds.variables:
-                ncVarOut = ds.variables[v + "_quality_control_man"]
+            if v + "_quality_control_int" in ds.variables:
+                ncVarOut = ds.variables[v + "_quality_control_int"]
             else:
-                ncVarOut = ds.createVariable(v + "_quality_control_man", "i1", nc_vars[v].dimensions, fill_value=99, zlib=True)  # fill_value=0 otherwise defaults to max
-                nc_vars[v].ancillary_variables = nc_vars[v].ancillary_variables + " " + v + "_quality_control_man"
+                ncVarOut = ds.createVariable(v + "_quality_control_int", "i1", nc_vars[v].dimensions, fill_value=99, zlib=True)  # fill_value=0 otherwise defaults to max
+                nc_vars[v].ancillary_variables = nc_vars[v].ancillary_variables + " " + v + "_quality_control_int"
 
                 ncVarOut[:] = 0
 
             if 'long_name' in nc_vars[v].ncattrs():
                 ncVarOut.long_name = "manual flag for " + nc_vars[v].long_name
-            #if 'standard_name' in nc_vars[v].ncattrs():
-            #    ncVarOut.standard_name = nc_vars[v].standard_name + " manual flag"
 
-            #ncVarOut.quality_control_conventions = "IMOS standard flags"
-            #ncVarOut.flag_values = np.array([0, 1, 2, 3, 4, 6, 7, 9], dtype=np.int8)
-            #ncVarOut.flag_meanings = 'unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value'
             ncVarOut.units = "1"
-            ncVarOut.comment = 'manual'
-            if start_str:
-                ncVarOut.comment += ', by date, start ' + start.strftime("%Y-%m-%d")
-            if end_str:
-                ncVarOut.comment += ', by date, end ' + end.strftime("%Y-%m-%d")
+            ncVarOut.comment = 'mark as interpolated'
 
             if reason:
                 ncVarOut.comment += ', ' + reason
@@ -138,10 +125,6 @@ def maunal(netCDFfile, var_name=None, start_str=None, flag=4, reason=None, end_s
         else:
             hist = hist + datetime.utcnow().strftime("%Y-%m-%d") + " manual QC, marked " + str(int(count))
         hist = hist + " with flag="+str(flag)
-        if start_str:
-            hist = hist + ", start " + start.strftime("%Y-%m-%d %H:%M:%S")
-        if end_str:
-            hist = hist + ", end " + end.strftime("%Y-%m-%d %H:%M:%S")
         if reason:
             hist += ', ' + reason
 
@@ -155,4 +138,4 @@ def maunal(netCDFfile, var_name=None, start_str=None, flag=4, reason=None, end_s
 
 
 if __name__ == "__main__":
-    maunal(netCDFfile=[sys.argv[1]], start_str=sys.argv[2], var_name=sys.argv[3], flag=int(sys.argv[4]))
+    interp(netCDFfile=[sys.argv[1]], var_name=sys.argv[2])

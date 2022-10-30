@@ -125,7 +125,7 @@ def add_qc(netCDFfile, var_name=None):
         
         ds.date_created = now.strftime("%Y-%m-%dT%H:%M:%SZ")
         
-        ds.history += '\n' + now.strftime("%Y-%m-%d : ") + 'quality_control variables added.'
+        ds.history += '\n' + now.strftime("%Y-%m-%d") + ' quality_control variables added.'
 
         # ADD quality control attributes!!
 

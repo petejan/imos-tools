@@ -39,8 +39,11 @@ import ocean_dp.qc.propogate_flags
 import ocean_dp.processing.addPSAL
 import ocean_dp.processing.add_density
 import ocean_dp.processing.add_sigma_theta0_sm
+import ocean_dp.processing.add_doxs
+import ocean_dp.processing.add_oxsol
+import ocean_dp.processing.calc_DOX_to_DOX2
 import ocean_dp.processing.apply_scale_offset_attributes
-from ocean_dp.processing.resampler import resample
+from ocean_dp.processing.down_sample import down_sample
 import ocean_dp.file_name.imosNetCDFfileName
 
 
@@ -87,8 +90,15 @@ for fv00_file in ncFiles:
     has_psal = False
     if 'PSAL' in ds.variables:
         has_psal = True
+    has_dox2 = False
+    if 'DOX2' in ds.variables:
+        has_dox2 = True
+    if 'DOX' in ds.variables:
+        has_dox2 = True
+    if 'DOXY' in ds.variables:
+        has_dox2 = True
 
-    print('variables temp,cndc,psal', has_temp, has_cndc, has_psal)
+    print('variables temp, cndc, psal, dox2', has_temp, has_cndc, has_psal, has_dox2)
 
     is_pumped = False
     if re.match(r'SBE37SMP.*', ds.instrument_model):
@@ -111,6 +121,14 @@ for fv00_file in ncFiles:
 
     print('nominal depth', ndepth)
 
+    if has_dox2:
+        # oxygen QC
+
+        print('doxs:', fv01_file_list)
+        ocean_dp.processing.add_oxsol.add_oxsol(fv00_file)
+        ocean_dp.processing.calc_DOX_to_DOX2.doxtodox2(fv00_file)
+        ocean_dp.processing.add_doxs.add_doxs([fv00_file])
+
     fv01_file_list = ocean_dp.qc.add_qc_flags.add_qc([fv00_file])
     if has_cndc and not has_psal:
         fv01_file_list[0] = ocean_dp.processing.addPSAL.add_psal(fv01_file_list[0])
@@ -123,7 +141,6 @@ for fv00_file in ncFiles:
     fv01_file_list = ocean_dp.processing.apply_scale_offset_attributes.apply_scale_offset(fv01_file_list)
 
     if has_temp:
-
         # temperature QC
         for q in temp_qc_params:
             if q['depth'] > ndepth:
@@ -159,6 +176,17 @@ for fv00_file in ncFiles:
             else:
                 limit = 0.02
             fv01_file_list = ocean_dp.processing.add_sigma_theta0_sm.add_sigma_theta0_sm(fv01_file_list[0], limit=limit)
+
+    if has_dox2:
+        # oxygen QC
+
+        print('dox_qc:', fv01_file_list)
+        fv01_file_list = ocean_dp.processing.add_doxs.add_doxs(fv01_file_list)  # does a re-calculate after apply_scale_offset
+
+        fv01_file_list = ocean_dp.qc.global_range.global_range(fv01_file_list, 'DOX2', 350, 150)
+        fv01_file_list = ocean_dp.qc.global_range.global_range(fv01_file_list, 'DOX2', 310, 180, 3)
+        fv01_file_list = ocean_dp.qc.global_range.global_range(fv01_file_list, 'DOXS', 1.2, 0.5)
+        fv01_file_list = ocean_dp.qc.global_range.global_range(fv01_file_list, 'DOXS', 1.15, 0.7, 3)
 
     # Pulse 6,7,8 SOFS 1,2 Vemco Mini sensors with SN < 10000 -> flag 3
     if model == 'Minilog-T':
@@ -262,6 +290,11 @@ for fv00_file in ncFiles:
         manual_var = 'PSAL'
         manual_reason = 'high salinity at end, reset of data suspect'
         fv01_file_list = ocean_dp.qc.manual_by_date.maunal(fv01_file_list, manual_var, None, manual_flag, manual_reason, end_str=None)
+    if model == 'Optode 4831' and deployment == 'SOFS-10-2021':
+        manual_flag = 3
+        manual_var = 'DOX2'
+        manual_reason = 'drift low, biofouling'
+        fv01_file_list = ocean_dp.qc.manual_by_date.maunal(fv01_file_list, manual_var, '2021-05-27', manual_flag, manual_reason, end_str=None)
 
     # need to propagate flags from temp -> PSAL, SIGMA-THETA0, OXSOL, DOX2
     #                              PSAL -> CNDC, SIGMA-THETA0, OXSOL, DOX2
@@ -274,4 +307,4 @@ for fv00_file in ncFiles:
         ds.references += '; Jansen P, Shadwick EH and Trull TW (2021). Southern Ocean Time Series (SOTS) Quality Assessment and Control Report Salinity Records Version 1.0. CSIRO, Australia. DOI: 10.26198/rv8y-2q14 (https://doi.org/10.26198/rv8y-2q14)'
     ds.close()
 
-    resample(fv01_file_list, 'nearest', resample=True, hours=1)
+    down_sample(fv01_file_list, 'mean')

@@ -25,38 +25,43 @@ from datetime import datetime
 # add OXSOL to a data file with TEMP, PSAL, PRES variables, many assumptions are made about the input file
 
 
-def add_doxs(netCDFfile):
-    ds = Dataset(netCDFfile, 'a')
+def add_doxs(netCDFfiles):
 
-    oxsol = ds.variables["OXSOL"][:]
-    dox2 = ds.variables["DOX2"][:]
+    for netCDFfile in netCDFfiles:
+        print('add_doxs:', netCDFfile)
 
-    # calculate and write oxygen solubility, ratio of disolved oxgen / oxygen solubility
-    if 'DOXS' not in ds.variables:
-        ncVarOut = ds.createVariable("DOXS", "f4", ("TIME",), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
-    else:
-        ncVarOut = ds.variables['DOXS']
+        ds = Dataset(netCDFfile, 'a')
 
-    ncVarOut[:] = dox2/oxsol
-    ncVarOut.units = "1"
-    ncVarOut.comment = "calculated using DOX2/OXSOL"
-    ncVarOut.long_name = "fractional_saturation_of_oxygen_in_sea_water"
-    ncVarOut.standard_name = "fractional_saturation_of_oxygen_in_sea_water"
-    ncVarOut.coordinates = "TIME LATITUDE LONGITUDE NOMINAL_DEPTH"
+        oxsol = ds.variables["OXSOL"][:]
+        dox2 = ds.variables["DOX2"][:]
 
-    # finish off, and close file
+        # calculate and write oxygen solubility, ratio of disolved oxgen / oxygen solubility
+        if 'DOXS' not in ds.variables:
+            ncVarOut = ds.createVariable("DOXS", "f4", ("TIME",), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
+        else:
+            ncVarOut = ds.variables['DOXS']
 
-    # update the history attribute
-    try:
-        hist = ds.history + "\n"
-    except AttributeError:
-        hist = ""
+        ncVarOut[:] = dox2/oxsol
+        ncVarOut.units = "1"
+        ncVarOut.comment = "calculated using DOX2/OXSOL"
+        ncVarOut.long_name = "fractional_saturation_of_oxygen_in_sea_water"
+        ncVarOut.standard_name = "fractional_saturation_of_oxygen_in_sea_water"
+        ncVarOut.coordinates = "TIME LATITUDE LONGITUDE NOMINAL_DEPTH"
 
-    ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " added DOXS")
+        # finish off, and close file
 
-    ds.close()
+        # update the history attribute
+        try:
+            hist = ds.history + "\n"
+        except AttributeError:
+            hist = ""
 
-    return netCDFfile
+        ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " added DOXS")
+
+        ds.close()
+
+    return netCDFfiles
+
 
 if __name__ == "__main__":
-    add_doxs(sys.argv[1])
+    add_doxs(sys.argv[1:])

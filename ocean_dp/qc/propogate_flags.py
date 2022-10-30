@@ -34,7 +34,7 @@ data = [{'out': 'PSAL', 'in': ('TEMP', 'PRES', 'CNDC')},
         {'out': 'OXSOL', 'in': ('TEMP', 'PRES', 'PSAL')},
         {'out': 'DOX2', 'in': ('TEMP', 'PRES', 'PSAL', 'DOX', 'OXSOL', 'DOXS')},
         {'out': 'DOXS', 'in': ('TEMP', 'PRES', 'PSAL', 'DOX', 'OXSOL', 'DOX2')},
-        ]
+       ]
 
 
 def propogate(netCDFfile, var_name=None):
@@ -90,8 +90,10 @@ def propogate(netCDFfile, var_name=None):
                     ncVarOut[:] = 0
                     for in_d in d['in']:
                         if in_d in ds.variables:
-                            print('propogating from ', in_d)
-                            ncVarOut[:] = np.max([ncVarOut[:], ds.variables[in_d + '_quality_control']], axis=0)
+                            print('propagating from ', in_d)
+                            qc_in = ds.variables[in_d + '_quality_control'][:]
+                            qc_in[qc_in == 8] = 0  # don't propogate the interpolated flag
+                            ncVarOut[:] = np.max([ncVarOut[:], qc_in], axis=0)
 
                     ncVarFinal[:] = np.max([ncVarOut[:], ds.variables[v + '_quality_control']], axis=0)
 
@@ -102,7 +104,7 @@ def propogate(netCDFfile, var_name=None):
             except AttributeError:
                 hist = ""
 
-            ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + ' : ' + 'propagate flags to : ' + ','.join(var_list))
+            ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + ' propagate flags to : ' + ','.join(var_list))
 
         ds.close()
 

@@ -121,6 +121,9 @@ def global_range(netCDFfiles, variable, max, min, qc_value=4):
 
 if __name__ == "__main__":
 
+    for i in range(1, len(sys.argv)-1):
+        print('global range: args ', i, sys.argv[i])
+
     # usage is <file_name> <variable_name> <max> <min> <qc value>
     if len(sys.argv) > 5:
         global_range([sys.argv[1]], sys.argv[2], max=float(sys.argv[3]), min=float(sys.argv[4]), qc_value=int(sys.argv[5]))

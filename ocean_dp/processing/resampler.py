@@ -152,7 +152,7 @@ def resample(files, method, resample='True', hours=12):
 
         # variable to smooth
         # print('input file vars', in_vars)
-        z = in_vars.intersection(['PRES', 'PRES_REL', 'TEMP', 'PSAL', 'CNDC', 'DENSITY', 'SIGMA_T0', 'DOX2', 'ATMP', 'AIRT', 'AIRT2_0M', 'AIRT1_5M',
+        z = in_vars.intersection(['PRES', 'PRES_REL', 'TEMP', 'PSAL', 'CNDC', 'DENSITY', 'SIGMA_T0', 'DOX2', 'DOXS', 'ATMP', 'AIRT', 'AIRT2_0M', 'AIRT1_5M',
                                   'RELH', 'RELH1_5M', 'RELH2_0M', 'HL', 'HS', 'PL_CMP', 'WSPD10M', 'WSPD', 'WDIR', 'RAIN_AMOUNT',
                                   'H_RAIN', 'TAU', 'SST', 'HEAT_NET', 'MASS_NET', 'LW_NET', 'SW_NET',
                                   'SW', 'LW', 'UWIND', 'VWIND', 'CPHL', 'BB',
@@ -171,7 +171,7 @@ def resample(files, method, resample='True', hours=12):
             var_to_resample_in = ds.variables[resample_var]
             only_qc = True
             if resample_var + '_quality_control' in ds.variables:
-                print('using qc : ', resample_var + "_quality_control")
+                print(resample_var, 'using qc : ', resample_var + "_quality_control")
                 qc = ds.variables[resample_var + "_quality_control"][:]
                 only_qc = True
             else:
@@ -228,7 +228,7 @@ def resample(files, method, resample='True', hours=12):
                 var_resample_out[sample_time_dist_msk] = y[sample_time_dist_msk]
 
         #  create history
-        ds_new.history += '\n' + now.strftime("%Y-%m-%d : ") + 'resampled data created from ' + os.path.basename(filepath) + ', window has' + str(window) + 'points, method ' + method
+        ds_new.history += '\n' + now.strftime("%Y-%m-%d") + ' resampled data created from ' + os.path.basename(filepath) + ', window has' + str(window) + 'points, method ' + method
 
         ds_new.file_version = 'Level 2 - Derived Products'
         ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"

@@ -72,6 +72,9 @@ def extract_optode(netCDFfile):
                     ncVarOut.setncattr(a, v + '_quality_control') # only copying main quality control, not all individual flags
                 else:
                     ncVarOut.setncattr(a, ncVarIn.getncattr(a))
+
+        # TODO: should we change PSAL, TEMP qc flags to interpolated (8) to stop duplicates?
+
         ncVarOut[:] = ncVarIn[:]
 
 

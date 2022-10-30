@@ -151,7 +151,7 @@ def down_sample(files, method):
 
         # variable to smooth
         # print('input file vars', in_vars)
-        z = in_vars.intersection(['PRES', 'PRES_REL', 'TEMP', 'PSAL', 'CNDC', 'DENSITY', 'SIGMA_T0', 'DOX2', 'ATMP', 'AIRT', 'AIRT2_0M', 'AIRT1_5M',
+        z = in_vars.intersection(['PRES', 'PRES_REL', 'TEMP', 'PSAL', 'CNDC', 'DENSITY', 'SIGMA_T0', 'DOX2', 'DOXS', 'ATMP', 'AIRT', 'AIRT2_0M', 'AIRT1_5M',
                                   'RELH', 'RELH1_5M', 'RELH2_0M', 'HL', 'HS', 'PL_CMP', 'RAIN_AMOUNT',
                                   'H_RAIN', 'TAU', 'SST', 'HEAT_NET', 'MASS_NET', 'LW_NET', 'SW_NET',
                                   'SW', 'LW', 'UWIND', 'VWIND', 'CPHL', 'BB',
@@ -227,7 +227,7 @@ def down_sample(files, method):
                 var_resample_out[:] = y.statistic
 
         #  create history
-        ds_new.history += '\n' + now.strftime("%Y-%m-%d : ") + 'resampled data created from ' + os.path.basename(filepath) + 'points, method ' + method
+        ds_new.history += '\n' + now.strftime("%Y-%m-%d") + ' resampled data created from ' + os.path.basename(filepath) + 'points, method ' + method
 
         ds_new.file_version = 'Level 2 - Derived Products'
         ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"

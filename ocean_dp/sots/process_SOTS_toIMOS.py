@@ -49,7 +49,7 @@ for fn in ncFiles:
         filename = ocean_dp.attribution.format_attributes.format_attributes(filename)
 
         print('step 2 (attributes) filename : ', filename)
-    except RuntimeError as ex:
+    except ValueError as ex:
         print('problem with file', fn)
         print(ex)
         pass

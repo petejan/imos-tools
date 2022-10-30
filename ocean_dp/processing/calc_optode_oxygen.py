@@ -53,7 +53,7 @@ def add_optode_oxygen(netCDFfile):
     except:
         pass
 
-    SA = gsw.SA_from_SP(SP, p, lon , lat)
+    SA = gsw.SA_from_SP(SP, p, lon, lat)
     pt = gsw.pt0_from_t(SA, t, p)
     sigmat = gsw.sigma0(SA, t)
 
@@ -100,7 +100,7 @@ def add_optode_oxygen(netCDFfile):
     except AttributeError:
         hist = ""
 
-    ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " : calculated optode oxygen and oxygen solubility")
+    ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " calculated optode oxygen and oxygen solubility")
 
     ds.close()
 

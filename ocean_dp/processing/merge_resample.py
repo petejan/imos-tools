@@ -56,6 +56,14 @@ def resample(netCDF_file, sample_file, vars):
                 new_var.sensor_serial_number = ds_sample.instrument_serial_number
                 new_var[:] = new_data
 
+                new_var_qc = ds.createVariable(v+"_quality_control", "i1", var.dimensions, fill_value=99)
+                new_var_qc[:] = 8
+                new_var_qc.quality_control_conventions = "IMOS standard flags"
+                new_var_qc.flag_values = np.array([0, 1, 2, 3, 4, 6, 7, 9], dtype=np.int8)
+                new_var_qc.flag_meanings = 'unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value'
+
+                new_var.ancillary_variables = v+"_quality_control"
+
                 for a in var.ncattrs():
                     #print(a)
                     if a not in ('_FillValue', 'ancillary_variables'):
@@ -69,7 +77,6 @@ def resample(netCDF_file, sample_file, vars):
 
     ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " added data from " + os.path.basename(sample_file) + " interpolated to this time")
 
-
     ds.close()
 
     ds_sample.close()
@@ -82,10 +89,10 @@ if __name__ == "__main__":
     v = None
     i = 1
     while i < len(sys.argv):
-        print('args', sys.argv[i])
+        print('merge_resample: args', sys.argv[i])
         if sys.argv[i] == '-VARS':
             v = sys.argv[i+1].split(',')
-            print (v)
+            print (' VARS:', v)
             i += 1
         elif file is None:
             file = sys.argv[i]
