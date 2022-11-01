@@ -92,7 +92,7 @@ def sqlite_insert(files):
             else:
                 qc = np.zeros_like(values, dtype=int)
             for i in range(0, len(values)):
-                data = (file_id, str(ts[i]), float(latitude), float(longitude), float(pres[i]), float(temp[i]), float(psal[i]), v, float(values[i]), int(qc[i]), 'SENSOR')
+                data = (file_id, ts[i].strftime("%Y-%m-%d %H:%M:%S"), float(latitude), float(longitude), float(pres[i]), float(temp[i]), float(psal[i]), v, float(values[i]), int(qc[i]), 'SENSOR')
                 print(i, data)
                 cur.execute('''INSERT INTO data VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''', data)
 

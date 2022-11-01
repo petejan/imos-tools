@@ -106,7 +106,7 @@ def sqlite_insert(files):
                 qc = np.zeros_like(values, dtype=int)
             for i in range(0, len(values[0, 0, :])):
                 #print(file_id, ts[i], latitude, longitude, pres[i], temp[i], psal[i], v, values[i], qc[i])
-                data = (file_id, str(ts[0, 0, i, 0]), float(latitude), float(longitude), float(pres[i]), float(temp[0,0,i]), float(psal[0,0,i]), map_var[v], float(values[0,0,i]), int(qc[0,0,i]), 'BOTTLE')
+                data = (file_id, ts[0, 0, i, 0].strftime("%Y-%m-%d %H:%M:%S"), float(latitude), float(longitude), float(pres[i]), float(temp[0,0,i]), float(psal[0,0,i]), map_var[v], float(values[0,0,i]), int(qc[0,0,i]), 'BOTTLE')
                 print(i, data)
                 cur.execute('''INSERT INTO data VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''', data)
 
