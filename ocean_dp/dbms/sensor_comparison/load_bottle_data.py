@@ -71,9 +71,18 @@ def sqlite_insert(files):
             con.commit()
 
         in_vars = set([x for x in nc.variables])
+
+        if 'temperature' in in_vars:
+            temp = nc.variables['temperature'][:].squeeze()
+
         t_var = nc.variables['time']
-        t = nc.variables['firingTime']
-        ts = num2date(t, calendar=t_var.calendar, units=t_var.units).squeeze()
+        if 'firingTime' in nc.variables:
+            t = nc.variables['firingTime']
+            ts = num2date(t, calendar=t_var.calendar, units=t_var.units).squeeze()
+        else:
+            t = nc.variables['time']
+            tx = np.ones_like(temp)*t[:]
+            ts = num2date(tx, calendar=t_var.calendar, units=t_var.units).squeeze()
 
         if 'latitude' in in_vars:
             latitude = nc.variables['latitude'][:]
@@ -84,8 +93,6 @@ def sqlite_insert(files):
         else:
             longitude = None
             
-        if 'temperature' in in_vars:
-            temp = nc.variables['temperature'][:].squeeze()
         if 'ctd_salinity' in in_vars:
             psal = nc.variables['ctd_salinity'][:].squeeze()
         elif 'salinity' in in_vars:
