@@ -19,6 +19,7 @@ import os
 import sys
 from datetime import datetime
 
+import gsw
 import numpy as np
 from cftime import num2date
 from glob2 import glob
@@ -72,7 +73,7 @@ def sqlite_insert(files):
         in_vars = set([x for x in nc.variables])
         t_var = nc.variables['time']
         t = nc.variables['firingTime']
-        ts = num2date(t, calendar=t_var.calendar, units=t_var.units)
+        ts = num2date(t, calendar=t_var.calendar, units=t_var.units).squeeze()
 
         if 'latitude' in in_vars:
             latitude = nc.variables['latitude'][:]
@@ -84,29 +85,40 @@ def sqlite_insert(files):
             longitude = None
             
         if 'temperature' in in_vars:
-            temp = nc.variables['temperature'][:]
+            temp = nc.variables['temperature'][:].squeeze()
         if 'ctd_salinity' in in_vars:
-            psal = nc.variables['ctd_salinity'][:]
+            psal = nc.variables['ctd_salinity'][:].squeeze()
         elif 'salinity' in in_vars:
-                psal = nc.variables['salinity'][:]
+                psal = nc.variables['salinity'][:].squeeze()
         else:
             psal = np.ones_like(temp) * np.nan
         if 'pressure' in in_vars:
-            pres = nc.variables['pressure'][:]
+            pres = nc.variables['pressure'][:].squeeze()
         else:
             pres = np.ones_like(temp)*np.nan
 
         load_vars = in_vars.intersection(['oxygen', 'salinity'])
         for v in load_vars:
-            values = nc.variables[v][:]
-            print('len values', values.shape, len(values[0, 0, :]))
+            values = nc.variables[v][:].squeeze()
+            print('len values', values.shape, len(values))
             if v+'Flag' in in_vars:
-                qc = nc.variables[v+'Flag'][:]
+                qc = nc.variables[v+'Flag'][:].squeeze()
             else:
                 qc = np.zeros_like(values, dtype=int)
-            for i in range(0, len(values[0, 0, :])):
+
+            if nc.variables[v].units == 'uM':
+                SA = gsw.SA_from_SP(psal, pres, longitude, latitude)
+                CT = gsw.CT_from_t(SA, temp, pres)
+
+                sigma_theta0 = gsw.sigma0(SA, CT)
+
+                # calculate disolved oxygen, umol/kg
+                values = values / (sigma_theta0 + 1000) * 1000
+                print(values)
+
+            for i in range(0, len(values)):
                 #print(file_id, ts[i], latitude, longitude, pres[i], temp[i], psal[i], v, values[i], qc[i])
-                data = (file_id, ts[0, 0, i, 0].strftime("%Y-%m-%d %H:%M:%S"), float(latitude), float(longitude), float(pres[i]), float(temp[0,0,i]), float(psal[0,0,i]), map_var[v], float(values[0,0,i]), int(qc[0,0,i]), 'BOTTLE')
+                data = (file_id, ts[i].strftime("%Y-%m-%d %H:%M:%S"), float(latitude), float(longitude), float(pres[i]), float(temp[i]), float(psal[i]), map_var[v], float(values[i]), int(qc[i]), 'BOTTLE')
                 print(i, data)
                 cur.execute('''INSERT INTO data VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''', data)
 
