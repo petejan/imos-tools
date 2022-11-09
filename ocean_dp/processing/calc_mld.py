@@ -72,7 +72,9 @@ def mld(files):
     mld_out_var[:] = mld_pres
 
     mld_out_var.comment_depth = "Mix Layer Depth using PRES_ALL to convert mooring length to pressure"
+    mld_out_var.long_name = 'calculated mix layer depth'
     mld_out_var.units = pres_var.units
+    mld_out_var.coordinates = 'TIME LONGITUDE LATITUDE'
 
     # update the history attribute
     try:

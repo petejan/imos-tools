@@ -155,9 +155,9 @@ def down_sample(files, method):
                                   'RELH', 'RELH1_5M', 'RELH2_0M', 'HL', 'HS', 'PL_CMP', 'RAIN_AMOUNT',
                                   'H_RAIN', 'TAU', 'SST', 'HEAT_NET', 'MASS_NET', 'LW_NET', 'SW_NET',
                                   'SW', 'LW', 'UWIND', 'VWIND', 'CPHL', 'BB',
-                                  'VAVH', 'SWH'
+                                  'VAVH', 'SWH', 'Hm0', 'Tz',
                                   'UCUR', 'VCUR', 'WCUR',
-                                  'xCO2_SW', 'xCO2_AIR',
+                                  'xCO2_SW', 'xCO2_AIR', 'xCO2_SW_WET', 'xCO2_AIR_WET',
                                   'PAR',
                                   'NTRI_CONC', 'ALKA_CONC', 'PHOS_CONC', 'SLCA_CONC', 'TCO2',
                                   'WEIGHT', 'NTRI', 'PHOS', 'SLCA', 'TALK', 'pHt'])
@@ -165,19 +165,26 @@ def down_sample(files, method):
 
         qc_in_level = 2
         for resample_var in sorted(z):
+            qc = np.ones_like(datetime_time)
 
             var_to_resample_in = ds.variables[resample_var]
-            only_qc = True
-            if resample_var + '_quality_control' in ds.variables:
-                print('using qc : ', resample_var + "_quality_control")
-                qc = ds.variables[resample_var + "_quality_control"][:]
-                only_qc = True
-            else:
-                qc = np.ones_like(datetime_time)
+            if ds.file_version.startswith("Level 1"):
+
+                if resample_var + '_quality_control' in ds.variables:
+                    print('using qc : ', resample_var + "_quality_control")
+                    qc = ds.variables[resample_var + "_quality_control"][:]
+                else:
+                    print(resample_var, 'no QC, skipping')
+                    continue  # only include variables that have quality_control
+
+            if any(qc) == 7:  # only include variables which are not interpolated
+                print('only interpolated data, not including in resampled data')
+                continue
 
             data_in = var_to_resample_in[qc <= qc_in_level]
 
-            if only_qc and len(data_in) > 0:
+            print('len data', len(data_in))
+            if len(data_in) > 0:
                 time_deployment = var_time[qc <= qc_in_level]
 
                 print(resample_var, 'input data : ', data_in)
@@ -198,7 +205,6 @@ def down_sample(files, method):
                         attr_dict[a] = var_to_resample_in.getncattr(a)
 
                 var_resample_out.setncatts(attr_dict)
-                var_resample_out.ancillary_variables = resample_var + '_quality_control ' + resample_var + '_standard_error ' + resample_var + '_number_of_observations'
 
                 # # interpolate the time to get the distance to the nearest point
                 # f = interp1d(np.array(time_deployment), np.array(time_deployment), kind='nearest', bounds_error=False, fill_value=np.nan)
@@ -213,21 +219,51 @@ def down_sample(files, method):
                 # # only use data where sample time is less than 3 hrs from the gridded time
                 # sample_time_dist_msk = abs(sample_time_dist) < 0.75 * 60 * 60
 
+                aux_vars = []
+                if resample_var + "_quality_control" in ds.variables:
+                    var_resample_dist_out = ds_new.createVariable(resample_var + '_quality_control', 'i1', 'TIME', fill_value=99, zlib=True)
+                    try:
+                        var_resample_dist_out.standard_name = ds.variables[resample_var + "_quality_control"].standard_name
+                    except:
+                        pass
+                    var_resample_dist_out.long_name = ds.variables[resample_var + "_quality_control"].long_name
+                    var_resample_dist_out.comment = 'maximum of quality flags of input data'
+                    var_resample_dist_out.quality_control_conventions = 'IMOS standard flags'
+                    var_resample_dist_out.flag_values = np.array([0, 1, 2, 3, 4, 6, 7, 9], dtype=np.int8)
+                    var_resample_dist_out.flag_meanings = "unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value"
+
+                    var_resample_dist_out[:] = qc_out.statistic
+
+                    aux_vars.append(resample_var + '_quality_control')
+
                 var_resample_dist_out = ds_new.createVariable(resample_var + '_standard_error', 'f4', 'TIME', fill_value=np.NaN, zlib=True)
+                var_resample_dist_out.long_name = ds.variables[resample_var].long_name + ' standard error'
+                var_resample_dist_out.units = var_resample_out.units
                 var_resample_dist_out.comment = 'sample bin standard deviation'
                 var_resample_dist_out[:] = sd.statistic
+                aux_vars.append(resample_var + '_standard_error')
+
                 var_resample_dist_out = ds_new.createVariable(resample_var + '_number_of_observations', 'f4', 'TIME', fill_value=np.NaN, zlib=True)
+                var_resample_dist_out.long_name = ds.variables[resample_var].long_name + ' number of observations'
+                var_resample_dist_out.units = '1'
                 var_resample_dist_out.comment = 'number of samples'
                 var_resample_dist_out[:] = n.statistic
-                var_resample_dist_out = ds_new.createVariable(resample_var + '_quality_control', 'i1', 'TIME', fill_value=99, zlib=True)
-                var_resample_dist_out.comment = 'maximum of quality flags of input data'
-                var_resample_dist_out[:] = qc_out.statistic
+                aux_vars.append(resample_var + '_number_of_observations')
+
+                var_resample_out.ancillary_variables = " ".join(aux_vars)
 
                 print("shape", var_resample_out.shape, y.statistic.shape)
                 var_resample_out[:] = y.statistic
 
         #  create history
-        ds_new.history += '\n' + now.strftime("%Y-%m-%d") + ' resampled data created from ' + os.path.basename(filepath) + 'points, method ' + method
+        # update the history attribute
+        try:
+            hist = ds_new.history + "\n"
+        except AttributeError:
+            hist = ""
+
+        hist += now.strftime("%Y-%m-%d") + ' resampled data created from ' + os.path.basename(filepath) + ' points, method ' + method
+        ds_new.history = hist
 
         ds_new.file_version = 'Level 2 - Derived Products'
         ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"

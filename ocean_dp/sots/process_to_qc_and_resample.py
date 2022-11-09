@@ -98,6 +98,10 @@ for fv00_file in ncFiles:
     if 'DOXY' in ds.variables:
         has_dox2 = True
 
+    has_wave = False
+    if 'Hm0' in ds.variables:
+        has_wave = True
+
     print('variables temp, cndc, psal, dox2', has_temp, has_cndc, has_psal, has_dox2)
 
     is_pumped = False
@@ -187,6 +191,15 @@ for fv00_file in ncFiles:
         fv01_file_list = ocean_dp.qc.global_range.global_range(fv01_file_list, 'DOX2', 310, 180, 3)
         fv01_file_list = ocean_dp.qc.global_range.global_range(fv01_file_list, 'DOXS', 1.2, 0.5)
         fv01_file_list = ocean_dp.qc.global_range.global_range(fv01_file_list, 'DOXS', 1.15, 0.7, 3)
+
+    if has_wave:
+        # wave QC
+
+        print('wave_qc:', fv01_file_list)
+
+        fv01_file_list = ocean_dp.qc.global_range.global_range(fv01_file_list, 'Hm0', 25, 0)
+        fv01_file_list = ocean_dp.qc.global_range.global_range(fv01_file_list, 'Tz', 25, 2)
+
 
     # Pulse 6,7,8 SOFS 1,2 Vemco Mini sensors with SN < 10000 -> flag 3
     if model == 'Minilog-T':

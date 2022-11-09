@@ -17,6 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 import os
 import sys
+from datetime import datetime
 
 from glob2 import glob
 from netCDF4 import Dataset, stringtochar
@@ -84,8 +85,20 @@ def create(file):
     fDim = ncOut.createDimension("IDX", file_count)
     sDim = ncOut.createDimension("strlen", 256)
     varOutFn = ncOut.createVariable("FILE_NAME", "S1", ('IDX', 'strlen'))
+    varOutFn.long_name = 'name of source file'
     varOutInst = ncOut.createVariable("INSTRUMENT", "S1", ('IDX', 'strlen'))
+    varOutInst.long_name = 'source instrument type:serialnumber'
     varOutNdFn = ncOut.createVariable("NOMINAL_DEPTH", "f4", ("IDX"), fill_value=np.nan)
+
+    varOutNdFn.standard_name = "depth"
+    varOutNdFn.long_name = "nominal depth"
+    varOutNdFn.coordinates = 'LONGITUDE LATITUDE'
+    varOutNdFn.units = "m"
+    varOutNdFn.positive = "down"
+    varOutNdFn.reference_datum = "sea surface"
+    varOutNdFn.valid_max = 12000.
+    varOutNdFn.valid_min = -5.
+    varOutNdFn.axis = "Z"
 
     sql_select_files = 'select file.file_id, file.name, a_inst.value AS inst, a_sn.value AS sn, CAST(a_nd.value AS REAL) AS nom_depth FROM file ' \
                        'left join "attributes" a_inst on (file.file_id = a_inst.file_id and a_inst.name = "instrument_model") ' \
@@ -124,6 +137,9 @@ def create(file):
     varOutFn[:] = stringtochar(file_names)
     varOutInst[:] = stringtochar(instrument)
 
+    ncOut.geospatial_vertical_max = max(varOutNdFn[:])
+    ncOut.geospatial_vertical_min = min(varOutNdFn[:])
+
     sql_select_vars = 'SELECT name, COUNT(*) AS count, is_aux FROM variables v WHERE dimensions LIKE "TIME[%]" and name != "TIME" and name != "LATITUDE" AND name != "LONGITUDE"' \
                       'and name not like "%_SAMPLE_TIME_DIFF" GROUP BY name ORDER BY name'
 
@@ -140,10 +156,26 @@ def create(file):
             iDim = ncOut.createDimension("IDX_"+var_name, var['count'])
 
             varOutFnIdx = ncOut.createVariable("IDX_"+var_name, "i4", ("IDX_"+var_name))
+            varOutFnIdx.long_name = 'index of data to FILE_NAME, INSTRUMENT, NOMINAL_DEPTH'
+            varOutFnIdx.units = '1'
+
+            varOutNdIdx = ncOut.createVariable("NOMINAL_DEPTH_"+var_name, "f4", ("IDX_"+var_name))
+            varOutNdIdx.standard_name = 'depth'
+            varOutNdIdx.long_name = 'NOMINAL DEPTH for ' + var_name
+            varOutNdIdx.units = "m"
+            varOutNdIdx.positive = "down"
+            varOutNdIdx.reference_datum = "sea surface"
+            varOutNdIdx.valid_max = 12000.
+            varOutNdIdx.valid_min = -5.
+
             n = 0
             while row:
                 print(n, 'create-file-index', row['name'], row['nominal_depth'])
                 varOutFnIdx[n] = file_id_map[row['file_id']]
+                try:
+                    varOutNdIdx[n] = float(row['nominal_depth'])
+                except TypeError:
+                    varOutNdIdx[n] = 0
                 row = cur.fetchone()
 
                 n += 1
@@ -160,13 +192,47 @@ def create(file):
 
     tDim = ncOut.createDimension("TIME", number_samples_read)
     ncTimesOut = ncOut.createVariable("TIME", "d", ("TIME",), zlib=True)
+    ncTimesOut.standard_name = "time"
     ncTimesOut.long_name = "time"
     ncTimesOut.units = "days since 1950-01-01 00:00:00 UTC"
     ncTimesOut.calendar = "gregorian"
     ncTimesOut.axis = "T"
+    ncTimesOut.valid_max = 90000
+    ncTimesOut.valid_min = 0
     ncTimesOut[:] = row['data']
 
-    # generate the data for each variable
+    rows = cur.execute('SELECT * FROM variable_depth WHERE name == "LATITUDE" ORDER BY CAST(nominal_depth AS REAL)')
+    row = cur.fetchone()
+
+    ncLatOut = ncOut.createVariable("LATITUDE", "d")
+    ncLatOut.axis = "Y"
+    ncLatOut.long_name = "latitude"
+    ncLatOut.reference_datum = "WGS84 geographic coordinate system"
+    ncLatOut.standard_name = "latitude"
+    ncLatOut.units = "degrees_north"
+    ncLatOut.valid_max = 90
+    ncLatOut.valid_min = -90
+    
+    lat_data = row['data']
+    print('lat data', lat_data)
+    ncLatOut[:] = lat_data
+
+    rows = cur.execute('SELECT * FROM variable_depth WHERE name == "LONGITUDE" ORDER BY CAST(nominal_depth AS REAL)')
+    row = cur.fetchone()
+
+    ncLonOut = ncOut.createVariable("LONGITUDE", "d")
+    ncLonOut.axis = "X"
+    ncLonOut.long_name = "longitude"
+    ncLonOut.reference_datum = "WGS84 geographic coordinate system"
+    ncLonOut.standard_name = "longitude"
+    ncLonOut.units = "degrees_east"
+    ncLonOut.valid_max = 180
+    ncLonOut.valid_min = -180
+
+    lon_data = row['data']
+    ncLonOut[:] = lon_data
+
+# generate the data for each variable
     vars = cur_vars.execute(sql_select_vars)
     for var in vars:
         var_name = var['name']
@@ -189,6 +255,11 @@ def create(file):
             fill_value = 99
 
         varOut = ncOut.createVariable(var_name, row['type'], ("IDX_"+dim_name, "TIME"), fill_value=fill_value, zlib=True)
+        if var_name.endswith('_quality_control'):
+             varOut.flag_values = np.array([0, 1, 2, 3, 4, 6, 7, 9], dtype=np.int8)
+             varOut.flag_meanings = "unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value"
+        # if var_name.endswith('_number_of_observations'):
+        #     varOut.units = '1'
 
         # add the variable attributes
         att_sql = 'SELECT name, count(*) AS count, type, value FROM variable_attributes WHERE var_name = "'+var_name+'" GROUP BY name, value'
@@ -204,6 +275,11 @@ def create(file):
                         varOut.setncattr(att['name'], np.float32(att['value']))
                     elif att['type'] == 'float64':
                         varOut.setncattr(att['name'], np.float(att['value']))
+            if att['name'] == 'coordinates':
+                try:
+                    varOut.coordinates = varOut.coordinates.replace("NOMINAL_DEPTH", "NOMINAL_DEPTH_"+var_name)
+                except:
+                    pass
 
         # write the data
         n = 0
@@ -215,6 +291,17 @@ def create(file):
             n += 1
 
         print('rows-loaded', n)
+
+    ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
+
+    now = datetime.utcnow()
+
+    ncOut.date_created = now.strftime(ncTimeFormat)
+    ncOut.history = now.strftime("%Y-%m-%d") + " created from " + file
+    ncOut.principal_investigator = 'Shadwick, Elizabeth, Shulz, Eric'
+    ncOut.title = 'Gridded oceanographic and meteorological data from the Southern Ocean Time Series observatory in the Southern Ocean southwest of Tasmania'
+    ncOut.file_version = 'Level 2 - Derived product'
+    ncOut.data_mode = 'G'  # TODO: corruption of data_mode from OceanSITES manual
 
     ncOut.close()
     con.close()

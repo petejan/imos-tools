@@ -105,7 +105,9 @@ def make_depth(files):
         depth_out_var = ds.variables['PRES_ALL']
 
     depth_out_var[:] = depth
+    depth_out_var.long_name = pres_var.long_name
     depth_out_var.units = pres_var.units
+    depth_out_var.coordinates = 'TIME LATITUDE LONGITUDE NOMINAL_DEPTH'
 
     # update the history attribute
     try:

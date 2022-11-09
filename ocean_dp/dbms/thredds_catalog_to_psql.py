@@ -94,7 +94,7 @@ def sqlite_insert(con, http, opendap):
                  date_created, time_deployment_start, time_deployment_end, principal_investigator))
     con.commit()
 
-    file_id = cur.lastrowid
+    file_id = cur.fetchone()[0]
     print('file_id', file_id)
 
     # load all global attributes

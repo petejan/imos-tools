@@ -45,6 +45,7 @@ nameCode['NITRATE_UM'] = "K"
 nameCode['NITRATE'] = "K"
 nameCode['Hm0'] = "W"
 nameCode['UVH'] = "R"
+nameCode['xCO2_SW_WET'] = "G"
 
 # IMOS_<Facility-Code>_<Data-Code>_<Start-date>_<Platform-Code>_FV<File-Version>_ <Product-Type>_END-<End-date>_C-<Creation_date>_<PARTX>.nc
 
@@ -63,17 +64,20 @@ def rename(netCDFfile):
     creation_date = datetime.strptime(ds.date_created, ncTimeFormat)
     platform_code = ds.platform_code
     deployment = ds.deployment_code
-    instrument = ds.instrument_model
-    instrument_sn = ds.instrument_serial_number
-
     nominal_depth = ds.variables["NOMINAL_DEPTH"][:]
-
     fv = 'FV00'
     if file_version.startswith('Level 1'):
         fv = 'FV01'
+    elif file_version.startswith('Level 2'):
+        fv = 'FV02'
 
-    product_code = deployment + "-" + instrument + "-" + instrument_sn + "-" + "{0:.0f}".format(np.abs(nominal_depth)) + "m"
-    product_code = product_code.replace(" ", "-")
+    try:
+        instrument = ds.instrument_model
+        instrument_sn = ds.instrument_serial_number
+        product_code = deployment + "-" + instrument + "-" + instrument_sn + "-" + "{0:.0f}".format(np.abs(nominal_depth)) + "m"
+        product_code = product_code.replace(" ", "-")
+    except:
+        product_code = deployment + "-hourly-gridded-product"
 
     codes = []
     for v in ds_variables:
