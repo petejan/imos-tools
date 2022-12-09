@@ -2685,6 +2685,7 @@ VAR,LATITUDE,SAZ47-11-2008,,,2008-09-28,2009-09-09,LATITUDE,"()","()",,float64,"
 VAR,LONGITUDE,SAZ47-11-2008,,,2008-09-28,2009-09-09,LONGITUDE,"()","()",,float64,"145.6392"
 
 GLOBAL,,,Optode 3830,1419,2019-03-18,2020-08-01,,"","",deployment_code,str,"SOFS-8-2019"
+GLOBAL,,,MAPCO2,unknown,2019-03-18,2020-08-01,,"","",deployment_code,str,"SOFS-8-2019"
 GLOBAL,,,Resolute-Polar,0222,2019-03-18,2020-08-01,,"","",deployment_code,str,"SOFS-8-2019"
 GLOBAL,,,Data Logger,2,2019-03-18,2020-08-01,,"","",deployment_code,str,"SOFS-8-2019"
 GLOBAL,,,SOFS Tension Frame,2,2019-03-18,2020-08-01,,"","",deployment_code,str,"SOFS-8-2019"
@@ -2771,6 +2772,7 @@ GLOBAL,,SOFS-8-2019,,,2019-03-18,2020-08-01,,"","",site_nominal_depth,float64,"4
 GLOBAL,,SOFS-8-2019,,,2019-03-18,2020-08-01,,"","",time_deployment_start,str,"2019-03-18T10:00:00Z"
 GLOBAL,,SOFS-8-2019,,,2019-03-18,2020-08-01,,"","",time_deployment_end,str,"2020-09-04T22:18:23Z"
 
+VAR,NOMINAL_DEPTH,SOFS-8-2019,MAPCO2,unknown,2019-03-18,2020-08-01,NOMINAL_DEPTH,"()","()",,float64,"1.00"
 VAR,NOMINAL_DEPTH,SOFS-8-2019,Optode 3830,1419,2019-03-18,2020-08-01,NOMINAL_DEPTH,"()","()",,float64,"1.00"
 VAR,NOMINAL_DEPTH,SOFS-8-2019,Resolute-Polar,0222,2019-03-18,2020-08-01,NOMINAL_DEPTH,"()","()",,float64,"0.00"
 VAR,NOMINAL_DEPTH,SOFS-8-2019,Data Logger,2,2019-03-18,2020-08-01,NOMINAL_DEPTH,"()","()",,float64,"0.00"

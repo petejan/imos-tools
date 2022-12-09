@@ -1,0 +1,770 @@
+rec_type, var_name, deployment_code, model, serial_number, time_deployment, time_recovery, variable_name, variable_dims, variable_shape, attribute_name, type, value
+GLOBAL,*,,,,,,,,,Conventions,str,"CF-1.6,IMOS-1.4"
+GLOBAL,*,,,,,,,,,Metadata_Conventions,str,"Unidata Dataset Discovery v1.0"
+GLOBAL,*,,,,,,,,,abstract,str,"Oceanographic and meteorological data from the Southern Ocean Time Series observatory in the Southern Ocean southwest of Tasmania"
+GLOBAL,*,,,,,,,,,acknowledgement,str,"Any users of IMOS data are required to clearly acknowledge the source of the material derived from IMOS in the format: ""Data was sourced from the Integrated Marine Observing System (IMOS) - IMOS is a national collaborative research infrastructure, supported by the Australian Government."" If relevant, also credit other organisations involved in collection of this particular datastream (as listed in 'credit' in the metadata record)."
+GLOBAL,*,,,,,,,,,author,str,"Jansen, Peter"
+GLOBAL,*,,,,,,,,,author_email,str,peter.jansen@csiro.au
+GLOBAL,*,,,,,,,,,cdm_data_type,str,Station
+GLOBAL,*,,,,,,,,,citation,str,"The citation in a list of references is: 'IMOS [year-of-data-download], [Title], [data-access-URL], accessed [date-of-access]'."
+GLOBAL,*,,,,,,,,,data_centre,str,"Australian Ocean Data Network (AODN)"
+GLOBAL,*,,,,,,,,,data_centre_email,str,info@aodn.org.au
+GLOBAL,*,,,,,,,,,disclaimer,str,"Data, products and services from IMOS are provided ""as is"" without any warranty as to fitness for a particular purpose."
+GLOBAL,*,,,,,,,,,featureType,str,timeSeries
+GLOBAL,*,,,,,,,,,file_version,str,"Level 2 - Derived Products"
+GLOBAL,*,,,,,,,,,file_version_quality_control,str,"Quality controlled data have been through quality assurance procedures such as automated routines and sensor calibration and/or a level of visual inspection and flag of obvious errors. The data are in physical units using standard SI metric units with calibration and other pre- processing routines applied, all time and location values are in absolute coordinates to comply with standards and datum. Data includes flags for each measurement to indicate the estimated quality of the measurement. Metadata exists for the data or for the higher level dataset that the data belongs to. This is the standard IMOS data level and is what should be made available to AODN and to the IMOS community."
+GLOBAL,*,,,,,,,,,geospatial_lat_units,str,degrees_north
+GLOBAL,*,,,,,,,,,geospatial_lon_units,str,degrees_east
+GLOBAL,*,,,,,,,,,geospatial_vertical_positive,str,down
+GLOBAL,*,,,,,,,,,geospatial_vertical_units,str,metres
+GLOBAL,*,,,,,,,,,institution,str,DWM-SOTS
+GLOBAL,*,,,,,,,,,institution_references,str,http://www.imos.org.au/aodn.html
+GLOBAL,*,,,,,,,,,keywords,str,"Oceans>Ocean Temperature>Sea Surface,Temperature,Oceans>Ocean Winds>Surface Winds,Atmosphere>Atmospheric,Pressure>Atmospheric, Pressure,Atmosphere>Precipitation>Precipitation Rate,Atmosphere>Atmospheric, Water Vapor>Humidity,Atmosphere>Atmospheric Winds>Surface, Winds,Atmosphere>Atmospheric Temperature>Air Temperature,Atmosphere>Atmospheric, Radiation>Shortwave Radiation,Atmosphere>Atmospheric Radiation>Longwave, Radiation,Atmosphere>Atmospheric Radiation>Net Radiation,Atmosphere>Atmospheric, Radiation>Radiative Flux,Oceans>Ocean Heat Budget>Heat Flux,Oceans>Ocean, Heat Budget>Longwave Radiation,Oceans>Ocean Heat Budget>Shortwave Radiation"
+GLOBAL,*,,,,,,,,,keywords_vocabulary,str,"IMOS parameter names. See https://github.com/aodn/imos-toolbox/blob/master/IMOS/imosParameters.txt"
+GLOBAL,*,,,,,,,,,license,str,http://creativecommons.org/licenses/by/4.0/
+GLOBAL,*,,,,,,,,,naming_authority,str,IMOS
+GLOBAL,*,,,,,,,,,principal_investigator,str,"Trull, Tom; Shulz, Eric; Shadwick, Elizabeth"
+GLOBAL,*,,,,,,,,,principal_investigator_email,str,"tom.trull@csiro.au; eshulz@bom.gov.au; elizabeth.shadwick@csiro.au"
+GLOBAL,*,,,,,,,,,project,str,"Integrated Marine Observing System (IMOS)"
+GLOBAL,*,,,,,,,,,references,str,http://www.imos.org.au
+GLOBAL,*,,,,,,,,,source,str,"Mooring observation"
+GLOBAL,*,,,,,,,,,standard_name_vocabulary,str,"NetCDF Climate and Forecast (CF) Metadata Convention Standard Name Table 67"
+GLOBAL,*,,,,,,,,,wmo_platform_code,str,58450
+
+GLOBAL,*,SOFS-9-2020,,,,,,,,geospatial_lat_max,float64,-46.98476
+GLOBAL,*,SOFS-9-2020,,,,,,,,geospatial_lat_min,float64,-46.98476
+GLOBAL,*,SOFS-9-2020,,,,,,,,geospatial_lon_max,float64,141.81169
+GLOBAL,*,SOFS-9-2020,,,,,,,,geospatial_lon_min,float64,141.81169
+GLOBAL,*,SOFS-9-2020,,,,,,,,mooring,str,"Southern Ocean Flux Station"
+GLOBAL,*,SOFS-9-2020,,,,,,,,deployment_code,str,SOFS-9-2020
+GLOBAL,*,SOFS-9-2020,,,,,,,,platform_code,str,SOFS
+GLOBAL,*,SOFS-9-2020,,,,,,,,time_deployment_end,str,2021-04-24T00:00:00Z
+GLOBAL,*,SOFS-9-2020,,,,,,,,time_deployment_start,str,2020-09-01T03:36:38Z
+GLOBAL,*,SOFS-9-2020,,,,,,,,voyage_deployment,str,http://www.cmar.csiro.au/data/trawler/survey_details.cfm?survey=IN2020_V09
+GLOBAL,*,SOFS-9-2020,,,,,,,,voyage_recovery,str,http://www.cmar.csiro.au/data/trawler/survey_details.cfm?survey=IN2021_V02
+GLOBAL,*,SOFS-9-2020,,,,,,,,site_code,str,SOTS
+GLOBAL,*,SOFS-9-2020,,,,,,,,site_nominal_depth,float64,4624.0
+
+VAR,LATITUDE,SOFS-8-2019,,,2019-03-18,2020-08-01,LATITUDE,"()","()",,float64,"-46.8933500000"
+VAR,LONGITUDE,SOFS-8-2019,,,2019-03-18,2020-08-01,LONGITUDE,"()","()",,float64,"142.3446400000"
+
+VAR,LATITUDE,SOFS-9-2020,,,2020-08-31,2021-04-24,LATITUDE,"()","()",,float64,"-46.9847600000"
+VAR,LONGITUDE,SOFS-9-2020,,,2020-08-31,2021-04-24,LONGITUDE,"()","()",,float64,"141.8116900000"
+
+VAR,LATITUDE,SOFS-10-2021,,,2021-04-16,2022-04-01,LATITUDE,"()","()",,float64,"-46.9976800000"
+VAR,LONGITUDE,SOFS-10-2021,,,2021-04-16,2022-04-01,LONGITUDE,"()","()",,float64,"142.2844700000"
+
+GLOBAL,,SOFS-10-2021,,,,,,,,site_nominal_depth,float64,"4624.00"
+GLOBAL,,SOFS-10-2021,,,,,,,,time_deployment_start,str,"2021-04-20T10:12:57Z"
+GLOBAL,,SOFS-10-2021,,,,,,,,time_deployment_end,str,"2022-05-12T22:08:43Z"
+GLOBAL,,SOFS-10-2021,,,,,,,,geospatial_lat_max,float64,-46.9977
+GLOBAL,,SOFS-10-2021,,,,,,,,geospatial_lat_min,float64,-46.9977
+GLOBAL,,SOFS-10-2021,,,,,,,,geospatial_lon_max,float64,142.2845
+GLOBAL,,SOFS-10-2021,,,,,,,,geospatial_lon_min,float64,142.2845
+GLOBAL,,SOFS-10-2021,,,,,,,,mooring,str,"Southern Ocean Flux Station"
+GLOBAL,,SOFS-10-2021,,,,,,,,deployment_code,str,SOFS-10-2021
+GLOBAL,,SOFS-10-2021,,,,,,,,platform_code,str,SOFS
+GLOBAL,,SOFS-10-2021,,,,,,,,site_code,str,SOTS
+
+GLOBAL,,SOFS-10-2021,,,,,,,,voyage_deployment,str,http://www.cmar.csiro.au/data/trawler/survey_details.cfm?survey=IN2021_V02
+GLOBAL,,SOFS-10-2021,,,,,,,,voyage_recovery,str,http://www.cmar.csiro.au/data/trawler/survey_details.cfm?survey=IN2022_V03
+
+GLOBAL,,SOFS-8-2019,,,2019-03-18,2020-08-01,,"","",site_nominal_depth,float64,"4624.00"
+GLOBAL,,SOFS-8-2019,,,2019-03-18,2020-08-01,,"","",time_deployment_start,str,"2019-03-18T10:00:00Z"
+GLOBAL,,SOFS-8-2019,,,2019-03-18,2020-08-01,,"","",time_deployment_end,str,"2020-09-04T22:18:23Z"
+GLOBAL,,SOFS-8-2019,,,,,,,,geospatial_lat_max,float64,-46.89335
+GLOBAL,,SOFS-8-2019,,,,,,,,geospatial_lat_min,float64,-46.89335
+GLOBAL,,SOFS-8-2019,,,,,,,,geospatial_lon_max,float64,142.34464
+GLOBAL,,SOFS-8-2019,,,,,,,,geospatial_lon_min,float64,142.34464
+
+GLOBAL,,SOFS-8-2019,,,,,,,,voyage_deployment,str,http://www.cmar.csiro.au/data/trawler/survey_details.cfm?survey=IN2019_V02
+GLOBAL,,SOFS-8-2019,,,,,,,,voyage_recovery,str,http://www.cmar.csiro.au/data/trawler/survey_details.cfm?survey=IN2020_V09
+
+GLOBAL,,SOFS-8-2019,,,,,,,,mooring,str,"Southern Ocean Flux Station"
+GLOBAL,,SOFS-8-2019,,,,,,,,deployment_code,str,SOFS-8-2019
+GLOBAL,,SOFS-8-2019,,,,,,,,platform_code,str,SOFS
+GLOBAL,,SOFS-8-2019,,,,,,,,site_code,str,SOTS
+
+VAR_ATT,AIRT,,,,,,,,,ancillary_variables,str,"AIRT_standard_error AIRT_number_of_observations AIRT_quality_control"
+VAR_ATT,AIRT,,,,,,,,,comment,str,"ASIMET HRH"
+VAR_ATT,AIRT,,,,,,,,,comment_faulty,str,"no radiation shield, damaged on deployment"
+VAR_ATT,AIRT,,,,,,,,,coordinates,str,"TIME NOMINAL_DEPTH_AIRT LATITUDE LONGITUDE"
+VAR_ATT,AIRT,,,,,,,,,long_name,str,"air temperature"
+VAR_ATT,AIRT,,,,,,,,,name,str,air_temperature
+VAR_ATT,AIRT,,,,,,,,,observation_type,str,measured
+VAR_ATT,AIRT,,,,,,,,,standard_name,str,air_temperature
+VAR_ATT,AIRT,,,,,,,,,units,str,celsius
+VAR_ATT,AIRT,,,,,,,,,valid_max,float32,60.0
+VAR_ATT,AIRT,,,,,,,,,valid_min,float32,-40.0
+VAR_ATT,AIRT1_5M,,,,,,,,,ancillary_variables,str,"AIRT1_5M_standard_error AIRT1_5M_number_of_observations"
+VAR_ATT,AIRT1_5M,,,,,,,,,coordinates,str,"TIME NOMINAL_DEPTH_AIRT1_5M LATITUDE LONGITUDE"
+VAR_ATT,AIRT1_5M,,,,,,,,,long_name,str,"calculated air temperature at 1.5 meters"
+VAR_ATT,AIRT1_5M,,,,,,,,,observation_type,str,calculated
+VAR_ATT,AIRT1_5M,,,,,,,,,standard_name,str,air_temperature
+VAR_ATT,AIRT1_5M,,,,,,,,,units,str,celsius
+VAR_ATT,AIRT1_5M_number_of_observations,,,,,,,,,comment,str,"number of samples"
+VAR_ATT,AIRT1_5M_number_of_observations,,,,,,,,,long_name,str,"calculated air temperature at 1.5 meters number of observations"
+VAR_ATT,AIRT1_5M_number_of_observations,,,,,,,,,units,str,1
+VAR_ATT,AIRT1_5M_standard_error,,,,,,,,,comment,str,"sample bin standard deviation"
+VAR_ATT,AIRT1_5M_standard_error,,,,,,,,,long_name,str,"calculated air temperature at 1.5 meters standard error"
+VAR_ATT,AIRT1_5M_standard_error,,,,,,,,,units,str,celsius
+VAR_ATT,AIRT2_0M,,,,,,,,,ancillary_variables,str,"AIRT2_0M_standard_error AIRT2_0M_number_of_observations"
+VAR_ATT,AIRT2_0M,,,,,,,,,coordinates,str,"TIME NOMINAL_DEPTH_AIRT2_0M LATITUDE LONGITUDE"
+VAR_ATT,AIRT2_0M,,,,,,,,,long_name,str,"calculated air temperature at 2.0 meters"
+VAR_ATT,AIRT2_0M,,,,,,,,,observation_type,str,calculated
+VAR_ATT,AIRT2_0M,,,,,,,,,standard_name,str,air_temperature
+VAR_ATT,AIRT2_0M,,,,,,,,,units,str,celsius
+VAR_ATT,AIRT2_0M_number_of_observations,,,,,,,,,comment,str,"number of samples"
+VAR_ATT,AIRT2_0M_number_of_observations,,,,,,,,,long_name,str,"calculated air temperature at 2.0 meters number of observations"
+VAR_ATT,AIRT2_0M_number_of_observations,,,,,,,,,units,str,1
+VAR_ATT,AIRT2_0M_standard_error,,,,,,,,,comment,str,"sample bin standard deviation"
+VAR_ATT,AIRT2_0M_standard_error,,,,,,,,,long_name,str,"calculated air temperature at 2.0 meters standard error"
+VAR_ATT,AIRT2_0M_standard_error,,,,,,,,,units,str,celsius
+VAR_ATT,AIRT_number_of_observations,,,,,,,,,comment,str,"number of samples"
+VAR_ATT,AIRT_number_of_observations,,,,,,,,,long_name,str,"air temperature number of observations"
+VAR_ATT,AIRT_number_of_observations,,,,,,,,,units,str,1
+VAR_ATT,AIRT_quality_control,,,,,,,,,comment,str,"maximum of quality flags of input data"
+VAR_ATT,AIRT_quality_control,,,,,,,,,flag_meanings,str,"unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value"
+VAR_ATT,AIRT_quality_control,,,,,,,,,flag_values,ndarray,"[0 1 2 3 4 6 7 9]"
+VAR_ATT,AIRT_quality_control,,,,,,,,,long_name,str,"quality flag for air temperature"
+VAR_ATT,AIRT_quality_control,,,,,,,,,quality_control_conventions,str,"IMOS standard flags"
+VAR_ATT,AIRT_quality_control,,,,,,,,,standard_name,str,"air_temperature status_flag"
+VAR_ATT,AIRT_standard_error,,,,,,,,,comment,str,"sample bin standard deviation"
+VAR_ATT,AIRT_standard_error,,,,,,,,,long_name,str,"air temperature standard error"
+VAR_ATT,AIRT_standard_error,,,,,,,,,units,str,celsius
+VAR_ATT,ATMP,,,,,,,,,ancillary_variables,str,"ATMP_standard_error ATMP_number_of_observations ATMP_quality_control"
+VAR_ATT,ATMP,,,,,,,,,comment,str,"ASIMET BPR"
+VAR_ATT,ATMP,,,,,,,,,coordinates,str,"TIME NOMINAL_DEPTH_ATMP LATITUDE LONGITUDE"
+VAR_ATT,ATMP,,,,,,,,,long_name,str,"atmospheric pressure"
+VAR_ATT,ATMP,,,,,,,,,mslp_indicator,str,"at sensor height"
+VAR_ATT,ATMP,,,,,,,,,name,str,air_pressure
+VAR_ATT,ATMP,,,,,,,,,observation_type,str,measured
+VAR_ATT,ATMP,,,,,,,,,standard_name,str,air_pressure
+VAR_ATT,ATMP,,,,,,,,,units,str,hectopascal
+VAR_ATT,ATMP,,,,,,,,,valid_max,float32,1050.0
+VAR_ATT,ATMP,,,,,,,,,valid_min,float32,850.0
+VAR_ATT,ATMP_number_of_observations,,,,,,,,,comment,str,"number of samples"
+VAR_ATT,ATMP_number_of_observations,,,,,,,,,long_name,str,"atmospheric pressure number of observations"
+VAR_ATT,ATMP_number_of_observations,,,,,,,,,units,str,1
+VAR_ATT,ATMP_quality_control,,,,,,,,,comment,str,"maximum of quality flags of input data"
+VAR_ATT,ATMP_quality_control,,,,,,,,,flag_meanings,str,"unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value"
+VAR_ATT,ATMP_quality_control,,,,,,,,,flag_values,ndarray,"[0 1 2 3 4 6 7 9]"
+VAR_ATT,ATMP_quality_control,,,,,,,,,long_name,str,"quality flag for air pressure"
+VAR_ATT,ATMP_quality_control,,,,,,,,,quality_control_conventions,str,"IMOS standard flags"
+VAR_ATT,ATMP_quality_control,,,,,,,,,standard_name,str,"air_pressure status_flag"
+VAR_ATT,ATMP_standard_error,,,,,,,,,comment,str,"sample bin standard deviation"
+VAR_ATT,ATMP_standard_error,,,,,,,,,long_name,str,"atmospheric pressure standard error"
+VAR_ATT,ATMP_standard_error,,,,,,,,,units,str,hectopascal
+VAR_ATT,BB,,,,,,,,,ancillary_variables,str,"BB_quality_control BB_standard_error BB_number_of_observations"
+VAR_ATT,BB,,,,,,,,,comment_equation_1,str,"turb (NTU)= scale factor*(counts-dark counts)"
+VAR_ATT,BB,,,,,,,,,comment_equation_2,str,"B (m-1 sr-1)=turb (NTU)*0.002727 ... wetlabs"
+VAR_ATT,BB,,,,,,,,,comment_equation_3,str,"bbp (m-1) = 2 * pi * Xp * (B - Bsw) ... Zhang et al. (2009)"
+VAR_ATT,BB,,,,,,,,,comment_equation_4,str,"where Xp angle taken as 142 deg, 1.17 ... Sullivan and Twardowski, 2009"
+VAR_ATT,BB,,,,,,,,,comment_qc_climatology,str,"BB < 0 or BB > 0.01 m-1"
+VAR_ATT,BB,,,,,,,,,comment_qc_flat_line,str,"window_size = 24 hours; abs(diff(data in window)) == 0"
+VAR_ATT,BB,,,,,,,,,comment_qc_param_flat_line,str,"abs(diff(all_data_in_burst)) == 0"
+VAR_ATT,BB,,,,,,,,,comment_qc_spike_test,str,"window_size_for_running_median = 25 hours; abs(single_data_point - running_median) > 3 * stddev(whole_time_series)"
+VAR_ATT,BB,,,,,,,,,coordinates,str,"TIME LATITUDE LONGITUDE NOMINAL_DEPTH_BB"
+VAR_ATT,BB,,,,,,,,,long_name,str,"optical backscatter"
+VAR_ATT,BB,,,,,,,,,units,str,m-1
+VAR_ATT,BB,,,,,,,,,valid_max,float32,1.0
+VAR_ATT,BB,,,,,,,,,valid_min,float32,0.0
+VAR_ATT,BB_number_of_observations,,,,,,,,,comment,str,"number of samples"
+VAR_ATT,BB_number_of_observations,,,,,,,,,long_name,str,"optical backscatter number of observations"
+VAR_ATT,BB_number_of_observations,,,,,,,,,units,str,1
+VAR_ATT,BB_quality_control,,,,,,,,,comment,str,"maximum of quality flags of input data"
+VAR_ATT,BB_quality_control,,,,,,,,,flag_meanings,str,"unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value"
+VAR_ATT,BB_quality_control,,,,,,,,,flag_values,ndarray,"[0 1 2 3 4 6 7 9]"
+VAR_ATT,BB_quality_control,,,,,,,,,long_name,str,"quality flag for BB"
+VAR_ATT,BB_quality_control,,,,,,,,,quality_control_conventions,str,"IMOS standard flags"
+VAR_ATT,BB_standard_error,,,,,,,,,comment,str,"sample bin standard deviation"
+VAR_ATT,BB_standard_error,,,,,,,,,long_name,str,"optical backscatter standard error"
+VAR_ATT,BB_standard_error,,,,,,,,,units,str,m-1
+VAR_ATT,CNDC,,,,,,,,,ancillary_variables,str,"CNDC_quality_control CNDC_standard_error CNDC_number_of_observations"
+VAR_ATT,CNDC,,,,,,,,,comment,str,"Conductivity [S/m]"
+VAR_ATT,CNDC,,,,,,,,,coordinates,str,"TIME LATITUDE LONGITUDE NOMINAL_DEPTH_CNDC"
+VAR_ATT,CNDC,,,,,,,,,long_name,str,sea_water_electrical_conductivity
+VAR_ATT,CNDC,,,,,,,,,name,str,"Water conductivity"
+VAR_ATT,CNDC,,,,,,,,,standard_name,str,sea_water_electrical_conductivity
+VAR_ATT,CNDC,,,,,,,,,units,str,S/m
+VAR_ATT,CNDC,,,,,,,,,valid_max,float32,40.0
+VAR_ATT,CNDC,,,,,,,,,valid_min,float32,0.0
+VAR_ATT,CNDC_number_of_observations,,,,,,,,,comment,str,"number of samples"
+VAR_ATT,CNDC_number_of_observations,,,,,,,,,long_name,str,"sea_water_electrical_conductivity number of observations"
+VAR_ATT,CNDC_number_of_observations,,,,,,,,,units,str,1
+VAR_ATT,CNDC_quality_control,,,,,,,,,comment,str,"maximum of quality flags of input data"
+VAR_ATT,CNDC_quality_control,,,,,,,,,flag_meanings,str,"unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value"
+VAR_ATT,CNDC_quality_control,,,,,,,,,flag_values,ndarray,"[0 1 2 3 4 6 7 9]"
+VAR_ATT,CNDC_quality_control,,,,,,,,,long_name,str,"quality flag for sea_water_electrical_conductivity"
+VAR_ATT,CNDC_quality_control,,,,,,,,,quality_control_conventions,str,"IMOS standard flags"
+VAR_ATT,CNDC_quality_control,,,,,,,,,standard_name,str,"sea_water_electrical_conductivity status_flag"
+VAR_ATT,CNDC_standard_error,,,,,,,,,comment,str,"sample bin standard deviation"
+VAR_ATT,CNDC_standard_error,,,,,,,,,long_name,str,"sea_water_electrical_conductivity standard error"
+VAR_ATT,CNDC_standard_error,,,,,,,,,units,str,S/m
+VAR_ATT,CPHL,,,,,,,,,ancillary_variables,str,"CPHL_quality_control CPHL_standard_error CPHL_number_of_observations"
+VAR_ATT,CPHL,,,,,,,,,comment_equation,str,"chl-a (mg/m-3) = scale_factor * (count - dark_count)"
+VAR_ATT,CPHL,,,,,,,,,comment_qc_climatology,str,"chl-a < 0 or chl-a > 10 mg/m-3"
+VAR_ATT,CPHL,,,,,,,,,comment_qc_flat_line,str,"window_size = 24 hours; abs(diff(data in window)) == 0"
+VAR_ATT,CPHL,,,,,,,,,comment_qc_gross_range,str,"data < 0 or data > 2000"
+VAR_ATT,CPHL,,,,,,,,,comment_qc_spike_test,str,"window_size_for_running_median = 25 hours; abs(single_data_point - running_median) > 3 * stddev(whole_time_series)"
+VAR_ATT,CPHL,,,,,,,,,coordinates,str,"TIME LATITUDE LONGITUDE NOMINAL_DEPTH_CPHL"
+VAR_ATT,CPHL,,,,,,,,,long_name,str,mass_concentration_of_inferred_chlorophyll_from_relative_fluorescence_units_in_sea_water
+VAR_ATT,CPHL,,,,,,,,,standard_name,str,mass_concentration_of_chlorophyll_in_sea_water
+VAR_ATT,CPHL,,,,,,,,,units,str,ug/L
+VAR_ATT,CPHL,,,,,,,,,valid_max,float32,40.0
+VAR_ATT,CPHL,,,,,,,,,valid_min,float32,-1.0
+VAR_ATT,CPHL_number_of_observations,,,,,,,,,comment,str,"number of samples"
+VAR_ATT,CPHL_number_of_observations,,,,,,,,,long_name,str,"mass_concentration_of_inferred_chlorophyll_from_relative_fluorescence_units_in_sea_water number of observations"
+VAR_ATT,CPHL_number_of_observations,,,,,,,,,units,str,1
+VAR_ATT,CPHL_quality_control,,,,,,,,,comment,str,"maximum of quality flags of input data"
+VAR_ATT,CPHL_quality_control,,,,,,,,,flag_meanings,str,"unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value"
+VAR_ATT,CPHL_quality_control,,,,,,,,,flag_values,ndarray,"[0 1 2 3 4 6 7 9]"
+VAR_ATT,CPHL_quality_control,,,,,,,,,long_name,str,"quality flag for CPHL"
+VAR_ATT,CPHL_quality_control,,,,,,,,,quality_control_conventions,str,"IMOS standard flags"
+VAR_ATT,CPHL_quality_control,,,,,,,,,standard_name,str,"mass_concentration_of_chlorophyll_in_sea_water status_flag"
+VAR_ATT,CPHL_standard_error,,,,,,,,,comment,str,"sample bin standard deviation"
+VAR_ATT,CPHL_standard_error,,,,,,,,,long_name,str,"mass_concentration_of_inferred_chlorophyll_from_relative_fluorescence_units_in_sea_water standard error"
+VAR_ATT,CPHL_standard_error,,,,,,,,,units,str,ug/L
+VAR_ATT,DENSITY,,,,,,,,,ancillary_variables,str,"DENSITY_quality_control DENSITY_standard_error DENSITY_number_of_observations"
+VAR_ATT,DENSITY,,,,,,,,,comment,str,"calculated using gsw-python https://teos-10.github.io/GSW-Python/index.html"
+VAR_ATT,DENSITY,,,,,,,,,coordinates,str,"TIME LATITUDE LONGITUDE NOMINAL_DEPTH_DENSITY"
+VAR_ATT,DENSITY,,,,,,,,,long_name,str,sea_water_density
+VAR_ATT,DENSITY,,,,,,,,,standard_name,str,sea_water_density
+VAR_ATT,DENSITY,,,,,,,,,units,str,kg/m^3
+VAR_ATT,DENSITY,,,,,,,,,valid_max,float32,1100.0
+VAR_ATT,DENSITY,,,,,,,,,valid_min,float32,1000.0
+VAR_ATT,DENSITY_number_of_observations,,,,,,,,,comment,str,"number of samples"
+VAR_ATT,DENSITY_number_of_observations,,,,,,,,,long_name,str,"sea_water_density number of observations"
+VAR_ATT,DENSITY_number_of_observations,,,,,,,,,units,str,1
+VAR_ATT,DENSITY_quality_control,,,,,,,,,comment,str,"maximum of quality flags of input data"
+VAR_ATT,DENSITY_quality_control,,,,,,,,,flag_meanings,str,"unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value"
+VAR_ATT,DENSITY_quality_control,,,,,,,,,flag_values,ndarray,"[0 1 2 3 4 6 7 9]"
+VAR_ATT,DENSITY_quality_control,,,,,,,,,long_name,str,"quality flag for sea_water_density"
+VAR_ATT,DENSITY_quality_control,,,,,,,,,quality_control_conventions,str,"IMOS standard flags"
+VAR_ATT,DENSITY_quality_control,,,,,,,,,standard_name,str,"sea_water_density status_flag"
+VAR_ATT,DENSITY_standard_error,,,,,,,,,comment,str,"sample bin standard deviation"
+VAR_ATT,DENSITY_standard_error,,,,,,,,,long_name,str,"sea_water_density standard error"
+VAR_ATT,DENSITY_standard_error,,,,,,,,,units,str,kg/m^3
+VAR_ATT,DOX2,,,,,,,,,ancillary_variables,str,"DOX2_quality_control DOX2_standard_error DOX2_number_of_observations"
+VAR_ATT,DOX2,,,,,,,,,coordinates,str,"TIME LATITUDE LONGITUDE NOMINAL_DEPTH_DOX2"
+VAR_ATT,DOX2,,,,,,,,,long_name,str,moles_of_oxygen_per_unit_mass_in_sea_water
+VAR_ATT,DOX2,,,,,,,,,standard_name,str,moles_of_oxygen_per_unit_mass_in_sea_water
+VAR_ATT,DOX2,,,,,,,,,units,str,umol/kg
+VAR_ATT,DOX2,,,,,,,,,valid_max,float32,400.0
+VAR_ATT,DOX2,,,,,,,,,valid_min,float32,0.0
+VAR_ATT,DOX2_number_of_observations,,,,,,,,,comment,str,"number of samples"
+VAR_ATT,DOX2_number_of_observations,,,,,,,,,long_name,str,"moles_of_oxygen_per_unit_mass_in_sea_water number of observations"
+VAR_ATT,DOX2_number_of_observations,,,,,,,,,units,str,1
+VAR_ATT,DOX2_quality_control,,,,,,,,,comment,str,"maximum of quality flags of input data"
+VAR_ATT,DOX2_quality_control,,,,,,,,,flag_meanings,str,"unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value"
+VAR_ATT,DOX2_quality_control,,,,,,,,,flag_values,ndarray,"[0 1 2 3 4 6 7 9]"
+VAR_ATT,DOX2_quality_control,,,,,,,,,long_name,str,"quality flag for moles_of_oxygen_per_unit_mass_in_sea_water"
+VAR_ATT,DOX2_quality_control,,,,,,,,,quality_control_conventions,str,"IMOS standard flags"
+VAR_ATT,DOX2_quality_control,,,,,,,,,standard_name,str,"moles_of_oxygen_per_unit_mass_in_sea_water status_flag"
+VAR_ATT,DOX2_standard_error,,,,,,,,,comment,str,"sample bin standard deviation"
+VAR_ATT,DOX2_standard_error,,,,,,,,,long_name,str,"moles_of_oxygen_per_unit_mass_in_sea_water standard error"
+VAR_ATT,DOX2_standard_error,,,,,,,,,units,str,umol/kg
+VAR_ATT,DOXS,,,,,,,,,ancillary_variables,str,"DOXS_quality_control DOXS_standard_error DOXS_number_of_observations"
+VAR_ATT,DOXS,,,,,,,,,comment,str,"calculated using DOX2/OXSOL"
+VAR_ATT,DOXS,,,,,,,,,coordinates,str,"TIME LATITUDE LONGITUDE NOMINAL_DEPTH_DOXS"
+VAR_ATT,DOXS,,,,,,,,,long_name,str,fractional_saturation_of_oxygen_in_sea_water
+VAR_ATT,DOXS,,,,,,,,,standard_name,str,fractional_saturation_of_oxygen_in_sea_water
+VAR_ATT,DOXS,,,,,,,,,units,str,1
+VAR_ATT,DOXS_number_of_observations,,,,,,,,,comment,str,"number of samples"
+VAR_ATT,DOXS_number_of_observations,,,,,,,,,long_name,str,"fractional_saturation_of_oxygen_in_sea_water number of observations"
+VAR_ATT,DOXS_number_of_observations,,,,,,,,,units,str,1
+VAR_ATT,DOXS_quality_control,,,,,,,,,comment,str,"maximum of quality flags of input data"
+VAR_ATT,DOXS_quality_control,,,,,,,,,flag_meanings,str,"unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value"
+VAR_ATT,DOXS_quality_control,,,,,,,,,flag_values,ndarray,"[0 1 2 3 4 6 7 9]"
+VAR_ATT,DOXS_quality_control,,,,,,,,,long_name,str,"quality flag for fractional_saturation_of_oxygen_in_sea_water"
+VAR_ATT,DOXS_quality_control,,,,,,,,,quality_control_conventions,str,"IMOS standard flags"
+VAR_ATT,DOXS_quality_control,,,,,,,,,standard_name,str,"fractional_saturation_of_oxygen_in_sea_water status_flag"
+VAR_ATT,DOXS_standard_error,,,,,,,,,comment,str,"sample bin standard deviation"
+VAR_ATT,DOXS_standard_error,,,,,,,,,long_name,str,"fractional_saturation_of_oxygen_in_sea_water standard error"
+VAR_ATT,DOXS_standard_error,,,,,,,,,units,str,1
+VAR_ATT,HEAT_NET,,,,,,,,,ancillary_variables,str,"HEAT_NET_standard_error HEAT_NET_number_of_observations"
+VAR_ATT,HEAT_NET,,,,,,,,,comment,str," "
+VAR_ATT,HEAT_NET,,,,,,,,,coordinates,str,"TIME NOMINAL_DEPTH_HEAT_NET LATITUDE LONGITUDE"
+VAR_ATT,HEAT_NET,,,,,,,,,long_name,str,"net heat flux"
+VAR_ATT,HEAT_NET,,,,,,,,,observation_type,str,calculated
+VAR_ATT,HEAT_NET,,,,,,,,,standard_name,str,upward_heat_flux_in_air
+VAR_ATT,HEAT_NET,,,,,,,,,units,str,"watts meter-2"
+VAR_ATT,HEAT_NET_number_of_observations,,,,,,,,,comment,str,"number of samples"
+VAR_ATT,HEAT_NET_number_of_observations,,,,,,,,,long_name,str,"net heat flux number of observations"
+VAR_ATT,HEAT_NET_number_of_observations,,,,,,,,,units,str,1
+VAR_ATT,HEAT_NET_standard_error,,,,,,,,,comment,str,"sample bin standard deviation"
+VAR_ATT,HEAT_NET_standard_error,,,,,,,,,long_name,str,"net heat flux standard error"
+VAR_ATT,HEAT_NET_standard_error,,,,,,,,,units,str,"watts meter-2"
+VAR_ATT,HL,,,,,,,,,ancillary_variables,str,"HL_standard_error HL_number_of_observations"
+VAR_ATT,HL,,,,,,,,,comment,str," "
+VAR_ATT,HL,,,,,,,,,coordinates,str,"TIME NOMINAL_DEPTH_HL LATITUDE LONGITUDE"
+VAR_ATT,HL,,,,,,,,,long_name,str,"latent heat flux"
+VAR_ATT,HL,,,,,,,,,observation_type,str,calculated
+VAR_ATT,HL,,,,,,,,,standard_name,str,surface_upward_latent_heat_flux
+VAR_ATT,HL,,,,,,,,,units,str,"watts meter-2"
+VAR_ATT,HL_number_of_observations,,,,,,,,,comment,str,"number of samples"
+VAR_ATT,HL_number_of_observations,,,,,,,,,long_name,str,"latent heat flux number of observations"
+VAR_ATT,HL_number_of_observations,,,,,,,,,units,str,1
+VAR_ATT,HL_standard_error,,,,,,,,,comment,str,"sample bin standard deviation"
+VAR_ATT,HL_standard_error,,,,,,,,,long_name,str,"latent heat flux standard error"
+VAR_ATT,HL_standard_error,,,,,,,,,units,str,"watts meter-2"
+VAR_ATT,HS,,,,,,,,,ancillary_variables,str,"HS_standard_error HS_number_of_observations"
+VAR_ATT,HS,,,,,,,,,comment,str," "
+VAR_ATT,HS,,,,,,,,,coordinates,str,"TIME NOMINAL_DEPTH_HS LATITUDE LONGITUDE"
+VAR_ATT,HS,,,,,,,,,long_name,str,"sensible heat flux"
+VAR_ATT,HS,,,,,,,,,observation_type,str,calculated
+VAR_ATT,HS,,,,,,,,,standard_name,str,surface_upward_sensible_heat_flux
+VAR_ATT,HS,,,,,,,,,units,str,"watts meter-2"
+VAR_ATT,HS_number_of_observations,,,,,,,,,comment,str,"number of samples"
+VAR_ATT,HS_number_of_observations,,,,,,,,,long_name,str,"sensible heat flux number of observations"
+VAR_ATT,HS_number_of_observations,,,,,,,,,units,str,1
+VAR_ATT,HS_standard_error,,,,,,,,,comment,str,"sample bin standard deviation"
+VAR_ATT,HS_standard_error,,,,,,,,,long_name,str,"sensible heat flux standard error"
+VAR_ATT,HS_standard_error,,,,,,,,,units,str,"watts meter-2"
+VAR_ATT,H_RAIN,,,,,,,,,ancillary_variables,str,"H_RAIN_standard_error H_RAIN_number_of_observations"
+VAR_ATT,H_RAIN,,,,,,,,,coordinates,str,"TIME NOMINAL_DEPTH_H_RAIN LATITUDE LONGITUDE"
+VAR_ATT,H_RAIN,,,,,,,,,long_name,str,"upward heat flux due to rainfall"
+VAR_ATT,H_RAIN,,,,,,,,,observation_type,str,calculated
+VAR_ATT,H_RAIN,,,,,,,,,standard_name,str,temperature_flux_due_to_rainfall_expressed_as_heat_flux_into_sea_water
+VAR_ATT,H_RAIN,,,,,,,,,units,str,"watts meter-2"
+VAR_ATT,H_RAIN_number_of_observations,,,,,,,,,comment,str,"number of samples"
+VAR_ATT,H_RAIN_number_of_observations,,,,,,,,,long_name,str,"upward heat flux due to rainfall number of observations"
+VAR_ATT,H_RAIN_number_of_observations,,,,,,,,,units,str,1
+VAR_ATT,H_RAIN_standard_error,,,,,,,,,comment,str,"sample bin standard deviation"
+VAR_ATT,H_RAIN_standard_error,,,,,,,,,long_name,str,"upward heat flux due to rainfall standard error"
+VAR_ATT,H_RAIN_standard_error,,,,,,,,,units,str,"watts meter-2"
+VAR_ATT,Hm0,,,,,,,,,ancillary_variables,str,"Hm0_quality_control Hm0_standard_error Hm0_number_of_observations"
+VAR_ATT,Hm0,,,,,,,,,coordinates,str,"LONGITUDE LATITUDE TIME"
+VAR_ATT,Hm0,,,,,,,,,long_name,str,"significant wave height by spectral moment"
+VAR_ATT,Hm0,,,,,,,,,standard_name,str,sea_surface_wave_significant_height
+VAR_ATT,Hm0,,,,,,,,,units,str,m
+VAR_ATT,Hm0,,,,,,,,,coordinates,str,"TIME NOMINAL_DEPTH_Hm0 LATITUDE LONGITUDE"
+VAR_ATT,Hm0_number_of_observations,,,,,,,,,comment,str,"number of samples"
+VAR_ATT,Hm0_number_of_observations,,,,,,,,,long_name,str,"significant wave height by spectral moment number of observations"
+VAR_ATT,Hm0_number_of_observations,,,,,,,,,units,str,1
+VAR_ATT,Hm0_quality_control,,,,,,,,,comment,str,"maximum of quality flags of input data"
+VAR_ATT,Hm0_quality_control,,,,,,,,,flag_meanings,str,"unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value"
+VAR_ATT,Hm0_quality_control,,,,,,,,,flag_values,ndarray,"[0 1 2 3 4 6 7 9]"
+VAR_ATT,Hm0_quality_control,,,,,,,,,long_name,str,"quality flag for significant wave height by spectral moment"
+VAR_ATT,Hm0_quality_control,,,,,,,,,quality_control_conventions,str,"IMOS standard flags"
+VAR_ATT,Hm0_quality_control,,,,,,,,,standard_name,str,"sea_surface_wave_significant_height status_flag"
+VAR_ATT,Hm0_standard_error,,,,,,,,,comment,str,"sample bin standard deviation"
+VAR_ATT,Hm0_standard_error,,,,,,,,,long_name,str,"significant wave height by spectral moment standard error"
+VAR_ATT,Hm0_standard_error,,,,,,,,,units,str,m
+VAR_ATT,LATITUDE,,,,,,,,,axis,str,Y
+VAR_ATT,LATITUDE,,,,,,,,,long_name,str,latitude
+VAR_ATT,LATITUDE,,,,,,,,,name,str,"Latitude recorded by instrument"
+VAR_ATT,LATITUDE,,,,,,,,,reference_datum,str,"WGS84 geographic coordinate system"
+VAR_ATT,LATITUDE,,,,,,,,,sensor_name,str,"CSIRO-Data Logger"
+VAR_ATT,LATITUDE,,,,,,,,,standard_name,str,latitude
+VAR_ATT,LATITUDE,,,,,,,,,units,str,degrees_north
+VAR_ATT,LATITUDE,,,,,,,,,valid_max,float64,90.0
+VAR_ATT,LATITUDE,,,,,,,,,valid_min,float64,-90.0
+VAR_ATT,LONGITUDE,,,,,,,,,axis,str,X
+VAR_ATT,LONGITUDE,,,,,,,,,long_name,str,longitude
+VAR_ATT,LONGITUDE,,,,,,,,,name,str,"Longitude recorded by instrument"
+VAR_ATT,LONGITUDE,,,,,,,,,reference_datum,str,"WGS84 geographic coordinate system"
+VAR_ATT,LONGITUDE,,,,,,,,,sensor_name,str,"CSIRO-Data Logger"
+VAR_ATT,LONGITUDE,,,,,,,,,standard_name,str,longitude
+VAR_ATT,LONGITUDE,,,,,,,,,units,str,degrees_east
+VAR_ATT,LONGITUDE,,,,,,,,,valid_max,float64,180.0
+VAR_ATT,LONGITUDE,,,,,,,,,valid_min,float64,-180.0
+VAR_ATT,LW,,,,,,,,,ancillary_variables,str,"LW_standard_error LW_number_of_observations LW_quality_control"
+VAR_ATT,LW,,,,,,,,,comment,str,"ASIMET LWR"
+VAR_ATT,LW,,,,,,,,,coordinates,str,"TIME NOMINAL_DEPTH_LW LATITUDE LONGITUDE"
+VAR_ATT,LW,,,,,,,,,long_name,str,"long wave radiation"
+VAR_ATT,LW,,,,,,,,,name,str,surface_downwelling_longwave_flux_in_air
+VAR_ATT,LW,,,,,,,,,observation_type,str,measured
+VAR_ATT,LW,,,,,,,,,standard_name,str,surface_downwelling_longwave_flux_in_air
+VAR_ATT,LW,,,,,,,,,units,str,"watts meter-2"
+VAR_ATT,LW,,,,,,,,,valid_max,float32,700.0
+VAR_ATT,LW,,,,,,,,,valid_min,float32,0.0
+VAR_ATT,LW_NET,,,,,,,,,ancillary_variables,str,"LW_NET_standard_error LW_NET_number_of_observations"
+VAR_ATT,LW_NET,,,,,,,,,coordinates,str,"TIME NOMINAL_DEPTH_LW_NET LATITUDE LONGITUDE"
+VAR_ATT,LW_NET,,,,,,,,,long_name,str,"net long-wave radiation"
+VAR_ATT,LW_NET,,,,,,,,,observation_type,str,calculated
+VAR_ATT,LW_NET,,,,,,,,,standard_name,str,surface_net_upward_longwave_flux
+VAR_ATT,LW_NET,,,,,,,,,units,str,"watts meter-2"
+VAR_ATT,LW_NET_number_of_observations,,,,,,,,,comment,str,"number of samples"
+VAR_ATT,LW_NET_number_of_observations,,,,,,,,,long_name,str,"net long-wave radiation number of observations"
+VAR_ATT,LW_NET_number_of_observations,,,,,,,,,units,str,1
+VAR_ATT,LW_NET_standard_error,,,,,,,,,comment,str,"sample bin standard deviation"
+VAR_ATT,LW_NET_standard_error,,,,,,,,,long_name,str,"net long-wave radiation standard error"
+VAR_ATT,LW_NET_standard_error,,,,,,,,,units,str,"watts meter-2"
+VAR_ATT,LW_number_of_observations,,,,,,,,,comment,str,"number of samples"
+VAR_ATT,LW_number_of_observations,,,,,,,,,long_name,str,"long wave radiation number of observations"
+VAR_ATT,LW_number_of_observations,,,,,,,,,units,str,1
+VAR_ATT,LW_quality_control,,,,,,,,,comment,str,"maximum of quality flags of input data"
+VAR_ATT,LW_quality_control,,,,,,,,,flag_meanings,str,"unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value"
+VAR_ATT,LW_quality_control,,,,,,,,,flag_values,ndarray,"[0 1 2 3 4 6 7 9]"
+VAR_ATT,LW_quality_control,,,,,,,,,long_name,str,"quality flag for surface downwelling longwave radiation"
+VAR_ATT,LW_quality_control,,,,,,,,,quality_control_conventions,str,"IMOS standard flags"
+VAR_ATT,LW_quality_control,,,,,,,,,standard_name,str,"surface_downwelling_longwave_flux_in_air status_flag"
+VAR_ATT,LW_standard_error,,,,,,,,,comment,str,"sample bin standard deviation"
+VAR_ATT,LW_standard_error,,,,,,,,,long_name,str,"long wave radiation standard error"
+VAR_ATT,LW_standard_error,,,,,,,,,units,str,"watts meter-2"
+VAR_ATT,MASS_NET,,,,,,,,,ancillary_variables,str,"MASS_NET_standard_error MASS_NET_number_of_observations"
+VAR_ATT,MASS_NET,,,,,,,,,coordinates,str,"TIME NOMINAL_DEPTH_MASS_NET LATITUDE LONGITUDE"
+VAR_ATT,MASS_NET,,,,,,,,,long_name,str,"net mass flux"
+VAR_ATT,MASS_NET,,,,,,,,,observation_type,str,calculated
+VAR_ATT,MASS_NET,,,,,,,,,standard_name,str,upward_mass_flux_of_air
+VAR_ATT,MASS_NET,,,,,,,,,units,str,"kilogram meter-2 second-1"
+VAR_ATT,MASS_NET_number_of_observations,,,,,,,,,comment,str,"number of samples"
+VAR_ATT,MASS_NET_number_of_observations,,,,,,,,,long_name,str,"net mass flux number of observations"
+VAR_ATT,MASS_NET_number_of_observations,,,,,,,,,units,str,1
+VAR_ATT,MASS_NET_standard_error,,,,,,,,,comment,str,"sample bin standard deviation"
+VAR_ATT,MASS_NET_standard_error,,,,,,,,,long_name,str,"net mass flux standard error"
+VAR_ATT,MASS_NET_standard_error,,,,,,,,,units,str,"kilogram meter-2 second-1"
+VAR_ATT,NOMINAL_DEPTH,,,,,,,,,axis,str,Z
+VAR_ATT,NOMINAL_DEPTH,,,,,,,,,long_name,str,"nominal depth"
+VAR_ATT,NOMINAL_DEPTH,,,,,,,,,positive,str,down
+VAR_ATT,NOMINAL_DEPTH,,,,,,,,,reference_datum,str,"sea surface"
+VAR_ATT,NOMINAL_DEPTH,,,,,,,,,standard_name,str,depth
+VAR_ATT,NOMINAL_DEPTH,,,,,,,,,units,str,m
+VAR_ATT,NOMINAL_DEPTH,,,,,,,,,valid_max,float32,12000.0
+VAR_ATT,NOMINAL_DEPTH,,,,,,,,,valid_min,float32,-5.0
+VAR_ATT,PRES,,,,,,,,,ancillary_variables,str,"PRES_quality_control PRES_standard_error PRES_number_of_observations"
+VAR_ATT,PRES,,,,,,,,,applied_offset,float32,-10.135297
+VAR_ATT,PRES,,,,,,,,,comment,str,"Pressure, Strain Gauge [db]"
+VAR_ATT,PRES,,,,,,,,,coordinates,str,"TIME LATITUDE LONGITUDE NOMINAL_DEPTH_PRES"
+VAR_ATT,PRES,,,,,,,,,long_name,str,sea_water_pressure_due_to_sea_water
+VAR_ATT,PRES,,,,,,,,,standard_name,str,sea_water_pressure_due_to_sea_water
+VAR_ATT,PRES,,,,,,,,,units,str,dbar
+VAR_ATT,PRES,,,,,,,,,valid_max,float32,12000.0
+VAR_ATT,PRES,,,,,,,,,valid_min,float32,-15.0
+VAR_ATT,PRES_number_of_observations,,,,,,,,,comment,str,"number of samples"
+VAR_ATT,PRES_number_of_observations,,,,,,,,,long_name,str,"sea_water_pressure_due_to_sea_water number of observations"
+VAR_ATT,PRES_number_of_observations,,,,,,,,,units,str,1
+VAR_ATT,PRES_quality_control,,,,,,,,,comment,str,"maximum of quality flags of input data"
+VAR_ATT,PRES_quality_control,,,,,,,,,flag_meanings,str,"unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value"
+VAR_ATT,PRES_quality_control,,,,,,,,,flag_values,ndarray,"[0 1 2 3 4 6 7 9]"
+VAR_ATT,PRES_quality_control,,,,,,,,,long_name,str,"quality flag for sea_water_pressure_due_to_sea_water"
+VAR_ATT,PRES_quality_control,,,,,,,,,quality_control_conventions,str,"IMOS standard flags"
+VAR_ATT,PRES_quality_control,,,,,,,,,standard_name,str,"sea_water_pressure_due_to_sea_water status_flag"
+VAR_ATT,PRES_standard_error,,,,,,,,,comment,str,"sample bin standard deviation"
+VAR_ATT,PRES_standard_error,,,,,,,,,long_name,str,"sea_water_pressure_due_to_sea_water standard error"
+VAR_ATT,PRES_standard_error,,,,,,,,,units,str,dbar
+VAR_ATT,PSAL,,,,,,,,,ancillary_variables,str,"PSAL_standard_error PSAL_number_of_observations PSAL_quality_control"
+VAR_ATT,PSAL,,,,,,,,,comment,str,"Derived from Pressure, Temperature (IPTS68) and Conductivity using PSS 1978 equations"
+VAR_ATT,PSAL,,,,,,,,,coordinates,str,"TIME NOMINAL_DEPTH_PSAL LATITUDE LONGITUDE"
+VAR_ATT,PSAL,,,,,,,,,long_name,str,Salinity
+VAR_ATT,PSAL,,,,,,,,,observation_type,str,calculated
+VAR_ATT,PSAL,,,,,,,,,standard_name,str,sea_water_practical_salinity
+VAR_ATT,PSAL,,,,,,,,,units,str,1e-3
+VAR_ATT,PSAL,,,,,,,,,valid_max,float32,40.0
+VAR_ATT,PSAL,,,,,,,,,valid_min,float32,-1.0
+VAR_ATT,PSAL_number_of_observations,,,,,,,,,comment,str,"number of samples"
+VAR_ATT,PSAL_number_of_observations,,,,,,,,,long_name,str,"Salinity number of observations"
+VAR_ATT,PSAL_number_of_observations,,,,,,,,,units,str,1
+VAR_ATT,PSAL_quality_control,,,,,,,,,comment,str,"maximum of quality flags of input data"
+VAR_ATT,PSAL_quality_control,,,,,,,,,flag_meanings,str,"unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value"
+VAR_ATT,PSAL_quality_control,,,,,,,,,flag_values,ndarray,"[0 1 2 3 4 6 7 9]"
+VAR_ATT,PSAL_quality_control,,,,,,,,,long_name,str,"quality flag for sea_water_practical_salinity"
+VAR_ATT,PSAL_quality_control,,,,,,,,,quality_control_conventions,str,"IMOS standard flags"
+VAR_ATT,PSAL_quality_control,,,,,,,,,standard_name,str,"sea_water_practical_salinity status_flag"
+VAR_ATT,PSAL_standard_error,,,,,,,,,comment,str,"sample bin standard deviation"
+VAR_ATT,PSAL_standard_error,,,,,,,,,long_name,str,"Salinity standard error"
+VAR_ATT,PSAL_standard_error,,,,,,,,,units,str,1e-3
+VAR_ATT,RAIN_AMOUNT,,,,,,,,,ancillary_variables,str,"RAIN_AMOUNT_standard_error RAIN_AMOUNT_number_of_observations"
+VAR_ATT,RAIN_AMOUNT,,,,,,,,,comment,str,"ASIMET PRC. Rain rate derived from changes in rain level in siphon gauge"
+VAR_ATT,RAIN_AMOUNT,,,,,,,,,coordinates,str,"TIME NOMINAL_DEPTH_RAIN_AMOUNT LATITUDE LONGITUDE"
+VAR_ATT,RAIN_AMOUNT,,,,,,,,,long_name,str,"rain rate"
+VAR_ATT,RAIN_AMOUNT,,,,,,,,,observation_type,str,calculated
+VAR_ATT,RAIN_AMOUNT,,,,,,,,,standard_name,str,rainfall_rate
+VAR_ATT,RAIN_AMOUNT,,,,,,,,,units,str,"millimeters hour-1"
+VAR_ATT,RAIN_AMOUNT_number_of_observations,,,,,,,,,comment,str,"number of samples"
+VAR_ATT,RAIN_AMOUNT_number_of_observations,,,,,,,,,long_name,str,"rain rate number of observations"
+VAR_ATT,RAIN_AMOUNT_number_of_observations,,,,,,,,,units,str,1
+VAR_ATT,RAIN_AMOUNT_standard_error,,,,,,,,,comment,str,"sample bin standard deviation"
+VAR_ATT,RAIN_AMOUNT_standard_error,,,,,,,,,long_name,str,"rain rate standard error"
+VAR_ATT,RAIN_AMOUNT_standard_error,,,,,,,,,units,str,"millimeters hour-1"
+VAR_ATT,RELH,,,,,,,,,ancillary_variables,str,"RELH_standard_error RELH_number_of_observations RELH_quality_control"
+VAR_ATT,RELH,,,,,,,,,comment,str,"ASIMET HRH"
+VAR_ATT,RELH,,,,,,,,,comment_faulty,str,"no radiation shield"
+VAR_ATT,RELH,,,,,,,,,coordinates,str,"TIME NOMINAL_DEPTH_RELH LATITUDE LONGITUDE"
+VAR_ATT,RELH,,,,,,,,,long_name,str,"relative humidity "
+VAR_ATT,RELH,,,,,,,,,name,str,relative_humidity
+VAR_ATT,RELH,,,,,,,,,observation_type,str,measured
+VAR_ATT,RELH,,,,,,,,,standard_name,str,relative_humidity
+VAR_ATT,RELH,,,,,,,,,units,str,percent
+VAR_ATT,RELH,,,,,,,,,valid_max,float32,100.0
+VAR_ATT,RELH,,,,,,,,,valid_min,float32,0.0
+VAR_ATT,RELH1_5M,,,,,,,,,ancillary_variables,str,"RELH1_5M_standard_error RELH1_5M_number_of_observations"
+VAR_ATT,RELH1_5M,,,,,,,,,coordinates,str,"TIME NOMINAL_DEPTH_RELH1_5M LATITUDE LONGITUDE"
+VAR_ATT,RELH1_5M,,,,,,,,,long_name,str,"calculated relative humidity at 1.5 meters"
+VAR_ATT,RELH1_5M,,,,,,,,,observation_type,str,calculated
+VAR_ATT,RELH1_5M,,,,,,,,,standard_name,str,relative_humidity
+VAR_ATT,RELH1_5M,,,,,,,,,units,str,percent
+VAR_ATT,RELH1_5M_number_of_observations,,,,,,,,,comment,str,"number of samples"
+VAR_ATT,RELH1_5M_number_of_observations,,,,,,,,,long_name,str,"calculated relative humidity at 1.5 meters number of observations"
+VAR_ATT,RELH1_5M_number_of_observations,,,,,,,,,units,str,1
+VAR_ATT,RELH1_5M_standard_error,,,,,,,,,comment,str,"sample bin standard deviation"
+VAR_ATT,RELH1_5M_standard_error,,,,,,,,,long_name,str,"calculated relative humidity at 1.5 meters standard error"
+VAR_ATT,RELH1_5M_standard_error,,,,,,,,,units,str,percent
+VAR_ATT,RELH2_0M,,,,,,,,,ancillary_variables,str,"RELH2_0M_standard_error RELH2_0M_number_of_observations"
+VAR_ATT,RELH2_0M,,,,,,,,,coordinates,str,"TIME NOMINAL_DEPTH_RELH2_0M LATITUDE LONGITUDE"
+VAR_ATT,RELH2_0M,,,,,,,,,long_name,str,"calculated relative humidity at 2.0 meters"
+VAR_ATT,RELH2_0M,,,,,,,,,observation_type,str,calculated
+VAR_ATT,RELH2_0M,,,,,,,,,standard_name,str,relative_humidity
+VAR_ATT,RELH2_0M,,,,,,,,,units,str,percent
+VAR_ATT,RELH2_0M_number_of_observations,,,,,,,,,comment,str,"number of samples"
+VAR_ATT,RELH2_0M_number_of_observations,,,,,,,,,long_name,str,"calculated relative humidity at 2.0 meters number of observations"
+VAR_ATT,RELH2_0M_number_of_observations,,,,,,,,,units,str,1
+VAR_ATT,RELH2_0M_standard_error,,,,,,,,,comment,str,"sample bin standard deviation"
+VAR_ATT,RELH2_0M_standard_error,,,,,,,,,long_name,str,"calculated relative humidity at 2.0 meters standard error"
+VAR_ATT,RELH2_0M_standard_error,,,,,,,,,units,str,percent
+VAR_ATT,RELH_number_of_observations,,,,,,,,,comment,str,"number of samples"
+VAR_ATT,RELH_number_of_observations,,,,,,,,,long_name,str,"relative humidity  number of observations"
+VAR_ATT,RELH_number_of_observations,,,,,,,,,units,str,1
+VAR_ATT,RELH_quality_control,,,,,,,,,comment,str,"maximum of quality flags of input data"
+VAR_ATT,RELH_quality_control,,,,,,,,,flag_meanings,str,"unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value"
+VAR_ATT,RELH_quality_control,,,,,,,,,flag_values,ndarray,"[0 1 2 3 4 6 7 9]"
+VAR_ATT,RELH_quality_control,,,,,,,,,long_name,str,"quality flag for relative humidity"
+VAR_ATT,RELH_quality_control,,,,,,,,,quality_control_conventions,str,"IMOS standard flags"
+VAR_ATT,RELH_quality_control,,,,,,,,,standard_name,str,"relative_humidity status_flag"
+VAR_ATT,RELH_standard_error,,,,,,,,,comment,str,"sample bin standard deviation"
+VAR_ATT,RELH_standard_error,,,,,,,,,long_name,str,"relative humidity  standard error"
+VAR_ATT,RELH_standard_error,,,,,,,,,units,str,percent
+VAR_ATT,SIGMA_T0,,,,,,,,,ancillary_variables,str,"SIGMA_T0_quality_control SIGMA_T0_standard_error SIGMA_T0_number_of_observations"
+VAR_ATT,SIGMA_T0,,,,,,,,,comment,str,"calculated using gsw-python https://teos-10.github.io/GSW-Python/index.html"
+VAR_ATT,SIGMA_T0,,,,,,,,,coordinates,str,"TIME LATITUDE LONGITUDE NOMINAL_DEPTH_SIGMA_T0"
+VAR_ATT,SIGMA_T0,,,,,,,,,long_name,str,sea_water_sigma_theta
+VAR_ATT,SIGMA_T0,,,,,,,,,reference_pressure,str,"0 dbar"
+VAR_ATT,SIGMA_T0,,,,,,,,,standard_name,str,sea_water_sigma_theta
+VAR_ATT,SIGMA_T0,,,,,,,,,units,str,kg/m^3
+VAR_ATT,SIGMA_T0,,,,,,,,,valid_max,float32,100.0
+VAR_ATT,SIGMA_T0,,,,,,,,,valid_min,float32,0.0
+VAR_ATT,SIGMA_T0_number_of_observations,,,,,,,,,comment,str,"number of samples"
+VAR_ATT,SIGMA_T0_number_of_observations,,,,,,,,,long_name,str,"sea_water_sigma_theta number of observations"
+VAR_ATT,SIGMA_T0_number_of_observations,,,,,,,,,units,str,1
+VAR_ATT,SIGMA_T0_quality_control,,,,,,,,,comment,str,"maximum of quality flags of input data"
+VAR_ATT,SIGMA_T0_quality_control,,,,,,,,,flag_meanings,str,"unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value"
+VAR_ATT,SIGMA_T0_quality_control,,,,,,,,,flag_values,ndarray,"[0 1 2 3 4 6 7 9]"
+VAR_ATT,SIGMA_T0_quality_control,,,,,,,,,long_name,str,"quality flag for sea_water_sigma_theta"
+VAR_ATT,SIGMA_T0_quality_control,,,,,,,,,quality_control_conventions,str,"IMOS standard flags"
+VAR_ATT,SIGMA_T0_quality_control,,,,,,,,,standard_name,str,"sea_water_sigma_theta status_flag"
+VAR_ATT,SIGMA_T0_standard_error,,,,,,,,,comment,str,"sample bin standard deviation"
+VAR_ATT,SIGMA_T0_standard_error,,,,,,,,,long_name,str,"sea_water_sigma_theta standard error"
+VAR_ATT,SIGMA_T0_standard_error,,,,,,,,,units,str,kg/m^3
+VAR_ATT,SST,,,,,,,,,ancillary_variables,str,"SST_standard_error SST_number_of_observations"
+VAR_ATT,SST,,,,,,,,,coordinates,str,"TIME NOMINAL_DEPTH_SST LATITUDE LONGITUDE"
+VAR_ATT,SST,,,,,,,,,long_name,str,"sea skin temperature"
+VAR_ATT,SST,,,,,,,,,observation_type,str,calculated
+VAR_ATT,SST,,,,,,,,,standard_name,str,sea_surface_skin_temperature
+VAR_ATT,SST,,,,,,,,,units,str,celsius
+VAR_ATT,SST_number_of_observations,,,,,,,,,comment,str,"number of samples"
+VAR_ATT,SST_number_of_observations,,,,,,,,,long_name,str,"sea skin temperature number of observations"
+VAR_ATT,SST_number_of_observations,,,,,,,,,units,str,1
+VAR_ATT,SST_standard_error,,,,,,,,,comment,str,"sample bin standard deviation"
+VAR_ATT,SST_standard_error,,,,,,,,,long_name,str,"sea skin temperature standard error"
+VAR_ATT,SST_standard_error,,,,,,,,,units,str,celsius
+VAR_ATT,SW,,,,,,,,,ancillary_variables,str,"SW_standard_error SW_number_of_observations SW_quality_control"
+VAR_ATT,SW,,,,,,,,,comment,str,"ASIMET SWR"
+VAR_ATT,SW,,,,,,,,,coordinates,str,"TIME NOMINAL_DEPTH_SW LATITUDE LONGITUDE"
+VAR_ATT,SW,,,,,,,,,long_name,str,"short wave radiation"
+VAR_ATT,SW,,,,,,,,,name,str,surface_downwelling_shortwave_flux_in_air
+VAR_ATT,SW,,,,,,,,,observation_type,str,measured
+VAR_ATT,SW,,,,,,,,,standard_name,str,surface_downwelling_shortwave_flux_in_air
+VAR_ATT,SW,,,,,,,,,units,str,"watts meter-2"
+VAR_ATT,SW,,,,,,,,,valid_max,float32,2800.0
+VAR_ATT,SW,,,,,,,,,valid_min,float32,0.0
+VAR_ATT,SW_NET,,,,,,,,,ancillary_variables,str,"SW_NET_standard_error SW_NET_number_of_observations"
+VAR_ATT,SW_NET,,,,,,,,,coordinates,str,"TIME NOMINAL_DEPTH_SW_NET LATITUDE LONGITUDE"
+VAR_ATT,SW_NET,,,,,,,,,long_name,str,"net short-wave radiation"
+VAR_ATT,SW_NET,,,,,,,,,observation_type,str,calculated
+VAR_ATT,SW_NET,,,,,,,,,standard_name,str,surface_net_upward_shortwave_flux
+VAR_ATT,SW_NET,,,,,,,,,units,str,"watts meter-2"
+VAR_ATT,SW_NET_number_of_observations,,,,,,,,,comment,str,"number of samples"
+VAR_ATT,SW_NET_number_of_observations,,,,,,,,,long_name,str,"net short-wave radiation number of observations"
+VAR_ATT,SW_NET_number_of_observations,,,,,,,,,units,str,1
+VAR_ATT,SW_NET_standard_error,,,,,,,,,comment,str,"sample bin standard deviation"
+VAR_ATT,SW_NET_standard_error,,,,,,,,,long_name,str,"net short-wave radiation standard error"
+VAR_ATT,SW_NET_standard_error,,,,,,,,,units,str,"watts meter-2"
+VAR_ATT,SW_number_of_observations,,,,,,,,,comment,str,"number of samples"
+VAR_ATT,SW_number_of_observations,,,,,,,,,long_name,str,"short wave radiation number of observations"
+VAR_ATT,SW_number_of_observations,,,,,,,,,units,str,1
+VAR_ATT,SW_quality_control,,,,,,,,,comment,str,"maximum of quality flags of input data"
+VAR_ATT,SW_quality_control,,,,,,,,,flag_meanings,str,"unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value"
+VAR_ATT,SW_quality_control,,,,,,,,,flag_values,ndarray,"[0 1 2 3 4 6 7 9]"
+VAR_ATT,SW_quality_control,,,,,,,,,long_name,str,"quality flag for surface downwelling shortwave radiation"
+VAR_ATT,SW_quality_control,,,,,,,,,quality_control_conventions,str,"IMOS standard flags"
+VAR_ATT,SW_quality_control,,,,,,,,,standard_name,str,"surface_downwelling_shortwave_flux_in_air status_flag"
+VAR_ATT,SW_standard_error,,,,,,,,,comment,str,"sample bin standard deviation"
+VAR_ATT,SW_standard_error,,,,,,,,,long_name,str,"short wave radiation standard error"
+VAR_ATT,SW_standard_error,,,,,,,,,units,str,"watts meter-2"
+VAR_ATT,TAU,,,,,,,,,ancillary_variables,str,"TAU_standard_error TAU_number_of_observations"
+VAR_ATT,TAU,,,,,,,,,comment,str," "
+VAR_ATT,TAU,,,,,,,,,coordinates,str,"TIME NOMINAL_DEPTH_TAU LATITUDE LONGITUDE"
+VAR_ATT,TAU,,,,,,,,,long_name,str,"wind stress"
+VAR_ATT,TAU,,,,,,,,,observation_type,str,calculated
+VAR_ATT,TAU,,,,,,,,,standard_name,str,magnitude_of_surface_downward_stress
+VAR_ATT,TAU,,,,,,,,,units,str,"Newtons meter-2"
+VAR_ATT,TAU_number_of_observations,,,,,,,,,comment,str,"number of samples"
+VAR_ATT,TAU_number_of_observations,,,,,,,,,long_name,str,"wind stress number of observations"
+VAR_ATT,TAU_number_of_observations,,,,,,,,,units,str,1
+VAR_ATT,TAU_standard_error,,,,,,,,,comment,str,"sample bin standard deviation"
+VAR_ATT,TAU_standard_error,,,,,,,,,long_name,str,"wind stress standard error"
+VAR_ATT,TAU_standard_error,,,,,,,,,units,str,"Newtons meter-2"
+VAR_ATT,TEMP,,,,,,,,,ancillary_variables,str,"TEMP_standard_error TEMP_number_of_observations TEMP_quality_control"
+VAR_ATT,TEMP,,,,,,,,,coordinates,str,"TIME NOMINAL_DEPTH_TEMP LATITUDE LONGITUDE"
+VAR_ATT,TEMP,,,,,,,,,long_name,str,"sea water temperature"
+VAR_ATT,TEMP,,,,,,,,,name,str,sea_water_temperature
+VAR_ATT,TEMP,,,,,,,,,observation_type,str,measured
+VAR_ATT,TEMP,,,,,,,,,reference_scale,str,ITS-90
+VAR_ATT,TEMP,,,,,,,,,standard_name,str,sea_water_temperature
+VAR_ATT,TEMP,,,,,,,,,units,str,celsius
+VAR_ATT,TEMP,,,,,,,,,valid_max,float32,40.0
+VAR_ATT,TEMP,,,,,,,,,valid_min,float32,-2.5
+VAR_ATT,TEMP_number_of_observations,,,,,,,,,comment,str,"number of samples"
+VAR_ATT,TEMP_number_of_observations,,,,,,,,,long_name,str,"sea water temperature number of observations"
+VAR_ATT,TEMP_number_of_observations,,,,,,,,,units,str,1
+VAR_ATT,TEMP_quality_control,,,,,,,,,comment,str,"maximum of quality flags of input data"
+VAR_ATT,TEMP_quality_control,,,,,,,,,flag_meanings,str,"unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value"
+VAR_ATT,TEMP_quality_control,,,,,,,,,flag_values,ndarray,"[0 1 2 3 4 6 7 9]"
+VAR_ATT,TEMP_quality_control,,,,,,,,,long_name,str,"quality flag for sea_water_temperature"
+VAR_ATT,TEMP_quality_control,,,,,,,,,quality_control_conventions,str,"IMOS standard flags"
+VAR_ATT,TEMP_quality_control,,,,,,,,,standard_name,str,"sea_water_temperature status_flag"
+VAR_ATT,TEMP_standard_error,,,,,,,,,comment,str,"sample bin standard deviation"
+VAR_ATT,TEMP_standard_error,,,,,,,,,long_name,str,"sea water temperature standard error"
+VAR_ATT,TEMP_standard_error,,,,,,,,,units,str,celsius
+VAR_ATT,TIME,,,,,,,,,axis,str,T
+VAR_ATT,TIME,,,,,,,,,calendar,str,gregorian
+VAR_ATT,TIME,,,,,,,,,comment,str,"start of 10 minute sampling window"
+VAR_ATT,TIME,,,,,,,,,long_name,str,"time of measurement"
+VAR_ATT,TIME,,,,,,,,,standard_name,str,time
+VAR_ATT,TIME,,,,,,,,,units,str,"days since 1950-01-01T00:00:00 UTC"
+VAR_ATT,TIME,,,,,,,,,valid_max,float64,54787.0
+VAR_ATT,TIME,,,,,,,,,valid_min,float64,10957.0
+VAR_ATT,Tz,,,,,,,,,ancillary_variables,str,"Tz_quality_control Tz_standard_error Tz_number_of_observations"
+VAR_ATT,Tz,,,,,,,,,comment,str,"Estimated period from spectral moments m0 and m2"
+VAR_ATT,Tz,,,,,,,,,coordinates,str,"LONGITUDE LATITUDE TIME"
+VAR_ATT,Tz,,,,,,,,,long_name,str,"significant wave period"
+VAR_ATT,Tz,,,,,,,,,standard_name,str,sea_surface_wave_significant_period
+VAR_ATT,Tz,,,,,,,,,units,str,s
+VAR_ATT,Tz,,,,,,,,,coordinates,str,"TIME NOMINAL_DEPTH_Tz LATITUDE LONGITUDE"
+VAR_ATT,Tz_number_of_observations,,,,,,,,,comment,str,"number of samples"
+VAR_ATT,Tz_number_of_observations,,,,,,,,,long_name,str,"significant wave period number of observations"
+VAR_ATT,Tz_number_of_observations,,,,,,,,,units,str,1
+VAR_ATT,Tz_quality_control,,,,,,,,,comment,str,"maximum of quality flags of input data"
+VAR_ATT,Tz_quality_control,,,,,,,,,flag_meanings,str,"unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value"
+VAR_ATT,Tz_quality_control,,,,,,,,,flag_values,ndarray,"[0 1 2 3 4 6 7 9]"
+VAR_ATT,Tz_quality_control,,,,,,,,,long_name,str,"quality flag for significant wave period"
+VAR_ATT,Tz_quality_control,,,,,,,,,quality_control_conventions,str,"IMOS standard flags"
+VAR_ATT,Tz_quality_control,,,,,,,,,standard_name,str,"sea_surface_wave_significant_period status_flag"
+VAR_ATT,Tz_standard_error,,,,,,,,,comment,str,"sample bin standard deviation"
+VAR_ATT,Tz_standard_error,,,,,,,,,long_name,str,"significant wave period standard error"
+VAR_ATT,Tz_standard_error,,,,,,,,,units,str,s
+VAR_ATT,UWIND,,,,,,,,,ancillary_variables,str,"UWIND_quality_control UWIND_standard_error UWIND_number_of_observations"
+VAR_ATT,UWIND,,,,,,,,,coordinates,str,"TIME NOMINAL_DEPTH_UWIND LATITUDE LONGITUDE"
+VAR_ATT,UWIND,,,,,,,,,long_name,str,wind_velocity_east
+VAR_ATT,UWIND,,,,,,,,,name,str,eastward_wind
+VAR_ATT,UWIND,,,,,,,,,standard_name,str,eastward_wind
+VAR_ATT,UWIND,,,,,,,,,units,str,m/s
+VAR_ATT,UWIND,,,,,,,,,valid_max,float32,65.0
+VAR_ATT,UWIND,,,,,,,,,valid_min,float32,0.0
+VAR_ATT,UWIND_number_of_observations,,,,,,,,,comment,str,"number of samples"
+VAR_ATT,UWIND_number_of_observations,,,,,,,,,long_name,str,"wind_velocity_east number of observations"
+VAR_ATT,UWIND_number_of_observations,,,,,,,,,units,str,1
+VAR_ATT,UWIND_quality_control,,,,,,,,,comment,str,"maximum of quality flags of input data"
+VAR_ATT,UWIND_quality_control,,,,,,,,,flag_meanings,str,"unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value"
+VAR_ATT,UWIND_quality_control,,,,,,,,,flag_values,ndarray,"[0 1 2 3 4 6 7 9]"
+VAR_ATT,UWIND_quality_control,,,,,,,,,long_name,str,"quality flag for wind_velocity_east"
+VAR_ATT,UWIND_quality_control,,,,,,,,,quality_control_conventions,str,"IMOS standard flags"
+VAR_ATT,UWIND_quality_control,,,,,,,,,standard_name,str,"eastward_wind status_flag"
+VAR_ATT,UWIND_standard_error,,,,,,,,,comment,str,"sample bin standard deviation"
+VAR_ATT,UWIND_standard_error,,,,,,,,,long_name,str,"wind_velocity_east standard error"
+VAR_ATT,UWIND_standard_error,,,,,,,,,units,str,m/s
+VAR_ATT,VWIND,,,,,,,,,ancillary_variables,str,"VWIND_quality_control VWIND_standard_error VWIND_number_of_observations"
+VAR_ATT,VWIND,,,,,,,,,coordinates,str,"TIME NOMINAL_DEPTH_VWIND LATITUDE LONGITUDE"
+VAR_ATT,VWIND,,,,,,,,,long_name,str,wind_velocity_north
+VAR_ATT,VWIND,,,,,,,,,name,str,northward_wind
+VAR_ATT,VWIND,,,,,,,,,standard_name,str,northward_wind
+VAR_ATT,VWIND,,,,,,,,,units,str,m/s
+VAR_ATT,VWIND,,,,,,,,,valid_max,float32,65.0
+VAR_ATT,VWIND,,,,,,,,,valid_min,float32,0.0
+VAR_ATT,VWIND_number_of_observations,,,,,,,,,comment,str,"number of samples"
+VAR_ATT,VWIND_number_of_observations,,,,,,,,,long_name,str,"wind_velocity_north number of observations"
+VAR_ATT,VWIND_number_of_observations,,,,,,,,,units,str,1
+VAR_ATT,VWIND_quality_control,,,,,,,,,comment,str,"maximum of quality flags of input data"
+VAR_ATT,VWIND_quality_control,,,,,,,,,flag_meanings,str,"unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value"
+VAR_ATT,VWIND_quality_control,,,,,,,,,flag_values,ndarray,"[0 1 2 3 4 6 7 9]"
+VAR_ATT,VWIND_quality_control,,,,,,,,,long_name,str,"quality flag for wind_velocity_north"
+VAR_ATT,VWIND_quality_control,,,,,,,,,quality_control_conventions,str,"IMOS standard flags"
+VAR_ATT,VWIND_quality_control,,,,,,,,,standard_name,str,"northward_wind status_flag"
+VAR_ATT,VWIND_standard_error,,,,,,,,,comment,str,"sample bin standard deviation"
+VAR_ATT,VWIND_standard_error,,,,,,,,,long_name,str,"wind_velocity_north standard error"
+VAR_ATT,VWIND_standard_error,,,,,,,,,units,str,m/s
+
+VAR_ATT,xCO2_AIR_WET,,,,,,,,,ancillary_variables,str,"xCO2_AIR_WET_quality_control xCO2_AIR_WET_standard_error xCO2_AIR_WET_number_of_observations"
+VAR_ATT,xCO2_AIR_WET,,,,,,,,,comment,str,"from source file column xCO2Air(wet)(umol/mol)"
+VAR_ATT,xCO2_AIR_WET,,,,,,,,,long_name,str,"xCO2 of Air"
+VAR_ATT,xCO2_AIR_WET,,,,,,,,,units,str,umol/mol
+VAR_ATT,xCO2_AIR_WET,,,,,,,,,coordinates,str,"TIME NOMINAL_DEPTH_xCO2_AIR_WET LATITUDE LONGITUDE"
+VAR_ATT,xCO2_AIR_WET_number_of_observations,,,,,,,,,comment,str,"number of samples"
+VAR_ATT,xCO2_AIR_WET_number_of_observations,,,,,,,,,long_name,str,"xCO2 of Air number of observations"
+VAR_ATT,xCO2_AIR_WET_number_of_observations,,,,,,,,,units,str,1
+VAR_ATT,xCO2_AIR_WET_quality_control,,,,,,,,,comment,str,"maximum of quality flags of input data"
+VAR_ATT,xCO2_AIR_WET_quality_control,,,,,,,,,flag_meanings,str,"unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value"
+VAR_ATT,xCO2_AIR_WET_quality_control,,,,,,,,,flag_values,ndarray,"[0 1 2 3 4 6 7 9]"
+VAR_ATT,xCO2_AIR_WET_quality_control,,,,,,,,,long_name,str,"quality flag for xCO2 of Air"
+VAR_ATT,xCO2_AIR_WET_quality_control,,,,,,,,,quality_control_conventions,str,"IMOS standard flags"
+VAR_ATT,xCO2_AIR_WET_standard_error,,,,,,,,,comment,str,"sample bin standard deviation"
+VAR_ATT,xCO2_AIR_WET_standard_error,,,,,,,,,long_name,str,"xCO2 of Air standard error"
+VAR_ATT,xCO2_AIR_WET_standard_error,,,,,,,,,units,str,umol/mol
+VAR_ATT,xCO2_SW_WET,,,,,,,,,ancillary_variables,str,"xCO2_SW_WET_quality_control xCO2_SW_WET_standard_error xCO2_SW_WET_number_of_observations"
+VAR_ATT,xCO2_SW_WET,,,,,,,,,comment,str,"from source file column xCO2SW(wet)(umol/mol)"
+VAR_ATT,xCO2_SW_WET,,,,,,,,,long_name,str,"xCO2 of Seawater"
+VAR_ATT,xCO2_SW_WET,,,,,,,,,units,str,umol/mol
+VAR_ATT,xCO2_SW_WET,,,,,,,,,coordinates,str,"TIME NOMINAL_DEPTH_xCO2_SW_WET LATITUDE LONGITUDE"
+VAR_ATT,xCO2_SW_WET_number_of_observations,,,,,,,,,comment,str,"number of samples"
+VAR_ATT,xCO2_SW_WET_number_of_observations,,,,,,,,,long_name,str,"xCO2 of Seawater number of observations"
+VAR_ATT,xCO2_SW_WET_number_of_observations,,,,,,,,,units,str,1
+VAR_ATT,xCO2_SW_WET_quality_control,,,,,,,,,comment,str,"maximum of quality flags of input data"
+VAR_ATT,xCO2_SW_WET_quality_control,,,,,,,,,flag_meanings,str,"unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value"
+VAR_ATT,xCO2_SW_WET_quality_control,,,,,,,,,flag_values,ndarray,"[0 1 2 3 4 6 7 9]"
+VAR_ATT,xCO2_SW_WET_quality_control,,,,,,,,,long_name,str,"quality flag for xCO2 of Seawater"
+VAR_ATT,xCO2_SW_WET_quality_control,,,,,,,,,quality_control_conventions,str,"IMOS standard flags"
+VAR_ATT,xCO2_SW_WET_standard_error,,,,,,,,,comment,str,"sample bin standard deviation"
+VAR_ATT,xCO2_SW_WET_standard_error,,,,,,,,,long_name,str,"xCO2 of Seawater standard error"
+VAR_ATT,xCO2_SW_WET_standard_error,,,,,,,,,units,str,umol/mol
+VAR_ATT,xCO2_SW_WET,,,,,,,,,comment_data_source,str,"https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0118546/"
+VAR_ATT,xCO2_SW_WET,,,,,,,,,comment_data_citation,str,"Sutton, A., S. Maenner, S. Musielewicz, R. Battisti, R. Bott, and J. Osborne. 2020. High-resolution ocean and atmosphere pCO2 time-series measurements from mooring SOFS_142E_46S."
+
+VAR_ATT,PAR,,,,,,,,,ancillary_variables,str,"PAR_quality_control PAR_standard_error PAR_number_of_observations"
+VAR_ATT,PAR,,,,,,,,,comment_sensor_type,str,"cosine sensor"
+VAR_ATT,PAR,,,,,,,,,coordinates,str,"TIME LATITUDE LONGITUDE NOMINAL_DEPTH_PAR"
+VAR_ATT,PAR,,,,,,,,,long_name,str,surface_downwelling_photosynthetic_photon_flux_in_air
+VAR_ATT,PAR,,,,,,,,,standard_name,str,surface_downwelling_photosynthetic_photon_flux_in_air
+VAR_ATT,PAR,,,,,,,,,units,str,umol/m^2/s
+VAR_ATT,PAR,,,,,,,,,valid_max,float32,10000.0
+VAR_ATT,PAR,,,,,,,,,valid_min,float32,-2.0
+VAR_ATT,PAR_number_of_observations,,,,,,,,,comment,str,"number of samples"
+VAR_ATT,PAR_number_of_observations,,,,,,,,,long_name,str,"surface_downwelling_photosynthetic_photon_flux_in_air number of observations"
+VAR_ATT,PAR_number_of_observations,,,,,,,,,units,str,1
+VAR_ATT,PAR_quality_control,,,,,,,,,comment,str,"maximum of quality flags of input data"
+VAR_ATT,PAR_quality_control,,,,,,,,,flag_meanings,str,"unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value"
+VAR_ATT,PAR_quality_control,,,,,,,,,flag_values,ndarray,"[0 1 2 3 4 6 7 9]"
+VAR_ATT,PAR_quality_control,,,,,,,,,long_name,str,"quality flag for surface_downwelling_photosynthetic_photon_flux_in_air"
+VAR_ATT,PAR_quality_control,,,,,,,,,quality_control_conventions,str,"IMOS standard flags"
+VAR_ATT,PAR_quality_control,,,,,,,,,standard_name,str,"surface_downwelling_photosynthetic_photon_flux_in_air status_flag"
+VAR_ATT,PAR_standard_error,,,,,,,,,comment,str,"sample bin standard deviation"
+VAR_ATT,PAR_standard_error,,,,,,,,,long_name,str,"surface_downwelling_photosynthetic_photon_flux_in_air standard error"
+VAR_ATT,PAR_standard_error,,,,,,,,,units,str,umol/m^2/s
+VAR_ATT,pHt,,,,,,,,,ancillary_variables,str,"pHt_quality_control pHt_standard_error pHt_number_of_observations"
+VAR_ATT,pHt,,,,,,,,,comment,str,"pH_TS_measured (durafet)"
+VAR_ATT,pHt,,,,,,,,,coordinates,str,"TIME LATITUDE LONGITUDE NOMINAL_DEPTH_pHt"
+VAR_ATT,pHt,,,,,,,,,long_name,str,sea_water_ph_reported_on_total_scale
+VAR_ATT,pHt,,,,,,,,,units,str,1
+VAR_ATT,pHt,,,,,,,,,valid_max,float32,10.0
+VAR_ATT,pHt,,,,,,,,,valid_min,float32,5.0
+VAR_ATT,pHt_number_of_observations,,,,,,,,,comment,str,"number of samples"
+VAR_ATT,pHt_number_of_observations,,,,,,,,,long_name,str,"sea_water_ph_reported_on_total_scale number of observations"
+VAR_ATT,pHt_number_of_observations,,,,,,,,,units,str,1
+VAR_ATT,pHt_quality_control,,,,,,,,,comment,str,"maximum of quality flags of input data"
+VAR_ATT,pHt_quality_control,,,,,,,,,flag_meanings,str,"unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value"
+VAR_ATT,pHt_quality_control,,,,,,,,,flag_values,ndarray,"[0 1 2 3 4 6 7 9]"
+VAR_ATT,pHt_quality_control,,,,,,,,,long_name,str,"quality flag for sea_water_ph_reported_on_total_scale"
+VAR_ATT,pHt_quality_control,,,,,,,,,quality_control_conventions,str,"IMOS standard flags"
+VAR_ATT,pHt_standard_error,,,,,,,,,comment,str,"sample bin standard deviation"
+VAR_ATT,pHt_standard_error,,,,,,,,,long_name,str,"sea_water_ph_reported_on_total_scale standard error"
+VAR_ATT,pHt_standard_error,,,,,,,,,units,str,1

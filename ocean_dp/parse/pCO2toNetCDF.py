@@ -26,6 +26,7 @@ from glob2 import glob
 from netCDF4 import num2date, date2num
 from netCDF4 import Dataset
 import numpy as np
+import xml.etree.ElementTree as ET
 
 hdr_line_expr = r"Date Time \(UTC\)"
 hdr_qc_line_expr = r"Mooring Name,Latitude,Longitude,Date,Time"
@@ -142,11 +143,32 @@ column_map['xCO2Air(wet)(umol/mol)'] = ('xCO2_AIR_WET', 'umol/mol', 'xCO2 of Air
 
 def parse(files):
     qc_file = False
-
+    variable_info = {}
     output_names = []
     column_names = []
 
     for filepath in files:
+        if filepath.endswith('xml'):
+            # create element tree object
+            tree = ET.parse(filepath)
+
+            # get root element
+            root = tree.getroot()
+
+            # iterate news items
+            for item in root.findall('Variables_Info/Variable'):
+                for child in item:
+                    if child.tag == 'Variable_Name':
+                        v_name = child.text
+                    if child.tag == 'Description_of_Variable':
+                        v_desc = child.text
+                variable_info[v_name] = v_desc
+
+    print(variable_info)
+
+    for filepath in files[1:]:
+        if filepath.endswith('xml'):
+            continue
 
         print('file name', filepath)
 
@@ -220,8 +242,8 @@ def parse(files):
 
         ncOut = Dataset(outputName, 'w', format='NETCDF4')
 
-        ncOut.instrument = 'Battelle'
-        ncOut.instrument_model = 'Seaology pCO2 monitor'
+        ncOut.instrument = 'NOAA : MAPCO2'
+        ncOut.instrument_model = 'MAPCO2'
         if len(note) > 0:
             ncOut.note = note
         if cite:
@@ -242,19 +264,42 @@ def parse(files):
         ncTimesOut.axis = "T"
         ncTimesOut[:] = date2num(times, calendar=ncTimesOut.calendar, units=ncTimesOut.units)
 
+        has_qc = False
+
         for v in column_names:
-            print (v)
+            print ('column name', v)
+            if v in variable_info:
+                print('variable info', v, variable_info[v])
+
+            if v.endswith('QF') and v_out:
+                print(v, 'quality flag for', ncVarOut)
+                ncVarOutQC = ncOut.createVariable(v_out + '_quality_control', "i1", ("TIME",), fill_value=99)
+                ncVarOutQC.long_name = 'quality flag for ' + ncVarOut.long_name
+                ncVarOutQC.flag_values = np.array([2, 3, 4, 6, 9], dtype=np.int8)
+                ncVarOutQC.flag_meanings = "acceptable questionable known_bad median_of_replicates missing_value"
+                values = []
+                for d in data:
+                    values.append(d[v])
+                ncVarOutQC[:] = values
+
+                ncVarOut.ancillary_variables = v_out + '_quality_control'
+
+                has_qc = True
+
             if v in column_map:
                 v_out = column_map[v][0]
                 values = []
                 for d in data:
                     values.append(d[v])
                 # for each variable in the data file, create a netCDF variable
-                ncVarOut = ncOut.createVariable(v_out, "f4", ("TIME",), zlib=True, fill_value = np.nan)
+                ncVarOut = ncOut.createVariable(v_out, "f4", ("TIME",), zlib=True, fill_value=np.nan)
                 ncVarOut.long_name = column_map[v][2]
                 ncVarOut.units = column_map[v][1]
-                ncVarOut.comment = "from source file column `" + v + "`"
+                ncVarOut.comment = "from source file column " + v
                 ncVarOut[:] = values
+            else:
+                v_out = None
+
 
         # add timespan attributes
         ncOut.setncattr("time_coverage_start", num2date(ncTimesOut[0], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
@@ -263,6 +308,9 @@ def parse(files):
         # add creating and history entry
         ncOut.setncattr("date_created", datetime.utcnow().strftime(ncTimeFormat))
         ncOut.setncattr("history", datetime.utcnow().strftime("%Y-%m-%d") + " created from file " + os.path.basename(filepath))
+
+        if has_qc:
+            ncOut.file_version = 'Level 1 - Quality Controlled Data'
 
         ncOut.close()
 

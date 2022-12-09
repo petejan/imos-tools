@@ -38,6 +38,13 @@ def parseTypeValue(att_type, v):
         value = np.int32(v)
     elif att_type == 'ubyte':
         value = np.ubyte(v)
+    elif att_type == 'ndarray':
+        # [0 1 2 3 4 6 7 9]
+        v_split = v[1:-1].split(' ')
+        v_arr = [int(x) for x in v_split]
+        #print('v_split', v_arr)
+        value = np.ndarray(8, dtype='b')
+        value[:] = v_arr
     else:
         value = v
 
@@ -58,8 +65,14 @@ def add(netCDFfile, metadatafiles):
 
     time_start = datetime.strptime(ds.time_coverage_start, '%Y-%m-%dT%H:%M:%SZ')
     time_end = datetime.strptime(ds.time_coverage_end, '%Y-%m-%dT%H:%M:%SZ')
-    instrument_model = ds.instrument_model
-    instrument_serial_number = ds.instrument_serial_number
+    try:
+        instrument_model = ds.instrument_model
+    except AttributeError:
+        instrument_model = 'unknown'
+    try:
+        instrument_serial_number = ds.instrument_serial_number
+    except AttributeError:
+        instrument_serial_number = 'unknown'
 
     print(time_start, time_end)
 

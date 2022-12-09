@@ -234,7 +234,6 @@ for fv00_file in ncFiles:
         manual_reason = 'density inversion'
         maunal_date_start = '2019-02-09 00:00:00'
         mark_rest = True
-
     # SAZ 15 2013-02-19 2013-03-06
     if model == 'SBE37SM-RS232' and deployment == 'SAZ47-15-2012' and sn == '03708597':
         manual_flag = 4
@@ -293,6 +292,16 @@ for fv00_file in ncFiles:
 
     if manual_flag:
         fv01_file_list = ocean_dp.qc.manual_by_date.maunal(fv01_file_list, manual_var, maunal_date_start, manual_flag, manual_reason, end_str=maunal_date_end)
+    if model == 'SBE37SMP-ODO-RS232' and deployment == 'Pulse-9-2012' and sn == '03709515':
+        manual_flag = 3
+        manual_var = 'DOX2'
+        manual_reason = 'oxygen sensor failed'
+        fv01_file_list = ocean_dp.qc.manual_by_date.maunal(fv01_file_list, manual_var, '2012-07-21', manual_flag, manual_reason, end_str=None)
+    if model == 'Optode 3830' and deployment == 'SOFS-6-2017' and sn == '1158':
+        manual_flag = 3
+        manual_var = 'DOX2'
+        manual_reason = 'oxygen sensor reading high'
+        fv01_file_list = ocean_dp.qc.manual_by_date.maunal(fv01_file_list, manual_var, None, manual_flag, manual_reason, end_str=None)
     if model == 'SBE37SMP-ODO-RS232' and deployment == 'SOFS-9-2020' and sn == '03715971':
         manual_flag = 2
         manual_var = 'PSAL'
@@ -303,6 +312,11 @@ for fv00_file in ncFiles:
         manual_var = 'PSAL'
         manual_reason = 'high salinity at end, reset of data suspect'
         fv01_file_list = ocean_dp.qc.manual_by_date.maunal(fv01_file_list, manual_var, None, manual_flag, manual_reason, end_str=None)
+    if model == 'Optode 3830' and deployment == 'SOFS-9-2020':
+        manual_flag = 3
+        manual_var = 'DOX2'
+        manual_reason = 'drift low, biofouling'
+        fv01_file_list = ocean_dp.qc.manual_by_date.maunal(fv01_file_list, manual_var, '2020-11-24', manual_flag, manual_reason, end_str=None)
     if model == 'Optode 4831' and deployment == 'SOFS-10-2021':
         manual_flag = 3
         manual_var = 'DOX2'
