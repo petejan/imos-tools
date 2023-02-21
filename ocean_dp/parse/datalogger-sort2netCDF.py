@@ -230,6 +230,8 @@ def datalogger(outputName, files):
                                 if have_load:
                                     load_samples[sample] = decode_scale[decode_dict['Load']]
 
+                                #print('IMU sample',sample,  accel_samples[sample, 2], load_samples[sample])
+
                                 # find the sample index from the IMU timer, need to detect missed samples in the record
                                 if sample == 0:
                                     t0 = int(decode_scale[decode_dict['Timer']] * 5)/5
@@ -309,7 +311,7 @@ def datalogger(outputName, files):
                                 name = nv[0]
                                 if name in nameMap:
                                     try:
-                                        value = np.float(nv[1])
+                                        value = float(nv[1])
                                     except (ValueError, IndexError):
                                         value = np.nan
                                     done_dict.update({nameMap[name]: value})
@@ -325,7 +327,7 @@ def datalogger(outputName, files):
                                 data_time = data_time - timedelta(seconds=810989538)
 
                             #print('gps fix time ', data_time)
-                            gps_array.append({'time': data_time, 'lon': np.float(matchobj.group(4))*-1, 'lat': np.float(matchobj.group(3))})
+                            gps_array.append({'time': data_time, 'lon': float(matchobj.group(4))*-1, 'lat': float(matchobj.group(3))})
 
                         matchobj = gps_fix2.match(s)
                         if matchobj:
@@ -334,7 +336,7 @@ def datalogger(outputName, files):
                                 data_time = data_time - timedelta(seconds=810989538)
 
                             #print('gps fix time ', data_time)
-                            gps_array.append({'time': data_time, 'lon': np.float(matchobj.group(4))*-1, 'lat': np.float(matchobj.group(3))})
+                            gps_array.append({'time': data_time, 'lon': float(matchobj.group(4))*-1, 'lat': float(matchobj.group(3))})
 
                         matchobj = gps_rmc.match(s)
                         if matchobj:
@@ -410,7 +412,7 @@ def datalogger(outputName, files):
         done_times.append(round_time(d['time']))
 
     n_times = len(done_times)
-    print('final times', n_times, done_times[0], done_times[-1])
+    #print('final times', n_times, done_times[0], done_times[-1])
 
     ts_start = min(done_times)
     ts_end = max(done_times)
@@ -469,7 +471,7 @@ def datalogger(outputName, files):
         sample_t_var.units = 'seconds'
         sample_t_var.long_name = 'time_of_sample within window'
 
-        imu_sample_var = dataset.createVariable('TIME_SAMPLE_START', np.float, ('TIME',), fill_value=np.nan)
+        imu_sample_var = dataset.createVariable('TIME_SAMPLE_START', float, ('TIME',), fill_value=np.nan)
         imu_sample_var.units = 'seconds'
         imu_sample_var.comment = 'time offset to start of samples'
 
@@ -484,14 +486,14 @@ def datalogger(outputName, files):
             load_var = dataset.createVariable('load', np.float32, ('sample_time', 'TIME'), fill_value=np.nan, zlib=True)
 
     if len(gps_array) > 0:
-        xpos_var = dataset.createVariable('XPOS', np.float, ('TIME',), fill_value=np.nan)
-        ypos_var = dataset.createVariable('YPOS', np.float, ('TIME',), fill_value=np.nan)
-        gps_sample_var = dataset.createVariable('TIME_GPS_FIX', np.float, ('TIME',), fill_value=np.nan)
+        xpos_var = dataset.createVariable('XPOS', float, ('TIME',), fill_value=np.nan)
+        ypos_var = dataset.createVariable('YPOS', float, ('TIME',), fill_value=np.nan)
+        gps_sample_var = dataset.createVariable('TIME_GPS_FIX', float, ('TIME',), fill_value=np.nan)
         gps_sample_var.units = 'seconds'
         gps_sample_var.comment = 'time offset to gps fix'
 
     if len(rmc_array) > 0:
-        rmc_diff_var = dataset.createVariable('TIME_DIFF', np.float, ('TIME',), fill_value=np.nan)
+        rmc_diff_var = dataset.createVariable('TIME_DIFF', float, ('TIME',), fill_value=np.nan)
         rmc_diff_var.units = 'seconds'
         rmc_diff_var.comment = 'difference between TIME and utc time from gps'
 

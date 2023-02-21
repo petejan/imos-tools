@@ -89,7 +89,7 @@ def add_wave_spectra(netCDFfile):
     if "WAVE_SPECTRA" in dsOut.variables:
         wave_spec_out_var = dsOut.variables["WAVE_SPECTRA"]
     else:
-        wave_spec_out_var = dsOut.createVariable("WAVE_SPECTRA", "f4", ("TIME", 'FREQ'), fill_value=np.nan, zlib=zl)  # fill_value=nan otherwise defaults to max
+        wave_spec_out_var = dsOut.createVariable("WAVE_SPECTRA", "f4", ("FREQ", "TIME"), fill_value=np.nan, zlib=zl)  # fill_value=nan otherwise defaults to max
     wave_spec_out_var.units = "m^2/Hz"
     wave_spec_out_var.long_name = "wave_spectral_density"
     wave_spec_out_var.comment = "calculated from world coordinate acceleration, with 512 point welch FFT, using hamming window, mean removed, zero filled where data is NaN"
@@ -103,6 +103,12 @@ def add_wave_spectra(netCDFfile):
         apd_out_var = dsOut.variables["Tz"]
     else:
         apd_out_var = dsOut.createVariable("Tz", "f4", ("TIME",), fill_value=np.nan, zlib=zl)  # fill_value=nan otherwise defaults to max
+
+    # if "ACCEL_W_Z" in dsOut.variables:
+    #     accel_w_var = dsOut.variables["ACCEL_W_Z"]
+    # else:
+    #     dsOut.createDimension('SAMPLE', 3072)
+    #     accel_w_var = dsOut.createVariable("ACCEL_W_Z", "f4", ("TIME", "SAMPLE"), fill_value=np.nan, zlib=zl)  # fill_value=nan otherwise defaults to max
 
     # handle for variables
     var_q = dsIn.variables["orientation"]
@@ -123,7 +129,7 @@ def add_wave_spectra(netCDFfile):
             accel_world.fill(np.nan)
             for j in range(0, 3072):
                 try:
-                    # read the quaternion, the IMU data is in w, x, y, z where as Rotation.from_quant is in x, y, z, w
+                    # read the quaternion, the IMU data is in w, x, y, z whereas Rotation.from_quant is in x, y, z, w
                     #r = Rotation.from_quat(np.transpose([q[j, 1], q[j, 2], q[j, 3], q[j, 0]]))
 
                     #accel_inst = var_accel[j, :, i]  # dimensions are sample_time, vector, TIME
@@ -132,6 +138,7 @@ def add_wave_spectra(netCDFfile):
 
                     accel_inst = var_accel[j, :, i]  # dimensions are sample_time, vector, TIME
                     accel_world[j, :] = point_rotation_by_quaternion(accel_inst, q[j, :])
+                    #print(j, accel_inst, accel_world[j, :])
 
                 except ValueError as v:
                     print(j, v)
@@ -145,11 +152,13 @@ def add_wave_spectra(netCDFfile):
             # removing mean seems to work as well as detrend='linear' or detrend='constant'
 
             a = accel_world[:, 2]
+            #accel_w_var[:] = a
             a_mean = np.nanmean(a)
-            a = a - a_mean
+            #a = a - a_mean
             nan_a = np.isnan(a)
-            a[nan_a] = 0 # zero fill
-            f, wave_acceleration_spectra = signal.welch(a, fs=5, nfft=512, scaling='density', window='hamming', detrend=None)
+            #a[nan_a] = 0 # zero fill
+            a[nan_a] = a_mean # mean fill
+            f, wave_acceleration_spectra = signal.welch(a, fs=5, nfft=512, scaling='density', window='hamming', detrend='linear', nperseg=512)
 
             # compute displacement spectra from wave acceleration spectra
             # by divinding by (2*pi*f) ^ 4, first point is nan as f[0] = 0
@@ -158,7 +167,7 @@ def add_wave_spectra(netCDFfile):
             wave_displacement_spectra[1:] = wave_acceleration_spectra[1:-1] / (2*np.pi*f[1:-1])**4
 
             # save wave displacement spectra
-            wave_spec_out_var[i, :] = wave_displacement_spectra
+            wave_spec_out_var[:, i] = wave_displacement_spectra
 
             # calculate wave height, NOAA use frequency band 0.0325 to 0.485 https://www.ndbc.noaa.gov/wavecalc.shtml
             # 0.05 = 20 sec wave period, MRU overestimates the acceleration at this low frequency,
@@ -181,7 +190,7 @@ def add_wave_spectra(netCDFfile):
             print('missing data', num2date(var_time[i], calendar=var_time.calendar, units=var_time.units))
             swh_out_var[i] = np.nan
             apd_out_var[i] = np.nan
-            wave_spec_out_var[i, :] = np.nan
+            wave_spec_out_var[:, i] = np.nan
 
         print("save % s seconds" % (time.time() - start))
 

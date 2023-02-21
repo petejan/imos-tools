@@ -125,8 +125,14 @@ def parse(files):
                             cndc_out.append(float(dictionary['CC']))
                             dox2_out.append(float(dictionary['O2']))
                             dox2_temp_out.append(float(dictionary['OT']))
-                            flu_out.append(float(dictionary['CH']))
-                            bs_out.append(float(dictionary['TB']))
+                            if len(dictionary['CH']) > 0:
+                                flu_out.append(float(dictionary['CH']))
+                            else:
+                                flu_out.append(np.nan)
+                            if len(dictionary['TB']) > 0:
+                                bs_out.append(float(dictionary['TB']))
+                            else:
+                                bs_out.append(np.nan)
 
                             profile_n_out.append(n_profile)
 
