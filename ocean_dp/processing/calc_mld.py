@@ -75,7 +75,7 @@ def mld(files):
     mld_out_var.long_name = 'calculated mix layer depth'
     mld_out_var.units = pres_var.units
     mld_out_var.coordinates = 'TIME LONGITUDE LATITUDE'
-    mod_out_var.comment = "calculated using temperature difference of " + str(mix_layer_depth_temp_diff) + " degrees_Celsius to first sensor below 15 m nominal depth"
+    mld_out_var.comment = "calculated using temperature difference of " + str(mix_layer_depth_temp_diff) + " degrees_Celsius to first sensor below 15 m nominal depth"
 
     # update the history attribute
     try:
