@@ -39,13 +39,13 @@ def down_sample(files, method):
         datetime_end = datetime_deploy_end.replace(minute=0, second=0, microsecond=0) - timedelta(hours=1)
         timedelta_hours = (datetime_end - datetime_start).total_seconds()/3600
 
-        sample_datetime = [(datetime_start + timedelta(hours=h)) for h in range(np.int(timedelta_hours+1))]
+        sample_datetime = [(datetime_start + timedelta(hours=h)) for h in range(int(timedelta_hours+1))]
         print('sample_datetime_start, sample_datetime_end', sample_datetime[0], sample_datetime[-1])
 
         num_deploy_start = date2num(datetime_deploy_start, units=var_time.units)
         num_deploy_end = date2num(datetime_deploy_end, units=var_time.units)
 
-        bin_datetime = [(datetime_start + timedelta(hours=(h-0.5))) for h in range(np.int(timedelta_hours+2))]
+        bin_datetime = [(datetime_start + timedelta(hours=(h-0.5))) for h in range(int(timedelta_hours+2))]
         bins = date2num(bin_datetime, units=var_time.units)
 
         # read existing times, find sample rate
@@ -59,7 +59,7 @@ def down_sample(files, method):
         time_deployment = time[deployment_msk]
 
         # use the mid point sample rate, as it may change at start/end
-        n_mid = np.int(len(time_deployment)/2)
+        n_mid = int(len(time_deployment)/2)
         t_mid0 = datetime_time_deployment[n_mid]
         t_mid1 = datetime_time_deployment[n_mid+1]
 

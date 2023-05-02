@@ -254,7 +254,7 @@ def parse(files):
                                 cal_tup = (cal_sensor, cal_param, cal_value, sensor_name)
                                 cal_tags.append(cal_tup)
                                 #print('cal_tag', cal_tup)
-                                #print("calibration type %s param %s value %s" % (cal_sensor, cal_param, cal_value))
+                                print("calibration type %s param %s value %s" % (cal_sensor, cal_param, cal_value))
 
                     matchObj = re.match(sensor_start, line)
                     if matchObj:
@@ -540,14 +540,14 @@ def parse(files):
                     #print("cal_tag", c, v)
                     if c[3] == v['sensor_name']:
                         add = True
-                    # if varName == 'TEMP' and c[0] == 'TemperatureSensor':
-                    #     add = True
+                    if varName == 'TEMP' and c[0] == 'TemperatureSensor':
+                        add = True
                     # if varName == 'DOX2' and c[0] == 'OxygenSensor':
                     #     add = True
                     if varName == 'PRES' and c[0] == 'PressureSensor':
                          add = True
-                    # if varName == 'CNDC' and c[0] == 'ConductivitySensor':
-                    #     add = True
+                    if varName == 'CNDC' and c[0] == 'ConductivitySensor':
+                        add = True
                     # if varName == 'TEMP' and c[0] == 'temperature':
                     #     add = True
                     # if varName == 'CNDC' and c[0] == 'conductivity':

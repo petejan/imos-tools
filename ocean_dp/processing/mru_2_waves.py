@@ -18,7 +18,6 @@
 from cftime import num2date
 from netCDF4 import Dataset
 import sys
-import gsw
 import numpy as np
 from datetime import datetime
 
@@ -28,7 +27,7 @@ from scipy import signal
 import time
 
 zl = False
-append_to_file = False
+append_to_file = True
 
 # is this quicker than using the Rotation library, not really
 
@@ -104,11 +103,10 @@ def add_wave_spectra(netCDFfile):
     else:
         apd_out_var = dsOut.createVariable("Tz", "f4", ("TIME",), fill_value=np.nan, zlib=zl)  # fill_value=nan otherwise defaults to max
 
-    # if "ACCEL_W_Z" in dsOut.variables:
-    #     accel_w_var = dsOut.variables["ACCEL_W_Z"]
-    # else:
-    #     dsOut.createDimension('SAMPLE', 3072)
-    #     accel_w_var = dsOut.createVariable("ACCEL_W_Z", "f4", ("TIME", "SAMPLE"), fill_value=np.nan, zlib=zl)  # fill_value=nan otherwise defaults to max
+    if "acceleration_world" in dsOut.variables:
+        accel_w_var = dsOut.variables["acceleration_world"]
+    else:
+        accel_w_var = dsOut.createVariable("acceleration_world", "f4", ("sample_time", "vector", "TIME"), fill_value=np.nan, zlib=zl)  # fill_value=nan otherwise defaults to max
 
     # handle for variables
     var_q = dsIn.variables["orientation"]
@@ -138,6 +136,7 @@ def add_wave_spectra(netCDFfile):
 
                     accel_inst = var_accel[j, :, i]  # dimensions are sample_time, vector, TIME
                     accel_world[j, :] = point_rotation_by_quaternion(accel_inst, q[j, :])
+                    accel_w_var[j, :, i] = accel_world[j, :]
                     #print(j, accel_inst, accel_world[j, :])
 
                 except ValueError as v:
