@@ -86,11 +86,11 @@ deep_sea_phox = r"DSPHOX(\d*),(\d{2}/\d{2}/\d{4} \d{2}:\d{2}:\d{2}),(.*)$"
 # parse the file
 #
 
-instrument_model = 'SeaPHOxV2'
-instrument_serialnumber = "02016"
+instrument_model = 'Deep SeapHox2'
+instrument_serialnumber = "0002026"
 
 instrument_ctd_model = 'SBE37SMP-ODO'
-instrument_ctd_serialnumber = '21808'
+instrument_ctd_serialnumber = '20127'
 
 hdr_map = {}
 hdr_map['FrameSync'] = {'var': None, 'long_name': None, 'units': None}
@@ -185,7 +185,7 @@ def sbe_phox_parse(files):
     print("output file : %s" % outputName)
     outputNames.append(outputName)
 
-    ncOut = Dataset(outputName, 'w', format='NETCDF4')
+    ncOut = Dataset(outputName, 'w', format='NETCDF4_CLASSIC')
 
     if instrument_ctd_model:
         ncOut.instrument_ctd_model = instrument_ctd_model
