@@ -322,6 +322,21 @@ for fv00_file in ncFiles:
         manual_var = 'DOX2'
         manual_reason = 'drift low, biofouling'
         fv01_file_list = ocean_dp.qc.manual_by_date.maunal(fv01_file_list, manual_var, '2021-05-27', manual_flag, manual_reason, end_str=None)
+    if model == 'SBE37SMP-ODO-RS232' and deployment == 'SOFS-11-2022' and sn == '03715971':
+        manual_flag = 4
+        manual_var = 'PSAL'
+        manual_reason = 'high salinity at start, rest of data suspect'
+        fv01_file_list = ocean_dp.qc.manual_by_date.maunal(fv01_file_list, manual_var, None, manual_flag, manual_reason, end_str=None)
+    if model == 'SBE37SMP-ODO-RS232' and deployment == 'SOFS-11-2022' and sn == '03723332':
+        manual_flag = 3
+        manual_var = 'PSAL'
+        manual_reason = 'battery failed'
+        fv01_file_list = ocean_dp.qc.manual_by_date.maunal(fv01_file_list, manual_var, '2022-12-30', manual_flag, manual_reason, end_str=None)
+    if model == 'Deep SeapHox2' and deployment == 'SOFS-11-2022' and sn == '0002026':
+        manual_flag = 3
+        manual_var = 'PSAL'
+        manual_reason = 'drifted high, possible bio-fouling'
+        fv01_file_list = ocean_dp.qc.manual_by_date.maunal(fv01_file_list, manual_var, '2022-11-15', manual_flag, manual_reason, end_str=None)
 
     # need to propagate flags from temp -> PSAL, SIGMA-THETA0, OXSOL, DOX2
     #                              PSAL -> CNDC, SIGMA-THETA0, OXSOL, DOX2
@@ -334,4 +349,4 @@ for fv00_file in ncFiles:
         ds.references += '; Jansen P, Shadwick EH and Trull TW (2021). Southern Ocean Time Series (SOTS) Quality Assessment and Control Report Salinity Records Version 1.0. CSIRO, Australia. DOI: 10.26198/rv8y-2q14 (https://doi.org/10.26198/rv8y-2q14)'
     ds.close()
 
-    down_sample(fv01_file_list, 'mean')
+    #down_sample(fv01_file_list, 'mean')
