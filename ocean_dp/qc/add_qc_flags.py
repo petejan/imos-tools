@@ -28,7 +28,7 @@ import shutil
 # add QC variables to file
 
 
-def add_qc(netCDFfile, var_name=None):
+def add_qc(netCDF_files_in, var_name=None):
 
     new_name = []  # list of new file names
 
@@ -36,7 +36,7 @@ def add_qc(netCDFfile, var_name=None):
     now = datetime.utcnow()
 
     # loop over all file names given
-    for fn in netCDFfile:
+    for fn in netCDF_files_in:
 
         fn_new = fn
         dirname = os.path.dirname(fn_new)
@@ -59,8 +59,10 @@ def add_qc(netCDFfile, var_name=None):
         # If a new (different) filename has been successfully generated, make 
         # a copy of the old file with the new name
         if fn_new != fn:
+            print('qc from : ', fn)
+            print('qc to   : ', fn_new)
             # copy file
-            shutil.copy(fn, fn_new)
+            shutil.copyfile(fn, fn_new)
 
         print("output", fn_new)
 

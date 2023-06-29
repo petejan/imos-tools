@@ -68,8 +68,9 @@ psal_qc_params = [
 
 
 ncFiles = []
-for fv01_file_list in sys.argv[1:]:
-    ncFiles.extend(glob.glob(fv01_file_list))
+# get list of files from command line, expand and wild cards
+for cmd_args in sys.argv[1:]:
+    ncFiles.extend(glob.glob(cmd_args))
 
 qc_files = []
 for fv00_file in ncFiles:
@@ -125,19 +126,21 @@ for fv00_file in ncFiles:
 
     print('nominal depth', ndepth)
 
-    if has_dox2:
-        # oxygen QC
-
-        print('doxs:', fv01_file_list)
-        ocean_dp.processing.add_oxsol.add_oxsol(fv00_file)
-        ocean_dp.processing.calc_DOX_to_DOX2.doxtodox2(fv00_file)
-        ocean_dp.processing.add_doxs.add_doxs([fv00_file])
-
+    print('add qc :', [fv00_file])
     fv01_file_list = ocean_dp.qc.add_qc_flags.add_qc([fv00_file])
     if has_cndc and not has_psal:
-        fv01_file_list[0] = ocean_dp.processing.addPSAL.add_psal(fv01_file_list[0])
+        fv01_file_list[0] = ocean_dp.processing.addPSAL.add_psal(fv00_file[0])
         ocean_dp.qc.add_qc_flags.add_qc(fv01_file_list, 'PSAL')
-        fv01_file_list[0] = ocean_dp.file_name.imosNetCDFfileName.rename(fv01_file_list[0])
+        fv01_file_list[0] = ocean_dp.file_name.imosNetCDFfileName.rename(fv00_file[0])
+    if has_dox2:
+        # oxygen QC, add OXSOL, DOX2 if needed (from DOX) and DOXS
+
+        print('doxs:', fv01_file_list[0])
+        ocean_dp.processing.add_oxsol.add_oxsol(fv01_file_list[0])
+        ocean_dp.processing.calc_DOX_to_DOX2.doxtodox2(fv01_file_list[0])
+        ocean_dp.processing.add_doxs.add_doxs(fv01_file_list)
+
+
 
     fv01_file_list = ocean_dp.qc.in_out_water.in_out_water(fv01_file_list)
 
