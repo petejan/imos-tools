@@ -115,7 +115,7 @@ def make_depth(files):
     except AttributeError:
         hist = ""
 
-    ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " : added filled depth record for each instrument measurement")
+    ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " added filled depth record for each instrument measurement")
 
     ds.close()
 

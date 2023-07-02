@@ -90,7 +90,7 @@ def doxtodox2(netCDFfile):
     except AttributeError:
         hist = ""
 
-    ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " : added derived oxygen, DOX2, DOXS, DOX_MG")
+    ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " added derived oxygen, DOX2, DOXS, DOX_MG")
 
     ds.close()
 

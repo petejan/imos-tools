@@ -83,7 +83,7 @@ def mld(files):
     except AttributeError:
         hist = ""
 
-    ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " : added mix layer depth, temperature difference = " + str(mix_layer_depth_temp_diff))
+    ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " added mix layer depth, temperature difference = " + str(mix_layer_depth_temp_diff))
 
     ds.close()
 

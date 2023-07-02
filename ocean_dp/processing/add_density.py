@@ -114,7 +114,7 @@ def add_density(netCDFfile):
     except AttributeError:
         hist = ""
 
-    ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " : added DENSITY and SIGMA-THETA0 from TEMP, PSAL, "+pres_var+", LAT, LON")
+    ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " added DENSITY and SIGMA-THETA0 from TEMP, PSAL, "+pres_var+", LAT, LON")
 
     ds.close()
 
