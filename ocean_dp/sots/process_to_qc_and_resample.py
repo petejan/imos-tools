@@ -139,7 +139,9 @@ for fv00_file in ncFiles:
         ocean_dp.processing.add_oxsol.add_oxsol(fv01_file_list[0])
         ocean_dp.processing.calc_DOX_to_DOX2.doxtodox2(fv01_file_list[0])
         ocean_dp.processing.add_doxs.add_doxs(fv01_file_list)
-
+        ocean_dp.qc.add_qc_flags.add_qc(fv01_file_list, 'OXSOL')
+        ocean_dp.qc.add_qc_flags.add_qc(fv01_file_list, 'DOXS')
+        ocean_dp.qc.add_qc_flags.add_qc(fv01_file_list, 'DOX2')
 
 
     fv01_file_list = ocean_dp.qc.in_out_water.in_out_water(fv01_file_list)
