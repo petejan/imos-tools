@@ -112,7 +112,7 @@ def datalogger(outputName, files):
 
     print("output file : %s" % outputName)
 
-    dataset = Dataset(outputName, 'w', format='NETCDF4')
+    dataset = Dataset(outputName, 'w', format='NETCDF4_CLASSIC')
 
     dataset.instrument = "Campbell Scientific; CR1000"
     dataset.instrument_model = "CR1000"

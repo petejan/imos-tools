@@ -94,7 +94,7 @@ def lisst_parse(files):
 
     print("output file : %s" % outputName)
 
-    ncOut = Dataset(outputName, 'w', format='NETCDF4')
+    ncOut = Dataset(outputName, 'w', format='NETCDF4_CLASSIC')
 
     ncOut.instrument = "Sequioa ; LISST-25X"
     ncOut.instrument_model = "LISST-25X"

@@ -180,7 +180,7 @@ def main(files):
 
     print("output file : %s" % outputName)
 
-    ncOut = Dataset(outputName, 'w', format='NETCDF4')
+    ncOut = Dataset(outputName, 'w', format='NETCDF4_CLASSIC')
 
     inst_system = fixed_decoded['sysConfig'] & 0x7
     inst_system_text = inst_system_decoder[inst_system]

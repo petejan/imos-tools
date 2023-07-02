@@ -58,7 +58,7 @@ def netcdf_gen(file_name, nominal_depth, *args):
             if all(np.shape(var_data[1]) == np.shape(x) for x in var_data):
 
                 # Create the netcdf with IMOS tag
-                ds = Dataset(file_name, "w", format="NETCDF4")
+                ds = Dataset(file_name, "w", format="NETCDF4_CLASSIC")
 
                 # Create time dimension with length to match data
                 time_dim = ds.createDimension("TIME", len(var_data[0]))

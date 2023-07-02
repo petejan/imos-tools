@@ -73,7 +73,7 @@ def datalogger(file):
 
     print("output file : %s" % outputName)
 
-    dataset = Dataset(outputName, 'w', format='NETCDF4')
+    dataset = Dataset(outputName, 'w', format='NETCDF4_CLASSIC')
 
     dataset.instrument = "LORD Sensing Microstrain ; 3DM-GX1"
     dataset.instrument_model = "3DM-GX1"

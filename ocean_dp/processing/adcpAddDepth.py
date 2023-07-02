@@ -7,7 +7,7 @@ def add_depth(path_file):
 
     outputName = path_file.replace(".nc", "-depth.nc")
 
-    ncOut = Dataset(outputName, 'w', format='NETCDF4')
+    ncOut = Dataset(outputName, 'w', format='NETCDF4_CLASSIC')
 
     dsIn = Dataset(path_file, mode='r')
 

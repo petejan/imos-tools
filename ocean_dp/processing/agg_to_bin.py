@@ -116,7 +116,7 @@ def agg_to_bin(netCDFfiles):
     #s = bin[only_time, :]
     #print("Shape ", s)
 
-    ncOut = Dataset(netCDFfiles[1].replace("Aggregate", "binned"), 'w', format='NETCDF4')
+    ncOut = Dataset(netCDFfiles[1].replace("Aggregate", "binned"), 'w', format='NETCDF4_CLASSIC')
 
     # add time
     tDim = ncOut.createDimension("TIME", nt_points)

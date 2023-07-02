@@ -237,7 +237,7 @@ def parse(file):
 
         ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
 
-        ncOut = Dataset(outputName, 'w', format='NETCDF4')
+        ncOut = Dataset(outputName, 'w', format='NETCDF4_CLASSIC')
 
         ncOut.instrument = 'StarODDI ; ' + instrument_model
         ncOut.instrument_model = instrument_model

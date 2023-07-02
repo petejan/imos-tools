@@ -79,7 +79,7 @@ RXM = Cls(0x02, 'RXM', [
 
 def gps_imu_2018(netCDFfiles):
 
-    ncOut = Dataset("gps.nc", 'w', format='NETCDF4')
+    ncOut = Dataset("gps.nc", 'w', format='NETCDF4_CLASSIC')
 
     ncOut.instrument = "CSIRO ; GPS/IMU Logger"
     ncOut.instrument_model = "SOFS-7.5"

@@ -31,7 +31,7 @@ from collections import OrderedDict
 
 def parse_cal(netCDF, cal):
 
-    ncOut = Dataset(netCDF, 'a', format='NETCDF4')
+    ncOut = Dataset(netCDF, 'a', format='NETCDF4_CLASSIC')
 
     ncVarUVWL = ncOut.variables['UV_DIM']
 

@@ -64,7 +64,7 @@ taxon_group = phyto.groupby(['TAXON_ECO_GROUP'])
 
 outputName = fn + '.nc'
 
-ncOut = Dataset(outputName, 'w', format='NETCDF4')
+ncOut = Dataset(outputName, 'w', format='NETCDF4_CLASSIC')
 ncOut.comment = 'data downloaded from https://www.cmar.csiro.au/geoserver/ows?service=wfs&version=2.0.0&request=GetFeature&typeName=imos:PLANKTON_SOTS_PHYTOPLANKTON&srsName=EPSG%3A4326&sortby=imos:SAMPLE_TIME&outputFormat=csv'
 
 oDim = ncOut.createDimension('OBS', len(phyto))

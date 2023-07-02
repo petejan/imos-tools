@@ -225,7 +225,7 @@ def run(fn):
     # TIMEUTC output file
     outputName = fn + '-MDL-TIME.nc'
     print("TIME output file : %s" % outputName)
-    time_nc = Dataset(outputName, 'w', format='NETCDF4')
+    time_nc = Dataset(outputName, 'w', format='NETCDF4_CLASSIC')
 
     time_nc.createDimension("TIME")
     utc_times = time_nc.createVariable("TIME", "d", ("TIME",))
@@ -243,7 +243,7 @@ def run(fn):
     # SOL output file
     outputName = fn + '-MDL-SOL.nc'
     print("SOL output file : %s" % outputName)
-    sol_nc = Dataset(outputName, 'w', format='NETCDF4')
+    sol_nc = Dataset(outputName, 'w', format='NETCDF4_CLASSIC')
 
     sol_nc.createDimension("TIME")
     sol_times = sol_nc.createVariable("TIME", "d", ("TIME",))

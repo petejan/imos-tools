@@ -65,7 +65,7 @@ def create(mooring):
 
     print("output file : %s" % outputName)
 
-    ncOut = Dataset(outputName, 'w', format='NETCDF4')
+    ncOut = Dataset(outputName, 'w', format='NETCDF4_CLASSIC')
 
     select_parameters = "SELECT parameter_code, imos_data_code, array_agg(instrument_id) AS instruments, array_agg(source) AS source, array_agg(depth) AS depths, array_agg(instrument_make) AS instrument_makes, array_agg(instrument_model) AS instrument_models, array_agg(instrument_serial) AS instrument_serials " \
                         "FROM (SELECT CAST(parameter_code AS varchar(20)), imos_data_code , d.mooring_id, d.instrument_id, s.instrument_id AS source, CAST(avg(depth) AS numeric(8,3)) AS depth, " \

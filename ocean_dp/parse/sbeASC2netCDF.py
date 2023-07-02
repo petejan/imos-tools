@@ -323,7 +323,7 @@ def sbe_asc_parse(files):
         print("output file : %s" % outputName)
         outputNames.append(outputName)
 
-        ncOut = Dataset(outputName, 'w', format='NETCDF4')
+        ncOut = Dataset(outputName, 'w', format='NETCDF4_CLASSIC')
 
         ncOut.instrument = 'Sea-Bird Electronics ; ' + instrument_model
         ncOut.instrument_model = instrument_model

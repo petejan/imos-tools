@@ -63,7 +63,7 @@ def flatten(path_file):
 
     outputName = path_file.replace('.nc', '-flat.nc')
 
-    ncOut = Dataset(outputName, 'w', format='NETCDF4')
+    ncOut = Dataset(outputName, 'w', format='NETCDF4_CLASSIC')
 
     # copy global attributes
     for a in dsIn.ncattrs():

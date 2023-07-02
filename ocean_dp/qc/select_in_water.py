@@ -72,7 +72,7 @@ def select_in_water(netCDFfiles):
         time_dim_len = len(time[deployed])
 
         # Create the new netcdf file
-        ds = Dataset(fn_new, "w", format="NETCDF4")
+        ds = Dataset(fn_new, "w", format="NETCDF4_CLASSIC")
 
         new_time_dim = ds.createDimension("TIME", time_dim_len)
 

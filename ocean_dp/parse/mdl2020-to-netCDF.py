@@ -147,7 +147,7 @@ def mdl_2020(netCDFfiles):
     # adc output file
     outputName = fn + '-MDL-ADC.nc'
     print("adc output file : %s" % outputName)
-    adc_nc = Dataset(outputName, 'w', format='NETCDF4')
+    adc_nc = Dataset(outputName, 'w', format='NETCDF4_CLASSIC')
 
     adc_nc.createDimension("TIME")
     adc_times = adc_nc.createVariable("TIME", "d", ("TIME",))
@@ -167,7 +167,7 @@ def mdl_2020(netCDFfiles):
     # accel netcdf file
     outputName = fn + '-MDL-ACCEL.nc'
     print("accel output file : %s" % outputName)
-    accel_nc = Dataset(outputName, 'w', format='NETCDF4')
+    accel_nc = Dataset(outputName, 'w', format='NETCDF4_CLASSIC')
 
     accel_nc.createDimension("TIME")
     accel_times = accel_nc.createVariable("TIME", "d", ("TIME",))
@@ -190,7 +190,7 @@ def mdl_2020(netCDFfiles):
     # gyro netcdf file
     outputName = fn + '-MDL-GYRO.nc'
     print("gyro output file : %s" % outputName)
-    gyro_nc = Dataset(outputName, 'w', format='NETCDF4')
+    gyro_nc = Dataset(outputName, 'w', format='NETCDF4_CLASSIC')
 
     gyro_nc.createDimension("TIME")
     gyro_times = gyro_nc.createVariable("TIME", "d", ("TIME",))

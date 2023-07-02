@@ -145,7 +145,7 @@ def eco_parse(files):
 
     print("output file : %s" % outputName)
 
-    ncOut = Dataset(outputName, 'w', format='NETCDF4')
+    ncOut = Dataset(outputName, 'w', format='NETCDF4_CLASSIC')
 
     ncOut.instrument = "WetLABs ; ECO-PARS"
     ncOut.instrument_model = "ECO-PARS"

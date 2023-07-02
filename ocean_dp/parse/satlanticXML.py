@@ -47,7 +47,7 @@ def parse_xml(files):
 
     ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
 
-    ncOut = Dataset(output_name, 'w', format='NETCDF4')
+    ncOut = Dataset(output_name, 'w', format='NETCDF4_CLASSIC')
 
     ncOut.instrument = instrument_manufacture + ' ; ' + instrument_model
     ncOut.instrument_model = instrument_model

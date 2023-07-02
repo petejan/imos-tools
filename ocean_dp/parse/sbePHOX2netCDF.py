@@ -166,7 +166,7 @@ def sbe_phox_parse(files):
     print("output file : %s" % outputName)
     outputNames.append(outputName)
 
-    ncOut = Dataset(outputName, 'w', format='NETCDF4')
+    ncOut = Dataset(outputName, 'w', format='NETCDF4_CLASSIC')
 
     if instrument_ctd_model:
         instrument_model = instrument_ctd_model

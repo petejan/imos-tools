@@ -182,7 +182,7 @@ def parse(file):
 
     print("output file : %s" % outputName)
 
-    ncOut = Dataset(outputName, 'w', format='NETCDF4')
+    ncOut = Dataset(outputName, 'w', format='NETCDF4_CLASSIC')
 
     ncOut.instrument = 'Alec Electronics ; ' + instrument_model
     ncOut.instrument_model = instrument_model

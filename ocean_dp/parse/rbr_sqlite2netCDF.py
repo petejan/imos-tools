@@ -81,7 +81,7 @@ def parse(file):
 
     outputName = filepath + ".nc"
     print("output file : %s" % outputName)
-    ncOut = Dataset(outputName, 'w', format='NETCDF4')
+    ncOut = Dataset(outputName, 'w', format='NETCDF4_CLASSIC')
 
     # get a SQL lite connection
     conn = sqlite3.connect(filepath)

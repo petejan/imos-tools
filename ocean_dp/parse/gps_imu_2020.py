@@ -119,7 +119,7 @@ types = {1: 'PKT_TYPE_UBX', 2: 'PKT_TYPE_MPU', 3: 'PKT_TYPE_FXS', 4: 'PKT_TYPE_R
 
 def gps_imu_2020(netCDFfiles):
 
-    ncOut = Dataset("gps.nc", 'w', format='NETCDF4')
+    ncOut = Dataset("gps.nc", 'w', format='NETCDF4_CLASSIC')
 
     ncOut.instrument = "CSIRO ; GPS/IMU Logger"
     ncOut.instrument_model = "SOFS-7.5"

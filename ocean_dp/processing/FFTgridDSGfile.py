@@ -137,7 +137,7 @@ def FFTgridDSGfile(netCDFfiles):
 
     plt.show()
 
-    ncOut = Dataset("fft-bin.nc", 'w', format='NETCDF4')
+    ncOut = Dataset("fft-bin.nc", 'w', format='NETCDF4_CLASSIC')
 
     # add time
     tDim = ncOut.createDimension("TIME", nt_points)

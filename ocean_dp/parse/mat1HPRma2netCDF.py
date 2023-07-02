@@ -62,7 +62,7 @@ def sbe_asc_parse(file):
 
     print("output file : %s" % outputName)
 
-    dataset = Dataset(outputName, 'w', format='NETCDF4')
+    dataset = Dataset(outputName, 'w', format='NETCDF4_CLASSIC')
 
     dataset.instrument = "Lowell - MAT-1"
     dataset.instrument_model = "MAT-1"

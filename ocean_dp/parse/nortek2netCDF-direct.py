@@ -206,7 +206,7 @@ def parse_file(files):
 
         print("output file : %s" % outputName)
 
-        ncOut = Dataset(outputName, 'w', format='NETCDF4')
+        ncOut = Dataset(outputName, 'w', format='NETCDF4_CLASSIC')
 
         # add time variable
 
