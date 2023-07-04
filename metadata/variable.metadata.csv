@@ -283,6 +283,9 @@ VAR_ATT,TIME_SAMPLE_START,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINA
 VAR_ATT,acceleration,,,,,,,,,long_name,str,acceleration_vector_XYZ
 VAR_ATT,acceleration,,,,,,,,,units,str,m/s/s
 VAR_ATT,acceleration,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
+VAR_ATT,acceleration_world,,,,,,,,,long_name,str,acceleration_world_coordinates
+VAR_ATT,acceleration_world,,,,,,,,,units,str,m/s/s
+VAR_ATT,acceleration_world,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH
 VAR_ATT,magnetic,,,,,,,,,long_name,str,magnetic_direction_XYZ
 VAR_ATT,magnetic,,,,,,,,,units,str,Gauss
 VAR_ATT,magnetic,,,,,,,,,coordinates,str,TIME LATITUDE LONGITUDE NOMINAL_DEPTH

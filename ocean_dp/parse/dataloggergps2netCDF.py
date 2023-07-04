@@ -113,7 +113,7 @@ def nmea_parse(files):
 
     print("output file : %s" % outputName)
 
-    ncOut = Dataset(outputName, 'w', format='NETCDF4')
+    ncOut = Dataset(outputName, 'w', format='NETCDF4_CLASSIC')
 
     ncOut.instrument = "NAL Research ; 9602-LP"
     ncOut.instrument_model = "9602-LP"
@@ -132,10 +132,10 @@ def nmea_parse(files):
     ncTimesOut.axis = "T"
     ncTimesOut[:] = date2num(time, calendar=ncTimesOut.calendar, units=ncTimesOut.units)
 
-    ncVarOut = ncOut.createVariable("XPOS", "f4", ("TIME",), zlib=True)
+    ncVarOut = ncOut.createVariable("XPOS", "f8", ("TIME",), zlib=True)
     ncVarOut[:] = xpos
 
-    ncVarOut = ncOut.createVariable("YPOS", "f4", ("TIME",), zlib=True)
+    ncVarOut = ncOut.createVariable("YPOS", "f8", ("TIME",), zlib=True)
     ncVarOut[:] = ypos
 
     # add timespan attributes

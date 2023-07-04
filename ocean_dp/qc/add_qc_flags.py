@@ -91,11 +91,15 @@ def add_qc(netCDF_files_in, var_name=None):
                     for r in remove:
                         to_add.remove(r)
 
+        added = False
+        added_vars = []
         # for each variable, add a new ancillary variable <VAR>_quality_control to each which has 'TIME' as a dimension
         for v in to_add:
             if v in nc_vars:
                 if "TIME" in nc_vars[v].dimensions:
                     print("time dim ", v)
+                    added = True
+                    added_vars.append(v)
 
                     qc_var_name = v+"_quality_control"
                     # add if the quality_control variable does not exist
@@ -126,8 +130,9 @@ def add_qc(netCDF_files_in, var_name=None):
         ds.file_version_quality_control = "Quality controlled data have been through quality assurance procedures such as automated routines and sensor calibration and/or a level of visual inspection and flag of obvious errors. The data are in physical units using standard SI metric units with calibration and other pre- processing routines applied, all time and location values are in absolute coordinates to comply with standards and datum. Data includes flags for each measurement to indicate the estimated quality of the measurement. Metadata exists for the data or for the higher level dataset that the data belongs to. This is the standard IMOS data level and is what should be made available to AODN and to the IMOS community."
         
         ds.date_created = now.strftime("%Y-%m-%dT%H:%M:%SZ")
-        
-        ds.history += '\n' + now.strftime("%Y-%m-%d") + ' quality_control variables added.'
+
+        if added:
+            ds.history += '\n' + now.strftime("%Y-%m-%d") + ' quality_control variables added to ' + ",".join(added_vars)
 
         # ADD quality control attributes!!
 
