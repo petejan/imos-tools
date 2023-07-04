@@ -27,7 +27,7 @@ from scipy import signal
 import time
 
 zl = False
-append_to_file = True
+append_to_file = False
 
 # is this quicker than using the Rotation library, not really
 
@@ -39,10 +39,37 @@ def quaternion_mult(q, r):
             r[0]*q[3]-r[1]*q[2]+r[2]*q[1]+r[3]*q[0]]
 
 
-def point_rotation_by_quaternion(point,q):
+def point_rotation_by_quaternion(point, q):
     r = np.array((0, point[0], point[1], point[2]))
-    q_conj = [q[0],-1*q[1],-1*q[2],-1*q[3]]
+    q_conj = [q[0], -1*q[1], -1*q[2], -1*q[3]]
+
     return quaternion_mult(quaternion_mult(q,r),q_conj)[1:]
+
+
+def quaternion_mult_vect(q, r):
+
+    w = r[:, 0]*q[:, 0]-r[:, 1]*q[:, 1]-r[:, 2]*q[:, 2]-r[:, 3]*q[:, 3]
+    x = r[:, 0]*q[:, 1]+r[:, 1]*q[:, 0]-r[:, 2]*q[:, 3]+r[:, 3]*q[:, 2]
+    y = r[:, 0]*q[:, 2]+r[:, 1]*q[:, 3]+r[:, 2]*q[:, 0]-r[:, 3]*q[:, 1]
+    z = r[:, 0]*q[:, 3]-r[:, 1]*q[:, 2]+r[:, 2]*q[:, 1]+r[:, 3]*q[:, 0]
+
+    return np.array((w, x, y, z,)).transpose()
+
+
+def point_rotation_by_quaternion_vect(point, q):
+
+    r = np.array([np.zeros_like(point[:, 0]), point[:, 0], point[:, 1], point[:, 2]]).transpose()
+    q_conj = np.array((q[:, 0], -1 * q[:, 1], -1 * q[:, 2], -1 * q[:, 3])).transpose()
+
+    #print('vect shape', point.shape, q.shape, r.shape, q_conj.shape)
+
+    qr = quaternion_mult_vect(q, r)
+    #print('res1', res1.shape)
+    qrq = quaternion_mult_vect(qr, q_conj)
+
+    #print('return', res.shape)
+
+    return qrq[:, 1:]
 
 
 def add_wave_spectra(netCDFfile):
@@ -103,14 +130,17 @@ def add_wave_spectra(netCDFfile):
     else:
         apd_out_var = dsOut.createVariable("Tz", "f4", ("TIME",), fill_value=np.nan, zlib=zl)  # fill_value=nan otherwise defaults to max
 
-    if "acceleration_world" in dsOut.variables:
-        accel_w_var = dsOut.variables["acceleration_world"]
-    else:
-        accel_w_var = dsOut.createVariable("acceleration_world", "f4", ("sample_time", "vector", "TIME"), fill_value=np.nan, zlib=zl)  # fill_value=nan otherwise defaults to max
+    if append_to_file:
+        if "acceleration_world" in dsOut.variables:
+            accel_w_var = dsOut.variables["acceleration_world"]
+        else:
+            accel_w_var = dsOut.createVariable("acceleration_world", "f4", ("sample_time", "vector", "TIME"), fill_value=np.nan, zlib=zl)  # fill_value=nan otherwise defaults to max
 
     # handle for variables
     var_q = dsIn.variables["orientation"]
     var_accel = dsIn.variables["acceleration"]
+    accel = var_accel[:]
+    q = var_q[:]
 
     # create an array for wave_displacement spectra
     wave_displacement_spectra = np.zeros(256) * np.nan
@@ -122,25 +152,33 @@ def add_wave_spectra(netCDFfile):
         start = time.time()
 
         if nans_missing[2] < 1000:
+
             # read quaternion for this time
-            q = var_q[:, :, i]
-            accel_world.fill(np.nan)
-            for j in range(0, 3072):
-                try:
-                    # read the quaternion, the IMU data is in w, x, y, z whereas Rotation.from_quant is in x, y, z, w
-                    #r = Rotation.from_quat(np.transpose([q[j, 1], q[j, 2], q[j, 3], q[j, 0]]))
 
-                    #accel_inst = var_accel[j, :, i]  # dimensions are sample_time, vector, TIME
+            accel_world[:, :] = point_rotation_by_quaternion_vect(accel[:, :, i], q[:, :, i])
 
-                    #accel_world[j, :] = r.apply(accel_inst)
+            if append_to_file:
+                accel_w_var[:, :, i] = accel_world[:, :]
 
-                    accel_inst = var_accel[j, :, i]  # dimensions are sample_time, vector, TIME
-                    accel_world[j, :] = point_rotation_by_quaternion(accel_inst, q[j, :])
-                    accel_w_var[j, :, i] = accel_world[j, :]
-                    #print(j, accel_inst, accel_world[j, :])
-
-                except ValueError as v:
-                    print(j, v)
+            # for j in range(0, 3072):
+            #     try:
+            #         accel_inst = var_accel[j, :, i]  # dimensions are sample_time, vector, TIME
+            #
+            #         print(j, accel_inst.shape, q.shape)
+            #
+            #         # read the quaternion, the IMU data is in w, x, y, z whereas Rotation.from_quant is in x, y, z, w
+            #
+            #         #r = Rotation.from_quat(np.transpose([q[j, 1], q[j, 2], q[j, 3], q[j, 0]]))
+            #         #accel_world[j, :] = r.apply(accel_inst)
+            #
+            #         accel_world[j, :] = point_rotation_by_quaternion(accel_inst, q[j, :])
+            #
+            #         accel_w_var[j, :, i] = accel_world[j, :]
+            #
+            #         print(j, accel_inst, accel_world[j, :])
+            #
+            #     except ValueError as v:
+            #         print(j, v)
 
             # convert accelerations to world coordinates
 
@@ -157,13 +195,13 @@ def add_wave_spectra(netCDFfile):
             nan_a = np.isnan(a)
             #a[nan_a] = 0 # zero fill
             a[nan_a] = a_mean # mean fill
-            f, wave_acceleration_spectra = signal.welch(a, fs=5, nfft=512, scaling='density', window='hamming', detrend='linear', nperseg=512)
+            freq_spec, wave_acceleration_spectra = signal.welch(a, fs=5, nfft=512, scaling='density', window='hamming', detrend='linear', nperseg=512)
 
             # compute displacement spectra from wave acceleration spectra
             # by divinding by (2*pi*f) ^ 4, first point is nan as f[0] = 0
-            f_wave_disp = f[0:-1]
+            f_wave_disp = freq_spec[0:-1]
             wave_displacement_spectra[0] = np.nan
-            wave_displacement_spectra[1:] = wave_acceleration_spectra[1:-1] / (2*np.pi*f[1:-1])**4
+            wave_displacement_spectra[1:] = wave_acceleration_spectra[1:-1] / (2*np.pi*freq_spec[1:-1])**4
 
             # save wave displacement spectra
             wave_spec_out_var[:, i] = wave_displacement_spectra
@@ -173,10 +211,10 @@ def add_wave_spectra(netCDFfile):
             # almost 1m at 7m SWH, ~ 10% because of noise
             # use f[1] as the delta frequency (the width of a frequency bin width)
             msk = (f_wave_disp > 0.05) & (f_wave_disp < 0.485)
-            m0 = sum(wave_displacement_spectra[msk] * f[1])
+            m0 = sum(wave_displacement_spectra[msk] * freq_spec[1])
             swh = 4 * np.sqrt(m0)
 
-            m2 = sum(wave_displacement_spectra[msk] * f[1] * (f_wave_disp[msk] ** 2))
+            m2 = sum(wave_displacement_spectra[msk] * freq_spec[1] * (f_wave_disp[msk] ** 2))
 
             apd = np.sqrt(m0/m2)
             print("calc % s seconds" % (time.time() - start))
