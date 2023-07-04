@@ -62,8 +62,10 @@ def add_oxsol(netCDFfile):
 
     oxsol = gsw.O2sol_SP_pt(SP, pt)
 
+    added = True
     if 'OXSOL' in ds.variables:
         ncVarOut = ds.variables['OXSOL']
+        added = False
     else:
         ncVarOut = ds.createVariable("OXSOL", "f4", ("TIME",), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
 
@@ -73,13 +75,14 @@ def add_oxsol(netCDFfile):
     ncVarOut.comment = "calculated using gsw-python https://teos-10.github.io/GSW-Python/index.html function gsw.O2sol_SP_pt" + comment
     ncVarOut.coordinates = 'TIME LATITUDE LONGITUDE NOMINAL_DEPTH'
 
-    # update the history attribute
-    try:
-        hist = ds.history + "\n"
-    except AttributeError:
-        hist = ""
+    if added:
+        # update the history attribute
+        try:
+            hist = ds.history + "\n"
+        except AttributeError:
+            hist = ""
 
-    ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " added oxygen solubility")
+        ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " added oxygen solubility")
 
     ds.close()
 

@@ -329,7 +329,7 @@ def sbe_asc_parse(files):
         ncOut.instrument_model = instrument_model
         ncOut.instrument_serial_number = instrument_serialnumber
         if sample_interval:
-            ncOut.instrument_sample_interval = np.float(sample_interval)
+            ncOut.instrument_sample_interval = float(sample_interval)
         #ncOut.instrument_model = instrument_model
 
         #     TIME:axis = "T";
@@ -349,7 +349,7 @@ def sbe_asc_parse(files):
         for c in cal_tags:
             if c[0] == 'rtc':
                 try:
-                    ncTimesOut.setncattr('calibration_' + c[1], np.float(c[2]))
+                    ncTimesOut.setncattr('calibration_' + c[1], float(c[2]))
                 except ValueError:
                     ncTimesOut.setncattr('calibration_' + c[1], c[2])
 

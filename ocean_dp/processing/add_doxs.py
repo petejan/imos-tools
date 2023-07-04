@@ -35,11 +35,13 @@ def add_doxs(netCDFfiles):
         oxsol = ds.variables["OXSOL"][:]
         dox2 = ds.variables["DOX2"][:]
 
+        added = True
         # calculate and write oxygen solubility, ratio of disolved oxgen / oxygen solubility
         if 'DOXS' not in ds.variables:
             ncVarOut = ds.createVariable("DOXS", "f4", ("TIME",), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
         else:
             ncVarOut = ds.variables['DOXS']
+            added = False
 
         ncVarOut[:] = dox2/oxsol
         ncVarOut.units = "1"
@@ -48,15 +50,16 @@ def add_doxs(netCDFfiles):
         ncVarOut.standard_name = "fractional_saturation_of_oxygen_in_sea_water"
         ncVarOut.coordinates = "TIME LATITUDE LONGITUDE NOMINAL_DEPTH"
 
+        if added:
+            # update the history attribute
+            try:
+                hist = ds.history + "\n"
+            except AttributeError:
+                hist = ""
+
+            ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " added DOXS")
+
         # finish off, and close file
-
-        # update the history attribute
-        try:
-            hist = ds.history + "\n"
-        except AttributeError:
-            hist = ""
-
-        ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " added DOXS")
 
         ds.close()
 

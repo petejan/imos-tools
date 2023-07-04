@@ -164,7 +164,7 @@ def datalogger(outputName, files):
         with open(file, "rb") as f:
             byte = f.read(1)
             while byte != b"":
-                if byte[0] == 0x0c: # start of IMU stabQ packet
+                if byte[0] == 0x0c:  # start of IMU stabQ packet
                     pos = f.tell()
 
                     p_len = 30
@@ -230,7 +230,7 @@ def datalogger(outputName, files):
                                 if have_load:
                                     load_samples[sample] = decode_scale[decode_dict['Load']]
 
-                                #print('IMU sample',sample,  accel_samples[sample, 2], load_samples[sample])
+                                #print('IMU sample',sample,  accel_samples[sample, 2], gyro_samples[sample, 2])
 
                                 # find the sample index from the IMU timer, need to detect missed samples in the record
                                 if sample == 0:
@@ -443,7 +443,7 @@ def datalogger(outputName, files):
 
     print("output file : %s" % outputName)
 
-    dataset = Dataset(outputName, 'w', format='NETCDF4')
+    dataset = Dataset(outputName, 'w', format='NETCDF4_CLASSIC')
 
     dataset.instrument = "Campbell Scientific; CR1000"
     dataset.instrument_model = "CR1000"

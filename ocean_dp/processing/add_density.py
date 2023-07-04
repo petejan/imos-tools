@@ -68,6 +68,7 @@ def add_density(netCDFfile):
 
     # TODO: copy forward the QC from PSAL
 
+    added = True
     # calculates density
     density = gsw.rho(SA, CT, p)
     # generates a new variable 'DENSITY' in the netcdf
@@ -75,6 +76,7 @@ def add_density(netCDFfile):
         ncVarOut = ds.createVariable("DENSITY", "f4", ("TIME",), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
     else:
         ncVarOut = ds.variables['DENSITY']
+        added = False
 
     # assigns the calculated densities to the DENSITY variable, sets the units as kg/m^3, and comments on the variable's origin
     ncVarOut[:] = density
@@ -108,17 +110,18 @@ def add_density(netCDFfile):
 
     ncVarOut.comment = "calculated using gsw-python https://teos-10.github.io/GSW-Python/index.html"
 
-    # update the history attribute
-    try:
-        hist = ds.history + "\n"
-    except AttributeError:
-        hist = ""
+    if added:
+        print('added density')
 
-    ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " added DENSITY and SIGMA-THETA0 from TEMP, PSAL, "+pres_var+", LAT, LON")
+        # update the history attribute
+        try:
+            hist = ds.history + "\n"
+        except AttributeError:
+            hist = ""
+
+        ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " added DENSITY and SIGMA-THETA0 from TEMP, PSAL, "+pres_var+", LAT, LON")
 
     ds.close()
-
-    print('added density')
 
     return [netCDFfile]
 

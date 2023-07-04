@@ -83,8 +83,10 @@ def add_psal(netCDFfile):
     C = var_cndc[:] * cndc_scale
     psal = gsw.SP_from_C(C, t, p)
 
+    added = True
     if "PSAL" in ds.variables:
         ncVarOut = ds.variables["PSAL"]
+        added = False
     else:
         ncVarOut = ds.createVariable("PSAL", "f4", ("TIME",), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
     ncVarOut[:] = psal
@@ -96,11 +98,12 @@ def add_psal(netCDFfile):
     ncVarOut.comment = "calculated using gsw-python https://teos-10.github.io/GSW-Python/index.html" + comment
     ncVarOut.coordinates = "TIME LATITUDE LONGITUDE NOMINAL_DEPTH"
 
-    # update the history attribute
-    try:
-        hist = ds.history + "\n"
-    except AttributeError:
-        hist = ""
+    if added:
+        # update the history attribute
+        try:
+            hist = ds.history + "\n"
+        except AttributeError:
+            hist = ""
 
     ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " added PSAL from TEMP, CNDC, " + pres_var)
 
