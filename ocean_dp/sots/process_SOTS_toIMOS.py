@@ -37,6 +37,7 @@ for fn in ncFiles:
                                                            'metadata/sots.metadata.csv',
                                                            'metadata/sofs.metadata.csv',
                                                            'metadata/asimet.metadata.csv',
+                                                           'metadata/SAZ47.metadata.csv',
                                                            'metadata/variable.metadata.csv'])
 
         filename = ocean_dp.attribution.addAttributes.add(fn, ['metadata/pulse-saz-sofs-flux-timeoffset.metadata.csv'])

@@ -129,9 +129,9 @@ for fv00_file in ncFiles:
     print('add qc :', [fv00_file])
     fv01_file_list = ocean_dp.qc.add_qc_flags.add_qc([fv00_file])
     if has_cndc and not has_psal:
-        fv01_file_list[0] = ocean_dp.processing.addPSAL.add_psal(fv00_file[0])
+        fv01_file_list[0] = ocean_dp.processing.addPSAL.add_psal(fv01_file_list[0])
         ocean_dp.qc.add_qc_flags.add_qc(fv01_file_list, 'PSAL')
-        fv01_file_list[0] = ocean_dp.file_name.imosNetCDFfileName.rename(fv00_file[0])
+        fv01_file_list[0] = ocean_dp.file_name.imosNetCDFfileName.rename(fv01_file_list[0])
     if has_dox2:
         # oxygen QC, add OXSOL, DOX2 if needed (from DOX) and DOXS
 
@@ -342,6 +342,11 @@ for fv00_file in ncFiles:
         manual_var = 'PSAL'
         manual_reason = 'drifted high, possible bio-fouling'
         fv01_file_list = ocean_dp.qc.manual_by_date.maunal(fv01_file_list, manual_var, '2022-11-15', manual_flag, manual_reason, end_str=None)
+    if model == 'SBE37SM-RS232' and deployment == 'SAZ47-24-2022' and sn == '03713264':
+        manual_flag = 3
+        manual_var = 'PSAL'
+        manual_reason = 'drift high'
+        fv01_file_list = ocean_dp.qc.manual_by_date.maunal(fv01_file_list, manual_var, '2022-08-01', manual_flag, manual_reason, end_str=None)
 
     # need to propagate flags from temp -> PSAL, SIGMA-THETA0, OXSOL, DOX2
     #                              PSAL -> CNDC, SIGMA-THETA0, OXSOL, DOX2
