@@ -20,25 +20,27 @@ import os
 import sys
 
 from datetime import datetime, timedelta
+
+from glob2 import glob
 from netCDF4 import num2date, date2num
 from netCDF4 import Dataset
 import numpy as np
 import xmltodict
 
 
-def parse_xml(files):
+def parse_xml(xml_file, files):
 
     instrument_model = 'SUNA-V2'
     instrument_serialnumber = '0829'
 
-    with open(files[0]) as fd:
+    with open(xml_file) as fd:
         doc = xmltodict.parse(fd.read())
 
     instrument_manufacture = doc['InstrumentPackage']['Instrument']['@manufacturer']
     instrument_serialnumber = doc['InstrumentPackage']['Instrument']['@serialNumber']
     instrument_model = doc['InstrumentPackage']['Instrument']['@identifier'][0:4] + '-' + doc['InstrumentPackage']['Instrument']['@model']
 
-    output_name = files[0] + ".nc"
+    output_name = xml_file + ".nc"
     print("output file : %s" % output_name)
 
     #
@@ -100,7 +102,7 @@ def parse_xml(files):
 
     num_samples = 0
     array_idx = np.zeros([256])
-    for f in files[1:]:
+    for f in files:
         print('reading file', f)
         hdr_n = 1
         with open(f, 'r', errors='ignore') as fp:
@@ -174,5 +176,11 @@ def parse_xml(files):
 
 if __name__ == "__main__":
 
+    xml_file = sys.argv[1]
+    files = []
+    # get list of files from command line, expand and wild cards
+    for cmd_args in sys.argv[2:]:
+        files.extend(glob(cmd_args))
+
     # arguments are <xml file> <files....(or zip file)>
-    parse_xml(sys.argv[1:])
+    parse_xml(xml_file, files)

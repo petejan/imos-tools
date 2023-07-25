@@ -23,7 +23,7 @@ for f in sys.argv[1:]:
 for fn in ncFiles:
     print('step 1 (parse)')
 
-    print ("processing " , fn)
+    print ("processing ", fn)
 
     # need to apply any timeoffset first
     try:

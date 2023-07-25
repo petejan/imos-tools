@@ -1,6 +1,8 @@
 import sys
 import os
 
+from netCDF4 import Dataset
+
 print('Python %s on %s' % (sys.version, sys.platform))
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), '..'))
 
@@ -31,14 +33,25 @@ for fn in ncFiles:
         print('file-name', filename)
         filename = ocean_dp.processing.apply_scale_offset_attributes.apply_scale_offset([filename])
 
-        filename = ocean_dp.attribution.addAttributes.add(fn,
-                                                          ['metadata/pulse-saz-sofs-flux.metadata.csv',
+        metadata_files = ['metadata/pulse-saz-sofs-flux.metadata.csv',
                                                            'metadata/imos.metadata.csv',
                                                            'metadata/sots.metadata.csv',
-                                                           'metadata/sofs.metadata.csv',
-                                                           'metadata/asimet.metadata.csv',
-                                                           'metadata/SAZ47.metadata.csv',
-                                                           'metadata/variable.metadata.csv'])
+                                                           'metadata/variable.metadata.csv']
+        filename = ocean_dp.attribution.addAttributes.add(fn, metadata_files)
+
+        # hack to pickup the correct metadata files based on the deployment_code
+        metadata_files = []
+        ds = Dataset(fn, 'r')
+        print('deployment code', ds.deployment_code)
+        if ds.deployment_code.find('SAZ') >= 0:
+            metadata_files.append('metadata/SAZ47.metadata.csv')
+        if ds.deployment_code.find('SOFS') >= 0:
+            metadata_files.append('metadata/sofs.metadata.csv')
+            metadata_files.append('metadata/asimet.metadata.csv')
+        print('metadata_files', metadata_files)
+        ds.close()
+
+        filename = ocean_dp.attribution.addAttributes.add(fn, metadata_files)
 
         filename = ocean_dp.attribution.addAttributes.add(fn, ['metadata/pulse-saz-sofs-flux-timeoffset.metadata.csv'])
         print('file-name', filename)

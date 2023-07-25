@@ -39,6 +39,7 @@ def resample(netCDF_file, sample_file, vars):
         if 'TIME' in (var.dimensions) and v != 'TIME' and v.find('_quality_control') == -1:
             if vars is None or v in vars:
                 print('time dimension in', v)
+                add_qc = False
                 qc = np.ones_like(sample_time)
                 if v in ds.variables:
                     new_var = ds.variables[v]
@@ -49,6 +50,7 @@ def resample(netCDF_file, sample_file, vars):
                 if v + '_quality_control' in ds_sample.variables:
                     print('using qc : ', v + "_quality_control")
                     qc = ds_sample.variables[v + "_quality_control"][:]
+                    add_qc = True
 
                 new_data = np.interp(time_var[:], sample_time[qc <= qc_in_level], var[qc <= qc_in_level])
                 #print(new_data)
@@ -56,13 +58,14 @@ def resample(netCDF_file, sample_file, vars):
                 new_var.sensor_serial_number = ds_sample.instrument_serial_number
                 new_var[:] = new_data
 
-                new_var_qc = ds.createVariable(v+"_quality_control", "i1", var.dimensions, fill_value=99)
-                new_var_qc[:] = 8
-                new_var_qc.quality_control_conventions = "IMOS standard flags"
-                new_var_qc.flag_values = np.array([0, 1, 2, 3, 4, 6, 7, 9], dtype=np.int8)
-                new_var_qc.flag_meanings = 'unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value'
+                if add_qc:
+                    new_var_qc = ds.createVariable(v+"_quality_control", "i1", var.dimensions, fill_value=99)
+                    new_var_qc[:] = 8
+                    new_var_qc.quality_control_conventions = "IMOS standard flags"
+                    new_var_qc.flag_values = np.array([0, 1, 2, 3, 4, 6, 7, 9], dtype=np.int8)
+                    new_var_qc.flag_meanings = 'unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value'
 
-                new_var.ancillary_variables = v+"_quality_control"
+                    new_var.ancillary_variables = v+"_quality_control"
 
                 for a in var.ncattrs():
                     #print(a)

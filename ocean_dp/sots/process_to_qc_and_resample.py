@@ -85,12 +85,15 @@ for fv00_file in ncFiles:
     has_temp = False
     if 'TEMP' in ds.variables:
         has_temp = True
+    
     has_cndc = False
     if 'CNDC' in ds.variables:
         has_cndc = True
+    
     has_psal = False
     if 'PSAL' in ds.variables:
         has_psal = True
+    
     has_dox2 = False
     if 'DOX2' in ds.variables:
         has_dox2 = True
@@ -98,6 +101,10 @@ for fv00_file in ncFiles:
         has_dox2 = True
     if 'DOXY' in ds.variables:
         has_dox2 = True
+    
+    has_par = False
+    if 'PAR' in ds.variables:
+        has_par = True
 
     has_wave = False
     if 'Hm0' in ds.variables:
@@ -204,6 +211,24 @@ for fv00_file in ncFiles:
 
         fv01_file_list = ocean_dp.qc.global_range.global_range(fv01_file_list, 'Hm0', 25, 0)
         fv01_file_list = ocean_dp.qc.global_range.global_range(fv01_file_list, 'Tz', 25, 2)
+
+    if has_par:
+        # par QC
+
+        print('par_qc:', fv01_file_list)
+
+        fv01_file_list = ocean_dp.qc.global_range.global_range(fv01_file_list, 'Hm0', 25, 0)
+
+        ocean_dp.processing.add_incoming_radiation.add_solar(fv01_file_list)
+
+        print('step 8 global range')
+        ocean_dp.qc.global_range.global_range(fv01_file_list, 'PAR', max=10000, min=-1.7)
+
+        print('step 9 global range, pbad 4500')
+        ocean_dp.qc.global_range.global_range(fv01_file_list, 'PAR', max=4500, min=-1.7, qc_value=3)
+
+        print('step 10 climate qc')
+        ocean_dp.qc.par_climate_range.climate_range(fv01_file_list, "PAR")
 
 
     # Pulse 6,7,8 SOFS 1,2 Vemco Mini sensors with SN < 10000 -> flag 3
