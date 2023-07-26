@@ -66,6 +66,7 @@ nameMap["SBEOPOXMML"] = "DOX1"
 nameMap["SBEOPOXMGL"] = "DOXY"
 nameMap["SBEOXTC"] = "DOX_TEMP"
 nameMap["OXSOLMMKG"] = "OXSOL"
+nameMap["OXSOLMLL"] = None
 nameMap["DENSITY00"] = "DENSITY"
 nameMap["DEPSM"] = "DEPTH"
 nameMap["FLECOAFL"] = "CPHL"
@@ -559,7 +560,7 @@ def parse(files):
                         ncVarOut.setncattr('calibration_' + c[1], c[2])
 
                 #print("Create Variable %s : %s" % (ncVarOut, data[v[0]]))
-                ncVarOut[:] = odata[:, v['col']]
+                ncVarOut[:] = odata[:, i]
 
             i = i + 1
 
