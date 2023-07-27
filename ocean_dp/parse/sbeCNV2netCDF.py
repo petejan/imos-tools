@@ -513,18 +513,18 @@ def parse(files):
             varName = v['var_name']
             if varName == 'TIME':
                 has_time = True
-                #print(data[:, v['col']])
+                #print(data[:, i])
                 if (v['unit'] == 'julian days') | (v['sbe-name'] == 'TIMEJ'):
                     t_epoc_start = datetime(start_time.year, 1, 1) - timedelta(days=1)
                     t_epoc_jd = date2num(t_epoc_start, calendar=ncTimesOut.calendar, units=ncTimesOut.units)
-                    ncTimesOut[:] = (odata[:, v['col']] + t_epoc_jd)
-                    print("julian days time ", odata[0, v['col']], start_time, ncTimesOut[0])
+                    ncTimesOut[:] = (odata[:, i] + t_epoc_jd)
+                    print("julian days time ", odata[0, i], start_time, ncTimesOut[0])
                 elif v['sbe-name'] == 'TIMES':
                     print("time is seconds")
-                    ncTimesOut[:] = (odata[:, v['col']] / 3600 / 24) + date2num(start_time, calendar=ncTimesOut.calendar, units=ncTimesOut.units)
+                    ncTimesOut[:] = (odata[:, i] / 3600 / 24) + date2num(start_time, calendar=ncTimesOut.calendar, units=ncTimesOut.units)
                 else:
                     print("time is seconds")
-                    ncTimesOut[:] = (odata[:, v['col']]/ 3600 / 24) + t_epoc
+                    ncTimesOut[:] = (odata[:, i]/ 3600 / 24) + t_epoc
             else:
                 if varName not in ncOut.variables:
                   ncVarOut = ncOut.createVariable(varName, "f4", ("TIME",), fill_value=np.nan, zlib=True) # fill_value=nan otherwise defaults to max
@@ -569,6 +569,21 @@ def parse(files):
 
             ncTimesOut[:] = [date2num(start_time + timedelta(seconds=x*sample_interval), calendar=ncTimesOut.calendar, units=ncTimesOut.units) for x in range(number_samples_read)]
 
+        t_diff = np.diff(ncTimesOut[:])
+        t_diff_min = min(t_diff)
+        if t_diff_min <= 0:
+            print('**** WARNING time not-monotonic ** minimum time difference', t_diff_min)
+            print('indexes', np.where(t_diff <= 0))
+        if (ncTimesOut[:] > date2num(datetime.now(), calendar=ncTimesOut.calendar, units=ncTimesOut.units)).any():
+            print('**** WARNING time in future')
+            idx = np.where(ncTimesOut[:] > date2num(datetime.now(), calendar=ncTimesOut.calendar, units=ncTimesOut.units))
+            print('indexes', idx)
+            print(num2date(ncTimesOut[idx], units=ncTimesOut.units, calendar=ncTimesOut.calendar, only_use_cftime_datetimes=False, only_use_python_datetimes=True))
+        if (ncTimesOut[:] < date2num(datetime(1980, 1, 1), calendar=ncTimesOut.calendar, units=ncTimesOut.units)).any():
+            print('**** WARNING time before 1980')
+            idx = np.where(ncTimesOut[:] < date2num(datetime(1980, 1, 1), calendar=ncTimesOut.calendar, units=ncTimesOut.units))
+            print('indexes', idx)
+            print(num2date(ncTimesOut[idx], units=ncTimesOut.units, calendar=ncTimesOut.calendar, only_use_cftime_datetimes=False, only_use_python_datetimes=True))
 
         # add timespan attributes
         ncOut.setncattr("time_coverage_start", num2date(ncTimesOut[0], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
