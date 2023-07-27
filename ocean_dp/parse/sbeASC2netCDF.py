@@ -377,6 +377,23 @@ def sbe_asc_parse(files):
 
             i = i + 1
 
+        t_diff = np.diff(ncTimesOut[:])
+        t_diff_min = min(t_diff)
+        if t_diff_min <= 0:
+            print('**** WARNING time not-monotonic ** minimum time difference', t_diff_min)
+            print('indexes', np.where(t_diff <= 0))
+        if (ncTimesOut[:] > date2num(datetime.now(), calendar=ncTimesOut.calendar, units=ncTimesOut.units)).any():
+            print('**** WARNING time in future')
+            idx = np.where(ncTimesOut[:] > date2num(datetime.now(), calendar=ncTimesOut.calendar, units=ncTimesOut.units))
+            print('indexes', idx)
+            print(num2date(ncTimesOut[idx], units=ncTimesOut.units, calendar=ncTimesOut.calendar, only_use_cftime_datetimes=False, only_use_python_datetimes=True))
+        if (ncTimesOut[:] < date2num(datetime(1980, 1, 1), calendar=ncTimesOut.calendar, units=ncTimesOut.units)).any():
+            print('**** WARNING time before 1980')
+            idx = np.where(ncTimesOut[:] < date2num(datetime(1980, 1, 1), calendar=ncTimesOut.calendar, units=ncTimesOut.units))
+            print('indexes', idx)
+            print(num2date(ncTimesOut[idx], units=ncTimesOut.units, calendar=ncTimesOut.calendar, only_use_cftime_datetimes=False, only_use_python_datetimes=True))
+
+
         # add timespan attributes
         ncOut.setncattr("time_coverage_start", num2date(ncTimesOut[0], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
         ncOut.setncattr("time_coverage_end", num2date(ncTimesOut[-1], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
