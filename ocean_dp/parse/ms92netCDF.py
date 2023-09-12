@@ -119,7 +119,7 @@ def parse(file):
                         ts.append(t-timedelta(hours=timezone))
                         #print("timestamp %s" % (t-timedelta(hours=timezone)))
                         dat = [float(d) for d in lineSplit[-9:]]
-                        #data.append(dat)
+                        data.append(dat)
                         #print(t-timedelta(hours=timezone), dat)
 
                         number_samples_read = number_samples_read + 1
@@ -161,6 +161,23 @@ def parse(file):
     ncTimesOut.calendar = "gregorian"
     ncTimesOut.axis = "T"
     ncTimesOut[:] = date2num(ts, units=ncTimesOut.units, calendar=ncTimesOut.calendar)
+
+    t_diff = np.diff(ncTimesOut[:])
+    t_diff_min = min(t_diff)
+    print('minimum time diff', t_diff_min)
+    if t_diff_min <= 0:
+        print('**** WARNING time not-monotonic ** minimum time difference', t_diff_min)
+        print('indexes', np.where(t_diff <= 0))
+    if (ncTimesOut[:] > date2num(datetime.now(), calendar=ncTimesOut.calendar, units=ncTimesOut.units)).any():
+        print('**** WARNING time in future')
+        idx = np.where(ncTimesOut[:] > date2num(datetime.now(), calendar=ncTimesOut.calendar, units=ncTimesOut.units))
+        print('indexes', idx)
+        print(num2date(ncTimesOut[idx], units=ncTimesOut.units, calendar=ncTimesOut.calendar, only_use_cftime_datetimes=False, only_use_python_datetimes=True))
+    if (ncTimesOut[:] < date2num(datetime(1980, 1, 1), calendar=ncTimesOut.calendar, units=ncTimesOut.units)).any():
+        print('**** WARNING time before 1980')
+        idx = np.where(ncTimesOut[:] < date2num(datetime(1980, 1, 1), calendar=ncTimesOut.calendar, units=ncTimesOut.units))
+        print('indexes', idx)
+        print(num2date(ncTimesOut[idx], units=ncTimesOut.units, calendar=ncTimesOut.calendar, only_use_cftime_datetimes=False, only_use_python_datetimes=True))
 
     for s in setup:
         print(s)
