@@ -20,6 +20,8 @@ import sys
 import re
 
 from datetime import datetime, timedelta
+from zipfile import ZipFile
+
 from netCDF4 import date2num, num2date
 from netCDF4 import Dataset
 import numpy as np
@@ -38,99 +40,142 @@ from dateutil import parser
 
 first_line_expr = r"In-situ Marine Optics"
 data_start_expr = r"-------------------------------"
-serial_expr     = r"MS9.* .SN:(.*)."
-setup_expr      = r"(.*).=.(.*)$"
-in_air_expr     = r"IN-AIR$"
-in_water_expr   = r"IN-WATER$"
-wavelengths_expr   = r"WAVELENGTHS.=.\[(.*)\]$"
+serial_expr     = r"MS9.*\(SN:(.*)\)"
+setup_expr      = r"(.*).=.(.*)"
+in_air_expr     = r"IN-AIR"
+in_water_expr   = r"IN-WATER"
+wavelengths_expr   = r"WAVELENGTHS.=.\[(.*)\]"
+
 
 def parse(file):
+    for filepath in file[1:]:
+        if filepath.endswith('.zip'):
+            myzip = ZipFile(filepath)
+            file_list = myzip.namelist()
+            for f in file_list:
+                print ('file', f)
+                if not f.startswith('_'):
+                    fp = myzip.open(f)
+                    parse_fp(fp)
 
+        else:
+            fp = open(filepath, 'r', errors='ignore')
+
+            parse_fp(fp)
+
+    output_netCDF(file[1])
+
+
+timezone = 0
+number_samples_read = None
+data = []
+ts = []
+name = []
+setup = []
+instrument_serial_number = 'Unknown'
+units = None
+wlens = []
+
+
+def parse_fp(fp):
+    global instrument_serial_number, ts, data, units, wlens, timezone, number_samples_read
+    number_samples_read = 0
     hdr = True
     dataLine = 0
-    name = []
-    number_samples_read = 0
     nVars = 0
-    data = []
-    ts = []
-    setup = []
-    timezone = 0
+    t_last = datetime(1900, 1, 1)
 
-    for filepath in file[1:]:
+    line = fp.readline()
+    if isinstance(line, bytes):
+        line = line.decode('utf-8')
 
-        with open(filepath, 'r', errors='ignore') as fp:
-            line = fp.readline()
+    print('line', line)
 
-            matchObj = re.match(first_line_expr, line)
-            if not matchObj:
-                print("Not a MS9 log file !")
-                return None
+    matchObj = re.match(first_line_expr, line)
+    if not matchObj:
+        print("Not a MS9 log file !")
+        return None
 
-            cnt = 1
-            while line:
-                #print(line)
+    cnt = 1
+    while line:
+        #print(line)
 
-                if hdr:
-                    matchObj = re.match(data_start_expr, line)
-                    if matchObj:
-                        #print("data_start_expr:matchObj.group() : ", matchObj.group())
-                        #print("data_start_expr:matchObj.group(1) : ", matchObj.group(1))
-                        hdr = False
+        if hdr:
+            #print('hdr-line', line)
 
-                    matchObj = re.match(serial_expr, line)
-                    if matchObj:
-                        print("serial_expr:matchObj.group() : ", matchObj.group())
-                        print("serial_expr:matchObj.group(1) : ", matchObj.group(1))
-                        instrument_serial_number = matchObj.group(1)
+            matchObj = re.match(data_start_expr, line)
+            if matchObj:
+                print("data_start_expr:matchObj.group() : ", matchObj.group())
+                #print("data_start_expr:matchObj.group(1) : ", matchObj.group(1))
+                hdr = False
 
-                    matchObj = re.match(setup_expr, line)
-                    if matchObj:
-                        #print("setup_expr:matchObj.group() : ", matchObj.group())
-                        #print("setup_expr:matchObj.group(1) : ", matchObj.group(1))
-                        #print("setup_expr:matchObj.group(2) : ", matchObj.group(2))
-                        setup.append((matchObj.group(1).replace(" ", "_"), matchObj.group(2)))
-                        if matchObj.group(1) == 'TIMEZONE':
-                            timezone = float(matchObj.group(2))
-                        if matchObj.group(1) == 'DETECTOR UNITS':
-                            units = matchObj.group(2)
+            matchObj = re.match(serial_expr, line)
+            if matchObj:
+                print("serial_expr:matchObj.group() : ", matchObj.group())
+                print("serial_expr:matchObj.group(1) : ", matchObj.group(1))
+                instrument_serial_number = matchObj.group(1)
 
-                    matchObj = re.match(in_air_expr, line)
-                    if matchObj:
-                        setup.append(("IN_AIR", "1"))
+            matchObj = re.match(setup_expr, line)
+            if matchObj:
+                print("setup_expr:matchObj.group() : ", matchObj.group())
+                #print("setup_expr:matchObj.group(1) : ", matchObj.group(1))
+                #print("setup_expr:matchObj.group(2) : ", matchObj.group(2))
+                setup.append((matchObj.group(1).replace(" ", "_"), matchObj.group(2)))
+                if matchObj.group(1) == 'TIMEZONE':
+                    timezone = float(matchObj.group(2))
+                if matchObj.group(1) == 'DETECTOR UNITS':
+                    units = matchObj.group(2)
 
-                    matchObj = re.match(in_water_expr, line)
-                    if matchObj:
-                        setup.append(("IN_WATER", "1"))
+            matchObj = re.match(in_air_expr, line)
+            if matchObj:
+                print("in_air_expr:matchObj.group() : ", matchObj.group())
+                setup.append(("IN_AIR", "1"))
 
-                    matchObj = re.match(wavelengths_expr, line)
-                    if matchObj:
-                        #print("wavelengths_expr:matchObj.group() : ", matchObj.group())
-                        #print("wavelengths_expr:matchObj.group(1) : ", matchObj.group(1))
+            matchObj = re.match(in_water_expr, line)
+            if matchObj:
+                print("in_water_expr:matchObj.group() : ", matchObj.group())
+                setup.append(("IN_WATER", "1"))
 
-                        wavelengths = matchObj.group(1)
-                        wlens = [float(x) for x in wavelengths.split(",")]
-                        #print (wlens)
+            matchObj = re.match(wavelengths_expr, line)
+            if matchObj:
+                #print("wavelengths_expr:matchObj.group() : ", matchObj.group())
+                #print("wavelengths_expr:matchObj.group(1) : ", matchObj.group(1))
+
+                wavelengths = matchObj.group(1)
+                wlens = [float(x) for x in wavelengths.split(",")]
+                print ('wavelengths', wlens)
+
+        else:
+            lineSplit = line.split(',')
+            if (lineSplit[0].startswith('MS9')):
+                #print(lineSplit)
+                t = parser.parse(lineSplit[2] + " " + lineSplit[3], dayfirst=True)
+                if t > t_last:
+                    ts.append(t-timedelta(hours=timezone))
+                    #print("timestamp %s" % (t-timedelta(hours=timezone)))
+                    dat = [float(d) for d in lineSplit[-9:]]
+                    data.append(dat)
+                    #print(t-timedelta(hours=timezone), dat)
+
+                    number_samples_read = number_samples_read + 1
+                    t_last = t
 
                 else:
-                    lineSplit = line.split(',')
-                    if (lineSplit[0].startswith('MS9')):
-                        #print(lineSplit)
-                        t = parser.parse(lineSplit[2] + " " + lineSplit[3], dayfirst=True)
-                        ts.append(t-timedelta(hours=timezone))
-                        #print("timestamp %s" % (t-timedelta(hours=timezone)))
-                        dat = [float(d) for d in lineSplit[-9:]]
-                        data.append(dat)
-                        #print(t-timedelta(hours=timezone), dat)
+                    print('*** WARNING non-monotonic time **', cnt, t, t_last, line)
 
-                        number_samples_read = number_samples_read + 1
+                dataLine = dataLine + 1
 
-                        dataLine = dataLine + 1
+        line = fp.readline()
+        if isinstance(line, bytes):
+            line = line.decode('utf-8')
 
-                line = fp.readline()
-                cnt += 1
+        cnt += 1
 
     # trim data
     print("samplesRead %d data shape %s" % (number_samples_read, len(name)))
+
+
+def output_netCDF(filepath):
 
     #
     # build the netCDF file
