@@ -84,6 +84,7 @@ def parse_fp(fp):
     dataLine = 0
     nVars = 0
     t_last = datetime(1900, 1, 1)
+    ms = 0
 
     line = fp.readline()
     if isinstance(line, bytes):
@@ -150,9 +151,12 @@ def parse_fp(fp):
             if (lineSplit[0].startswith('MS9')):
                 #print(lineSplit)
                 t = parser.parse(lineSplit[2] + " " + lineSplit[3], dayfirst=True)
+                if t.second != t_last.second:
+                    ms = 0
+                t = t.replace(microsecond=ms*1000) # hack as sometimes the milliseconds part of the time is incorrect
+                #print("timestamp %s" % (t - timedelta(hours=timezone)))
                 if t > t_last:
                     ts.append(t-timedelta(hours=timezone))
-                    #print("timestamp %s" % (t-timedelta(hours=timezone)))
                     dat = [float(d) for d in lineSplit[-9:]]
                     data.append(dat)
                     #print(t-timedelta(hours=timezone), dat)
@@ -163,6 +167,7 @@ def parse_fp(fp):
                 else:
                     print('*** WARNING non-monotonic time **', cnt, t, t_last, line)
 
+                ms = ms + 200
                 dataLine = dataLine + 1
 
         line = fp.readline()
@@ -226,7 +231,7 @@ def output_netCDF(filepath):
 
     for s in setup:
         print(s)
-        ncOut.setncattr("comment_setup_" + s[0].lower(), s[1])
+        ncOut.setncattr("comment_setup_" + s[0].lower(), s[1].rstrip())
 
     ncOut.createDimension("WAVELENGTH", len(wlens))
     ncVarOut = ncOut.createVariable('WAVELENGTH', "f4", ("WAVELENGTH"), fill_value=None)
