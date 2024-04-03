@@ -87,6 +87,23 @@ unitMap["density, kg/m^3"] = "kg/m^3"
 unitMap["sigma-t, kg/m^3"] = "kg/m^3"
 unitMap["NTU"] = "1"
 
+
+# map calibrations
+calMap = {}
+calMap["TV290C"] = ('TemperatureSensor', 0)
+calMap["T090C"] = ('TemperatureSensor', 0)
+calMap["T190C"] = ('TemperatureSensor', 1)
+calMap["COND0SM"] = ('ConductivitySensor', 0)
+calMap["C0SM"] = ('ConductivitySensor', 0)
+calMap["C1SM"] = ('ConductivitySensor', 1)
+calMap["PRDM"] = ('PressureSensor', 0)
+calMap["SBEOPOXMMKG"] = ('OxygenSensor', 0)
+calMap["SBEOX0MML"] = ('OxygenSensor', 0)
+calMap["SBEOX1MML"] = ('OxygenSensor', 1)
+calMap["PAR"] = ('PAR_BiosphericalLicorChelseaSensor', 0)
+calMap["WETCDOM"] = ('FluoroWetlabCDOM_Sensor', 0)
+calMap["FLECOAFL"] = ('FluoroWetlabECO_AFL_FL_Sensor', 0)
+
 # search expressions within file
 
 first_line_expr = r"\* Sea-Bird (.*) Data File:"
@@ -167,6 +184,7 @@ def parse(files):
         data_cnv_lines = []
         adv_pri = None
         adv_sec = None
+        cal_sensors = {}
 
         with open(filepath, 'r', errors='ignore') as fp:
             line = fp.readline()
@@ -211,7 +229,11 @@ def parse(files):
                             #print("cal_val_expr:matchObj.group(1) : ", matchObj.group(1))
                             cal_param = matchObj.group(1)
                             cal_value = matchObj.group(2)
-                            cal_tags.append((cal_sensor, cal_param, cal_value))
+
+                            cal_tup = (cal_sensor, cal_param, cal_value, sensor_name, sensor_channel, cal_sensors[cal_sensor])
+                            cal_tags.append(cal_tup)
+
+                            #cal_tags.append((cal_sensor, cal_param, cal_value))
                             #print("calibration type %s param %s value %s" % (cal_sensor, cal_param, cal_value))
 
                         #else:
@@ -229,7 +251,7 @@ def parse(files):
                             #print("sensor_tag:matchObj.group(2) : ", tmatchObj.group(2))
                             cal_param = tmatchObj.group(1)
                             cal_value = tmatchObj.group(2)
-                            cal_tup = (cal_sensor, cal_param, cal_value, sensor_name)
+                            cal_tup = (cal_sensor, cal_param, cal_value, sensor_name, sensor_channel, cal_sensors[cal_sensor])
                             #cal_tags.append(cal_tup)
                             #print('cal_tag', cal_tup)
                             #print("calibration type %s param %s value %s" % (cal_sensor, cal_param, cal_value))
@@ -237,34 +259,43 @@ def parse(files):
                         smatchObj = re.match(sensor_type, line)
                         if smatchObj:
                             #print("sensor_type:matchObj.group() : ", smatchObj.group())
-                            #print("sensor_type:matchObj.group(1) : ", smatchObj.group(1))
-                            #print("sensor_type:matchObj.group(2) : ", smatchObj.group(2))
+                            print("sensor_type:matchObj.group(1) : ", smatchObj.group(1))
+                            print("sensor_type:matchObj.group(2) : ", smatchObj.group(2))
                             cal_sensor = smatchObj.group(1)
+                            if cal_sensor not in cal_sensors:
+                                cal_sensors[cal_sensor] = 0
+                            else:
+                                cal_sensors[cal_sensor] += 1
+                            print('cal_sensors', cal_sensors)
 
                         if cal_param and cal_sensor and tmatchObj:
                             add_cal_tag = False
+                            if cal_param == 'G':
+                                eqn = 1
                             if not use_eqn:
                                 add_cal_tag = True
                             elif use_eqn == eqn:
                                 add_cal_tag = True
-
+                            #print("add_cal_tag", add_cal_tag, "eqn", use_eqn, eqn)
                             if add_cal_tag:
                                 if cal_param != 'SerialNumber' and cal_param != 'CalibrationDate' and cal_param != 'SensorName':
                                     cal_value = float(cal_value)
 
-                                cal_tup = (cal_sensor, cal_param, cal_value, sensor_name)
+                                cal_tup = (cal_sensor, cal_param, cal_value, sensor_name, sensor_channel, cal_sensors[cal_sensor])
                                 cal_tags.append(cal_tup)
                                 #print('cal_tag', cal_tup)
-                                print("calibration type %s param %s value %s" % (cal_sensor, cal_param, cal_value))
+                                print("channel %d calibration type %s # %d param %s value %s" % (sensor_channel, cal_sensor, cal_sensors[cal_sensor], cal_param, cal_value))
 
                     matchObj = re.match(sensor_start, line)
                     if matchObj:
                         #print("sensor_start:matchObj.group() : ", matchObj.group())
-                        #print("sensor_start:matchObj.group(1) : ", matchObj.group(1))
+                        print("sensor_start:matchObj.group(1) : ", matchObj.group(1))
                         sensor = True
+                        sensor_channel = int(matchObj.group(1))
                         use_eqn = None
                         cal_param = None
                         cal_sensor = None
+                        eqn = None
 
                     matchObj = re.match(sensor_end, line)
                     if matchObj:
@@ -293,7 +324,7 @@ def parse(files):
                         #print("use_expr:matchObj.group() : ", matchObj.group())
                         #print("use_expr:matchObj.group(1) : ", matchObj.group(1))
                         #print("use_expr:matchObj.group(2) : ", matchObj.group(2))
-                        use_eqn = matchObj.group(2)
+                        use_eqn = int(matchObj.group(2))
 
                     matchObj = re.match(startTimeExpr, line)
                     if matchObj:
@@ -539,24 +570,14 @@ def parse(files):
                 for c in cal_tags:
                     add = False
                     #print("cal_tag", c, v)
-                    if c[3] == v['sensor_name']:
-                        add = True
-                    if varName == 'TEMP' and c[0] == 'TemperatureSensor':
-                        add = True
-                    # if varName == 'DOX2' and c[0] == 'OxygenSensor':
-                    #     add = True
-                    if varName == 'PRES' and c[0] == 'PressureSensor':
-                         add = True
-                    if varName == 'CNDC' and c[0] == 'ConductivitySensor':
-                        add = True
-                    # if varName == 'TEMP' and c[0] == 'temperature':
-                    #     add = True
-                    # if varName == 'CNDC' and c[0] == 'conductivity':
-                    #     add = True
-                    # if varName == 'PRES' and c[0] == 'pressure':
-                    #     add = True
+
+                    if v['sbe-name'] in calMap:
+                        calMapTup = calMap[v['sbe-name']]
+                        if calMapTup[0] == c[0] and calMapTup[1] == c[5]:
+                            add = True
 
                     if add:
+                        print('adding cal tag', c)
                         ncVarOut.setncattr('calibration_' + c[1], c[2])
 
                 #print("Create Variable %s : %s" % (ncVarOut, data[v[0]]))
