@@ -19,8 +19,8 @@
 import sys
 import re
 
-from datetime import datetime, timedelta
-from dateutil import parser
+from datetime import datetime, UTC
+
 from glob2 import glob
 
 from netCDF4 import date2num, num2date
@@ -104,7 +104,7 @@ hdr_map['Pressure (Decibar)'] = {'var': 'PRES', 'long_name': 'sea_water_pressure
 hdr_map['Salinity (psu)'] = {'var': 'PSAL', 'long_name': 'sea_water_practical_salinity', 'units': '1'}
 hdr_map['Conductivity (S/m)'] = {'var': 'CNDC', 'long_name': 'sea_water_electrical_conductivity', 'units': 'S/m'}
 hdr_map['Oxygen (ml/L)'] = {'var': 'DOX', 'long_name': 'volume_concentration_of_dissolved_molecular_oxygen_in_sea_water', 'units': 'ml/l'}
-hdr_map['Relative Humidity (%)'] = {'var': None, 'long_name': None, 'units': None}
+hdr_map['Relative Humidity (%)'] = {'var': 'IHUMID', 'long_name': 'internal humidity', 'units': '1'}
 hdr_map['Int Temperature (Celsius)'] = {'var': 'ITEMP', 'long_name': 'internal_temperature', 'units': 'degrees_Celsius'}
 
 
@@ -236,8 +236,8 @@ def sbe_phox_parse(files):
     ncOut.setncattr("time_coverage_end", num2date(ncTimesOut[-1], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
 
     # add creating and history entry
-    ncOut.setncattr("date_created", datetime.utcnow().strftime(ncTimeFormat))
-    ncOut.setncattr("history", datetime.utcnow().strftime("%Y-%m-%d") + " created from file " + os.path.basename(filepath))
+    ncOut.setncattr("date_created", datetime.now(UTC).strftime(ncTimeFormat))
+    ncOut.setncattr("history", datetime.now(UTC).strftime("%Y-%m-%d") + " created from file " + os.path.basename(filepath))
 
     ncOut.close()
 

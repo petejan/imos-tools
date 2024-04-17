@@ -95,7 +95,7 @@ def read(fp, times, data, number_samples):
 
     last_dt = datetime(2000,1,1)
     try:
-        line = fp.readline().decode()
+        line = fp.readline()
         while line:
             #print(line)
             matchObj = re.match(ctd_expr, line)
@@ -120,7 +120,7 @@ def read(fp, times, data, number_samples):
                 instrument_ctd_serialnumber = matchObj.group(2)
                 #print('ctd model, serial_number', instrument_ctd_model, instrument_ctd_serialnumber)
 
-            line = fp.readline().decode()
+            line = fp.readline()
     except UnicodeDecodeError:
         pass
 

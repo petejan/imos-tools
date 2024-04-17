@@ -370,7 +370,7 @@ def sbe_asc_parse(files):
                 cal_name = nameMap.get(c[0])
                 if cal_name == varName:
                     try:
-                        ncVarOut.setncattr('calibration_' + c[1], np.float32(c[2]))
+                        ncVarOut.setncattr('calibration_' + c[1], float(c[2]))
                     except ValueError:
                         ncVarOut.setncattr('calibration_' + c[1], c[2])
 
