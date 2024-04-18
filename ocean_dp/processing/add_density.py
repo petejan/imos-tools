@@ -18,7 +18,7 @@ from netCDF4 import Dataset
 import sys
 import gsw
 import numpy as np
-from datetime import datetime
+from datetime import datetime, UTC
 
 
 # add density to a data file with TEMP, PSAL, PRES variables, many assumptions are made about the input file
@@ -50,15 +50,19 @@ def add_density(netCDFfile):
         print("no pressure variable, or nominal depth")
         return
 
-    var_lon = ds.variables["LONGITUDE"]
-    var_lat = ds.variables["LATITUDE"]
+    if 'LONGITUDE' in ds.variables:
+        var_lon = ds.variables["LONGITUDE"]
+        var_lat = ds.variables["LATITUDE"]
+        lon = var_lon[:]
+        lat = var_lat[:]
+    else:
+        lon = 142
+        lat = -47
 
     # extracts the data from the variables
     t = var_temp[:]
     psal = var_psal[:]
     p = var_pres[:]
-    lon = var_lon[:]
-    lat = var_lat[:]
 
     # calculates absolute salinity
     SA = gsw.SA_from_SP(psal, p, lon, lat)
@@ -85,7 +89,7 @@ def add_density(netCDFfile):
     ncVarOut.standard_name = "sea_water_density"
     ncVarOut.valid_max = np.float32(1100) # https://oceanobservatories.org/wp-content/uploads/2015/09/1341-10004_Data_Product_SPEC_GLBLRNG_OOI.pdf
     ncVarOut.valid_min = np.float32(1000)
-    ncVarOut.coordinates = var_psal.coordinates
+    #ncVarOut.coordinates = var_psal.coordinates
 
     ncVarOut.comment = "calculated using gsw-python https://teos-10.github.io/GSW-Python/index.html"
 
@@ -106,7 +110,7 @@ def add_density(netCDFfile):
     ncVarOut.reference_pressure = "0 dbar"
     ncVarOut.valid_max = np.float32(100)
     ncVarOut.valid_min = np.float32(0)
-    ncVarOut.coordinates = var_psal.coordinates
+    #ncVarOut.coordinates = var_psal.coordinates
 
     ncVarOut.comment = "calculated using gsw-python https://teos-10.github.io/GSW-Python/index.html"
 
@@ -119,7 +123,7 @@ def add_density(netCDFfile):
         except AttributeError:
             hist = ""
 
-        ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " added DENSITY and SIGMA-THETA0 from TEMP, PSAL, "+pres_var+", LAT, LON")
+        ds.setncattr('history', hist + datetime.now(UTC).strftime("%Y-%m-%d") + " added DENSITY and SIGMA-THETA0 from TEMP, PSAL, "+pres_var+", LAT, LON")
 
     ds.close()
 

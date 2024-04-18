@@ -17,19 +17,10 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 import sys
-import re
 
-from datetime import datetime, timedelta
-from dateutil import parser
-from glob2 import glob
-
-from netCDF4 import date2num, num2date
+from datetime import datetime, UTC
 from netCDF4 import Dataset
 
-import os
-
-import numpy as np
-import zipfile
 from bs4 import BeautifulSoup
 import bs4
 
@@ -42,7 +33,7 @@ hdr_map['DateTime (UTC+00:00)'] = {'var': None, 'long_name': None, 'units': None
 hdr_map['Sample Number (#)'] = {'var': None, 'long_name': None, 'units': None}
 hdr_map['Error Flags (#)'] = {'var': None, 'long_name': None, 'units': None}
 hdr_map['Temperature (Celsius)'] = {'var': 'TEMP', 'long_name': 'sea_water_temperature', 'standard_name': 'sea_water_temperature', 'units': 'degrees_Celsius'}
-hdr_map['External pH (pH)'] = {'var': 'pHt', 'long_name': 'sea_water_ph_reported_on_total_scale', 'units': '1', 'comment': 'pH_TS_measured (durafet)'}
+hdr_map['External pH (pH)'] = {'var': 'pHt', 'long_name': 'sea_water_ph_reported_on_total_scale', 'units': '1', 'comment': 'pH_TS_measured (isfet)'}
 hdr_map['External pH (Volt)'] = {'var': 'VEXT_PH', 'long_name': 'voltage_external_ph', 'units': 'Volts'}
 hdr_map['Pressure (Decibar)'] = {'var': 'PRES', 'long_name': 'sea_water_pressure_due_to_sea_water', 'units': 'dbar'}
 hdr_map['Salinity (psu)'] = {'var': 'PSAL', 'long_name': 'sea_water_practical_salinity', 'units': '1'}
@@ -100,7 +91,7 @@ def add_xml(xml_file, outputName):
     except AttributeError:
         hist = ""
 
-    ncOut.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " attributes from " + xml_file)
+    ncOut.setncattr('history', hist + datetime.now(UTC).strftime("%Y-%m-%d") + " attributes from " + xml_file)
 
 
     ncOut.close()

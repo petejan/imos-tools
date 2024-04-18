@@ -19,7 +19,7 @@
 import sys
 import re
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 from dateutil import parser
 from glob2 import glob
 
@@ -399,8 +399,8 @@ def sbe_asc_parse(files):
         ncOut.setncattr("time_coverage_end", num2date(ncTimesOut[-1], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
 
         # add creating and history entry
-        ncOut.setncattr("date_created", datetime.utcnow().strftime(ncTimeFormat))
-        ncOut.setncattr("history", datetime.utcnow().strftime("%Y-%m-%d") + " created from file " + os.path.basename(filepath))
+        ncOut.setncattr("date_created", datetime.now(UTC).strftime(ncTimeFormat))
+        ncOut.setncattr("history", datetime.now(UTC).strftime("%Y-%m-%d") + " created from file " + os.path.basename(filepath))
 
         ncOut.close()
 

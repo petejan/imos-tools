@@ -384,4 +384,4 @@ for fv00_file in ncFiles:
         ds.references += '; Jansen P, Shadwick EH and Trull TW (2021). Southern Ocean Time Series (SOTS) Quality Assessment and Control Report Salinity Records Version 1.0. CSIRO, Australia. DOI: 10.26198/rv8y-2q14 (https://doi.org/10.26198/rv8y-2q14)'
     ds.close()
 
-    #down_sample(fv01_file_list, 'mean')
+    down_sample(fv01_file_list, 'mean')
