@@ -21,6 +21,7 @@ import re
 
 from datetime import datetime, UTC
 
+from cftime import num2date
 from netCDF4 import Dataset, date2num
 import numpy as np
 
@@ -61,10 +62,13 @@ def parse_sbs(sbs_file):
 
     var_temp_r = ncOut.createVariable("TEMP_RAW", "f4", ("TIME",), zlib=False)
     var_temp = ncOut.createVariable("TEMP", "f4", ("TIME",), zlib=False)
+    var_temp.units = 'degrees_Celsius'
     var_pres_r = ncOut.createVariable("PRES_RAW", "f4", ("TIME",), zlib=False)
     var_pres = ncOut.createVariable("PRES", "f4", ("TIME",), zlib=False)
+    var_pres.units = 'dbar'
     var_cndc_r = ncOut.createVariable("COND_RAW", "f4", ("TIME",), zlib=False)
     var_cndc = ncOut.createVariable("CNDC", "f4", ("TIME",), zlib=False)
+    var_cndc.units = 'S/m'
     var_ophase = ncOut.createVariable("OXPHASE_RAW", "f4", ("TIME",), zlib=False)
     var_otemp = ncOut.createVariable("OXTEMP_RAW", "f4", ("TIME",), zlib=False)
     var_ph_v = ncOut.createVariable("VEXT_PH", "f4", ("TIME",), zlib=False)
@@ -228,6 +232,12 @@ def parse_sbs(sbs_file):
         sample += 1
 
     fb.close()
+    # add timespan attributes
+    ncOut.setncattr("time_coverage_start", num2date(ncTimesOut[0], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
+    ncOut.setncattr("time_coverage_end", num2date(ncTimesOut[-1], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
+
+    # add creating and history entry
+    ncOut.setncattr("date_created", datetime.now(UTC).strftime(ncTimeFormat))
 
     try:
         hist = ncOut.history + "\n"
