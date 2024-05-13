@@ -444,7 +444,7 @@ def parse(files):
                             name.insert(nVars, name_dict)
                             #print(name_dict)
                             nVars = nVars + 1
-                        print("name {} : {} ncName {}".format(nameN, varName, ncVarName))
+                        print("name {} : {} ncName {} comment {}".format(nameN, varName, ncVarName, comment))
 
                     matchObj = re.match(end_expr, line)
                     if matchObj:
