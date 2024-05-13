@@ -34,6 +34,7 @@ import ctypes
 #  0 User Configuration
 
 #  1 Aquadopp Velocity Data
+#  129 Aquadopp Velocity Data including RAW magnetometer
 #  2 Vectrino distance data
 
 #  6 Head Configuration
@@ -95,6 +96,9 @@ packet_decoder[1] = {'name': 'Aquadopp Velocity Data', 'keys': ['time_bcd', 'err
 packet_decoder[128] = {'name': 'Aquadopp Diagnostics Data', 'keys': ['time_bcd', 'error', 'AnaIn1', 'battery', 'soundSpd_Anain2', 'head', 'pitch', 'roll',
                             'presMSB', 'status', 'presLSW', 'temp', 'vel_b1', 'vel_b2', 'vel_b3', 'amp1', 'amp2', 'amp3', 'fill', 'checksum'], 'unpack': "<6s7hBB5h4BH"}
 
+packet_decoder[129] = {'name': 'Aquadopp Velocity RAW Data', 'keys': ['time_bcd', 'error', 'AnaIn1', 'battery', 'soundSpd_Anain2', 'head', 'pitch', 'roll',
+                            'presMSB', 'status', 'presLSW', 'temp', 'sound_speed', 'EnsCount', 'CompHx', 'CompHy', 'CompHz', 'vel_b1', 'vel_b2', 'vel_b3', 'amp1', 'amp2', 'amp3', 'fill', 'checksum'], 'unpack': "<6s7hBBH3h3h3h4BH"}
+
 packet_decoder[6] = {'name': 'Aquadopp Diagnostics Data Header', 'keys': ['records', 'cell', 'noise1', 'noise2', 'noise3', 'noise4', 'proc1', 'proc2',
                             'proc3', 'proc4', 'dis1', 'dis2', 'dist3', 'dist4', 'spare', 'checksum'], 'unpack': "<2H4B8H6sH"}
 
@@ -131,6 +135,7 @@ packet_decode2netCDF[9] = {'decode': 'FWversion', 'attrib': 'nortek_firmware_ver
 attribute_list = []
 
 velocity_data = []
+vel_raw_mag = False
 vector_velocity_data = []
 vector_imu_data = []
 aquapro_data = []
@@ -251,6 +256,11 @@ def parse_file(filepath):
                             instrument_head_serialnumber = d['head_serial'].decode("utf-8").strip()
                             print('instrument head serial number ', instrument_head_serialnumber)
 
+                        if 'system' in d:
+                            print('System Data:')
+                            for sd in d['system']:
+                                print (sd)
+                            
                         if 'CoordSys' in d:
                             coord_system = d['CoordSys']
 
@@ -284,6 +294,12 @@ def parse_file(filepath):
                         if 'Aquadopp Velocity Data' == packet_decoder[id]['name']:
                             #print('velocity data')
                             velocity_data.append((dt, d))
+                            #print(dt, d)
+
+                        if 'Aquadopp Velocity RAW Data' == packet_decoder[id]['name']:
+                            print('velocity RAW data')
+                            velocity_data.append((dt, d))
+                            vel_raw_mag = True
                             #print(dt, d)
 
                         # create an array of all the data packets (this does copy them into memory)
@@ -351,9 +367,12 @@ def parse_file(filepath):
         instrument_model = 'Aquadopp ' + si_format(system_frequency * 1000, precision=0) + 'Hz'
 
         # create an array to store data in (creates another memory copy)
-        data_array = np.zeros((11, number_samples_read))
+        if vel_raw_mag:
+            data_array = np.zeros((15, number_samples_read))
+        else:
+            data_array = np.zeros((11, number_samples_read))
         data_array.fill(np.nan)
-        byte_array = np.zeros((3, number_samples_read), 'byte')
+        byte_array = np.zeros((3, number_samples_read), 'short')
         i = 0
         for d in velocity_data:
             data_array[0][i] = date2num(d[0], calendar='gregorian', units="days since 1950-01-01 00:00:00 UTC")
@@ -373,6 +392,12 @@ def parse_file(filepath):
 
             data_array[10][i] = d[1]['soundSpd_Anain2'] * 0.1
 
+            if vel_raw_mag:
+                data_array[11][i] = d[1]['CompHx']
+                data_array[12][i] = d[1]['CompHy']
+                data_array[13][i] = d[1]['CompHz']
+                data_array[14][i] = d[1]['EnsCount']
+
             byte_array[0][i] = d[1]['amp1']
             byte_array[1][i] = d[1]['amp2']
             byte_array[2][i] = d[1]['amp3']
@@ -391,6 +416,11 @@ def parse_file(filepath):
         var_names.append({'data_n':  8, 'name': 'BATT', 'comment': "battery voltage", 'unit': 'V'})
         var_names.append({'data_n':  9, 'name': 'ITEMP', 'comment': "instrument temperature", 'unit': 'degrees_Celsius'})
         var_names.append({'data_n': 10, 'name': 'SSPEED', 'comment': "sound speed", 'unit': 'm/s'})
+        if vel_raw_mag:
+            var_names.append({'data_n': 11, 'name': 'Hx', 'comment': "magnetic x component", 'unit': '1'})
+            var_names.append({'data_n': 12, 'name': 'Hy', 'comment': "magnetic y component", 'unit': '1'})
+            var_names.append({'data_n': 13, 'name': 'Hz', 'comment': "magnetic z component", 'unit': '1'})
+            var_names.append({'data_n': 14, 'name': 'EnsCount', 'comment': "ensamble count", 'unit': '1'})
 
         var_names.append({'byte_n':  0, 'name': 'ABSIC1', 'comment': "amplitude beam 1", 'unit': 'counts'})
         var_names.append({'byte_n':  1, 'name': 'ABSIC2', 'comment': "amplitude beam 2", 'unit': 'counts'})
