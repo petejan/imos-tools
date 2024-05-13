@@ -70,7 +70,6 @@ timezone = 0
 number_samples_read = None
 data = []
 ts = []
-name = []
 setup = []
 instrument_serial_number = 'Unknown'
 units = None
@@ -148,27 +147,35 @@ def parse_fp(fp):
 
         else:
             lineSplit = line.split(',')
-            if (lineSplit[0].startswith('MS9')):
-                #print(lineSplit)
-                t = parser.parse(lineSplit[2] + " " + lineSplit[3], dayfirst=True)
-                if t.second != t_last.second:
-                    ms = 0
-                t = t.replace(microsecond=ms*1000) # hack as sometimes the milliseconds part of the time is incorrect
-                #print("timestamp %s" % (t - timedelta(hours=timezone)))
-                if t > t_last:
-                    ts.append(t-timedelta(hours=timezone))
-                    dat = [float(d) for d in lineSplit[-9:]]
-                    data.append(dat)
-                    #print(t-timedelta(hours=timezone), dat)
+            try:
+                if (lineSplit[0].startswith('MS9')):
+                    #print(lineSplit)
+                    #t = parser.parse(lineSplit[2] + " " + lineSplit[3], dayfirst=True)
+                    t = datetime.strptime(lineSplit[2] + " " + lineSplit[3], '%d/%m/%Y %H:%M:%S.%f')
+                    #print(t)
+                    if t.second != t_last.second:
+                        ms = 0
+                    #t = t.replace(microsecond=ms*1000) # hack as sometimes the milliseconds part of the time is incorrect
+                    #print("timestamp %s" % (t - timedelta(hours=timezone)))
+                    if t > t_last:
+                        # parse the floating point data (the measurements)
+                        dat = [float(d) for d in lineSplit[-9:]]
 
-                    number_samples_read = number_samples_read + 1
-                    t_last = t
+                        # add to list of data
+                        ts.append(t-timedelta(hours=timezone))
+                        data.append(dat)
+                        #print(t-timedelta(hours=timezone), dat)
 
-                else:
-                    print('*** WARNING non-monotonic time **', cnt, t, t_last, line)
+                        number_samples_read = number_samples_read + 1
+                        t_last = t
 
-                ms = ms + 200
-                dataLine = dataLine + 1
+                    else:
+                        print('*** WARNING non-monotonic time **', cnt, t, t_last, line)
+
+                    ms = ms + 200
+                    dataLine = dataLine + 1
+            except (parser._parser.ParserError, ValueError) as error:
+                print('Parse error', line, error)
 
         line = fp.readline()
         if isinstance(line, bytes):
@@ -177,7 +184,7 @@ def parse_fp(fp):
         cnt += 1
 
     # trim data
-    print("samplesRead %d data shape %s" % (number_samples_read, len(name)))
+    print("samplesRead %d data shape %s" % (number_samples_read, len(data)))
 
 
 def output_netCDF(filepath):
