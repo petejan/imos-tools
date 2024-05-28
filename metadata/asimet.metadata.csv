@@ -296,3 +296,7 @@ VAR_ATT,WSPD_MAX,SOFS-12-2023,,L26,,,,"","",sensor_serial_number,str,"SWND-284"
 VAR_ATT,WSPD_MIN,SOFS-12-2023,,L25,,,,"","",sensor_serial_number,str,"SWND-283"
 VAR_ATT,WSPD_MIN,SOFS-12-2023,,L26,,,,"","",sensor_serial_number,str,"SWND-284"
 
+
+VAR_ATT,TIME,SOFS-12-2023,,L25,,,,"","",comment_time_check,str,"at 2024-04-14 23:44:25 UTC, logger RTC reads 572 seconds fast"
+VAR_ATT,TIME,SOFS-12-2023,,L26,,,,"","",comment_time_check,str,"at 2024-04-14 23:46:28 UTC, logger RTC reads 1779 seconds slow"
+
