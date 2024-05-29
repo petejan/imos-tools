@@ -512,3 +512,11 @@ VAR_ATT,GYRO,,,,,,,,,long_name,str,raw gyroscope
 VAR_ATT,COMPASS,,,,,,,,,coordinates,str,LONGITUDE LATITUDE TIME
 VAR_ATT,COMPASS,,,,,,,,,long_name,str,compass heading
 
+VAR_ATT,WAVE_DIR_MEAN_SPREAD,,,,,,,,,coordinates,str,LONGITUDE LATITUDE TIME
+VAR_ATT,WAVE_DIR_MEAN_SPREAD,,,,,,,,,long_name,str,mean wave directional spread
+
+VAR_ATT,WAVE_DIR_PEAK,,,,,,,,,coordinates,str,LONGITUDE LATITUDE TIME
+VAR_ATT,WAVE_DIR_PEAK,,,,,,,,,long_name,str,peak wave direction
+VAR_ATT,WAVE_DIR_PEAK_SPREAD,,,,,,,,,coordinates,str,LONGITUDE LATITUDE TIME
+VAR_ATT,WAVE_DIR_PEAK_SPREAD,,,,,,,,,long_name,str,peak wave directional spread
+
