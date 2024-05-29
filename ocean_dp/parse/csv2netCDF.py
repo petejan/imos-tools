@@ -134,7 +134,10 @@ def csv_parse(f, model=None, serial=None):
 
     for i in range(0, len(hdr)):
         print(i, hdr[i], len(value[-1]))
-        ncVarOut = ncOut.createVariable(hdr[i], "f4", ("TIME",), zlib=True)
+        type = 'f4'
+        if hdr[i] == 'XPOS' or hdr[i] == 'YPOS':
+            type = 'f8'
+        ncVarOut = ncOut.createVariable(hdr[i], type, ("TIME",), zlib=True)
         ncVarOut.units = units[i]
         ncVarOut[:] = [v[i] for v in value]
 
