@@ -23,9 +23,7 @@ import sys
 import numpy as np
 import csv
 from datetime import datetime
-from fuzzywuzzy import fuzz
 
-match_threshold = 90
 
 def parseTypeValue(att_type, v):
     if att_type == 'float64':
@@ -79,10 +77,6 @@ def add(netCDFfile, metadatafiles):
     ds_variables = ds.variables
 
     added_attribute = False
-    fuzz_best_model = -1
-    fuzz_model = None
-    fuzz_best_serial = -1
-    fuzz_serial = None
 
     #print(ds_variables)
     dict1 = {}
@@ -147,23 +141,11 @@ def add(netCDFfile, metadatafiles):
                     # match instrument
                     # fuzzie matching : https://medium.com/@categitau/fuzzy-string-matching-in-python-68f240d910fe
                     if len(dict1['model']) > 0:
-                        fuz = fuzz.ratio(instrument_model.lower(), dict1['model'].lower())
-                        #print("model fuzz", fuz, instrument_model, dict1['model'])
-                        if fuz > fuzz_best_model:
-                            fuzz_best_model = fuz
-                            fuzz_model = dict1
-                        if fuz < match_threshold:
+                        if instrument_model.lower() != dict1['model']:
                             match = False
-                            #print("instrument_model not match : ", dict1['model'])
                     if len(dict1['serial_number']) > 0:
-                        fuz = fuzz.ratio(instrument_serial_number.lower(), dict1['serial_number'].lower())
-                        #print("fuzz serial", fuz, instrument_serial_number, dict1['serial_number'])
-                        if fuz > fuzz_best_serial:
-                            fuzz_best_serial = fuz
-                            fuzz_serial = dict1
-                        if fuz < match_threshold:
+                        if instrument_serial_number.lower() != dict1['serial_number']:
                             match = False
-                            #print("serial_number not match : ", dict1['serial_number'])
 
                     if match:
                         #print("match ", dict1, td, tr)
@@ -198,11 +180,6 @@ def add(netCDFfile, metadatafiles):
                                 added_attribute = True
 
     if not added_attribute:
-        if fuzz_best_model > 0:
-            print("best model match", fuzz_best_model, fuzz_model)
-        if fuzz_best_serial > 0:
-            print("best serial match", fuzz_best_serial, fuzz_serial)
-
         print('no attributes added, file not changed')
         ds.close()
 
