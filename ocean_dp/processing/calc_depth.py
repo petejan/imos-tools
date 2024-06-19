@@ -4,8 +4,7 @@ import sys
 
 from netCDF4 import Dataset, date2num, num2date
 
-from datetime import datetime, timedelta
-import matplotlib.pyplot as plt
+from datetime import datetime, UTC
 
 import numpy as np
 from scipy.interpolate import interp1d
@@ -115,7 +114,7 @@ def make_depth(files):
     except AttributeError:
         hist = ""
 
-    ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " added filled depth record for each instrument measurement")
+    ds.setncattr('history', hist + datetime.now(UTC).strftime("%Y-%m-%d") + " added filled depth record for each instrument measurement")
 
     ds.close()
 

@@ -4,8 +4,7 @@ import sys
 
 from netCDF4 import Dataset, date2num, num2date
 
-from datetime import datetime, timedelta
-import matplotlib.pyplot as plt
+from datetime import datetime, UTC
 
 import numpy as np
 from scipy.interpolate import interp1d
@@ -83,7 +82,7 @@ def mld(files):
     except AttributeError:
         hist = ""
 
-    ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " added mix layer depth, temperature difference = " + str(mix_layer_depth_temp_diff))
+    ds.setncattr('history', hist + datetime.now(UTC).strftime("%Y-%m-%d") + " added mix layer depth, temperature difference = " + str(mix_layer_depth_temp_diff))
 
     ds.close()
 

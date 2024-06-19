@@ -5,8 +5,8 @@ import sys
 from glob2 import glob
 from netCDF4 import Dataset, date2num, num2date
 
-from datetime import datetime, timedelta
-import matplotlib.pyplot as plt
+from datetime import datetime, timedelta, UTC
+#import matplotlib.pyplot as plt
 
 import numpy as np
 from scipy.interpolate import interp1d
@@ -18,7 +18,7 @@ np.set_printoptions(linewidth=256)
 def resample(files, method, resample='True', hours=12):
     output_names = []
 
-    now = datetime.utcnow()
+    now = datetime.now(UTC)
 
     for filepath in files:
 
@@ -28,6 +28,9 @@ def resample(files, method, resample='True', hours=12):
 
         ds = Dataset(filepath, 'r')
         ds.set_auto_mask(False)
+
+        print();
+        print('processing', filepath)
 
         # deal with TIME
         var_time = ds.variables["TIME"]
@@ -41,7 +44,7 @@ def resample(files, method, resample='True', hours=12):
         timedelta_hours = (datetime_end - datetime_start).total_seconds()/3600
         #print('datetime_start, datetime_end', datetime_start, datetime_end, timedelta_hours)
 
-        sample_datetime = [(datetime_start + timedelta(hours=h)) for h in range(np.int(timedelta_hours+1))]
+        sample_datetime = [(datetime_start + timedelta(hours=h)) for h in range(int(timedelta_hours+1))]
         print('sample_datetime_start, sample_datetime_end', sample_datetime[0], sample_datetime[-1])
 
         num_deploy_start = date2num(datetime_deploy_start, units=var_time.units)
@@ -58,7 +61,10 @@ def resample(files, method, resample='True', hours=12):
         time_deployment = time[deployment_msk]
 
         # use the mid point sample rate, as it may change at start/end
-        n_mid = np.int(len(time_deployment)/2)
+        n_mid = int(len(time_deployment)/2)
+        if n_mid == 0:
+            print('mid point', n_mid)
+            continue
         t_mid0 = datetime_time_deployment[n_mid]
         t_mid1 = datetime_time_deployment[n_mid+1]
 
@@ -159,6 +165,7 @@ def resample(files, method, resample='True', hours=12):
                                   'VAVH', 'SWH'
                                   'UCUR', 'VCUR', 'WCUR',
                                   'xCO2_SW', 'xCO2_AIR',
+                                  'Hm0', 'Tz',
                                   'PAR',
                                   'NTRI_CONC', 'ALKA_CONC', 'PHOS_CONC', 'SLCA_CONC', 'TCO2',
                                   'WEIGHT', 'NTRI', 'PHOS', 'SLCA', 'TALK'])
@@ -228,7 +235,13 @@ def resample(files, method, resample='True', hours=12):
                 var_resample_out[sample_time_dist_msk] = y[sample_time_dist_msk]
 
         #  create history
-        ds_new.history += '\n' + now.strftime("%Y-%m-%d") + ' resampled data created from ' + os.path.basename(filepath) + ', window has' + str(window) + 'points, method ' + method
+        # update the history attribute
+        try:
+            hist = ds_new.history + "\n"
+        except AttributeError:
+            hist = ""
+
+        ds_new.setncattr('history', hist + datetime.now(UTC).strftime("%Y-%m-%d") + ' resampled data created from ' + os.path.basename(filepath) + ', window has' + str(window) + 'points, method ' + method)
 
         ds_new.file_version = 'Level 2 - Derived Products'
         ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
@@ -240,15 +253,6 @@ def resample(files, method, resample='True', hours=12):
         ds.close()
 
     return output_names
-
-
-def plot():
-    #plt.plot(t_dt[msk], psal)
-    #plt.plot(d_dt, y)
-
-    plt.grid()
-
-    plt.show()
 
 
 if __name__ == "__main__":

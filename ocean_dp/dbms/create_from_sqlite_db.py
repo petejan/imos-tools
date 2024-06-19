@@ -17,7 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 import os
 import sys
-from datetime import datetime
+from datetime import datetime, UTC
 
 from cftime import num2date
 from glob2 import glob
@@ -28,7 +28,7 @@ import numpy as np
 import io
 
 compressor = 'zlib'  # zlib, bz2
-include_attributes = False
+include_attributes = True
 
 def adapt_array(arr):
     """
@@ -307,7 +307,7 @@ def create(file):
 
     ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
 
-    now = datetime.utcnow()
+    now = datetime.now(UTC)
 
     ncOut.date_created = now.strftime(ncTimeFormat)
     ncOut.history = now.strftime("%Y-%m-%d") + " created from " + file
@@ -315,7 +315,7 @@ def create(file):
     ncOut.title = 'Gridded oceanographic and meteorological data from the Southern Ocean Time Series observatory in the Southern Ocean southwest of Tasmania'
     ncOut.file_version = 'Level 2 - Derived product'
     ncOut.data_mode = 'G'  # TODO: corruption of data_mode from OceanSITES manual
-    ncOut.deployment_code = 'SOFS-9-2020'
+    ncOut.deployment_code = 'SOFS-11-2022'
 
     ncOut.close()
     con.close()
