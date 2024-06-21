@@ -141,14 +141,21 @@ def add(netCDFfile, metadatafiles):
                     # match instrument
                     # fuzzie matching : https://medium.com/@categitau/fuzzy-string-matching-in-python-68f240d910fe
                     if len(dict1['model']) > 0:
-                        if instrument_model.lower() != dict1['model']:
+                        if instrument_model.lower() != dict1['model'].lower():
                             match = False
+                        else:
+                            #print(instrument_model.lower(), dict1['model'].lower())
+                            pass
+
                     if len(dict1['serial_number']) > 0:
-                        if instrument_serial_number.lower() != dict1['serial_number']:
+                        if instrument_serial_number.lower() != dict1['serial_number'].lower():
                             match = False
+                        else:
+                            #print(instrument_serial_number.lower(), dict1['serial_number'].lower())
+                            pass
 
                     if match:
-                        #print("match ", dict1, td, tr)
+                        print("match ", dict1, td, tr)
 
                         # global attributes
                         if dict1['rec_type'] == 'GLOBAL':

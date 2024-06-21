@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-
+import glob
 # raw2netCDF
 # Copyright (C) 2019 Peter Jansen
 #
@@ -20,7 +20,7 @@ import sys
 import re
 import os
 
-from datetime import datetime, UTC
+from datetime import datetime, UTC, timedelta
 from netCDF4 import date2num, num2date
 from netCDF4 import Dataset
 import numpy as np
@@ -43,88 +43,148 @@ line_exp = r"(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}) INFO:.*MEASUREMENT\s*(\d*)\s*
 done_line_expr = r"(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}) INFO:.*done time.*OBP=\s*([0-9.-]*).*OT=\s*([0-9.-]*).*$"
 line_4831_expr = r"(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}) INFO: Optode Line : \s*(\d*)\s*(\d*) (.*)$"
 
+open_log_time_expr = r"(\d+) TIME (\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})"
+open_log_sample_expr = r"(\d+) 4831\t(\d+)\t[0-9.]+\t[0-9.]+\t([0-9.]+)\t([0-9.]+).*$"
+open_log_sampleTxt_expr = r"(\d+) MEASUREMENT\t4831\t(\d+)\t.*\tTemperature\[Deg.C\]\t([0-9.]+)\tCalPhase\[Deg\]\t([0-9.]+).*$"
+
 # 2021-03-03 02:00:04 INFO: Optode Line : 4831 506 242.692 94.008 24.952 29.995 29.995 39.004 9.009 524.5 677.6 -21.1
 
 #2019-12-03 05:00:07 INFO: Optode Line : MEASUREMENT   3830   1419 Oxygen:     330.55 Saturation:      94.27 Temperature:      10.19 DPhase:      34.15 BPhase:      34.15 RPhase:       0.00 BAmp:     2
 #2019-12-03 06:00:07 INFO: Optode Line : MEASUREMENT   3830   1419 Oxygen:     330.59 Saturation:      94.19 Temperature:      10.15 DPhase:      34.17 BPhase:      34.17 RPhase:       0.00 BAmp:     2
 
+
 def parse(file):
 
+    use_only_optode_line = False
     number_samples_read = 0
     instrument_model = 'Optode 3830'
     instrument_serial_number = 'unknown'
-
-    filepath = file[0]
     t = []
     bphase = []
     temp = []
 
-    with open(filepath, 'r', errors='ignore') as fp:
-        line = fp.readline()
-        cnt = 1
-        while line:
-            matchObj = re.match(line_exp, line)
-            if matchObj:
-                try:
-                    ts = datetime.strptime(matchObj.group(1), '%Y-%m-%d %H:%M:%S')
-                    instrument_model = 'Optode ' + matchObj.group(2)
-                    instrument_serial_number = matchObj.group(3)
+    ms_0 = None
+    ts_0 = None
 
-                    bp = float(matchObj.group(5))
-                    ot = float(matchObj.group(4))
+    for filepath in file:
 
-                    t.append(ts)
-                    bphase.append(bp)
-                    temp.append(ot)
-
-                    number_samples_read = number_samples_read + 1
-                except ValueError as v:
-                    print('Optode Value Error:', v)
-                    print(line)
-            matchObj = re.match(line_4831_expr, line)
-            if matchObj:
-                try:
-                    ts = datetime.strptime(matchObj.group(1), '%Y-%m-%d %H:%M:%S')
-                    instrument_model = 'Optode ' + matchObj.group(2)
-                    instrument_serial_number = matchObj.group(3)
-
-                    split = matchObj.group(4).split()
-                    bp = float(split[4])
-                    ot = float(split[2])
-
-                    t.append(ts)
-                    bphase.append(bp)
-                    temp.append(ot)
-
-                    number_samples_read = number_samples_read + 1
-                except ValueError as v:
-                    print('Optode Value Error:', v)
-                    print(line)
-            matchObj = re.match(done_line_expr, line)
-            if matchObj:
-                try:
-                    ts = datetime.strptime(matchObj.group(1), '%Y-%m-%d %H:%M:%S')
-
-                    bp = float(matchObj.group(2))
-                    ot = float(matchObj.group(3))
-
-                    t.append(ts)
-                    bphase.append(bp)
-                    temp.append(ot)
-
-                    number_samples_read = number_samples_read + 1
-                except ValueError as v:
-                    print('Value Error:', v)
-                    print(line)
-
+        with open(filepath, 'r', errors='ignore') as fp:
             line = fp.readline()
+            cnt = 1
+            while line:
+                matchObj = re.match(line_exp, line)
+                if matchObj:
+                    try:
+                        ts = datetime.strptime(matchObj.group(1), '%Y-%m-%d %H:%M:%S')
+                        instrument_model = 'Optode ' + matchObj.group(2)
+                        instrument_serial_number = matchObj.group(3)
+
+                        bp = float(matchObj.group(5))
+                        ot = float(matchObj.group(4))
+
+                        t.append(ts)
+                        bphase.append(bp)
+                        temp.append(ot)
+
+                        number_samples_read = number_samples_read + 1
+                        use_only_optode_line = True
+
+                    except ValueError as v:
+                        print('Optode Value Error:', v)
+                        print(line)
+                matchObj = re.match(line_4831_expr, line)
+                if matchObj:
+                    try:
+                        ts = datetime.strptime(matchObj.group(1), '%Y-%m-%d %H:%M:%S')
+                        instrument_model = 'Optode ' + matchObj.group(2)
+                        instrument_serial_number = matchObj.group(3)
+
+                        split = matchObj.group(4).split()
+                        bp = float(split[4])
+                        ot = float(split[2])
+
+                        t.append(ts)
+                        bphase.append(bp)
+                        temp.append(ot)
+
+                        number_samples_read = number_samples_read + 1
+                        use_only_optode_line = True
+
+                    except ValueError as v:
+                        print('Optode Value Error:', v)
+                        print(line)
+
+                matchObj = re.match(done_line_expr, line)
+                if not use_only_optode_line and matchObj:
+                    try:
+                        ts = datetime.strptime(matchObj.group(1), '%Y-%m-%d %H:%M:%S')
+
+                        bp = float(matchObj.group(2))
+                        ot = float(matchObj.group(3))
+
+                        t.append(ts)
+                        bphase.append(bp)
+                        temp.append(ot)
+
+                        number_samples_read = number_samples_read + 1
+                    except ValueError as v:
+                        print('Value Error:', v)
+                        print(line)
+
+                matchObj = re.match(open_log_time_expr, line)
+                if matchObj:
+                    if ms_0:
+                        ms = int(matchObj.group(1))
+
+                        ts = ts_0 + timedelta(seconds=(ms - ms_0) / 1000)
+                        print('from previous ts', ts)
+
+                    ms_0 = int(matchObj.group(1))
+                    ts_0 = datetime.strptime(matchObj.group(2), '%Y-%m-%d %H:%M:%S')
+
+                    print("optode log line", ms_0,  ts_0)
+
+                matchObj = re.match(open_log_sample_expr, line)
+                if matchObj and ms_0:
+                    ms = int(matchObj.group(1))
+                    instrument_serial_number = matchObj.group(2)
+                    instrument_model = 'Optode 4831'
+
+                    ts = ts_0 + timedelta(seconds=(ms - ms_0)/1000)
+                    bp = float(matchObj.group(4))
+                    ot = float(matchObj.group(3))
+                    print('bp', bp, line)
+
+                    t.append(ts)
+                    bphase.append(bp)
+                    temp.append(ot)
+
+                    number_samples_read = number_samples_read + 1
+
+                matchObj = re.match(open_log_sampleTxt_expr, line)
+                if matchObj and ms_0:
+                    ms = int(matchObj.group(1))
+                    instrument_serial_number = matchObj.group(2)
+                    instrument_model = 'Optode 4831'
+
+                    ts = ts_0 + timedelta(seconds=(ms - ms_0)/1000)
+                    bp = float(matchObj.group(4))
+                    ot = float(matchObj.group(3))
+                    print('bp', bp, line)
+
+                    t.append(ts)
+                    bphase.append(bp)
+                    temp.append(ot)
+
+                    number_samples_read = number_samples_read + 1
+                line = fp.readline()
 
     print("samplesRead %d" % (number_samples_read))
 
     if number_samples_read == 0:
         return
 
-    print('instrument ', instrument_model, 'serial', instrument_serial_number)
+        print('instrument ', instrument_model, 'serial', instrument_serial_number)
 
     #
     # build the netCDF file
@@ -132,7 +192,7 @@ def parse(file):
 
     ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
 
-    outputName = filepath + ".nc"
+    outputName = "optode-" + os.path.basename(files[0]) + ".nc"
 
     print("output file : %s" % outputName)
 
@@ -168,7 +228,10 @@ def parse(file):
     ncOut.setncattr("time_coverage_start", num2date(ncTimesOut[0], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
     ncOut.setncattr("time_coverage_end", num2date(ncTimesOut[-1], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
     ncOut.setncattr("date_created", datetime.now(UTC).strftime(ncTimeFormat))
-    ncOut.setncattr("history", datetime.utcnow().strftime("%Y-%m-%d") + " created from file " + os.path.basename(filepath))
+    hist = datetime.utcnow().strftime("%Y-%m-%d") + " created from file " + os.path.basename(filepath)
+    if len(files) > 1:
+        hist += " ..."
+    ncOut.setncattr("history", hist)
 
     ncOut.close()
 
@@ -176,5 +239,9 @@ def parse(file):
 
 
 if __name__ == "__main__":
-    parse(sys.argv[1:])
+    files = []
+    for f in sys.argv[1:]:
+        files.extend(glob.glob(f))
+
+    parse(files)
 

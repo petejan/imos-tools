@@ -45,8 +45,16 @@ def oxygen(netCDFfile):
 
     t = var_temp[:]
     SP = var_psal[:]
+    lat = -47
+    lon = 142
 
-    SA = gsw.SA_from_SP(SP, p, ds.variables["LONGITUDE"][0], ds.variables["LATITUDE"][0])
+    try:
+        lat = ds.variables['LATITUDE'][0]
+        lon = ds.variables['LONGITUDE'][0]
+    except:
+        pass
+
+    SA = gsw.SA_from_SP(SP, p, lon, lat)
     CT = gsw.CT_from_t(SA, t, p)
     pt = gsw.pt0_from_t(SA, t, p)
 
