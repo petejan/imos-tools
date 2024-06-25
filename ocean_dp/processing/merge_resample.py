@@ -17,7 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 import os
 import sys
-from datetime import datetime
+from datetime import datetime, UTC
 
 import numpy as np
 from cftime import num2date
@@ -78,7 +78,7 @@ def resample(netCDF_file, sample_file, vars):
     except AttributeError:
         hist = ""
 
-    ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " added data from " + os.path.basename(sample_file) + " interpolated to this time")
+    ds.setncattr('history', hist + datetime.now(UTC).strftime("%Y-%m-%d") + " added data from " + os.path.basename(sample_file) + " interpolated to this time")
 
     ds.close()
 

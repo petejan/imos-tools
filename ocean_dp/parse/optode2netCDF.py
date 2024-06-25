@@ -228,7 +228,7 @@ def parse(file):
     ncOut.setncattr("time_coverage_start", num2date(ncTimesOut[0], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
     ncOut.setncattr("time_coverage_end", num2date(ncTimesOut[-1], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
     ncOut.setncattr("date_created", datetime.now(UTC).strftime(ncTimeFormat))
-    hist = datetime.utcnow().strftime("%Y-%m-%d") + " created from file " + os.path.basename(filepath)
+    hist = datetime.now(UTC).strftime("%Y-%m-%d") + " created from file " + os.path.basename(filepath)
     if len(files) > 1:
         hist += " ..."
     ncOut.setncattr("history", hist)

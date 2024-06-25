@@ -83,7 +83,7 @@ def create(file):
                 elif att['type'] == 'float32':
                     ncOut.setncattr(att[0], np.float32(att[3]))
                 elif att['type'] == 'float64':
-                    ncOut.setncattr(att[0], np.float(att[3]))
+                    ncOut.setncattr(att[0], float(att[3]))
 
     fDim = ncOut.createDimension("IDX", file_count)
     sDim = ncOut.createDimension("strlen", 256)
@@ -213,36 +213,36 @@ def create(file):
     ncOut.setncattr("time_coverage_start", num2date(ncTimesOut[0], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
     ncOut.setncattr("time_coverage_end", num2date(ncTimesOut[-1], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
 
-    # rows = cur.execute('SELECT * FROM variable_depth WHERE name == "LATITUDE" ORDER BY CAST(nominal_depth AS REAL)')
-    # row = cur.fetchone()
-    #
-    # ncLatOut = ncOut.createVariable("LATITUDE", "d")
-    # ncLatOut.axis = "Y"
-    # ncLatOut.long_name = "latitude"
-    # ncLatOut.reference_datum = "WGS84 geographic coordinate system"
-    # ncLatOut.standard_name = "latitude"
-    # ncLatOut.units = "degrees_north"
-    # ncLatOut.valid_max = 90
-    # ncLatOut.valid_min = -90
-    #
-    # lat_data = row['data']
-    # print('lat data', lat_data)
-    # ncLatOut[:] = lat_data
-    #
-    # rows = cur.execute('SELECT * FROM variable_depth WHERE name == "LONGITUDE" ORDER BY CAST(nominal_depth AS REAL)')
-    # row = cur.fetchone()
-    #
-    # ncLonOut = ncOut.createVariable("LONGITUDE", "d")
-    # ncLonOut.axis = "X"
-    # ncLonOut.long_name = "longitude"
-    # ncLonOut.reference_datum = "WGS84 geographic coordinate system"
-    # ncLonOut.standard_name = "longitude"
-    # ncLonOut.units = "degrees_east"
-    # ncLonOut.valid_max = 180
-    # ncLonOut.valid_min = -180
-    #
-    # lon_data = row['data']
-    # ncLonOut[:] = lon_data
+    rows = cur.execute('SELECT * FROM variable_depth WHERE name == "LATITUDE" ORDER BY CAST(nominal_depth AS REAL)')
+    row = cur.fetchone()
+
+    ncLatOut = ncOut.createVariable("LATITUDE", "d")
+    ncLatOut.axis = "Y"
+    ncLatOut.long_name = "latitude"
+    ncLatOut.reference_datum = "WGS84 geographic coordinate system"
+    ncLatOut.standard_name = "latitude"
+    ncLatOut.units = "degrees_north"
+    ncLatOut.valid_max = 90
+    ncLatOut.valid_min = -90
+
+    lat_data = row['data']
+    print('lat data', lat_data)
+    ncLatOut[:] = lat_data
+
+    rows = cur.execute('SELECT * FROM variable_depth WHERE name == "LONGITUDE" ORDER BY CAST(nominal_depth AS REAL)')
+    row = cur.fetchone()
+
+    ncLonOut = ncOut.createVariable("LONGITUDE", "d")
+    ncLonOut.axis = "X"
+    ncLonOut.long_name = "longitude"
+    ncLonOut.reference_datum = "WGS84 geographic coordinate system"
+    ncLonOut.standard_name = "longitude"
+    ncLonOut.units = "degrees_east"
+    ncLonOut.valid_max = 180
+    ncLonOut.valid_min = -180
+
+    lon_data = row['data']
+    ncLonOut[:] = lon_data
 
     # generate the data for each variable
     vars = cur_vars.execute(sql_select_vars)
@@ -287,7 +287,7 @@ def create(file):
                         elif att['type'] == 'float32':
                             varOut.setncattr(att['name'], np.float32(att['value']))
                         elif att['type'] == 'float64':
-                            varOut.setncattr(att['name'], np.float(att['value']))
+                            varOut.setncattr(att['name'], float(att['value']))
                 if att['name'] == 'coordinates':
                     try:
                         varOut.coordinates = varOut.coordinates.replace("NOMINAL_DEPTH", "NOMINAL_DEPTH_"+var_name)
@@ -315,7 +315,7 @@ def create(file):
     ncOut.title = 'Gridded oceanographic and meteorological data from the Southern Ocean Time Series observatory in the Southern Ocean southwest of Tasmania'
     ncOut.file_version = 'Level 2 - Derived product'
     ncOut.data_mode = 'G'  # TODO: corruption of data_mode from OceanSITES manual
-    ncOut.deployment_code = 'SOFS-11-2022'
+    ncOut.deployment_code = 'SOFS-12-2023'
 
     ncOut.close()
     con.close()

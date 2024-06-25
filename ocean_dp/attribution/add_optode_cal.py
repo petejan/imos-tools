@@ -19,7 +19,7 @@ import os
 
 from netCDF4 import Dataset
 import sys
-from datetime import datetime
+from datetime import datetime, UTC
 
 val_names = ['C0', 'C1', 'C2', 'A0', 'A1', 'B0', 'B1']
 
@@ -45,7 +45,7 @@ def add(netCDFfile, optode_cal_file):
     except AttributeError:
         hist = ""
 
-    ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " attributes added from file " + os.path.basename(optode_cal_file))
+    ds.setncattr('history', hist + datetime.now(UTC).strftime("%Y-%m-%d") + " attributes added from file " + os.path.basename(optode_cal_file))
 
     ds.close()
 

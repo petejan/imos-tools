@@ -114,9 +114,9 @@ def add(netCDFfile, metadatafiles):
                     if 'time_deployment' in dict1:
                         if len(dict1['time_deployment']) > 0:
                             td = None
-                            if re.match('\d{1,2}\/\d{1,2}\/\d{1,2}', dict1['time_deployment']):
+                            if re.match(r'\d{1,2}\/\d{1,2}\/\d{1,2}', dict1['time_deployment']):
                                 td = datetime.strptime(dict1['time_deployment'], '%d/%m/%y')
-                            elif re.match('20\d{2}-\d{1,2}-\d{1,2} \d{1,2}:\d{2}', dict1['time_deployment']):
+                            elif re.match(r'20\d{2}-\d{1,2}-\d{1,2} \d{1,2}:\d{2}', dict1['time_deployment']):
                                 td = datetime.strptime(dict1['time_deployment'], '%Y-%m-%d %H:%M')
                             else:
                                 td = datetime.strptime(dict1['time_deployment'], '%Y-%m-%d')
@@ -127,9 +127,9 @@ def add(netCDFfile, metadatafiles):
                     if 'time_recovery' in dict1:
                         if len(dict1['time_recovery']) > 0:
                             tr = None
-                            if re.match('\d{1,2}\/\d{1,2}\/\d{1,2}', dict1['time_recovery']):
+                            if re.match(r'\d{1,2}\/\d{1,2}\/\d{1,2}', dict1['time_recovery']):
                                 tr = datetime.strptime(dict1['time_recovery'], '%d/%m/%y')
-                            elif re.match('20\d{2}-\d{1,2}-\d{1,2} \d{1,2}:\d{2}', dict1['time_recovery']):
+                            elif re.match(r'20\d{2}-\d{1,2}-\d{1,2} \d{1,2}:\d{2}', dict1['time_recovery']):
                                 tr = datetime.strptime(dict1['time_recovery'], '%Y-%m-%d %H:%M')
                             else:
                                 tr = datetime.strptime(dict1['time_recovery'], '%Y-%m-%d')
@@ -155,7 +155,7 @@ def add(netCDFfile, metadatafiles):
                             pass
 
                     if match:
-                        print("match ", dict1, td, tr)
+                        #print("match ", dict1, td, tr)
 
                         # global attributes
                         if dict1['rec_type'] == 'GLOBAL':
