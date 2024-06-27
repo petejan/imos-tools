@@ -289,10 +289,14 @@ def create(file):
                         elif att['type'] == 'float64':
                             varOut.setncattr(att['name'], float(att['value']))
                 if att['name'] == 'coordinates':
-                    try:
-                        varOut.coordinates = varOut.coordinates.replace("NOMINAL_DEPTH", "NOMINAL_DEPTH_"+var_name)
-                    except:
-                        pass
+                    if hasattr(varOut, 'coordinates'):
+                        if 'NOMINAL_DEPTH' in varOut.coordinates:
+                            varOut.coordinates = varOut.coordinates.replace("NOMINAL_DEPTH", "NOMINAL_DEPTH_"+var_name)
+                        else:
+                            varOut.coordinates = varOut.coordinates + " NOMINAL_DEPTH_"+var_name
+            # if no coordinates were added, add one now
+            if row['is_aux'] is None and not hasattr(varOut, 'coordinates'):
+                varOut.coordinates = "TIME LATITUDE LONGITUDE NOMINAL_DEPTH_" + var_name
 
         # write the data
         n = 0
