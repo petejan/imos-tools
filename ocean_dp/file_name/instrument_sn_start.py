@@ -19,7 +19,7 @@
 from netCDF4 import Dataset
 import sys
 import os
-from datetime import datetime
+from datetime import datetime, UTC
 
 def rename(netCDFfiles):
 

@@ -20,7 +20,7 @@ from netCDF4 import Dataset
 import sys
 import gsw
 import numpy as np
-from datetime import datetime
+from datetime import datetime, UTC
 import os
 
 # add PSAL to a data file with TEMP, CNDC, PRES variables, many assumptions are made about the input file
@@ -41,7 +41,7 @@ def add_psal(netCDFfile):
     fn_new = netCDFfile
     dirname = os.path.dirname(fn_new)
     basename = os.path.basename(fn_new)
-    now = datetime.utcnow()
+    now = datetime.now(UTC)
     if basename.startswith("IMOS"):
         fn_split = basename.split('_')
 
@@ -105,7 +105,7 @@ def add_psal(netCDFfile):
         except AttributeError:
             hist = ""
 
-    ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " added PSAL from TEMP, CNDC, " + pres_var)
+    ds.setncattr('history', hist + datetime.now(UTC).strftime("%Y-%m-%d") + " added PSAL from TEMP, CNDC, " + pres_var)
 
     ds.close()
 

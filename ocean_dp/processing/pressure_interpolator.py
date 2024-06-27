@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 import numpy as np
 from netCDF4 import Dataset
 import glob
@@ -47,10 +47,10 @@ def pressure_interpolator(netCDFfiles=None, agg_file=None):
     # Loop through each of the fv01 files
     for fn in netCDFfiles:
         
-        print(datetime.utcnow(), 'processing file : ', fn)
+        print(datetime.now(UTC), 'processing file : ', fn)
 
         # Change the creation date in the filename to today
-        now = datetime.utcnow()
+        now = datetime.now(UTC)
             
         fn_new_split = os.path.basename(fn).split('_')
         fn_new_split[-1] = "C-" + now.strftime("%Y%m%d") + ".nc"
@@ -92,7 +92,7 @@ def pressure_interpolator(netCDFfiles=None, agg_file=None):
             # including the 0m values
             agg_nominal_depths = np.insert(np.array(agg.variables["NOMINAL_DEPTH"][:]),0,0)
 
-            print(datetime.utcnow(), 'interpolating aggregate to file times')
+            print(datetime.now(UTC), 'interpolating aggregate to file times')
 
             # For each nominal depth, interpolate the agg data at the fv01 times
             # TODO: look at only calculating pressures for sensors above and below the NOMINAL_DEPTH that we're interested in
@@ -142,7 +142,7 @@ def pressure_interpolator(netCDFfiles=None, agg_file=None):
             # Create a NaN array to receive the fv01 interpolated pressures
             interp_fv01_pres = np.full((np.shape(fv01_contents.variables["TIME"][:])),np.nan)
 
-            print(datetime.utcnow(), 'interpolating pressure')
+            print(datetime.now(UTC), 'interpolating pressure')
 
             # At each timestamp, interpolate pressure for the fv01 data
             for j in range(len(fv01_contents.variables["TIME"])):
@@ -243,7 +243,7 @@ def pressure_interpolator(netCDFfiles=None, agg_file=None):
             print('press altered in original press')
             fv01_contents.history += '\n' + now.strftime("%Y-%m-%d : ") + 'replaced NANs with interpolated pressure.'
 
-        print(datetime.utcnow(), 'close file')
+        print(datetime.now(UTC), 'close file')
         fv01_contents.close()
             
     agg.close()

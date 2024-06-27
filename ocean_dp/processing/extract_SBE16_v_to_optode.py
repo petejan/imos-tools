@@ -20,7 +20,7 @@ from netCDF4 import Dataset
 import sys
 import gsw
 import numpy as np
-from datetime import datetime
+from datetime import datetime, UTC
 
 # extract V4 and V5 from SBE16 file and output BPHASE and OTEMP for optode processing
 
@@ -126,7 +126,7 @@ def extract_optode(netCDFfile):
     ds_out.title = 'Oceanographic mooring data deployment of {platform_code} at latitude {geospatial_lat_max:3.1f} longitude {geospatial_lon_max:3.1f} depth {geospatial_vertical_max:3.0f} (m) instrument {instrument} serial {instrument_serial_number}'
 
     ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
-    ds_out.setncattr("date_created", datetime.utcnow().strftime(ncTimeFormat))
+    ds_out.setncattr("date_created", datetime.now(UTC).strftime(ncTimeFormat))
 
     # update the history attribute
     try:
@@ -136,9 +136,9 @@ def extract_optode(netCDFfile):
 
     # keep the history so we know where it came from
     if is_raw:
-        ds_out.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " extract DOX2_RAW, OTEMP from " + netCDFfile)
+        ds_out.setncattr('history', hist + datetime.now(UTC).strftime("%Y-%m-%d") + " extract DOX2_RAW, OTEMP from " + netCDFfile)
     else:
-        ds_out.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " extract BPHASE, OTEMP from " + netCDFfile)
+        ds_out.setncattr('history', hist + datetime.now(UTC).strftime("%Y-%m-%d") + " extract BPHASE, OTEMP from " + netCDFfile)
 
     ds.close()
     ds_out.close()

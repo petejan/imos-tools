@@ -19,7 +19,7 @@
 import sys
 import re
 
-from datetime import datetime
+from datetime import datetime, UTC
 
 from glob2 import glob
 from netCDF4 import date2num, num2date
@@ -168,8 +168,8 @@ def parse(filepath, sn='unknown'):
     ncOut.setncattr("time_coverage_end", num2date(ncTimesOut[-1], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
 
     # add creating and history entry
-    ncOut.setncattr("date_created", datetime.utcnow().strftime(ncTimeFormat))
-    ncOut.setncattr("history", datetime.utcnow().strftime("%Y-%m-%d") + " created from file " + filepath)
+    ncOut.setncattr("date_created", datetime.now(UTC).strftime(ncTimeFormat))
+    ncOut.setncattr("history", datetime.now(UTC).strftime("%Y-%m-%d") + " created from file " + filepath)
 
     ncOut.close()
 

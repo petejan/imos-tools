@@ -19,7 +19,7 @@
 from netCDF4 import Dataset
 import sys
 import numpy as np
-from datetime import datetime
+from datetime import datetime, UTC
 
 #  convert magnetic orientation to true orientation
 
@@ -77,7 +77,7 @@ def magnetic_to_true(netCDFfile):
     except AttributeError:
         hist = ""
 
-    ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " : converted from magnetic orientation to true")
+    ds.setncattr('history', hist + datetime.now(UTC).strftime("%Y-%m-%d") + " : converted from magnetic orientation to true")
 
     ds.close()
 

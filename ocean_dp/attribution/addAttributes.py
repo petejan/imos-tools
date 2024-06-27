@@ -22,7 +22,7 @@ from netCDF4 import Dataset
 import sys
 import numpy as np
 import csv
-from datetime import datetime
+from datetime import datetime, UTC
 
 
 def parseTypeValue(att_type, v):
@@ -198,7 +198,7 @@ def add(netCDFfile, metadatafiles):
     except AttributeError:
         hist = ""
 
-    ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " attributes added from file(s) [" + format(', '.join(files)) + "]")
+    ds.setncattr('history', hist + datetime.now(UTC).strftime("%Y-%m-%d") + " attributes added from file(s) [" + format(', '.join(files)) + "]")
 
     ds.close()
 

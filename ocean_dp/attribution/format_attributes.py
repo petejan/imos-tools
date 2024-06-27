@@ -51,7 +51,7 @@ def format_attributes(netCDFfile):
     # except AttributeError:
     #     hist = ""
     #
-    # ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " : formatted attributes")
+    # ds.setncattr('history', hist + datetime.now(UTC).strftime("%Y-%m-%d") + " : formatted attributes")
 
     ds.close()
 

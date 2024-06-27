@@ -19,6 +19,7 @@
 import sys
 import struct
 import datetime
+from datetime import UTC
 import binascii
 
 from netCDF4 import Dataset
@@ -408,8 +409,8 @@ def parse(files):
 
     dataset.setncattr("time_coverage_start", num2date(times[0], units=times.units, calendar=times.calendar).strftime(ncTimeFormat))
     dataset.setncattr("time_coverage_end", num2date(times[-1], units=times.units, calendar=times.calendar).strftime(ncTimeFormat))
-    dataset.setncattr("date_created", datetime.datetime.utcnow().strftime(ncTimeFormat))
-    dataset.setncattr("history", datetime.datetime.utcnow().strftime("%Y-%m-%d") + " created from file " + files[0])
+    dataset.setncattr("date_created", datetime.datetime.now(UTC).strftime(ncTimeFormat))
+    dataset.setncattr("history", datetime.datetime.now(UTC).strftime("%Y-%m-%d") + " created from file " + files[0])
 
     dataset.close()
 

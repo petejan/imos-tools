@@ -1,5 +1,5 @@
 import re
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 from netCDF4 import num2date, date2num
 from netCDF4 import stringtochar
 import numpy.ma as ma
@@ -112,7 +112,7 @@ def flatline_test(nc, target_vars_in=[], window=5, flag=4):
     except AttributeError:
         hist = ""
 
-    nc.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + ' : flatline_test performed on ' + str(target_vars) + ', window ' + str(window) + ' consecutive values or more were flagged with ' + str(flag) + ' marked ' + str(int(points_marked)))
+    nc.setncattr('history', hist + datetime.now(UTC).strftime("%Y-%m-%d") + ' : flatline_test performed on ' + str(target_vars) + ', window ' + str(window) + ' consecutive values or more were flagged with ' + str(flag) + ' marked ' + str(int(points_marked)))
 
     nc.close()
 

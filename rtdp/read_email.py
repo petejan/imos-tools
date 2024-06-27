@@ -8,7 +8,7 @@ import sys
 
 from glob2 import glob
 import numpy as np
-from datetime import datetime
+from datetime import datetime, UTC
 import re
 import json
 import sqlite3

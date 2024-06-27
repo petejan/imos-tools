@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-from datetime import datetime
+from datetime import datetime, UTC
 
 from netCDF4 import Dataset, num2date
 import sys
@@ -121,9 +121,9 @@ def interp(netCDFfile, var_name=None, flag=8, reason=None):
         except AttributeError:
             hist = ""
         if var_name:
-            hist = hist + datetime.utcnow().strftime("%Y-%m-%d") + " " + var_name + " manual QC, marked " + str(int(count))
+            hist = hist + datetime.now(UTC).strftime("%Y-%m-%d") + " " + var_name + " manual QC, marked " + str(int(count))
         else:
-            hist = hist + datetime.utcnow().strftime("%Y-%m-%d") + " manual QC, marked " + str(int(count))
+            hist = hist + datetime.now(UTC).strftime("%Y-%m-%d") + " manual QC, marked " + str(int(count))
         hist = hist + " with flag="+str(flag)
         if reason:
             hist += ', ' + reason

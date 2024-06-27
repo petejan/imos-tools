@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 from netCDF4 import num2date, date2num
 import numpy.ma as ma
 from netCDF4 import Dataset
@@ -224,8 +224,8 @@ elif recovery_ship == "RV Investigator":
 # create the oceanSITES global attributes
 ncOut.setncattr("time_coverage_start", dates[0].strftime(ncTimeFormat))
 ncOut.setncattr("time_coverage_end", dates[-1].strftime(ncTimeFormat))
-ncOut.setncattr("date_created", datetime.utcnow().strftime(ncTimeFormat))
-ncOut.setncattr("history", history + '\n' + datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC : Convert from IMOS file : ") + fileName)
+ncOut.setncattr("date_created", datetime.now(UTC).strftime(ncTimeFormat))
+ncOut.setncattr("history", history + '\n' + datetime.now(UTC).strftime("%Y-%m-%d %H:%M:%S UTC : Convert from IMOS file : ") + fileName)
 ncOut.setncattr("acknowledgement", "We acknowledge support from the following agencies: the Australian Antarctic Program Partnership (AAPP), the Antarctic Climate and Ecosystems Cooperative Research Centre (ACE CRC), the Integrated Marine Observing System (www.imos.org.au), University of Tasmania (UTAS), Bureau of Meteorology (BoM), the Marine National Facility (MNF) and the Australian Antarctic Division (AAD). We also acknowledge the support of the CSIRO Moored Sensor Systems team.")
 ncOut.setncattr("data_type", "OceanSITES time-series data")
 ncOut.setncattr("format_version", "1.3")
@@ -395,7 +395,7 @@ for v in varList:
     except AttributeError:
         hist = ""
 
-    ncOut.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " : converted to oceanSITES format from file " + path_file)
+    ncOut.setncattr('history', hist + datetime.now(UTC).strftime("%Y-%m-%d") + " : converted to oceanSITES format from file " + path_file)
 
 
 ds_in.close()

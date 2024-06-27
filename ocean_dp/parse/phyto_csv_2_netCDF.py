@@ -6,7 +6,7 @@ import numpy as np
 import sys
 import os
 
-from datetime import datetime
+from datetime import datetime, UTC
 
 # see http://cfconventions.org/cf-conventions/cf-conventions.html#taxon-names-and-identifiers
 
@@ -176,8 +176,8 @@ ncOut.setncattr("time_coverage_start", num2date(ncTimesOut[0], units=ncTimesOut.
 ncOut.setncattr("time_coverage_end", num2date(ncTimesOut[-1], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
 
 # add creating and history entry
-ncOut.setncattr("date_created", datetime.utcnow().strftime(ncTimeFormat))
-ncOut.setncattr("history", datetime.utcnow().strftime("%Y-%m-%d") + " created from file " + os.path.basename(fn))
+ncOut.setncattr("date_created", datetime.now(UTC).strftime(ncTimeFormat))
+ncOut.setncattr("history", datetime.now(UTC).strftime("%Y-%m-%d") + " created from file " + os.path.basename(fn))
 
 ncOut.setncattr("contributor_name", "Eriksen, Ruth")
 ncOut.setncattr("contributor_role", "phytoplankton identification")

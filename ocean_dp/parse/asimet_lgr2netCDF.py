@@ -19,6 +19,7 @@ import re
 import sys
 
 import datetime
+from datetime import UTC
 from netCDF4 import date2num, num2date
 from netCDF4 import Dataset
 import struct
@@ -296,8 +297,8 @@ def parse(files):
         ncOut.setncattr("time_coverage_end", ts_end.strftime(ncTimeFormat))
 
         # add creating and history entry
-        ncOut.setncattr("date_created", datetime.datetime.utcnow().strftime(ncTimeFormat))
-        ncOut.setncattr("history", datetime.datetime.utcnow().strftime("%Y-%m-%d") + " created from file " + os.path.basename(filepath))
+        ncOut.setncattr("date_created", datetime.datetime.now(UTC).strftime(ncTimeFormat))
+        ncOut.setncattr("history", datetime.datetime.now(UTC).strftime("%Y-%m-%d") + " created from file " + os.path.basename(filepath))
 
         ncOut.close()
 

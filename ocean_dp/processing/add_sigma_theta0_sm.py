@@ -18,7 +18,7 @@ from netCDF4 import Dataset
 import sys
 import gsw
 import numpy as np
-from datetime import datetime
+from datetime import datetime, UTC
 
 
 from statsmodels.nonparametric.smoothers_lowess import lowess
@@ -93,7 +93,7 @@ def add_sigma_theta0_sm(netCDFfile, limit=0.02):
     except AttributeError:
         hist = ""
 
-    ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " added smoothed SIGMA_T0 smoothed data, and QC flags to SIGMA_T0 and PSAL")
+    ds.setncattr('history', hist + datetime.now(UTC).strftime("%Y-%m-%d") + " added smoothed SIGMA_T0 smoothed data, and QC flags to SIGMA_T0 and PSAL")
 
     ds.close()
 

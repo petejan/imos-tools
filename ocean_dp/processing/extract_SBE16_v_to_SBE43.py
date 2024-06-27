@@ -23,7 +23,7 @@ from netCDF4 import Dataset
 import sys
 import gsw
 import numpy as np
-from datetime import datetime
+from datetime import datetime, UTC
 
 # extract V0 from SBE16 file and output DOX2_VOLT, and DOX2
 
@@ -231,7 +231,7 @@ def extract_sbe43(netCDFfile):
     ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
 
     # add creating and history entry
-    ds_out.setncattr("date_created", datetime.utcnow().strftime(ncTimeFormat))
+    ds_out.setncattr("date_created", datetime.now(UTC).strftime(ncTimeFormat))
 
     # update the history attribute
     try:
@@ -240,7 +240,7 @@ def extract_sbe43(netCDFfile):
         hist = ""
 
     # keep the history so we know where it came from
-    ds_out.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " calculate DOX2 from file " + os.path.basename(netCDFfile))
+    ds_out.setncattr('history', hist + datetime.now(UTC).strftime("%Y-%m-%d") + " calculate DOX2 from file " + os.path.basename(netCDFfile))
 
     ds.close()
     ds_out.close()

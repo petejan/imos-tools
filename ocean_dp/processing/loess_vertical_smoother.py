@@ -4,7 +4,7 @@ import sys
 
 from netCDF4 import Dataset, date2num, num2date
 
-from datetime import datetime
+from datetime import datetime, UTC
 import matplotlib.pyplot as plt
 
 from pyloess import Loess
@@ -14,7 +14,7 @@ import numpy as np
 def smooth(files):
     output_names = []
 
-    now = datetime.utcnow()
+    now = datetime.now(UTC)
     #files = ['../../prawler.nc']
 
     for filepath in files:

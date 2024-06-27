@@ -20,7 +20,7 @@ from netCDF4 import Dataset
 import sys
 
 import numpy as np
-from datetime import datetime
+from datetime import datetime, UTC
 
 import os
 
@@ -32,7 +32,7 @@ def cal(netCDFfiles):
 
     for fn in netCDFfiles:
         # Change the creation date in the filename to today
-        now = datetime.utcnow()
+        now = datetime.now(UTC)
         ds_in = Dataset(fn, 'r')
         sn = ds_in.variables['PAR_COUNT'].calibration_PAR_SN
         dep_code = ds_in.deployment_code
@@ -123,7 +123,7 @@ def cal(netCDFfiles):
         except AttributeError:
             hist = ""
 
-        ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " : extracted from " + os.path.basename(fn))
+        ds.setncattr('history', hist + datetime.now(UTC).strftime("%Y-%m-%d") + " : extracted from " + os.path.basename(fn))
 
         ds.close()
 

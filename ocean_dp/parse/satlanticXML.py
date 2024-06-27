@@ -19,7 +19,7 @@
 import os
 import sys
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 
 from glob2 import glob
 from netCDF4 import num2date, date2num
@@ -166,8 +166,8 @@ def parse_xml(xml_file, files):
     ncOut.setncattr("time_coverage_end", ts_end.strftime(ncTimeFormat))
 
     # add creating and history entry
-    ncOut.setncattr("date_created", datetime.utcnow().strftime(ncTimeFormat))
-    ncOut.setncattr("history", datetime.utcnow().strftime("%Y-%m-%d") + " created from file " + os.path.basename(files[0]))
+    ncOut.setncattr("date_created", datetime.now(UTC).strftime(ncTimeFormat))
+    ncOut.setncattr("history", datetime.now(UTC).strftime("%Y-%m-%d") + " created from file " + os.path.basename(files[0]))
 
     ncOut.close()
 

@@ -5,7 +5,7 @@ import glob
 
 from netCDF4 import Dataset, date2num, num2date, stringtochar
 
-from datetime import datetime
+from datetime import datetime, UTC
 import matplotlib.pyplot as plt
 
 import numpy as np
@@ -13,7 +13,7 @@ import numpy as np
 def merge(files):
     output_names = []
 
-    now = datetime.utcnow()
+    now = datetime.now(UTC)
 
     for filepath in files:
 

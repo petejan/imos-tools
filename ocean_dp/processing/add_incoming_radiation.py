@@ -20,7 +20,7 @@ from netCDF4 import Dataset, num2date
 import sys
 
 import numpy as np
-from datetime import datetime
+from datetime import datetime, UTC
 
 from pysolar.solar import get_altitude_fast
 from pysolar.util import extraterrestrial_irrad
@@ -36,7 +36,7 @@ def add_solar(netCDFfiles):
 
     for fn in netCDFfiles:
         # Change the creation date in the filename to today
-        now = datetime.utcnow()
+        now = datetime.now(UTC)
 
         fn_new = fn
         if os.path.basename(fn).startswith("IMOS_"):
@@ -137,7 +137,7 @@ def add_solar(netCDFfiles):
         except AttributeError:
             hist = ""
 
-        ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " : added incoming radiation")
+        ds.setncattr('history', hist + datetime.now(UTC).strftime("%Y-%m-%d") + " : added incoming radiation")
 
         ds.close()
 

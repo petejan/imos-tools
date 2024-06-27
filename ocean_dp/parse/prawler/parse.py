@@ -23,7 +23,7 @@ from netCDF4 import num2date, date2num
 from netCDF4 import Dataset
 import numpy as np
 import struct
-from datetime import timedelta
+from datetime import timedelta, UTC
 
 import glob
 
@@ -228,7 +228,7 @@ def parse(files):
         return None
 
     # create the netCDF file
-    outputName = 'prawler-' + datetime.datetime.utcnow().strftime("%Y-%m-%d") + ".nc"
+    outputName = 'prawler-' + datetime.datetime.now(UTC).strftime("%Y-%m-%d") + ".nc"
 
     print("output file : %s" % outputName)
 
@@ -304,8 +304,8 @@ def parse(files):
     ncOut.setncattr("time_coverage_end", times_out[-1].strftime(ncTimeFormat))
 
     # add creating and history entry
-    ncOut.setncattr("date_created", datetime.datetime.utcnow().strftime(ncTimeFormat))
-    ncOut.setncattr("history", datetime.datetime.utcnow().strftime("%Y-%m-%d") + " created from file " + filepath)
+    ncOut.setncattr("date_created", datetime.datetime.now(UTC).strftime(ncTimeFormat))
+    ncOut.setncattr("history", datetime.datetime.now(UTC).strftime("%Y-%m-%d") + " created from file " + filepath)
 
     ncOut.close()
 

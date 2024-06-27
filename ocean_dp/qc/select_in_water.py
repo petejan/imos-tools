@@ -20,7 +20,7 @@ from dateutil.parser import parse
 from netCDF4 import Dataset, num2date, date2num
 from datetime import datetime, timedelta
 import sys
-from datetime import datetime
+from datetime import datetime, UTC
 import numpy as np
 from dateutil import parser
 import pytz
@@ -32,7 +32,7 @@ import shutil
 def select_in_water(netCDFfiles):
     
     new_name = [] # list of new file names
-    now = datetime.utcnow()            
+    now = datetime.now(UTC)            
 
     # loop over all file names given
     for fn in netCDFfiles:

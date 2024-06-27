@@ -23,7 +23,7 @@ import numpy as np
 from dateutil import parser
 import pytz
 import os
-from datetime import datetime
+from datetime import datetime, UTC
 
 # flag 4 (bad) when spike
 
@@ -117,7 +117,7 @@ def spike_test(netCDFfiles, variable, height, qc_value=4):
             hist = ds.history + "\n"
         except AttributeError:
             hist = ""
-        ds.setncattr("history", hist + datetime.utcnow().strftime("%Y-%m-%d") + " " + variable + " spike height = " + str(height) + " marked " + str(int(count)))
+        ds.setncattr("history", hist + datetime.now(UTC).strftime("%Y-%m-%d") + " " + variable + " spike height = " + str(height) + " marked " + str(int(count)))
 
         ds.close()
 

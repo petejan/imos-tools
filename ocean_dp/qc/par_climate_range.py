@@ -25,7 +25,7 @@ import numpy as np
 from dateutil import parser
 import pytz
 import os
-from datetime import datetime
+from datetime import datetime, UTC
 
 # flag 4 (bad) when out of climate range
 
@@ -132,7 +132,7 @@ def climate_range(netCDFfiles, variable_name, qc_value=3):
             hist = ds.history + "\n"
         except AttributeError:
             hist = ""
-        ds.setncattr("history", hist + datetime.utcnow().strftime("%Y-%m-%d") + " " + variable_name + " climate range, marked " + str(int(count)))
+        ds.setncattr("history", hist + datetime.now(UTC).strftime("%Y-%m-%d") + " " + variable_name + " climate range, marked " + str(int(count)))
 
         ds.close()
 

@@ -4,7 +4,7 @@ import sys
 
 from netCDF4 import Dataset, date2num, num2date
 
-from datetime import datetime
+from datetime import datetime, UTC
 import matplotlib.pyplot as plt
 
 import numpy as np
@@ -40,7 +40,7 @@ def bisection(array, value):
 def resample(files):
     output_names = []
 
-    now = datetime.utcnow()
+    now = datetime.now(UTC)
 
     for filepath in files:
 

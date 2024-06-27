@@ -23,7 +23,7 @@ import numpy as np
 from dateutil import parser
 import pytz
 import os
-from datetime import datetime
+from datetime import datetime, UTC
 
 # flag 4 (bad) when spike
 
@@ -118,7 +118,7 @@ def rate_of_change(netCDFfiles, variable, rate, qc_value=4):
             hist = ds.history + "\n"
         except AttributeError:
             hist = ""
-        ds.setncattr("history", hist + datetime.utcnow().strftime("%Y-%m-%d") + " " + variable + " max rate = " + str(rate) + " marked " + str(int(count)))
+        ds.setncattr("history", hist + datetime.now(UTC).strftime("%Y-%m-%d") + " " + variable + " max rate = " + str(rate) + " marked " + str(int(count)))
 
         ds.close()
 

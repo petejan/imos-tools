@@ -18,7 +18,7 @@
 
 from netCDF4 import Dataset, num2date
 import sys
-from datetime import datetime
+from datetime import datetime, UTC
 import numpy as np
 from dateutil import parser
 import pytz
@@ -104,7 +104,7 @@ def propogate(netCDFfile, var_name=None):
             except AttributeError:
                 hist = ""
 
-            ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + ' propagate flags to : ' + ','.join(var_list))
+            ds.setncattr('history', hist + datetime.now(UTC).strftime("%Y-%m-%d") + ' propagate flags to : ' + ','.join(var_list))
 
         ds.close()
 

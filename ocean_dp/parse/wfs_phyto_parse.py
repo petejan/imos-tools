@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, UTC
 import xml.etree.ElementTree as ET
 
 # web query http://www.cmar.csiro.au/geoserver/wms?service=WFS&version=1.1.0&request=GetFeature&typeName=imos:PLANKTON_SOTS_PHYTOPLANKTON&srsName=EPSG%3A4326

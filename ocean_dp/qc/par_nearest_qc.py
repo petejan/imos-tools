@@ -19,7 +19,7 @@ import glob
 
 import xarray as xr
 from datetime import timedelta
-from datetime import datetime
+from datetime import datetime, UTC
 
 import pandas as pd
 import numpy as np
@@ -227,7 +227,7 @@ def add_qc(dataDIR):
             hist = ds.history + "\n"
         except AttributeError:
             hist = ""
-        ds.setncattr("history", hist + datetime.utcnow().strftime("%Y-%m-%d") + " nearest neighbour test")
+        ds.setncattr("history", hist + datetime.now(UTC).strftime("%Y-%m-%d") + " nearest neighbour test")
 
         try:
             # find the existing quality_control variable in the auxillary variables list

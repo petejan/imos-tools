@@ -18,7 +18,7 @@
 
 import sys
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 from dateutil import parser
 
 from netCDF4 import date2num, num2date
@@ -158,8 +158,8 @@ def datalogger(file):
     dataset.setncattr("time_coverage_end", ts_end.strftime(ncTimeFormat))
 
     # add creating and history entry
-    dataset.setncattr("date_created", datetime.utcnow().strftime(ncTimeFormat))
-    dataset.setncattr("history", datetime.utcnow().strftime("%Y-%m-%d") + " created from file " + os.path.basename(file))
+    dataset.setncattr("date_created", datetime.now(UTC).strftime(ncTimeFormat))
+    dataset.setncattr("history", datetime.now(UTC).strftime("%Y-%m-%d") + " created from file " + os.path.basename(file))
 
     dataset.close()
 

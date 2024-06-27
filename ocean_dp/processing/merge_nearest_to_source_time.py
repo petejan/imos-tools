@@ -18,7 +18,7 @@
 
 import os
 import sys
-from datetime import datetime
+from datetime import datetime, UTC
 
 import numpy as np
 from cftime import num2date
@@ -134,7 +134,7 @@ def resample(merge_file, source_files):
         except AttributeError:
             hist = ""
 
-        merge_ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " added data from " + os.path.basename(source_file) + " interpolated to this time")
+        merge_ds.setncattr('history', hist + datetime.now(UTC).strftime("%Y-%m-%d") + " added data from " + os.path.basename(source_file) + " interpolated to this time")
 
         source_ds.close()
 

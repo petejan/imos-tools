@@ -15,7 +15,7 @@
 
 from netCDF4 import Dataset, date2num
 import sys
-from datetime import datetime
+from datetime import datetime, UTC
 import numpy as np
 
 # Provide the function with a filename (don't include .nc), a nominal depth,

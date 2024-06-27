@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 import numpy as np
 from netCDF4 import Dataset
 import glob
@@ -47,10 +47,10 @@ def pressure_interpolator(netCDFfiles = None, agg_file = None):
     # Loop through each of the fv01 files
     for fn in netCDFfiles:
         
-        print(datetime.utcnow(), 'processing file : ', fn)
+        print(datetime.now(UTC), 'processing file : ', fn)
 
         # Change the creation date in the filename to today
-        now = datetime.utcnow()
+        now = datetime.now(UTC)
             
         fn_new_split = os.path.basename(fn).split('_')
         fn_new_split[-1] = "C-" + now.strftime("%Y%m%d") + ".nc"
@@ -88,7 +88,7 @@ def pressure_interpolator(netCDFfiles = None, agg_file = None):
         agg_nominal_depths = np.insert(nominal_depths, 0, 0)
         nominal_depth_sort_idx = np.argsort(agg_nominal_depths)
 
-        print(datetime.utcnow(), 'interpolating aggregate to file times')
+        print(datetime.now(UTC), 'interpolating aggregate to file times')
 
         # new coding
 
@@ -109,7 +109,7 @@ def pressure_interpolator(netCDFfiles = None, agg_file = None):
         print("above pressure", above_interp_agg_pres)
 
         for j in range(1, len(agg_nominal_depths)):
-            print(datetime.utcnow(), ' selecting data ', j)
+            print(datetime.now(UTC), ' selecting data ', j)
 
             msk = agg.variables["instrument_index"][:] == (j - 1)
             time_selection = agg.variables["TIME"][msk]
@@ -117,7 +117,7 @@ def pressure_interpolator(netCDFfiles = None, agg_file = None):
             pres_qc_selection = agg.variables["PRES_quality_control"][msk]
             pres_selection[pres_qc_selection != 1] = np.nan
 
-            print(datetime.utcnow(), ' interpolating ', j)
+            print(datetime.now(UTC), ' interpolating ', j)
 
             interp_agg_pres[j, :] = np.interp(fv01_contents.variables["TIME"][:], time_selection, pres_selection)
 
@@ -132,7 +132,7 @@ def pressure_interpolator(netCDFfiles = None, agg_file = None):
         # # For each nominal depth, interpolate the agg data at the fv01 times
         # # TODO: look at only calculating pressures for sensors above and below the NOMINAL_DEPTH that we're interested in
         # for j in range(1, len(agg_nominal_depths)):
-        #     print(datetime.utcnow(), ' selecting data ', j)
+        #     print(datetime.now(UTC), ' selecting data ', j)
         #
         #     msk = agg.variables["instrument_index"][:] == (j - 1)
         #     time_selection = agg.variables["TIME"][msk]
@@ -140,7 +140,7 @@ def pressure_interpolator(netCDFfiles = None, agg_file = None):
         #     pres_qc_selection = agg.variables["PRES_quality_control"][msk]
         #     pres_selection[pres_qc_selection != 1] = np.nan
         #
-        #     print(datetime.utcnow(), ' interpolating ', j)
+        #     print(datetime.now(UTC), ' interpolating ', j)
         #
         #     interp_agg_pres[j, :] = np.interp(fv01_contents.variables["TIME"][:], time_selection, pres_selection)
         #
@@ -173,7 +173,7 @@ def pressure_interpolator(netCDFfiles = None, agg_file = None):
         #         history_comment = 'replaced NANs with interpolated pressure.'
         #
         # interp_at = np.where(np.isnan(interp_fv01_pres))
-        # print(datetime.utcnow(), 'interpolating pressure at depth=', fv01_contents.variables["NOMINAL_DEPTH"][0])
+        # print(datetime.now(UTC), 'interpolating pressure at depth=', fv01_contents.variables["NOMINAL_DEPTH"][0])
         #
         # # At each timestamp, interpolate pressure for the fv01 data
         # for j in range(len(fv01_contents.variables["TIME"])):
@@ -217,9 +217,9 @@ def pressure_interpolator(netCDFfiles = None, agg_file = None):
         #     except AttributeError:
         #         hist = ""
         #
-        #     fv01_contents.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " : " + history_comment)
+        #     fv01_contents.setncattr('history', hist + datetime.now(UTC).strftime("%Y-%m-%d") + " : " + history_comment)
         #
-        print(datetime.utcnow(), 'close file')
+        print(datetime.now(UTC), 'close file')
         fv01_contents.close()
             
     agg.close()

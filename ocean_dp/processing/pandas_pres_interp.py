@@ -24,7 +24,7 @@ import shutil
 import numpy as np
 import pandas as pd
 from netCDF4 import Dataset
-from datetime import datetime
+from datetime import datetime, UTC
 
 plot = False
 write_file = True
@@ -51,7 +51,7 @@ def interpolator(target_files=None, pres_file=None):
 
     out_file_list = []
 
-    print(datetime.utcnow(), 'load pressure file', os.path.basename(pres_file))
+    print(datetime.now(UTC), 'load pressure file', os.path.basename(pres_file))
 
     # read the pressure aggregate file
     agg_ds = Dataset(pres_file, mode="r")
@@ -75,10 +75,10 @@ def interpolator(target_files=None, pres_file=None):
     # load the target file
     for target_file in target_files:
 
-        print(datetime.utcnow(), 'target file', os.path.basename(target_file))
+        print(datetime.now(UTC), 'target file', os.path.basename(target_file))
 
         # Change the creation date in the filename to today
-        now = datetime.utcnow()
+        now = datetime.now(UTC)
 
         fn_new = target_file
         if os.path.basename(target_file).startswith("IMOS"):
@@ -97,7 +97,7 @@ def interpolator(target_files=None, pres_file=None):
                 # copy file
                 shutil.copy(target_file, fn_new)
 
-        print(datetime.utcnow(), 'output file', os.path.basename(fn_new))
+        print(datetime.now(UTC), 'output file', os.path.basename(fn_new))
 
         # read the TIME, and nominal depth from the target file
         interp_ds = Dataset(fn_new, 'r')
@@ -122,7 +122,7 @@ def interpolator(target_files=None, pres_file=None):
         # interpolate each pressure to the target time
         i = 0
         for j in inst_set:
-            print(datetime.utcnow(), ' selecting data ', j)
+            print(datetime.now(UTC), ' selecting data ', j)
 
             msk = np.where((inst_idx == j) & (pres_qc <= 1))
             time_msk = time[msk]
@@ -134,7 +134,7 @@ def interpolator(target_files=None, pres_file=None):
 
         # TODO: if the target file already has pressure, read the data into the last column, then interpolate
 
-        print(datetime.utcnow(), 'create data frame')
+        print(datetime.now(UTC), 'create data frame')
 
         # create a dataframe of all the data, including the target ones, filled with nan
         df = pd.DataFrame(interp_pres, index=interp_times, columns=nominal_depths)
@@ -152,18 +152,18 @@ def interpolator(target_files=None, pres_file=None):
             plt.invert_yaxis()
 
         # fill any time nan's
-        print(datetime.utcnow(), 'time interpolate data frame')
+        print(datetime.now(UTC), 'time interpolate data frame')
         df_interp = df.interpolate(method='index', axis=0, limit=1)
 
         # fill the target column with interpolated value
-        print(datetime.utcnow(), 'depth interpolate data frame')
+        print(datetime.now(UTC), 'depth interpolate data frame')
         df_interp = df_interp.interpolate(method='index', axis=1, limit=2)
 
         # extract the target pressure
         interp_pres_target = df_interp[interp_nom_depth].values
 
         if write_file:
-            print(datetime.utcnow(), 'write to file', os.path.basename(fn_new))
+            print(datetime.now(UTC), 'write to file', os.path.basename(fn_new))
 
             interp_msk = df[interp_nom_depth].isna().values # values which were NaNs before the interpolation
             interp_ds = Dataset(fn_new, 'a')
@@ -200,7 +200,7 @@ def interpolator(target_files=None, pres_file=None):
             except AttributeError:
                 hist = ""
 
-            interp_ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " : " + history_comment)
+            interp_ds.setncattr('history', hist + datetime.now(UTC).strftime("%Y-%m-%d") + " : " + history_comment)
 
             interp_ds.close()
 

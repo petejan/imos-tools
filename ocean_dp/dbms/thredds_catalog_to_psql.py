@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-from datetime import datetime
+from datetime import datetime, UTC
 import os
 import sys
 
@@ -207,7 +207,7 @@ if __name__ == "__main__":
         urls.append({'opendap': opendap, 'http': http})
 
 
-    now = datetime.utcnow()
+    now = datetime.now(UTC)
 
     con = psycopg2.connect(host='localhost', dbname='threddscat', user='postgres', password='secret')
 

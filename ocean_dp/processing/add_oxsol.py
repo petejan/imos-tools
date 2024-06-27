@@ -20,7 +20,7 @@ from netCDF4 import Dataset
 import sys
 import gsw
 import numpy as np
-from datetime import datetime
+from datetime import datetime, UTC
 
 # add OXSOL to a data file with TEMP, PSAL, PRES variables, many assumptions are made about the input file
 
@@ -82,7 +82,7 @@ def add_oxsol(netCDFfile):
         except AttributeError:
             hist = ""
 
-        ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " added oxygen solubility")
+        ds.setncattr('history', hist + datetime.now(UTC).strftime("%Y-%m-%d") + " added oxygen solubility")
 
     ds.close()
 

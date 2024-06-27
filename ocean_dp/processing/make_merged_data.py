@@ -5,7 +5,7 @@ import sys
 from glob2 import glob
 from netCDF4 import Dataset, date2num, num2date, stringtochar
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 import matplotlib.pyplot as plt
 
 import numpy as np
@@ -20,7 +20,7 @@ np.set_printoptions(linewidth=256)
 
 def make(files):
 
-    now = datetime.utcnow()
+    now = datetime.now(UTC)
 
     nominal_depth = np.empty(len(files))
 

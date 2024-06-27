@@ -20,7 +20,7 @@ from netCDF4 import Dataset
 import sys
 
 import numpy as np
-from datetime import datetime
+from datetime import datetime, UTC
 
 import os
 
@@ -32,7 +32,7 @@ def extract(netCDFfiles, sbe16_var='VOLT2'):
 
     for fn in netCDFfiles:
         # Change the creation date in the filename to today
-        now = datetime.utcnow()
+        now = datetime.now(UTC)
         ds_in = Dataset(fn, 'r')
         sn = ds_in.variables[sbe16_var].calibration_PAR_SN
         dep_code = ds_in.deployment_code
@@ -101,7 +101,7 @@ def extract(netCDFfiles, sbe16_var='VOLT2'):
         except AttributeError:
             hist = ""
 
-        ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " : extracted from " + os.path.basename(fn))
+        ds.setncattr('history', hist + datetime.now(UTC).strftime("%Y-%m-%d") + " : extracted from " + os.path.basename(fn))
 
         ds.close()
 

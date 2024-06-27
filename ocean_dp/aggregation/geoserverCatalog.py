@@ -10,7 +10,7 @@ from __future__ import print_function
 
 import sys
 import argparse
-from datetime import datetime
+from datetime import datetime, UTC
 
 import pandas as pd
 

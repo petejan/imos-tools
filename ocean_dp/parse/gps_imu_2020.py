@@ -19,7 +19,7 @@
 
 from netCDF4 import Dataset, num2date, chartostring, date2num
 from dateutil import parser
-from datetime import datetime
+from datetime import datetime, UTC
 from datetime import timedelta
 
 import numpy as np
@@ -283,8 +283,8 @@ def gps_imu_2020(netCDFfiles):
     ncOut.setncattr("time_coverage_end", imu_ts.strftime(ncTimeFormat))
 
     # add creating and history entry
-    ncOut.setncattr("date_created", datetime.utcnow().strftime(ncTimeFormat))
-    ncOut.setncattr("history", datetime.utcnow().strftime("%Y-%m-%d") + " created from file " + netCDFfiles[1])
+    ncOut.setncattr("date_created", datetime.now(UTC).strftime(ncTimeFormat))
+    ncOut.setncattr("history", datetime.now(UTC).strftime("%Y-%m-%d") + " created from file " + netCDFfiles[1])
 
     ncOut.close()
 

@@ -18,7 +18,7 @@
 
 from netCDF4 import Dataset, num2date
 import sys
-from datetime import datetime
+from datetime import datetime, UTC
 import numpy as np
 from dateutil import parser
 import pytz
@@ -33,7 +33,7 @@ def add_qc(netCDF_files_in, var_name=None):
     new_name = []  # list of new file names
 
     # Change the creation date in the filename to today
-    now = datetime.utcnow()
+    now = datetime.now(UTC)
 
     # loop over all file names given
     for fn in netCDF_files_in:

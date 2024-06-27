@@ -19,7 +19,7 @@ from cftime import num2date
 from netCDF4 import Dataset
 import sys
 import numpy as np
-from datetime import datetime
+from datetime import datetime, UTC
 
 from scipy.spatial.transform import Rotation
 from scipy import signal
@@ -241,10 +241,10 @@ def add_wave_spectra(netCDFfile):
         hist = ""
 
     if append_to_file:
-        dsOut.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " added wave spectra, and significant wave height")
+        dsOut.setncattr('history', hist + datetime.now(UTC).strftime("%Y-%m-%d") + " added wave spectra, and significant wave height")
     else:
-        dsOut.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " created wave spectra, wave height and period from " + netCDFfile)
-        dsOut.setncattr("date_created", datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"))
+        dsOut.setncattr('history', hist + datetime.now(UTC).strftime("%Y-%m-%d") + " created wave spectra, wave height and period from " + netCDFfile)
+        dsOut.setncattr("date_created", datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ"))
 
     dsOut.close()
 

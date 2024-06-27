@@ -19,7 +19,7 @@ import os
 import sys
 sys.path.extend(['.'])
 
-from datetime import datetime
+from datetime import datetime, UTC
 
 from cftime import num2date
 from netCDF4 import Dataset

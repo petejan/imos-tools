@@ -22,7 +22,7 @@ import re
 
 import datetime
 import traceback
-from datetime import timedelta
+from datetime import timedelta, UTC
 from netCDF4 import num2date, date2num
 from netCDF4 import Dataset
 import numpy as np
@@ -1385,8 +1385,8 @@ def parse_file(files, include_diag):
         ncOut.setncattr("time_coverage_end", ts_end.strftime(ncTimeFormat))
 
         # add creating and history entry
-        ncOut.setncattr("date_created", datetime.datetime.utcnow().strftime(ncTimeFormat))
-        ncOut.setncattr("history", datetime.datetime.utcnow().strftime("%Y-%m-%d") + " created from file " + os.path.basename(filepath))
+        ncOut.setncattr("date_created", datetime.datetime.now(UTC).strftime(ncTimeFormat))
+        ncOut.setncattr("history", datetime.datetime.now(UTC).strftime("%Y-%m-%d") + " created from file " + os.path.basename(filepath))
 
         ncOut.close()
 

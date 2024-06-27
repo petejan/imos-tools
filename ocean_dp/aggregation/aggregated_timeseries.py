@@ -1,7 +1,7 @@
 from __future__ import print_function
 import sys
 from dateutil.parser import parse
-from datetime import datetime
+from datetime import datetime, UTC
 import json
 
 import numpy as np
@@ -40,8 +40,8 @@ def set_globalattr(agg_Dataset, templatefile, varname, site):
                 'geospatial_lat_max':       agg_Dataset.LATITUDE.values.max(),
                 'geospatial_lon_min':       agg_Dataset.LONGITUDE.values.min(),
                 'geospatial_lon_max':       agg_Dataset.LONGITUDE.values.max(),
-                'date_created':             datetime.utcnow().strftime(timeformat),
-                'history':                  datetime.utcnow().strftime(timeformat) + ': Aggregated file created.',
+                'date_created':             datetime.now(UTC).strftime(timeformat),
+                'history':                  datetime.now(UTC).strftime(timeformat) + ': Aggregated file created.',
                 'keywords':                 ', '.join(list(agg_Dataset.variables) + ['AGGREGATED'])}
     global_metadata.update(agg_attr)
 
@@ -83,7 +83,7 @@ def generate_netcdf_output_filename(fileURL, nc, VoI, file_product_type, file_ve
 
     output_name = '_'.join([split_parts[0] + "_" + split_parts[1] + "_" + split_parts[2], \
                             t_start, split_parts[4], "FV0" + str(file_version), VoI, file_product_type]) + \
-                            "_END-" + t_end + "_C-" + datetime.utcnow().strftime(file_timeformat) + ".nc"
+                            "_END-" + t_end + "_C-" + datetime.now(UTC).strftime(file_timeformat) + ".nc"
     return output_name
 
 def create_empty_dataframe(columns):

@@ -17,7 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 import os
 import sys
-from datetime import datetime
+from datetime import datetime, UTC
 
 from glob2 import glob
 from netCDF4 import Dataset, stringtochar
@@ -205,7 +205,7 @@ def create(file):
     except AttributeError:
         hist = ""
 
-    ncOut.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " : created from " + file)
+    ncOut.setncattr('history', hist + datetime.now(UTC).strftime("%Y-%m-%d") + " : created from " + file)
 
 
     ncOut.close()

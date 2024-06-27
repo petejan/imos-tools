@@ -5,7 +5,7 @@ import scipy.signal.windows
 from glob2 import glob
 from netCDF4 import Dataset, date2num, num2date
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 
 import numpy as np
 from scipy.interpolate import interp1d
@@ -17,7 +17,7 @@ np.set_printoptions(linewidth=256)
 def down_sample(files, method, hours):
     output_names = []
 
-    now = datetime.utcnow()
+    now = datetime.now(UTC)
 
     for filepath in files:
 

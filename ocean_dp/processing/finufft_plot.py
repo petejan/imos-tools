@@ -18,7 +18,7 @@
 
 from netCDF4 import Dataset, num2date
 from dateutil import parser
-from datetime import datetime
+from datetime import datetime, UTC
 from datetime import timedelta
 
 import numpy as np

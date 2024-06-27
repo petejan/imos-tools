@@ -20,7 +20,7 @@ from netCDF4 import Dataset
 import sys
 import gsw
 import numpy as np
-from datetime import datetime
+from datetime import datetime, UTC
 
 # add PSAL to a data file with TEMP, CNDC, PRES variables, many assumptions are made about the input file
 
@@ -41,7 +41,7 @@ def fill_press(netCDFfile):
     except AttributeError:
         hist = ""
 
-    ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " : filled PRES from NOMINAL_DEPTH")
+    ds.setncattr('history', hist + datetime.now(UTC).strftime("%Y-%m-%d") + " : filled PRES from NOMINAL_DEPTH")
 
     ds.close()
 

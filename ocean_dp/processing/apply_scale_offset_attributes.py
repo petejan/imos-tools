@@ -20,7 +20,7 @@ from netCDF4 import Dataset, num2date
 import sys
 import gsw
 import numpy as np
-from datetime import datetime
+from datetime import datetime, UTC
 
 # add OXSOL to a data file with TEMP, PSAL, PRES variables, many assumptions are made about the input file
 
@@ -57,7 +57,7 @@ def apply_scale_offset(netCDFfiles):
             except AttributeError:
                 hist = ""
 
-            ds.setncattr('history', hist + datetime.utcnow().strftime("%Y-%m-%d") + " : scale, offset variable " + v.name + "")
+            ds.setncattr('history', hist + datetime.now(UTC).strftime("%Y-%m-%d") + " : scale, offset variable " + v.name + "")
 
             if v.name == 'TIME':
                 # update timespan attributes

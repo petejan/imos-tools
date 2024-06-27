@@ -19,6 +19,7 @@
 import sys
 
 import datetime
+from datetime import UTC
 from netCDF4 import num2date, date2num
 from netCDF4 import Dataset
 import numpy as np
@@ -272,8 +273,8 @@ def main(files):
     ncOut.setncattr("time_coverage_end", ts.strftime(ncTimeFormat))
 
     # add creating and history entry
-    ncOut.setncattr("date_created", datetime.datetime.utcnow().strftime(ncTimeFormat))
-    ncOut.setncattr("history", datetime.datetime.utcnow().strftime("%Y-%m-%d") + " created from file " + filepath)
+    ncOut.setncattr("date_created", datetime.datetime.now(UTC).strftime(ncTimeFormat))
+    ncOut.setncattr("history", datetime.datetime.now(UTC).strftime("%Y-%m-%d") + " created from file " + filepath)
 
     return outputName
 

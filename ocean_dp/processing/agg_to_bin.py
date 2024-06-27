@@ -19,7 +19,7 @@
 
 from netCDF4 import Dataset, num2date, chartostring
 from dateutil import parser
-from datetime import datetime
+from datetime import datetime, UTC
 from datetime import timedelta
 
 import numpy as np
@@ -147,8 +147,8 @@ def agg_to_bin(netCDFfiles):
         ncOut.setncattr(att, ds.getncattr(att))
 
     # add creating and history entry
-    ncOut.setncattr("date_created", datetime.utcnow().strftime(ncTimeFormat))
-    ncOut.setncattr("history", datetime.utcnow().strftime("%Y-%m-%d") + " created from file " + netCDFfiles[1])
+    ncOut.setncattr("date_created", datetime.now(UTC).strftime(ncTimeFormat))
+    ncOut.setncattr("history", datetime.now(UTC).strftime("%Y-%m-%d") + " created from file " + netCDFfiles[1])
 
     ncOut.close()
 

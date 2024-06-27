@@ -1,6 +1,6 @@
 import os
 import re
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 from netCDF4 import num2date, date2num
 from netCDF4 import stringtochar
 import numpy.ma as ma
@@ -128,7 +128,7 @@ def aggregate(files, varNames):
                      + "_" + "FV02" \
                      + "_" + fileProductType + "-Aggregate-" + varNames[0] \
                      + "_END-" + tEndMaksed.strftime(fileTimeFormat) \
-                     + "_C-" + datetime.utcnow().strftime(fileTimeFormat) \
+                     + "_C-" + datetime.now(UTC).strftime(fileTimeFormat) \
                      + ".nc"
     else:
         outputName = '_'.join(varNames) + '-Aggregate.nc'
@@ -210,8 +210,8 @@ def aggregate(files, varNames):
 
     ncOut.setncattr("time_coverage_start", dates[0].strftime(ncTimeFormat))
     ncOut.setncattr("time_coverage_end", dates[-1].strftime(ncTimeFormat))
-    ncOut.setncattr("date_created", datetime.utcnow().strftime(ncTimeFormat))
-    ncOut.setncattr("history", datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC : Create Aggregate"))
+    ncOut.setncattr("date_created", datetime.now(UTC).strftime(ncTimeFormat))
+    ncOut.setncattr("history", datetime.now(UTC).strftime("%Y-%m-%d %H:%M:%S UTC : Create Aggregate"))
 
     # instrument index
     indexVarType = "i1"

@@ -20,7 +20,7 @@ import sys
 import re
 import os
 
-from datetime import datetime
+from datetime import datetime, UTC
 
 import numpy
 import pytz

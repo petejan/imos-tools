@@ -22,6 +22,7 @@ import numpy as np
 import sys
 from scipy.interpolate import interp1d
 import datetime
+from datetime import UTC
 
 
 def resample(file):
@@ -112,8 +113,8 @@ def resample(file):
 
     ncOut.setncattr("time_coverage_start", num2date(ncTimesOut[0], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
     ncOut.setncattr("time_coverage_end", num2date(ncTimesOut[-1], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
-    ncOut.setncattr("date_created", datetime.datetime.utcnow().strftime(ncTimeFormat))
-    ncOut.setncattr("history", datetime.datetime.utcnow().strftime("%Y-%m-%d") + " created from file " + file)
+    ncOut.setncattr("date_created", datetime.datetime.now(UTC).strftime(ncTimeFormat))
+    ncOut.setncattr("history", datetime.datetime.now(UTC).strftime("%Y-%m-%d") + " created from file " + file)
 
     ncOut.close()
 
