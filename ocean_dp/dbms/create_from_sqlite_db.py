@@ -73,8 +73,9 @@ def create(file):
     file_count = count_rows.fetchone()[0]
     print('file-count', file_count)
 
+    # add global attributes
     if include_attributes:
-        att_sql = 'SELECT name, count(*) AS count, type, value FROM attributes  GROUP BY name, value'
+        att_sql = 'SELECT name, count(*) AS count, type, value FROM attributes GROUP BY name, value'
         global_rows = cur_att.execute(att_sql)
         for att in global_rows:
             if att['count'] == file_count:
@@ -85,6 +86,7 @@ def create(file):
                 elif att['type'] == 'float64':
                     ncOut.setncattr(att[0], float(att[3]))
 
+    # add source file name, index and there nominal depth variables
     fDim = ncOut.createDimension("IDX", file_count)
     sDim = ncOut.createDimension("strlen", 256)
     varOutFn = ncOut.createVariable("FILE_NAME", "S1", ('IDX', 'strlen'))
@@ -107,7 +109,7 @@ def create(file):
                        'left join "attributes" a_inst on (file.file_id = a_inst.file_id and a_inst.name = "instrument_model") ' \
                        'left join "attributes" a_sn on (file.file_id = a_sn.file_id and a_sn.name = "instrument_serial_number") ' \
                        'left join "attributes" a_nd on (file.file_id = a_nd.file_id and a_nd.name = "instrument_nominal_depth") ' \
-	                   'ORDER BY nom_depth, file.file_id'
+	                   'ORDER BY file.file_id'
 
     files = cur_files.execute(sql_select_files)
     row = cur_files.fetchone()
@@ -118,6 +120,7 @@ def create(file):
     file_names = np.empty(file_count, dtype='S256')
     instrument = np.empty(file_count, dtype='S256')
     file_id_map = {}
+    file_ids = []
 
     depths = []
     while row:
@@ -136,6 +139,7 @@ def create(file):
             varOutFn[n] = np.nan
 
         file_id_map[row['file_id']] = n
+        file_ids.append(row['file_id'])
 
         row = cur_files.fetchone()
 
@@ -156,7 +160,7 @@ def create(file):
         var_name = var['name']
         print('create dimensions for', var_name)
 
-        rows = cur.execute('SELECT * FROM variable_depth WHERE name == "'+var_name+'" ORDER BY CAST(nominal_depth AS REAL)')
+        rows = cur.execute('SELECT * FROM variables WHERE name == "'+var_name+'" ORDER BY file_id')
         row = cur.fetchone()
 
         if row['is_aux'] is None:
@@ -177,7 +181,7 @@ def create(file):
 
             n = 0
             while row:
-                print(n, 'create-file-index', row['name'], row['nominal_depth'])
+                print(n, 'create-file-index', row['name'], row['nominal_depth'], 'local_idx', file_id_map[row['file_id']], 'file_id', row['file_id'])
                 varOutFnIdx[n] = file_id_map[row['file_id']]
                 try:
                     varOutNdIdx[n] = float(row['nominal_depth'])
@@ -190,7 +194,7 @@ def create(file):
     # generate the time data
     vars = cur_vars.execute(sql_select_vars)
 
-    rows = cur.execute('SELECT * FROM variable_depth WHERE name == "TIME" ORDER BY CAST(nominal_depth AS REAL)')
+    rows = cur.execute('SELECT * FROM variables WHERE name == "TIME" ORDER BY file_id')
     row = cur.fetchone()
 
     print('time rows', cur.rowcount, len(row['data']))
@@ -213,7 +217,7 @@ def create(file):
     ncOut.setncattr("time_coverage_start", num2date(ncTimesOut[0], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
     ncOut.setncattr("time_coverage_end", num2date(ncTimesOut[-1], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
 
-    rows = cur.execute('SELECT * FROM variable_depth WHERE name == "LATITUDE" ORDER BY CAST(nominal_depth AS REAL)')
+    rows = cur.execute('SELECT * FROM variables WHERE name == "LATITUDE" ORDER BY file_id')
     row = cur.fetchone()
 
     ncLatOut = ncOut.createVariable("LATITUDE", "d")
@@ -229,7 +233,7 @@ def create(file):
     print('lat data', lat_data)
     ncLatOut[:] = lat_data
 
-    rows = cur.execute('SELECT * FROM variable_depth WHERE name == "LONGITUDE" ORDER BY CAST(nominal_depth AS REAL)')
+    rows = cur.execute('SELECT * FROM variables WHERE name == "LONGITUDE" ORDER BY file_id')
     row = cur.fetchone()
 
     ncLonOut = ncOut.createVariable("LONGITUDE", "d")
@@ -250,7 +254,7 @@ def create(file):
         var_name = var['name']
         print('create variable data', var_name)
 
-        rows = cur.execute('SELECT * FROM variable_depth WHERE name == "'+var_name+'" ORDER BY CAST(nominal_depth AS REAL)')
+        rows = cur.execute('SELECT * FROM variables WHERE name == "'+var_name+'" ORDER BY file_id')
         row = cur.fetchone()
 
         print('variable_depth', cur.rowcount, len(row['data']), row['is_aux'], row['type'])
@@ -315,7 +319,7 @@ def create(file):
 
     ncOut.date_created = now.strftime(ncTimeFormat)
     ncOut.history = now.strftime("%Y-%m-%d") + " created from " + file
-    ncOut.principal_investigator = 'Shadwick, Elizabeth, Shulz, Eric'
+    ncOut.principal_investigator = 'Shadwick, Elizabeth; Shulz, Eric'
     ncOut.title = 'Gridded oceanographic and meteorological data from the Southern Ocean Time Series observatory in the Southern Ocean southwest of Tasmania'
     ncOut.file_version = 'Level 2 - Derived product'
     ncOut.data_mode = 'G'  # TODO: corruption of data_mode from OceanSITES manual
