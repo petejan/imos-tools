@@ -67,132 +67,7 @@ def create(file):
 
     ncOut = Dataset(file+'.nc', "w", format='NETCDF4_CLASSIC')
 
-    # add the global attributes
-    att_sql = 'SELECT count(*) FROM file'
-    count_rows = cur_att.execute(att_sql)
-    file_count = count_rows.fetchone()[0]
-    print('file-count', file_count)
-
-    # add global attributes
-    if include_attributes:
-        att_sql = 'SELECT name, count(*) AS count, type, value FROM attributes GROUP BY name, value'
-        global_rows = cur_att.execute(att_sql)
-        for att in global_rows:
-            if att['count'] == file_count:
-                if att['type'] == 'str':
-                    ncOut.setncattr(att[0], att[3])
-                elif att['type'] == 'float32':
-                    ncOut.setncattr(att[0], np.float32(att[3]))
-                elif att['type'] == 'float64':
-                    ncOut.setncattr(att[0], float(att[3]))
-
-    # add source file name, index and there nominal depth variables
-    fDim = ncOut.createDimension("IDX", file_count)
-    sDim = ncOut.createDimension("strlen", 256)
-    varOutFn = ncOut.createVariable("FILE_NAME", "S1", ('IDX', 'strlen'))
-    varOutFn.long_name = 'name of source file'
-    varOutInst = ncOut.createVariable("INSTRUMENT", "S1", ('IDX', 'strlen'))
-    varOutInst.long_name = 'source instrument type:serialnumber'
-    varOutNdFn = ncOut.createVariable("NOMINAL_DEPTH", "f4", ("IDX"), fill_value=np.nan)
-
-    varOutNdFn.standard_name = "depth"
-    varOutNdFn.long_name = "nominal depth"
-    varOutNdFn.coordinates = 'LONGITUDE LATITUDE'
-    varOutNdFn.units = "m"
-    varOutNdFn.positive = "down"
-    varOutNdFn.reference_datum = "sea surface"
-    varOutNdFn.valid_max = 12000.
-    varOutNdFn.valid_min = -5.
-    varOutNdFn.axis = "Z"
-
-    sql_select_files = 'select file.file_id, file.name, a_inst.value AS inst, a_sn.value AS sn, CAST(a_nd.value AS REAL) AS nom_depth FROM file ' \
-                       'left join "attributes" a_inst on (file.file_id = a_inst.file_id and a_inst.name = "instrument_model") ' \
-                       'left join "attributes" a_sn on (file.file_id = a_sn.file_id and a_sn.name = "instrument_serial_number") ' \
-                       'left join "attributes" a_nd on (file.file_id = a_nd.file_id and a_nd.name = "instrument_nominal_depth") ' \
-	                   'ORDER BY file.file_id'
-
-    files = cur_files.execute(sql_select_files)
-    row = cur_files.fetchone()
-
-    print('rows', cur.rowcount)
-
-    n = 0
-    file_names = np.empty(file_count, dtype='S256')
-    instrument = np.empty(file_count, dtype='S256')
-    file_id_map = {}
-    file_ids = []
-
-    depths = []
-    while row:
-        print('create-file-name', n, row['name'])
-        file_names[n] = row['name']
-
-        if row['inst'] and row['sn']:
-            instrument[n] = row['inst'] + ' ; ' + row['sn']
-        else:
-            instrument[n] = 'unknown'
-
-        if row['nom_depth'] is not None:
-            varOutNdFn[n] = float(row['nom_depth'])
-            depths.append(float(row['nom_depth']))
-        else:
-            varOutFn[n] = np.nan
-
-        file_id_map[row['file_id']] = n
-        file_ids.append(row['file_id'])
-
-        row = cur_files.fetchone()
-
-        n += 1
-
-    varOutFn[:] = stringtochar(file_names)
-    varOutInst[:] = stringtochar(instrument)
-
-    ncOut.geospatial_vertical_max = max(depths)
-    ncOut.geospatial_vertical_min = min(depths)
-
-    sql_select_vars = 'SELECT name, COUNT(*) AS count, is_aux FROM variables v WHERE dimensions LIKE "TIME[%]" and name != "TIME" and name != "LATITUDE" AND name != "LONGITUDE"' \
-                      'and name not like "%_SAMPLE_TIME_DIFF" GROUP BY name ORDER BY name'
-
-    # generate the FILE instance variables
-    vars = cur_vars.execute(sql_select_vars)
-    for var in vars:
-        var_name = var['name']
-        print('create dimensions for', var_name)
-
-        rows = cur.execute('SELECT * FROM variables WHERE name == "'+var_name+'" ORDER BY file_id')
-        row = cur.fetchone()
-
-        if row['is_aux'] is None:
-            iDim = ncOut.createDimension("IDX_"+var_name, var['count'])
-
-            varOutFnIdx = ncOut.createVariable("IDX_"+var_name, "i4", ("IDX_"+var_name))
-            varOutFnIdx.long_name = 'index of data to FILE_NAME, INSTRUMENT, NOMINAL_DEPTH'
-            varOutFnIdx.units = '1'
-
-            varOutNdIdx = ncOut.createVariable("NOMINAL_DEPTH_"+var_name, "f4", ("IDX_"+var_name))
-            varOutNdIdx.standard_name = 'depth'
-            varOutNdIdx.long_name = 'NOMINAL DEPTH for ' + var_name
-            varOutNdIdx.units = "m"
-            varOutNdIdx.positive = "down"
-            varOutNdIdx.reference_datum = "sea surface"
-            varOutNdIdx.valid_max = 12000.
-            varOutNdIdx.valid_min = -5.
-
-            n = 0
-            while row:
-                print(n, 'create-file-index', row['name'], row['nominal_depth'], 'local_idx', file_id_map[row['file_id']], 'file_id', row['file_id'])
-                varOutFnIdx[n] = file_id_map[row['file_id']]
-                try:
-                    varOutNdIdx[n] = float(row['nominal_depth'])
-                except TypeError:
-                    varOutNdIdx[n] = 0
-                row = cur.fetchone()
-
-                n += 1
-
     # generate the time data
-    vars = cur_vars.execute(sql_select_vars)
 
     rows = cur.execute('SELECT * FROM variables WHERE name == "TIME" ORDER BY file_id')
     row = cur.fetchone()
@@ -248,70 +123,204 @@ def create(file):
     lon_data = row['data']
     ncLonOut[:] = lon_data
 
-    # generate the data for each variable
-    vars = cur_vars.execute(sql_select_vars)
-    for var in vars:
+    # add the global attributes
+    att_sql = 'SELECT count(*) FROM file'
+    count_rows = cur_att.execute(att_sql)
+    file_count = count_rows.fetchone()[0]
+    print('file-count', file_count)
+
+    # add global attributes
+    deployment_code = None
+    if include_attributes:
+        att_sql = 'SELECT name, count(*) AS count, type, value FROM attributes GROUP BY name, value'
+        global_rows = cur_att.execute(att_sql)
+        for att in global_rows:
+            if att['count'] == file_count:
+                if att[0] == 'deployment_code':
+                    deployment_code = att[3]
+                if att['type'] == 'str':
+                    ncOut.setncattr(att[0], att[3])
+                elif att['type'] == 'float32':
+                    ncOut.setncattr(att[0], np.float32(att[3]))
+                elif att['type'] == 'float64':
+                    ncOut.setncattr(att[0], float(att[3]))
+
+    # add source file name, index and there nominal depth variables
+    fDim = ncOut.createDimension("IDX", file_count)
+    sDim = ncOut.createDimension("strlen", 256)
+    varOutFn = ncOut.createVariable("FILE_NAME", "S1", ('IDX', 'strlen'))
+    varOutFn.long_name = 'name of source file'
+    varOutInst = ncOut.createVariable("INSTRUMENT", "S1", ('IDX', 'strlen'))
+    varOutInst.long_name = 'source instrument type:serialnumber'
+    varOutNdFn = ncOut.createVariable("NOMINAL_DEPTH", "f4", ("IDX"), fill_value=np.nan)
+
+    varOutNdFn.standard_name = "depth"
+    varOutNdFn.long_name = "nominal depth"
+    varOutNdFn.coordinates = 'LONGITUDE LATITUDE'
+    varOutNdFn.units = "m"
+    varOutNdFn.positive = "down"
+    varOutNdFn.reference_datum = "sea surface"
+    varOutNdFn.valid_max = 12000.
+    varOutNdFn.valid_min = -5.
+    varOutNdFn.axis = "Z"
+
+    sql_select_vars = 'SELECT name, COUNT(*) AS count, is_aux FROM variables v WHERE dimensions LIKE "TIME[%]" and name != "TIME" and name != "LATITUDE" AND name != "LONGITUDE"' \
+                      'and name not like "%_SAMPLE_TIME_DIFF" AND is_aux IS NULL GROUP BY name'
+
+    # generate the FILE instance variables
+    var_list = {}
+    file_vars = cur_vars.execute(sql_select_vars)
+    for var in file_vars:
         var_name = var['name']
-        print('create variable data', var_name)
+        print('create dimensions, nominal_depth variable for', var_name, var['count'])
 
-        rows = cur.execute('SELECT * FROM variables WHERE name == "'+var_name+'" ORDER BY file_id')
-        row = cur.fetchone()
+        if ("IDX_" + var_name) not in ncOut.dimensions:
+            var_list[var_name] = 0
+            iDim = ncOut.createDimension("IDX_" + var_name, var['count'])
 
-        print('variable_depth', cur.rowcount, len(row['data']), row['is_aux'], row['type'])
-        dim_name = var_name
-        if row['is_aux'] is not None:
-            dim_name = row['is_aux']
+            varOutFnIdx = ncOut.createVariable("IDX_" + var_name, "i4", ("IDX_" + var_name))
+            varOutFnIdx.long_name = 'index of data to FILE_NAME, INSTRUMENT, NOMINAL_DEPTH'
+            varOutFnIdx.units = '1'
 
-        number_samples_read = len(row['data'])
+            varOutNdIdx = ncOut.createVariable("NOMINAL_DEPTH_" + var_name, "f4", ("IDX_" + var_name))
+            varOutNdIdx.standard_name = 'depth'
+            varOutNdIdx.long_name = 'NOMINAL DEPTH for ' + var_name
+            varOutNdIdx.units = "m"
+            varOutNdIdx.positive = "down"
+            varOutNdIdx.reference_datum = "sea surface"
+            varOutNdIdx.valid_max = 12000.
+            varOutNdIdx.valid_min = -5.
 
-        #iDim = ncOut.createDimension("INSTANCE_"+var_name, var[1])
+    sql_select_files =  'select file.file_id, file.name, a_inst.value AS inst, a_sn.value AS sn, CAST(a_nd.value AS REAL) AS nom_depth FROM file ' \
+                        'left join "attributes" a_inst on (file.file_id = a_inst.file_id and a_inst.name = "instrument_model") ' \
+                        'left join "attributes" a_sn on (file.file_id = a_sn.file_id and a_sn.name = "instrument_serial_number") ' \
+                        'left join "attributes" a_nd on (file.file_id = a_nd.file_id and a_nd.name = "instrument_nominal_depth") ' \
+                        'ORDER BY nom_depth'
 
-        fill_value = np.nan
-        if row['type'] == 'int8':
-            fill_value = 99
+    print(var_list)
 
-        varOut = ncOut.createVariable(var_name, row['type'], ("IDX_"+dim_name, "TIME"), fill_value=fill_value, zlib=True)
-        if var_name.endswith('_quality_control'):
-             varOut.flag_values = np.array([0, 1, 2, 3, 4, 6, 7, 9], dtype=np.int8)
-             varOut.flag_meanings = "unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value"
-        # if var_name.endswith('_number_of_observations'):
-        #     varOut.units = '1'
+    files = cur_files.execute(sql_select_files)
+    row = cur_files.fetchone()
 
-        if include_attributes:
+    print('rows', cur.rowcount)
+
+    n = 0
+    file_names = np.empty(file_count, dtype='S256')
+    instrument = np.empty(file_count, dtype='S256')
+    file_id_map = {}
+    file_ids = []
+
+    # create a list of file_ids and depths
+    depths = []
+    while row:
+        file_id = row['file_id']
+        print('create-file-name', n, file_id, row['nom_depth'], row['name'])
+        file_names[n] = row['name']
+
+        if row['inst'] and row['sn']:
+            instrument[n] = row['inst'] + ' ; ' + row['sn']
+        else:
+            instrument[n] = 'unknown'
+
+        if row['nom_depth'] is not None:
+            varOutNdFn[n] = float(row['nom_depth'])
+            depths.append(float(row['nom_depth']))
+        else:
+            varOutNdFn[n] = np.nan
+
+        file_id_map[file_id] = n
+        file_ids.append(row['file_id'])
+
+        row = cur_files.fetchone()
+        n += 1
+
+    # for each file, now create the variables and lod the data
+    for file_id in file_ids:
+        print()
+
+        # generate the data for each variable
+
+        file_vars = cur.execute('SELECT * FROM variables WHERE dimensions LIKE "TIME[%]" and name != "TIME" and name != "LATITUDE" AND name != "LONGITUDE"' \
+                                'and name not like "%_SAMPLE_TIME_DIFF" AND file_id == ' + str(file_id) + ' ORDER BY name')
+
+        for var_rows in file_vars:
+
+            print(file_id, 'variable', var_rows['name'], var_rows['is_aux'], var_rows['type'])
+            var_name = var_rows['name']
+            dim_name = var_name
+            if var_rows['is_aux'] is not None:
+                dim_name = var_rows['is_aux']
+
+            fill_value = np.nan
+            if var_rows['type'] == 'int8':
+                fill_value = 99
+
+            if var_name not in ncOut.variables:
+                varOut = ncOut.createVariable(var_name, var_rows['type'], ("IDX_" + dim_name, "TIME"), fill_value=fill_value, zlib=True)
+                print('variable created ', var_name)
+            else:
+                varOut = ncOut[var_name]
+
+            n = var_list[dim_name]
+            print(dim_name, 'instance n', n)
+
+            if var_rows['is_aux'] is None:
+                varOut[n, :] = var_rows['data']
+                idx_var = ncOut.variables['IDX_' + dim_name]
+                idx_var[n] = file_id_map[file_id]
+                nd_var = ncOut.variables['NOMINAL_DEPTH_' + dim_name]
+                nd_var[n] = var_rows['nominal_depth']
+
+                var_list[dim_name] = n + 1
+            else:
+                varOut[n-1, :] = var_rows['data']
+
+    if include_attributes:
+        file_vars = cur.execute('SELECT name, is_aux, count(*) AS count FROM variables WHERE dimensions LIKE "TIME[%]" and name != "TIME" and name != "LATITUDE" AND name != "LONGITUDE"' \
+                                'and name not like "%_SAMPLE_TIME_DIFF" GROUP BY name ORDER BY name')
+
+        for var_rows in file_vars:
+            var_name = var_rows['name']
+            var_count = var_rows['count']
+            varOut = ncOut.variables[var_name]
+            print()
+            print(var_name, 'dimensions', varOut.dimensions, var_count)
+
             # add the variable attributes
-            att_sql = 'SELECT name, count(*) AS count, type, value FROM variable_attributes WHERE var_name = "'+var_name+'" GROUP BY name, value'
+            att_sql = 'SELECT name, count(*) AS count, type, value FROM variable_attributes WHERE var_name = "' + var_name + '" GROUP BY name, value HAVING count = ' + str(var_count)
             att_rows = cur_vatt.execute(att_sql)
+            dim_name = varOut.dimensions[0]
             for att in att_rows:
-                #if att['name'] != '_FillValue' and (att['name'] != 'ancillary_variables'):
+                print(var_name, 'var attributes', att['count'], var_list[dim_name.replace("IDX_", "")], att['value'])
                 if att['name'] != '_FillValue':
-                    # add attributes that are all the same (count in attribute group = number of variables of this name)
-                    if att['count'] == var['count']:
-                        if att['type'] == 'str':
-                            varOut.setncattr(att['name'], att['value'])
-                        elif att['type'] == 'float32':
-                            varOut.setncattr(att['name'], np.float32(att['value']))
-                        elif att['type'] == 'float64':
-                            varOut.setncattr(att['name'], float(att['value']))
-                if att['name'] == 'coordinates':
-                    if hasattr(varOut, 'coordinates'):
-                        if 'NOMINAL_DEPTH' in varOut.coordinates:
-                            varOut.coordinates = varOut.coordinates.replace("NOMINAL_DEPTH", "NOMINAL_DEPTH_"+var_name)
-                        else:
-                            varOut.coordinates = varOut.coordinates + " NOMINAL_DEPTH_"+var_name
+                    if att['type'] == 'str':
+                        varOut.setncattr(att['name'], att['value'])
+                    elif att['type'] == 'float32':
+                        varOut.setncattr(att['name'], np.float32(att['value']))
+                    elif att['type'] == 'float64':
+                        varOut.setncattr(att['name'], float(att['value']))
+                if var_rows['is_aux'] is None:
+                    varOut.coordinates = "TIME LATITUDE LONGITUDE NOMINAL_DEPTH_" + var_name
+
+            if var_name.endswith('_quality_control'):
+                varOut.flag_values = np.array([0, 1, 2, 3, 4, 6, 7, 9], dtype=np.int8)
+                varOut.flag_meanings = "unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value"
+            # if var_name.endswith('_number_of_observations'):
+            #     varOut.units = '1'
+
             # if no coordinates were added, add one now
-            if row['is_aux'] is None and not hasattr(varOut, 'coordinates'):
+            if var_rows['is_aux'] is None and not hasattr(varOut, 'coordinates'):
                 varOut.coordinates = "TIME LATITUDE LONGITUDE NOMINAL_DEPTH_" + var_name
 
-        # write the data
-        n = 0
-        while row:
-            print(row['name'], row['nominal_depth'])
-            varOut[n, :] = row['data']
-            row = cur.fetchone()
-
-            n += 1
-
         print('rows-loaded', n)
+
+    # save the file name and instrument
+    varOutFn[:] = stringtochar(file_names)
+    varOutInst[:] = stringtochar(instrument)
+
+    # create the final global attributes
+    ncOut.geospatial_vertical_max = max(depths)
+    ncOut.geospatial_vertical_min = min(depths)
 
     ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
 
@@ -323,7 +332,8 @@ def create(file):
     ncOut.title = 'Gridded oceanographic and meteorological data from the Southern Ocean Time Series observatory in the Southern Ocean southwest of Tasmania'
     ncOut.file_version = 'Level 2 - Derived product'
     ncOut.data_mode = 'G'  # TODO: corruption of data_mode from OceanSITES manual
-    ncOut.deployment_code = 'SOFS-12-2023'
+    if deployment_code:
+        ncOut.deployment_code = deployment_code
 
     ncOut.close()
     con.close()

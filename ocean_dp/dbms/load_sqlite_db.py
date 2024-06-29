@@ -68,7 +68,7 @@ def sqlite_insert(files):
         con.commit()
         cur.execute("CREATE TABLE IF NOT EXISTS attributes (file_id, name TEXT, type TEXT, value TEXT)")
         con.commit()
-        cur.execute("CREATE TABLE IF NOT EXISTS variables (file_id, name TEXT, type TEXT, dimensions TEXT, is_aux TEXT, data array)")
+        cur.execute("CREATE TABLE IF NOT EXISTS variables (file_id, name TEXT, type TEXT, dimensions TEXT, is_aux TEXT, nominal_depth REAL, data array)")
         con.commit()
         cur.execute("CREATE TABLE IF NOT EXISTS variable_attributes (file_id, var_name TEXT, name TEXT, type TEXT, value TEXT)")
         con.commit()
@@ -79,7 +79,7 @@ def sqlite_insert(files):
                     " LEFT join attributes AS nd ON (file.file_id = nd.file_id and nd.name == 'instrument_nominal_depth')")
 
         cur.execute("CREATE VIEW IF NOT EXISTS variable_depth AS "
-                    "SELECT file.file_id, file.name AS file_name, variables.name, variables.dimensions, variables.type, variables.is_aux, nd.value AS nominal_depth, variables.data "
+                    "SELECT file.file_id AS file_id, file.name AS file_name, variables.name, variables.dimensions, variables.type, variables.is_aux, CAST(nd.value AS REAL) AS file_nominal_depth, nominal_depth AS var_nominal_depth, variables.data "
                     "FROM variables"
                     " JOIN file ON (file.file_id = variables.file_id)"
                     " LEFT join attributes AS nd ON (file.file_id = nd.file_id and nd.name == 'instrument_nominal_depth')")
@@ -119,6 +119,20 @@ def sqlite_insert(files):
 
             var = nc.variables[var_name]
             var.set_auto_mask(False)
+            nd = np.nan
+            if hasattr(var, 'coordinates'):
+                if hasattr(nc, 'instrument_nominal_depth'):
+                    nd = nc.instrument_nominal_depth
+
+                coords = var.coordinates.split(' ')
+                for c in coords:
+                    #print(var_name, "coords", c)
+                    if hasattr(nc.variables[c], 'axis'):
+                        if nc.variables[c].axis == 'Z':
+                            nd = float(nc.variables[c][0])
+                            if nc.variables[c].positive == 'up':
+                                nd = -nd
+                            print('found z axis', nd)
 
             # get the dimensions
             dims = var.dimensions
@@ -132,7 +146,7 @@ def sqlite_insert(files):
 
             data = np.array(var[:])
             at_type = str(var.dtype)
-            cur.execute('INSERT INTO variables (file_id, name, type, dimensions, is_aux, data) VALUES (?,?,?,?,?,?)', [file_id, var_name, at_type, buf, is_aux, data])
+            cur.execute('INSERT INTO variables (file_id, name, type, dimensions, is_aux, nominal_depth, data) VALUES (?,?,?,?,?,?,?)', [file_id, var_name, at_type, buf, is_aux, nd, data])
             con.commit()
 
             # load variable attributes

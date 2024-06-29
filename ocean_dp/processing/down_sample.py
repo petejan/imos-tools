@@ -125,12 +125,18 @@ def down_sample(files, method):
         time_var.setncatts(attr_dict)
         time_var[:] = sample_datenum
 
-        # copy the NOMINAL_DEPTH, LATITUDE, and LONGITUDE
+        # copy the coordinate variables
         # TODO: check _FillValue
         varList = ds.variables
         in_vars = set([x for x in ds.variables])
 
-        z = in_vars.intersection(['NOMINAL_DEPTH', 'LATITUDE', 'LONGITUDE'])
+        # find list of coordinate variables
+        z = []
+        for v in ds.variables:
+            dims = ds.variables[v].dimensions
+            print('checking for coordinate var', v, dims, len(dims))
+            if (v != 'TIME') and (len(dims) == 0 or v == dims[0] and len(dims) == 1):
+                z.append(v)
         for v in z:
             print("processing coord", v)
             maVariable = ds.variables[v][:]  # get the data
