@@ -189,6 +189,7 @@ def down_sample(files, method):
 
             data_in = var_to_resample_in[qc <= qc_in_level]
 
+            print()
             print('len data', len(data_in))
             if len(data_in) > 0:
                 time_deployment = var_time[qc <= qc_in_level]
@@ -201,7 +202,7 @@ def down_sample(files, method):
 
                 qc_out = stats.binned_statistic(np.array(time_deployment), np.array(qc[qc <= qc_in_level]), statistic='max', bins=bins)
 
-                print('sampled data', y)
+                #print('sampled data', y)
 
                 #  create output variables
                 var_resample_out = ds_new.createVariable(resample_var, 'f4', 'TIME', fill_value=np.NaN, zlib=True)

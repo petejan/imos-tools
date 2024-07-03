@@ -54,18 +54,8 @@ sqlite3.register_adapter(np.ndarray, adapt_array)
 sqlite3.register_converter("array", convert_array)
 
 
-def create(file):
-
-    con = sqlite3.connect(file, detect_types=sqlite3.PARSE_DECLTYPES)
-    con.row_factory = sqlite3.Row
-
-    cur_vars = con.cursor()
+def create_dimensions(con, ncOut):
     cur = con.cursor()
-    cur_vatt = con.cursor()
-    cur_att = con.cursor()
-    cur_files = con.cursor()
-
-    ncOut = Dataset(file+'.nc', "w", format='NETCDF4_CLASSIC')
 
     # generate the time data
 
@@ -123,6 +113,10 @@ def create(file):
     lon_data = row['data']
     ncLonOut[:] = lon_data
 
+
+def global_attributes(con, ncOut):
+    cur_att = con.cursor()
+
     # add the global attributes
     att_sql = 'SELECT count(*) FROM file'
     count_rows = cur_att.execute(att_sql)
@@ -145,6 +139,54 @@ def create(file):
                 elif att['type'] == 'float64':
                     ncOut.setncattr(att[0], float(att[3]))
 
+    return (file_count, deployment_code)
+
+
+def add_attributes_to_variables(con, ncOut, var_list):
+
+    cur = con.cursor()
+    cur_vatt = con.cursor()
+
+    file_vars = cur.execute(
+        'SELECT name, is_aux, count(*) AS count FROM variables WHERE dimensions LIKE "TIME[%]" and name != "TIME" and name != "LATITUDE" AND name != "LONGITUDE"' \
+        'and name not like "%_SAMPLE_TIME_DIFF" GROUP BY name ORDER BY name')
+
+    for var_rows in file_vars:
+        var_name = var_rows['name']
+        var_count = var_rows['count']
+        varOut = ncOut.variables[var_name]
+        print()
+        print(var_name, 'dimensions', varOut.dimensions, var_count)
+
+        # add the variable attributes
+        att_sql = 'SELECT name, count(*) AS count, type, value FROM variable_attributes WHERE var_name = "' + var_name + '" GROUP BY name, value HAVING count = ' + str(
+            var_count)
+        att_rows = cur_vatt.execute(att_sql)
+        dim_name = varOut.dimensions[0]
+        for att in att_rows:
+            print(var_name, 'var attributes', att['count'], var_list[dim_name.replace("IDX_", "")], att['value'])
+            if att['name'] != '_FillValue':
+                if att['type'] == 'str':
+                    varOut.setncattr(att['name'], att['value'])
+                elif att['type'] == 'float32':
+                    varOut.setncattr(att['name'], np.float32(att['value']))
+                elif att['type'] == 'float64':
+                    varOut.setncattr(att['name'], float(att['value']))
+            if var_rows['is_aux'] is None:
+                varOut.coordinates = "TIME LATITUDE LONGITUDE NOMINAL_DEPTH_" + var_name
+
+        if var_name.endswith('_quality_control'):
+            varOut.flag_values = np.array([0, 1, 2, 3, 4, 6, 7, 9], dtype=np.int8)
+            varOut.flag_meanings = "unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value"
+        # if var_name.endswith('_number_of_observations'):
+        #     varOut.units = '1'
+
+        # if no coordinates were added, add one now
+        if var_rows['is_aux'] is None and not hasattr(varOut, 'coordinates'):
+            varOut.coordinates = "TIME LATITUDE LONGITUDE NOMINAL_DEPTH_" + var_name
+
+
+def gen_source_file_vars(ncOut, file_count):
     # add source file name, index and there nominal depth variables
     fDim = ncOut.createDimension("IDX", file_count)
     sDim = ncOut.createDimension("strlen", 256)
@@ -164,11 +206,20 @@ def create(file):
     varOutNdFn.valid_min = -5.
     varOutNdFn.axis = "Z"
 
+    return (varOutFn, varOutNdFn, varOutInst)
+
+def gen_file_instance_vars(con, ncOut):
+
+    cur_vars = con.cursor()
+
     sql_select_vars = 'SELECT name, COUNT(*) AS count, is_aux FROM variables v WHERE dimensions LIKE "TIME[%]" and name != "TIME" and name != "LATITUDE" AND name != "LONGITUDE"' \
                       'and name not like "%_SAMPLE_TIME_DIFF" AND is_aux IS NULL GROUP BY name'
 
     # generate the FILE instance variables
     var_list = {}
+    varOutFnIdx = None
+    varOutNdIdx = None
+
     file_vars = cur_vars.execute(sql_select_vars)
     for var in file_vars:
         var_name = var['name']
@@ -190,6 +241,59 @@ def create(file):
             varOutNdIdx.reference_datum = "sea surface"
             varOutNdIdx.valid_max = 12000.
             varOutNdIdx.valid_min = -5.
+
+    return (var_list, varOutFnIdx, varOutNdIdx)
+
+
+def load_file_data(con, ncOut, file_ids, file_id_map, var_list):
+    cur = con.cursor()
+
+    # for each file, now create the variables and load the data
+    for file_id in file_ids:
+        print()
+
+        # generate the data for each variable
+
+        file_vars = cur.execute('SELECT * FROM variables WHERE dimensions LIKE "TIME[%]" and name != "TIME" and name != "LATITUDE" AND name != "LONGITUDE"' \
+                                'and name not like "%_SAMPLE_TIME_DIFF" AND file_id == ' + str(file_id) + ' ORDER BY name')
+
+        for var_rows in file_vars:
+
+            print(file_id, 'variable', var_rows['name'], var_rows['is_aux'], var_rows['type'])
+            var_name = var_rows['name']
+            dim_name = var_name
+            if var_rows['is_aux'] is not None:
+                dim_name = var_rows['is_aux']
+
+            fill_value = np.nan
+            if var_rows['type'] == 'int8':
+                fill_value = 99
+
+            if var_name not in ncOut.variables:
+                varOut = ncOut.createVariable(var_name, var_rows['type'], ("IDX_" + dim_name, "TIME"), fill_value=fill_value, zlib=True)
+                print('variable created ', var_name)
+            else:
+                varOut = ncOut[var_name]
+
+            n = var_list[dim_name]
+            print(dim_name, 'instance n', n)
+
+            if var_rows['is_aux'] is None:
+                varOut[n, :] = var_rows['data']
+                idx_var = ncOut.variables['IDX_' + dim_name]
+                idx_var[n] = file_id_map[file_id]
+                nd_var = ncOut.variables['NOMINAL_DEPTH_' + dim_name]
+                nd_var[n] = var_rows['nominal_depth']
+
+                var_list[dim_name] = n + 1
+            else:
+                varOut[n-1, :] = var_rows['data']
+
+
+def create_file_ids(con, ncOut, var_list, file_count, varOutNdFn, varOutFn, varOutInst):
+
+    cur = con.cursor()
+    cur_files = con.cursor()
 
     sql_select_files =  'select file.file_id, file.name, a_inst.value AS inst, a_sn.value AS sn, CAST(a_nd.value AS REAL) AS nom_depth FROM file ' \
                         'left join "attributes" a_inst on (file.file_id = a_inst.file_id and a_inst.name = "instrument_model") ' \
@@ -234,89 +338,33 @@ def create(file):
         row = cur_files.fetchone()
         n += 1
 
-    # for each file, now create the variables and lod the data
-    for file_id in file_ids:
-        print()
-
-        # generate the data for each variable
-
-        file_vars = cur.execute('SELECT * FROM variables WHERE dimensions LIKE "TIME[%]" and name != "TIME" and name != "LATITUDE" AND name != "LONGITUDE"' \
-                                'and name not like "%_SAMPLE_TIME_DIFF" AND file_id == ' + str(file_id) + ' ORDER BY name')
-
-        for var_rows in file_vars:
-
-            print(file_id, 'variable', var_rows['name'], var_rows['is_aux'], var_rows['type'])
-            var_name = var_rows['name']
-            dim_name = var_name
-            if var_rows['is_aux'] is not None:
-                dim_name = var_rows['is_aux']
-
-            fill_value = np.nan
-            if var_rows['type'] == 'int8':
-                fill_value = 99
-
-            if var_name not in ncOut.variables:
-                varOut = ncOut.createVariable(var_name, var_rows['type'], ("IDX_" + dim_name, "TIME"), fill_value=fill_value, zlib=True)
-                print('variable created ', var_name)
-            else:
-                varOut = ncOut[var_name]
-
-            n = var_list[dim_name]
-            print(dim_name, 'instance n', n)
-
-            if var_rows['is_aux'] is None:
-                varOut[n, :] = var_rows['data']
-                idx_var = ncOut.variables['IDX_' + dim_name]
-                idx_var[n] = file_id_map[file_id]
-                nd_var = ncOut.variables['NOMINAL_DEPTH_' + dim_name]
-                nd_var[n] = var_rows['nominal_depth']
-
-                var_list[dim_name] = n + 1
-            else:
-                varOut[n-1, :] = var_rows['data']
-
-    if include_attributes:
-        file_vars = cur.execute('SELECT name, is_aux, count(*) AS count FROM variables WHERE dimensions LIKE "TIME[%]" and name != "TIME" and name != "LATITUDE" AND name != "LONGITUDE"' \
-                                'and name not like "%_SAMPLE_TIME_DIFF" GROUP BY name ORDER BY name')
-
-        for var_rows in file_vars:
-            var_name = var_rows['name']
-            var_count = var_rows['count']
-            varOut = ncOut.variables[var_name]
-            print()
-            print(var_name, 'dimensions', varOut.dimensions, var_count)
-
-            # add the variable attributes
-            att_sql = 'SELECT name, count(*) AS count, type, value FROM variable_attributes WHERE var_name = "' + var_name + '" GROUP BY name, value HAVING count = ' + str(var_count)
-            att_rows = cur_vatt.execute(att_sql)
-            dim_name = varOut.dimensions[0]
-            for att in att_rows:
-                print(var_name, 'var attributes', att['count'], var_list[dim_name.replace("IDX_", "")], att['value'])
-                if att['name'] != '_FillValue':
-                    if att['type'] == 'str':
-                        varOut.setncattr(att['name'], att['value'])
-                    elif att['type'] == 'float32':
-                        varOut.setncattr(att['name'], np.float32(att['value']))
-                    elif att['type'] == 'float64':
-                        varOut.setncattr(att['name'], float(att['value']))
-                if var_rows['is_aux'] is None:
-                    varOut.coordinates = "TIME LATITUDE LONGITUDE NOMINAL_DEPTH_" + var_name
-
-            if var_name.endswith('_quality_control'):
-                varOut.flag_values = np.array([0, 1, 2, 3, 4, 6, 7, 9], dtype=np.int8)
-                varOut.flag_meanings = "unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value"
-            # if var_name.endswith('_number_of_observations'):
-            #     varOut.units = '1'
-
-            # if no coordinates were added, add one now
-            if var_rows['is_aux'] is None and not hasattr(varOut, 'coordinates'):
-                varOut.coordinates = "TIME LATITUDE LONGITUDE NOMINAL_DEPTH_" + var_name
-
-        print('rows-loaded', n)
+    print('rows-loaded', n)
 
     # save the file name and instrument
     varOutFn[:] = stringtochar(file_names)
     varOutInst[:] = stringtochar(instrument)
+
+    return (file_names, instrument, file_ids, file_id_map, depths)
+
+
+def create(file):
+
+    con = sqlite3.connect(file, detect_types=sqlite3.PARSE_DECLTYPES)
+    con.row_factory = sqlite3.Row
+
+    ncOut = Dataset(file+'.nc', "w", format='NETCDF4_CLASSIC')
+
+    create_dimensions(con, ncOut)
+    (file_count, deployment_code) = global_attributes(con, ncOut)
+    (varOutFn, varOutNdFn, varOutInst) = gen_source_file_vars(ncOut, file_count)
+    (var_list, varOutFnIdx, varOutNdIdx) = gen_file_instance_vars(con, ncOut)
+
+    (file_names, instrument, file_ids, file_id_map, depths) = create_file_ids(con, ncOut, var_list, file_count, varOutNdFn, varOutFn, varOutInst)
+
+    load_file_data(con, ncOut, file_ids, file_id_map, var_list)
+
+    if include_attributes:
+        add_attributes_to_variables(con, ncOut, var_list)
 
     # create the final global attributes
     ncOut.geospatial_vertical_max = max(depths)
@@ -331,6 +379,7 @@ def create(file):
     ncOut.principal_investigator = 'Shadwick, Elizabeth; Shulz, Eric'
     ncOut.title = 'Gridded oceanographic and meteorological data from the Southern Ocean Time Series observatory in the Southern Ocean southwest of Tasmania'
     ncOut.file_version = 'Level 2 - Derived product'
+    ncOut.derived_product_type = 'gridded_data'
     ncOut.data_mode = 'G'  # TODO: corruption of data_mode from OceanSITES manual
     if deployment_code:
         ncOut.deployment_code = deployment_code
