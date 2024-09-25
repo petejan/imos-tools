@@ -2,7 +2,7 @@ import pandas as pd
 from netCDF4 import Dataset, date2num, stringtoarr, stringtochar
 import numpy as np
 
-from datetime import datetime
+from datetime import datetime, UTC
 
 # see http://cfconventions.org/cf-conventions/cf-conventions.html#taxon-names-and-identifiers
 
@@ -29,6 +29,11 @@ from datetime import datetime
 
 # this code implements a 'Discrete Sampling Geometries' format for the output file
 #  http://cfconventions.org/cf-conventions/cf-conventions.html#_indexed_ragged_array_representation
+
+
+# sqlite3 PLANKTON.sqlite
+# .mode csv
+# .import PLANKTON_SOTS_PHYTOPLANKTON.csv PLANKTON
 
 
 def create_obs_idx(ncOut, var, name):
@@ -67,6 +72,15 @@ outputName = fn + '.nc'
 ncOut = Dataset(outputName, 'w', format='NETCDF4_CLASSIC')
 ncOut.comment = 'data downloaded from https://www.cmar.csiro.au/geoserver/ows?service=wfs&version=2.0.0&request=GetFeature&typeName=imos:PLANKTON_SOTS_PHYTOPLANKTON&srsName=EPSG%3A4326&sortby=imos:SAMPLE_TIME&outputFormat=csv'
 
+# new data link 2024-06-13
+# http://geoserver-123.aodn.org.au/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=imos:bgc_phytoplankton_abundance_raw_data&outputFormat=csv
+#
+# geoserver, wfs
+# https://geoserver-123.aodn.org.au/geoserver/web/wicket/bookmarkable/org.geoserver.web.demo.MapPreviewPage?1&filter=false
+#
+# 2024-09-25
+# https://geoserver-123.aodn.org.au/geoserver/imos/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=imos%3Abgc_phytoplankton_abundance_raw_data&outputFormat=application%2Fjson
+
 oDim = ncOut.createDimension('OBS', len(phyto))
 sDim = ncOut.createDimension('strlen80', 80)
 fDim = ncOut.createDimension('nFAMILY', len(family))
@@ -102,6 +116,18 @@ caab = phyto.CAAB_CODE.values
 caab[np.isnan(caab)] = -1
 nc_caab_out[:] = caab
 
+nc_aphia_out = ncOut.createVariable('aphiaID', 'i4', ('OBS',), zlib=True, fill_value=-1)
+nc_aphia_out.valid_min = np.int32(0)
+nc_aphia_out.comment = 'WoRMS aphiaID, https://www.marinespecies.org/'
+aphia = -1
+nc_aphia_out[:] = aphia
+
+nc_method_out = ncOut.createVariable('Method', 'i1', ('OBS',), zlib=True, fill_value=-1)
+nc_method_out.valid_min = np.int8(0)
+nc_method_out.comment = 'observation method 0=LM, 1=SEM'
+method = -1
+nc_method_out[:] = method
+
 create_obs_idx(ncOut, family, 'FAMILY')
 create_obs_idx(ncOut, genus, 'GENUS')
 create_obs_idx(ncOut, species, 'SPECIES')
@@ -110,6 +136,7 @@ create_obs_idx(ncOut, taxon_group, 'TAXON_GROUP')
 
 ncOut.variables['TAXON'].standard_name = 'biological_taxon_name'
 ncOut.variables['CAAB'].standard_name = 'biological_taxon_identifier' # these are not really WoRMS (AphidID) codes eg aphia:104464 , but should be
+ncOut.variables['aphiaID'].standard_name = 'biological_taxon_identifier'
 
 ncOut.close()
 
