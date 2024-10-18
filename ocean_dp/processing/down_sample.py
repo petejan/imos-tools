@@ -205,7 +205,7 @@ def down_sample(files, method):
                 #print('sampled data', y)
 
                 #  create output variables
-                var_resample_out = ds_new.createVariable(resample_var, 'f4', 'TIME', fill_value=np.NaN, zlib=True)
+                var_resample_out = ds_new.createVariable(resample_var, 'f4', 'TIME', fill_value=np.nan, zlib=True)
                 attr_dict = {}
                 for a in var_to_resample_in.ncattrs():
                     if a != 'ancillary_variables' and a != '_FillValue' : # don't copy these for now
@@ -219,7 +219,7 @@ def down_sample(files, method):
                 #
                 # print('sample distance', sample_time_dist, '(seconds)')
                 # create a variable to save distance to nearest point
-                # var_resample_dist_out = ds_new.createVariable(resample_var + '_SAMPLE_TIME_DIFF', 'f4', 'TIME', fill_value=np.NaN, zlib=True)
+                # var_resample_dist_out = ds_new.createVariable(resample_var + '_SAMPLE_TIME_DIFF', 'f4', 'TIME', fill_value=np.nan, zlib=True)
                 # var_resample_dist_out.comment = 'seconds to actual sample timestamp, abs max='+str(max(abs(sample_time_dist)))
                 # var_resample_dist_out[:] = sample_time_dist
                 #
@@ -243,14 +243,14 @@ def down_sample(files, method):
 
                     aux_vars.append(resample_var + '_quality_control')
 
-                var_resample_dist_out = ds_new.createVariable(resample_var + '_standard_error', 'f4', 'TIME', fill_value=np.NaN, zlib=True)
+                var_resample_dist_out = ds_new.createVariable(resample_var + '_standard_error', 'f4', 'TIME', fill_value=np.nan, zlib=True)
                 var_resample_dist_out.long_name = ds.variables[resample_var].long_name + ' standard error'
                 var_resample_dist_out.units = var_resample_out.units
                 var_resample_dist_out.comment = 'sample bin standard deviation'
                 var_resample_dist_out[:] = sd.statistic
                 aux_vars.append(resample_var + '_standard_error')
 
-                var_resample_dist_out = ds_new.createVariable(resample_var + '_number_of_observations', 'f4', 'TIME', fill_value=np.NaN, zlib=True)
+                var_resample_dist_out = ds_new.createVariable(resample_var + '_number_of_observations', 'f4', 'TIME', fill_value=np.nan, zlib=True)
                 var_resample_dist_out.long_name = ds.variables[resample_var].long_name + ' number of observations'
                 var_resample_dist_out.units = '1'
                 var_resample_dist_out.comment = 'number of samples'

@@ -28,7 +28,7 @@ def make_depth(files):
     pres = pres_var[:]
 
     n_depths = nominal_depth_var[pres_idx]
-    n_depths[n_depths > 10000] = np.NaN
+    n_depths[n_depths > 10000] = np.nan
 
     print('PRES shape', pres_var.shape)
 
@@ -99,7 +99,7 @@ def make_depth(files):
         depth[:, needs_filling_i] = np.interp(nominal_depth, p_nd[pres_msk], p[pres_msk])
 
     if 'PRES_ALL' not in ds.variables:
-        depth_out_var = ds.createVariable("PRES_ALL", 'f4', ['IDX', 'TIME'], fill_value=np.NaN, zlib=True)
+        depth_out_var = ds.createVariable("PRES_ALL", 'f4', ['IDX', 'TIME'], fill_value=np.nan, zlib=True)
     else:
         depth_out_var = ds.variables['PRES_ALL']
 

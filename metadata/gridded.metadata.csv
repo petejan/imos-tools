@@ -30,6 +30,24 @@ GLOBAL,*,,,,,,,,,references,str,http://www.imos.org.au
 GLOBAL,*,,,,,,,,,source,str,"Mooring observation"
 GLOBAL,*,,,,,,,,,standard_name_vocabulary,str,"NetCDF Climate and Forecast (CF) Metadata Convention Standard Name Table 67"
 GLOBAL,*,,,,,,,,,wmo_platform_code,str,58450
+GLOBAL,*,,,,,,,,,data_product_type,str,gridded_data
+
+GLOBAL,*,Pulse-6-2009,,,,,,,,platform_code,str,Pulse
+
+GLOBAL,*,SOFS-1-2010,,,,,,,,geospatial_lat_max,float64,-46.72295
+GLOBAL,*,SOFS-1-2010,,,,,,,,geospatial_lat_min,float64,-46.72295
+GLOBAL,*,SOFS-1-2010,,,,,,,,geospatial_lon_max,float64,141.9535167
+GLOBAL,*,SOFS-1-2010,,,,,,,,geospatial_lon_min,float64,141.9535167
+
+GLOBAL,*,SOFS-2-2011,,,,,,,,geospatial_lat_max,float64,-46.77187
+GLOBAL,*,SOFS-2-2011,,,,,,,,geospatial_lat_min,float64,-46.77187
+GLOBAL,*,SOFS-2-2011,,,,,,,,geospatial_lon_max,float64,141.98687
+GLOBAL,*,SOFS-2-2011,,,,,,,,geospatial_lon_min,float64,141.98687
+
+GLOBAL,*,SOFS-3-2012,,,,,,,,geospatial_lat_max,float64,-46.66442
+GLOBAL,*,SOFS-3-2012,,,,,,,,geospatial_lat_min,float64,-46.66442
+GLOBAL,*,SOFS-3-2012,,,,,,,,geospatial_lon_max,float64,142.06278
+GLOBAL,*,SOFS-3-2012,,,,,,,,geospatial_lon_min,float64,142.06278
 
 GLOBAL,*,SOFS-9-2020,,,,,,,,geospatial_lat_max,float64,-46.98476
 GLOBAL,*,SOFS-9-2020,,,,,,,,geospatial_lat_min,float64,-46.98476

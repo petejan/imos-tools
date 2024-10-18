@@ -64,7 +64,7 @@ def mld(files):
             mld_pres[i] = pres_touse[-1, i]
 
     if 'MLD' not in ds.variables:
-        mld_out_var = ds.createVariable("MLD", 'f4', 'TIME', fill_value=np.NaN, zlib=True)
+        mld_out_var = ds.createVariable("MLD", 'f4', 'TIME', fill_value=np.nan, zlib=True)
     else:
         mld_out_var = ds.variables['MLD']
 

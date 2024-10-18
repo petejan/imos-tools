@@ -108,7 +108,8 @@ def sqlite_insert(files):
             try:
                 aux_vars = nc.variables[var_name].ancillary_variables.split(' ')
                 for a in aux_vars:
-                    vars[a] = var_name
+                    if var_name in nc.variables:
+                        vars[a] = var_name
             except AttributeError:
                 pass
 
@@ -126,13 +127,14 @@ def sqlite_insert(files):
 
                 coords = var.coordinates.split(' ')
                 for c in coords:
-                    #print(var_name, "coords", c)
-                    if hasattr(nc.variables[c], 'axis'):
-                        if nc.variables[c].axis == 'Z':
-                            nd = float(nc.variables[c][0])
-                            if nc.variables[c].positive == 'up':
-                                nd = -nd
-                            print('found z axis', nd)
+                    if c in nc.variables:
+                        #print(var_name, "coords", c)
+                        if hasattr(nc.variables[c], 'axis'):
+                            if nc.variables[c].axis == 'Z':
+                                nd = float(nc.variables[c][0])
+                                if nc.variables[c].positive == 'up':
+                                    nd = -nd
+                                print('found z axis', nd)
 
             # get the dimensions
             dims = var.dimensions
