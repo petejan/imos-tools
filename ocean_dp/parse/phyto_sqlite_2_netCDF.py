@@ -76,7 +76,7 @@ def create_obs_idx(ncOut, var, name):
 fn = 'phyto.sqlite'
 
 cnx = sqlite3.connect('phyto.sqlite')
-phyto = pd.read_sql_query("SELECT * FROM PLANKTON_SOTS_PHYTOPLANKTON", cnx)
+phyto = pd.read_sql_query("SELECT * FROM PLANKTON_SOTS_PHYTOPLANKTON ORDER BY SAMPLE_TIME", cnx)
 
 print(phyto)
 
