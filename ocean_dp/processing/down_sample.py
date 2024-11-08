@@ -20,6 +20,9 @@ def down_sample(files, method):
 
     for filepath in files:
 
+        print()
+        print('down_sample file :', filepath)
+
         fn_new = filepath
         dirname = os.path.dirname(fn_new)
         basename = os.path.basename(fn_new)
@@ -167,7 +170,7 @@ def down_sample(files, method):
                                   'PAR',
                                   'NTRI_CONC', 'ALKA_CONC', 'PHOS_CONC', 'SLCA_CONC', 'TCO2',
                                   'WEIGHT', 'NTRI', 'PHOS', 'SLCA', 'TALK', 'pHt'])
-        print ('vars to smooth', z)
+        print('vars to smooth', z)
 
         qc_in_level = 2
         for resample_var in sorted(z):
@@ -183,16 +186,18 @@ def down_sample(files, method):
                     print(resample_var, 'no QC, skipping')
                     continue  # only include variables that have quality_control
 
-            if any(qc) == 7:  # only include variables which are not interpolated
+            print("var shape", var_to_resample_in.shape, "qc shape:", qc.shape)
+            if any(qc.squeeze()) == 7:  # only include variables which are not interpolated
                 print('only interpolated data, not including in resampled data')
                 continue
 
-            data_in = var_to_resample_in[qc <= qc_in_level]
+            data_in = var_to_resample_in[:].squeeze()
+            data_in = data_in[qc.squeeze() <= qc_in_level]
 
             print()
             print('len data', len(data_in))
             if len(data_in) > 0:
-                time_deployment = var_time[qc <= qc_in_level]
+                time_deployment = var_time[qc.squeeze() <= qc_in_level]
 
                 print(resample_var, 'input data : ', data_in)
 

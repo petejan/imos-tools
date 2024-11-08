@@ -98,6 +98,9 @@ def create_dimensions(con, ncOut):
     print('lat data', lat_data)
     ncLatOut[:] = lat_data
 
+    ncOut.geospatial_lat_max = lat_data
+    ncOut.geospatial_lat_min = lat_data
+
     rows = cur.execute('SELECT * FROM variables WHERE name == "LONGITUDE" ORDER BY file_id')
     row = cur.fetchone()
 
@@ -112,6 +115,9 @@ def create_dimensions(con, ncOut):
 
     lon_data = row['data']
     ncLonOut[:] = lon_data
+
+    ncOut.geospatial_lon_max = lon_data
+    ncOut.geospatial_lon_min = lon_data
 
 
 def global_attributes(con, ncOut):
