@@ -76,7 +76,7 @@ def create_obs_idx(ncOut, var, name):
 fn = 'phyto.sqlite'
 
 cnx = sqlite3.connect('phyto.sqlite')
-phyto = pd.read_sql_query("SELECT * FROM PLANKTON_SOTS_PHYTOPLANKTON", cnx)
+phyto = pd.read_sql_query("SELECT * FROM PLANKTON_SOTS_PHYTOPLANKTON ORDER BY SAMPLE_TIME", cnx)
 
 print(phyto)
 
@@ -151,18 +151,18 @@ nc_bv_out = ncOut.createVariable('VOLUME', 'f4', ('OBS',), zlib=True, fill_value
 nc_bv_out.units = 'm^3/litre'
 nc_bv_out[:] = phyto['BIOVOLUME_UM3_PER_L'].values
 
+nc_method_out = ncOut.createVariable('METHOD', 'i1', ('OBS',), zlib=True, fill_value=-1)
+nc_method_out.units = '1'
+nc_method_out.long_name = 'analysis method'
+nc_method_out.units = '0 = Light Microscope, 1 = Scanning Electron Microscope'
+nc_method_out[:] = [0 if x == 'LM' else 1 if x == 'SEM' else -1 for x in phyto['METHOD']]
+
 #nc_aphia_id_out = ncOut.createVariable('APHIA_ID', 'i4', ('OBS', 'strlen80'), zlib=True, fill_value=-1)
-nc_aphia_id_out = ncOut.createVariable('APHIA_ID', 'S1', ('OBS', 'strlen80'), zlib=True)
+nc_aphia_id_out = ncOut.createVariable('APHIA_ID', 'i4', ('OBS'), zlib=True)
 #nc_aphia_id_out.valid_min = int(0)
 nc_aphia_id_out.comment = 'https://www.marinespecies.org/aphia.php'
 aphia_id = phyto['WORMS_APHIA_ID'].values
-#aphia_id[np.isnan(aphia_id)] = -1
-
-# for i in range(len(aphia_id)):
-#     if ~np.isnan(aphia_id[i]):
-#         nc_aphia_id_out[i] = stringtoarr("urn:lsid:marinespecies.org:taxname:" + '{:.0f}'.format(aphia_id[i]), 80, dtype='U')
-#     else:
-#         nc_aphia_id_out[i] = stringtoarr("", 80, dtype='U')
+nc_aphia_id_out[:] = aphia_id
 
 create_obs_idx(ncOut, family, 'FAMILY')
 create_obs_idx(ncOut, genus, 'GENUS')
