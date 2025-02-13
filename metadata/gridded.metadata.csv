@@ -31,6 +31,8 @@ GLOBAL,*,,,,,,,,,source,str,"Mooring observation"
 GLOBAL,*,,,,,,,,,standard_name_vocabulary,str,"NetCDF Climate and Forecast (CF) Metadata Convention Standard Name Table 67"
 GLOBAL,*,SOFS,,,,,,,,wmo_platform_code,str,58450
 GLOBAL,*,,,,,,,,,data_product_type,str,gridded_data
+GLOBAL,*,,,,,,,,,platform_code,str,SOTS
+GLOBAL,*,,,,,,,,,deployment_code,str,SOTS
 
 GLOBAL,*,Pulse*,,,,,,,,platform_code,str,Pulse
 GLOBAL,*,SOFS*,,,,,,,,platform_code,str,SOFS
