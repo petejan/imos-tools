@@ -88,7 +88,7 @@ def rdi_parse(files):
 
     print("output file : %s" % outputName)
 
-    ncOut = Dataset(outputName, 'w', format='NETCDF4_CLASSIC')
+    ncOut = Dataset(outputName, 'w', format='NETCDF4')
 
     # add time variable
 
@@ -106,11 +106,11 @@ def rdi_parse(files):
 
     var_temp = ncOut.createVariable("INST_TEMP", "f4", ("TIME",), zlib=True, chunksizes=[1024])
     var_temp.units = 'degrees_Celsius'
-    var_temp.instrument_uncertainty = np.float(0.5)
+    var_temp.instrument_uncertainty = float(0.5)
 
     var_press = ncOut.createVariable("PRES", "f4", ("TIME",), zlib=True, chunksizes=[1024])
     var_press.units = 'dbar'
-    var_press.applied_offset = np.float(-10.1353)
+    var_press.applied_offset = float(-10.1353)
     var_press_v = ncOut.createVariable("PRES_VAR", "f4", ("TIME",), zlib=True, chunksizes=[1024])
     var_press_v.units = 'dbar'
 
@@ -154,7 +154,10 @@ def rdi_parse(files):
                     sum += i
 
                 sum = sum % 65536
-                (cksum,) = struct.unpack("<H", binary_file.read(2))
+                cksum_data = binary_file.read(2)
+                if len(cksum_data) != 2:
+                    continue
+                (cksum,) = struct.unpack("<H", cksum_data)
                 print("checksum ", cksum, sum)
 
                 if cksum == sum:
@@ -336,7 +339,7 @@ def rdi_parse(files):
     ncOut.instrument = 'RDI ; ' + instrument_model
     ncOut.instrument_model = instrument_model
     ncOut.instrument_serial_number = str(instrument_serialnumber)
-    ncOut.frequency = np.float(inst_system_decoder[inst_system][1])
+    ncOut.frequency = float(inst_system_decoder[inst_system][1])
 
     coord_sys = (fixed_decoded['coord_trans'] >> 3) & 0x03
     ncOut.data_coordinates = inst_coords_decoder[coord_sys]
@@ -366,7 +369,7 @@ def rdi_parse(files):
     ncOut.dist_centre_bin1_cm = np.int32(fixed_decoded['bin1_dist'])
     ncOut.xmit_pulse_length_cm = np.int32(fixed_decoded['xmit_pulse_len'])
 
-    ncOut.time_between_pings_sec = np.float(fixed_decoded['tpp_min'] * 60 + fixed_decoded['tpp_sec'] + fixed_decoded['tpp_hun_sec']/100)
+    ncOut.time_between_pings_sec = float(fixed_decoded['tpp_min'] * 60 + fixed_decoded['tpp_sec'] + fixed_decoded['tpp_hun_sec']/100)
 
     # add fixed header data as attributes
     for x in fixed_decoded:

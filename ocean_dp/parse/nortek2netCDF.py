@@ -57,6 +57,7 @@ import ctypes
 
 # 30 AWAC Wave Data
 # 31 AWAC Wave Data Header
+# 32 AWAC profile data
 # 36 AWAC Wave Data SUV
 # 42 AWAC Stage Data
 
@@ -109,14 +110,18 @@ packet_decoder[17] = {'name': 'Vector System Data', 'keys': ['time_bcd', 'batter
 packet_decoder[16] = {'name': 'Vector Velocity Data', 'keys': ['anaIn2LSB', 'count', 'presMSB', 'anaIn2MSB', 'presLSW', 'anaIn1', 'vel1', 'vel2', 'vel3', 'amp1', 'amp2', 'amp3', 'corr1', 'corr2', 'corr3', 'checksum'], 'unpack': "<BBBB5H3B3BH"}
 packet_decoder[113] = {'name': 'Vector With IMU', 'keys': ['EnsCnt', 'AHRSid', 'accelX', 'accelY', 'accelZ', 'angRateX', 'angRateY', 'angRateZ', 'MagX', 'MagY', 'MagZ', 'M11', 'M12', 'M13', 'M21', 'M22', 'M23', 'M31', 'M32', 'M33', 'timer', 'IMUchSum', 'checksum'], 'unpack': "<BB18fIHH"}
 
+packet_decoder[32] = {'name': 'AWAC Velocity Profile Data', 'keys': ['time_bcd', 'error', 'AnaIn1', 'battery', 'soundSpd_Anain2', 'head', 'pitch', 'roll',
+                              'presMSB', 'status', 'presLSW', 'temp', 'spare', 'vel_b1...', 'vel_b2...', 'vel_b3...', 'amp1...', 'amp2...', 'amp3...', 'checksum' ], 'unpack': '<6s7hBBHH88s{0}h{0}BH'}
+
 packet_decoder[33] = {'name': 'Aquadopp Profiler Velocity Data', 'keys': ['time_bcd', 'error', 'AnaIn1', 'battery', 'soundSpd_Anain2', 'head', 'pitch', 'roll',
                               'presMSB', 'status', 'presLSW', 'temp', 'vel_b1...', 'vel_b2...', 'vel_b3...', 'amp1...', 'amp2...', 'amp3...', 'checksum' ], 'unpack': '<6s7hBBHH{0}h{0}BH'}
 
 packet_decoder[48] = {'name': 'AWAC Wave Data', 'keys': ['pressure', 'distance1', 'anaIn', 'vel1', 'vel2', 'vel3', 'dist1_vel4', 'amp1', 'amp2', 'amp3', 'amp4', 'checksum' ], 'unpack': '<7h4BH'}
 
-packet_decoder[49] = {'name': 'AWAC wave Data Header', 'keys': ['time_bcd', 'NRecords', 'blanking', 'battery', 'sound_speed', 'heading', 'pitch', 'roll', 'minPres', 'maxPres',
+packet_decoder[49] = {'name': 'AWAC Wave Data Header', 'keys': ['time_bcd', 'NRecords', 'blanking', 'battery', 'sound_speed', 'heading', 'pitch', 'roll', 'minPres', 'maxPres',
                                                                 'temperature', 'cell_size', 'noise1', 'noise2', 'noise3', 'noise4', 'progmagn1', 'progmagn2', 'progmagn3', 'progmagn4', 'spare', 'checksum'], 'unpack': "<6s11H4B4H14sH"}
 
+packet_decoder[66] = {'name': 'AWAC Stage Data', 'keys': ['spare', 'amp1', 'amp2', 'amp3', 'spare1', 'pressure', 'AST1', 'AST_Q', 'soundspeed', 'AST2', 'spare2', 'vel1', 'vel2', 'vel3', 'spare3', 'spare4', 'amp_cell...', 'checksum' ], 'unpack': '<H3B11HB{0}BH '}
 
 # TODO: how to map the above into netCDF attributes....
 
@@ -139,6 +144,7 @@ vel_raw_mag = False
 vector_velocity_data = []
 vector_imu_data = []
 aquapro_data = []
+awac_wave_data = []
 
 coord_system = None
 
@@ -150,6 +156,7 @@ def parse_file(filepath):
     checksum_errors = 0
     no_sync = 0
     sample_count = 0
+    wave_record = 0
 
     first_time = None
 
@@ -200,6 +207,14 @@ def parse_file(filepath):
                             #print(unpack.format(number_bins * number_beams))
                             unpack = unpack.format(number_samples * number_beams)
 
+                        if 'AWAC Velocity Profile Data' == packet_decoder[id]['name']:
+                            #print(unpack.format(number_bins * number_beams))
+                            unpack = unpack.format(number_samples * number_beams)
+
+                        if 'AWAC Stage Data' == packet_decoder[id]['name']:
+                            #print(unpack.format(number_bins * number_beams))
+                            unpack = unpack.format(408)
+
                         if 'Vector and Vectrino Probe Check Data' == packet_decoder[id]['name']:
                             unpack = unpack.format(300)
                             number_samples = 300
@@ -224,7 +239,7 @@ def parse_file(filepath):
                                 unpack = "<BB9fIHH"
 
                         # decode the packet
-                        #print("packet size", packet_decoder[id]['name'], len(packet))
+                        #print("packet size", packet_decoder[id]['name'], len(packet), unpack)
                         packetDecode = struct.unpack(unpack, packet)
                         d = dict(zip(keys_out, packetDecode))
 
@@ -258,8 +273,8 @@ def parse_file(filepath):
 
                         if 'system' in d:
                             print('System Data:')
-                            for sd in d['system']:
-                                print (sd)
+                            #for sd in d['system']:
+                            #    print (sd)
                             
                         if 'CoordSys' in d:
                             coord_system = d['CoordSys']
@@ -308,6 +323,27 @@ def parse_file(filepath):
                             aquapro_data.append((dt, d))
                             #print(dt, d)
 
+                        if 'AWAC Velocity Profile Data' == packet_decoder[id]['name']:
+                            #print('velocity data')
+                            aquapro_data.append((dt, d))
+                            #print(dt, d)
+
+                        if 'AWAC Wave Data Header' == packet_decoder[id]['name']:
+                            wave_record = 0
+                            print(dt, 'wave header, records to follow', d['NRecords'])
+                            #print(d)
+
+                        if 'AWAC Stage Data' == packet_decoder[id]['name']:
+                            #print(d)
+                            pass
+
+                        if 'AWAC Wave Data' == packet_decoder[id]['name']:
+                            #print('velocity data')
+                            wt = dt + timedelta(seconds=wave_record)
+                            awac_wave_data.append((wt, d))
+                            wave_record += 1
+                            #print(wt, d)
+
                         if 'Vector Velocity Data' == packet_decoder[id]['name']:
                             # calculate the sample timestamp
                             ts = first_time + timedelta(microseconds=int(sample_count*63000)) # a sample every 63 ms, where does this come from?
@@ -316,6 +352,7 @@ def parse_file(filepath):
                             sample_count += 1
 
                             #print(dt, d)
+
                         if 'Vector With IMU' == packet_decoder[id]['name']:
                             #print('Vector With IMU')
 
@@ -343,12 +380,14 @@ def parse_file(filepath):
     print('aquapro velocity data samples ', len(aquapro_data))
     print('vector velocity data samples ', len(vector_velocity_data))
     print('vector IMU data samples ', len(vector_imu_data))
+    print('AWAC wave data samples ', len(awac_wave_data))
 
     number_samples_read = len(velocity_data) + len(vector_velocity_data) + len(aquapro_data)
 
     aquadopp = len(velocity_data) > 0
     vector = len(vector_velocity_data) > 0
     aquapro = len(aquapro_data) > 0
+    awac = len(awac_wave_data) > 0
     vectImu = len(vector_imu_data) > 0
 
     if number_samples_read == 0:
@@ -426,32 +465,13 @@ def parse_file(filepath):
         var_names.append({'byte_n':  1, 'name': 'ABSIC2', 'comment': "amplitude beam 2", 'unit': 'counts'})
         var_names.append({'byte_n':  2, 'name': 'ABSIC3', 'comment': "amplitude beam 3", 'unit': 'counts'})
 
-    if aquapro:
+    if aquapro or awac:
         # add global attributes
         instrument_model = 'AquaPro ' + si_format(system_frequency * 1000, precision=0) + 'Hz'
 
         # create an array to store data in (creates another memory copy)
-        data_array = np.zeros((8, number_samples_read))
-        data_array.fill(np.nan)
         profile_array = np.zeros((number_beams, number_samples_read, number_bins))
         profile_array.fill(np.nan)
-
-        i = 0
-        for d in aquapro_data:
-            data_array[0][i] = date2num(d[0], calendar='gregorian', units="days since 1950-01-01 00:00:00 UTC")
-            data_array[1][i] = d[1]['head']/10
-            data_array[2][i] = d[1]['pitch']/10
-            data_array[3][i] = d[1]['roll']/10
-
-            data_array[4][i] = ((d[1]['presMSB'] * 65536) + d[1]['presLSW']) * 0.001
-
-            data_array[5][i] = d[1]['battery']/10
-
-            data_array[6][i] = d[1]['temp'] * 0.01
-
-            data_array[7][i] = d[1]['soundSpd_Anain2'] * 0.1
-
-            i = i + 1
 
         # output variable structures
         var_names = []
@@ -464,6 +484,71 @@ def parse_file(filepath):
         var_names.append({'data_n':  7, 'name': 'SSPEED', 'comment': "sound speed", 'unit': 'm/s'})
 
         ncOut.createDimension("CELL", number_bins)
+
+        if coord_systems[coord_system] == 'ENU':
+            var_names.append({'cell_n': 0, 'name': 'VEL_EAST', 'comment': "velocity east", 'unit': 'm/s'})
+            var_names.append({'cell_n': 1, 'name': 'VEL_NORTH', 'comment': "velocity north", 'unit': 'm/s'})
+            var_names.append({'cell_n': 2, 'name': 'VEL_UP', 'comment': "velocity up", 'unit': 'm/s'})
+        else:
+            var_names.append({'cell_n':  0, 'name': 'VEL_B1', 'comment': "velocity beam 1", 'unit': 'm/s'})
+            var_names.append({'cell_n':  1, 'name': 'VEL_B2', 'comment': "velocity beam 1", 'unit': 'm/s'})
+            var_names.append({'cell_n':  2, 'name': 'VEL_B3', 'comment': "velocity beam 1", 'unit': 'm/s'})
+
+    i = 0
+    for d in aquapro_data:
+        data_array = np.zeros((8, number_samples_read))
+        data_array.fill(np.nan)
+
+        data_array[0][i] = date2num(d[0], calendar='gregorian', units="days since 1950-01-01 00:00:00 UTC")
+        data_array[1][i] = d[1]['head']/10
+        data_array[2][i] = d[1]['pitch']/10
+        data_array[3][i] = d[1]['roll']/10
+
+        data_array[4][i] = ((d[1]['presMSB'] * 65536) + d[1]['presLSW']) * 0.001
+
+        data_array[5][i] = d[1]['battery']/10
+
+        data_array[6][i] = d[1]['temp'] * 0.01
+
+        data_array[7][i] = d[1]['soundSpd_Anain2'] * 0.1
+
+        cell_array = np.zeros((3, number_samples_read, number_bins))
+        cell_array.fill(np.nan)
+
+        for j in range(0, number_bins):
+            cell_array[0][i][j] = d[1]['vel_b1' + '[' + str(j) + ']'] / 1000
+            cell_array[1][i][j] = d[1]['vel_b2' + '[' + str(j) + ']'] / 1000
+            cell_array[2][i][j] = d[1]['vel_b3' + '[' + str(j) + ']'] / 1000
+
+        i = i + 1
+
+    if awac:
+        instrument_model = 'AWAC ' + si_format(system_frequency * 1000, precision=0) + 'Hz'
+        wave_array = np.zeros((11, len(awac_wave_data)))
+        wave_array.fill(np.nan)
+        for i in range(0, len(awac_wave_data)):
+            d = awac_wave_data[i]
+            wave_array[0][i] = date2num(d[0], calendar='gregorian', units="days since 1950-01-01 00:00:00 UTC")
+            wave_array[1][i] = d[1]['pressure'] * 0.001
+            wave_array[2][i] = d[1]['distance1'] / 1000
+            wave_array[3][i] = d[1]['dist1_vel4'] / 1000
+            wave_array[4][i] = d[1]['vel1']/1000
+            wave_array[5][i] = d[1]['vel2']/1000
+            wave_array[6][i] = d[1]['vel3']/1000
+            wave_array[7][i] = d[1]['amp1']
+            wave_array[8][i] = d[1]['amp2']
+            wave_array[9][i] = d[1]['amp3']
+            wave_array[10][i] = d[1]['amp4']
+
+        var_names.append({'wave_n':  1, 'name': 'PRES_WAVE', 'comment': "pressure", 'unit': 'dbar'})
+        var_names.append({'wave_n':  2, 'name': 'DIST', 'comment': "distance 1 to surface, vertical beam", 'unit': 'm'})
+
+        if coord_systems[coord_system] == 'ENU':
+            var_names.append({'wave_n':  4, 'name': 'VEL_WAVE_EAST', 'comment': "velocity east", 'unit': 'm/s'})
+            var_names.append({'wave_n':  5, 'name': 'VEL_WAVE_NORTH', 'comment': "velocity north", 'unit': 'm/s'})
+            var_names.append({'wave_n':  6, 'name': 'VEL_WAVE_UP', 'comment': "velocity up", 'unit': 'm/s'})
+
+        print(wave_array[0][0], wave_array[0][1])
 
     if vector:
         # add global attributes
@@ -545,6 +630,15 @@ def parse_file(filepath):
     ncTimesOut.axis = "T"
     ncTimesOut[:] = data_array[0]
 
+    if len(awac_wave_data):
+        tDim = ncOut.createDimension("TIME_WAVE", len(wave_array[0]))
+        ncTimesOut = ncOut.createVariable("TIME_WAVE", "d", ("TIME_WAVE",), zlib=True)
+        ncTimesOut.long_name = "time wave observation"
+        ncTimesOut.units = "days since 1950-01-01 00:00:00 UTC"
+        ncTimesOut.calendar = "gregorian"
+        ncTimesOut.axis = "T"
+        ncTimesOut[:] = wave_array[0]
+
     # add data variables
     for v in var_names:
         if 'data_n' in v:
@@ -567,6 +661,16 @@ def parse_file(filepath):
             ncVarOut.comment = v['comment']
             ncVarOut.units = v['unit']
             ncVarOut[:] = mat_array[v['mat_n']]
+        elif 'cell_n' in v:
+            ncVarOut = ncOut.createVariable(v['name'], "f4", ("TIME", "CELL"), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
+            ncVarOut.comment = v['comment']
+            ncVarOut.units = v['unit']
+            ncVarOut[:] = cell_array[v['cell_n']]
+        elif 'wave_n' in v:
+            ncVarOut = ncOut.createVariable(v['name'], "f4", ("TIME_WAVE",), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
+            ncVarOut.comment = v['comment']
+            ncVarOut.units = v['unit']
+            ncVarOut[:] = wave_array[v['wave_n']]
 
     ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
 
