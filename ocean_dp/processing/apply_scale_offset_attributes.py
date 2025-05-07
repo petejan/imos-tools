@@ -42,8 +42,8 @@ def apply_scale_offset(netCDFfiles):
 
             scale_offset = v.getncattr('comment_scale_offset')
             scale_offset_split = scale_offset.split(' ')
-            scale = np.float(scale_offset_split[0])
-            offset = np.float(scale_offset_split[1])
+            scale = float(scale_offset_split[0])
+            offset = float(scale_offset_split[1])
 
             v.renameAttribute('comment_scale_offset', 'comment_scale_offset_applied')
             v.comment_scale_offset_applied = "scale = " + str(scale) + " offset = " + str(offset)
