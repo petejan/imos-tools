@@ -95,6 +95,7 @@ instrument_ctd_serialnumber = '20127'
 hdr_map = {}
 hdr_map['FrameSync'] = {'var': None, 'long_name': None, 'units': None}
 hdr_map['DateTime (UTC+00:00)'] = {'var': None, 'long_name': None, 'units': None} # handelled separatly
+hdr_map['DateTime (UTC+11:00)'] = {'var': None, 'long_name': None, 'units': None} # handelled separatly
 hdr_map['Sample Number (#)'] = {'var': None, 'long_name': None, 'units': None}
 hdr_map['Error Flags (#)'] = {'var': None, 'long_name': None, 'units': None}
 hdr_map['Temperature (Celsius)'] = {'var': 'TEMP', 'long_name': 'sea_water_temperature', 'standard_name': 'sea_water_temperature', 'units': 'degrees_Celsius'}
@@ -130,12 +131,19 @@ def read(fp, times, data, number_samples):
                 ts = matchObj.group(2)
                 data_csv = matchObj.group(3)
                 dt = datetime.strptime(ts, '%m/%d/%Y %H:%M:%S')
+                if hdrline_split[0] == 'DateTime (UTC+11:00)':
+                    dt = dt - timedelta(hours=11)
                 times.append(dt)
                 number_samples += 1
                 split = data_csv.split(',')
                 d = []
+                n = 0
                 for i in split:
-                    d.append(float(i))
+                    if n != 1:
+                        d.append(float(i))
+                    else:
+                        d.append(int(i, 16))
+                    n += 1
                 data.append(d)
 
                 print(dt, d)

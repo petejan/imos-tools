@@ -135,100 +135,100 @@ decode.append({'key': 'spare2', 'var_name': None, 'units': None, 'scale': 1, 'of
 decode.append({'key': 'used', 'var_name': None, 'units': None, 'scale': 1, 'offset': 0, 'unpack': 'H'})
 
 
-def parse(files):
+def parse(filepath, start_date):
     output_files = []
 
-    for filepath in files:
-        ts_start = None
+    ts_start = None
 
-        number_samples_read = 0
+    number_samples_read = 0
 
-        # create the netCDF file
-        outputName = filepath + ".nc"
+    # create the netCDF file
+    outputName = filepath + ".nc"
 
-        print("output file : %s" % outputName)
+    print("output file : %s" % outputName)
 
-        ncOut = Dataset(outputName, 'w', format='NETCDF4')
+    ncOut = Dataset(outputName, 'w', format='NETCDF4')
 
-        # add time var_nameiable
+    # add time var_nameiable
 
-        #     TIME:axis = "T";
-        #     TIME:calendar = "gregorian";
-        #     TIME:long_name = "time";
-        #     TIME:units = "days since 1950-01-01 00:00:00 UTC";
+    #     TIME:axis = "T";
+    #     TIME:calendar = "gregorian";
+    #     TIME:long_name = "time";
+    #     TIME:units = "days since 1950-01-01 00:00:00 UTC";
 
-        t_cal = "gregorian"
-        t_unit = "days since 1950-01-01 00:00:00 UTC"
-        tDim = ncOut.createDimension("TIME")
-        ncTimesOut = ncOut.createVariable("TIME", "d", ("TIME",), zlib=False)
-        ncTimesOut.long_name = "time"
-        ncTimesOut.units = t_unit
-        ncTimesOut.calendar = t_cal
-        ncTimesOut.axis = "T"
+    t_cal = "gregorian"
+    t_unit = "days since 1950-01-01 00:00:00 UTC"
+    tDim = ncOut.createDimension("TIME")
+    ncTimesOut = ncOut.createVariable("TIME", "d", ("TIME",), zlib=False)
+    ncTimesOut.long_name = "time"
+    ncTimesOut.units = t_unit
+    ncTimesOut.calendar = t_cal
+    ncTimesOut.axis = "T"
 
-        # add global attributes
-        instrument_model = 'ASIMET LOG53'
-        # extract logger SN from file name, from .DAT or .RAW files
-        matchObj = re.match(r'.*L.*(\d\d).*[DR]A[TW]', os.path.basename(filepath))
-        if matchObj:
-            instrument_serialnumber = 'L' + matchObj.group(1)
+    # add global attributes
+    instrument_model = 'ASIMET LOG53'
+    # extract logger SN from file name, from .DAT or .RAW files
+    matchObj = re.match(r'.*L.*(\d\d).*[DR]A[TW]', os.path.basename(filepath))
+    if matchObj:
+        instrument_serialnumber = 'L' + matchObj.group(1)
+    else:
+        instrument_serialnumber = 'unknown'
+    matchObj = re.match(r'.*L.*(\d\d).BIN', os.path.basename(filepath))
+    if matchObj:
+        instrument_serialnumber = 'L' + matchObj.group(1)
+
+    ncOut.instrument = 'WHOI ; ' + instrument_model
+    ncOut.instrument_model = instrument_model
+    ncOut.instrument_serial_number = instrument_serialnumber
+
+    ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
+
+    # create keys for data index
+    decode_idx = {}
+    unpack = '>'
+    vars = []
+    data_scale = np.zeros([len(decode)])
+    data_offset = np.zeros([len(decode)])
+    for i in range(len(decode)):
+        decode_idx[decode[i]['key']] = i
+        unpack += decode[i]['unpack']
+        data_scale[i] = decode[i]['scale']
+        data_offset[i] = decode[i]['offset']
+        if decode[i]['var_name']:
+            v = ncOut.createVariable(decode[i]['var_name'], "f4", ("TIME",), zlib=True)
+            v.units = decode[i]['units']
         else:
-            instrument_serialnumber = 'unknown'
-        matchObj = re.match(r'.*L.*(\d\d).BIN', os.path.basename(filepath))
-        if matchObj:
-            instrument_serialnumber = 'L' + matchObj.group(1)
+            v = None
 
-        ncOut.instrument = 'WHOI ; ' + instrument_model
-        ncOut.instrument_model = instrument_model
-        ncOut.instrument_serial_number = instrument_serialnumber
+        vars.append(v)
 
-        ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
+    # array to cache data, could be size(file)/64
+    file_size = os.path.getsize(filepath)
+    cache_size = int(np.floor(file_size/64))
+    data_array = np.zeros([cache_size, len(decode)])
+    print('file size, cache size', file_size, cache_size)
 
-        # create keys for data index
-        decode_idx = {}
-        unpack = '>'
-        vars = []
-        data_scale = np.zeros([len(decode)])
-        data_offset = np.zeros([len(decode)])
-        for i in range(len(decode)):
-            decode_idx[decode[i]['key']] = i
-            unpack += decode[i]['unpack']
-            data_scale[i] = decode[i]['scale']
-            data_offset[i] = decode[i]['offset']
-            if decode[i]['var_name']:
-                v = ncOut.createVariable(decode[i]['var_name'], "f4", ("TIME",), zlib=True)
-                v.units = decode[i]['units']
-            else:
-                v = None
+    # loop over file, adding data to netCDF file for each timestamp
+    ts = None
+    last_ts = None
+    sample_cache_start = 0
+    sample_cache_n = 0
+    step_back = False
 
-            vars.append(v)
+    with open(filepath, "rb") as binary_file:
+        data_raw = binary_file.read(64)
+        while data_raw:
 
-        # array to cache data, could be size(file)/64
-        file_size = os.path.getsize(filepath)
-        cache_size = int(np.floor(file_size/64))
-        data_array = np.zeros([cache_size, len(decode)])
-        print('file size, cache size', file_size, cache_size)
+            data = struct.unpack(unpack, data_raw)
 
-        # loop over file, adding data to netCDF file for each timestamp
-        ts = None
-        last_ts = None
-        sample_cache_start = 0
-        sample_cache_n = 0
-        step_back = False
+            # check that this record is a used record
+            if data[decode_idx['used']] == 42405 and data[decode_idx['year']] < 40 and data[decode_idx['year']] > 5:
 
-        with open(filepath, "rb") as binary_file:
-            data_raw = binary_file.read(64)
-            while data_raw:
+                # decode the time
+                ts = datetime.datetime(int(data[decode_idx['year']]+2000), int(data[decode_idx['mon']]), int(data[decode_idx['day']]),
+                                       int(data[decode_idx['hour']]), int(data[decode_idx['min']]), 0)
 
-                data = struct.unpack(unpack, data_raw)
-
-                # check that this record is a used record
-                if data[decode_idx['used']] == 42405 and data[decode_idx['year']] < 40 and data[decode_idx['year']] > 5:
-
-                    # decode the time
-                    ts = datetime.datetime(int(data[decode_idx['year']]+2000), int(data[decode_idx['mon']]), int(data[decode_idx['day']]),
-                                           int(data[decode_idx['hour']]), int(data[decode_idx['min']]), 0)
-
+                if ts > start_date:
                     # hack as sometimes the time jumps back, seems to be a fault in the logger, mostly when minutes roll over
                     if (last_ts is not None) and (ts < last_ts) and not step_back:
                         print('time step back', ts)
@@ -273,39 +273,43 @@ def parse(files):
                     else:
                         print('non-monotonic time,', number_samples_read, ts, last_ts)
 
-                data_raw = binary_file.read(64)
+            data_raw = binary_file.read(64)
 
-        # flush last of cache
-        feedback = []
-        for x in range(len(data)):
-            feedback.append(decode[x]['key'] + '=' + str(data[x]))
-        print(number_samples_read, ts, ','.join(feedback))
-        ncTimesOut[sample_cache_start:number_samples_read] = data_array[0:sample_cache_n, 0]
-        for x in range(len(data)):
-            # print(x, data_decoded[x], metadata[x])
-            if vars[x]:
-                vars[x][sample_cache_start:number_samples_read] = data_array[0:sample_cache_n, x]
+    # flush last of cache
+    feedback = []
+    for x in range(len(data)):
+        feedback.append(decode[x]['key'] + '=' + str(data[x]))
+    print(number_samples_read, ts, ','.join(feedback))
+    ncTimesOut[sample_cache_start:number_samples_read] = data_array[0:sample_cache_n, 0]
+    for x in range(len(data)):
+        # print(x, data_decoded[x], metadata[x])
+        if vars[x]:
+            vars[x][sample_cache_start:number_samples_read] = data_array[0:sample_cache_n, x]
 
-        print("number of samples", number_samples_read)
-        print("file first timestamp", ts_start)
-        print("file last timestamp", ts)
+    print("number of samples", number_samples_read)
+    print("file first timestamp", ts_start)
+    print("file last timestamp", ts)
 
-        ts_start = num2date(np.min(ncTimesOut[:]), calendar=t_cal, units=t_unit)
-        ts_end = num2date(np.max(ncTimesOut[:]), calendar=t_cal, units=t_unit)
+    ts_start = num2date(np.min(ncTimesOut[:]), calendar=t_cal, units=t_unit)
+    ts_end = num2date(np.max(ncTimesOut[:]), calendar=t_cal, units=t_unit)
 
-        ncOut.setncattr("time_coverage_start", ts_start.strftime(ncTimeFormat))
-        ncOut.setncattr("time_coverage_end", ts_end.strftime(ncTimeFormat))
+    ncOut.setncattr("time_coverage_start", ts_start.strftime(ncTimeFormat))
+    ncOut.setncattr("time_coverage_end", ts_end.strftime(ncTimeFormat))
 
-        # add creating and history entry
-        ncOut.setncattr("date_created", datetime.datetime.now(UTC).strftime(ncTimeFormat))
-        ncOut.setncattr("history", datetime.datetime.now(UTC).strftime("%Y-%m-%d") + " created from file " + os.path.basename(filepath))
+    # add creating and history entry
+    ncOut.setncattr("date_created", datetime.datetime.now(UTC).strftime(ncTimeFormat))
+    ncOut.setncattr("history", datetime.datetime.now(UTC).strftime("%Y-%m-%d") + " created from file " + os.path.basename(filepath))
 
-        ncOut.close()
+    ncOut.close()
 
-        output_files.append(outputName)
+    output_files.append(outputName)
 
     return output_files
 
 
 if __name__ == "__main__":
-    parse(sys.argv[1:])
+    start_date = None
+    if len(sys.argv) > 1:
+        start_date = datetime.datetime.strptime(sys.argv[2], "%Y-%m-%d")
+
+    parse(sys.argv[1], start_date)

@@ -357,7 +357,7 @@ def plot_file(path_file):
             plt.text(0.0, -0.08, 'cyan: QC=2 (pgood); yellow : QC=3 (pbad); red : QC=4 (bad); QC=4,6,9 no line', fontsize=8, horizontalalignment='left', verticalalignment='center', transform = ax.transAxes)
 
         # plt.savefig(plot + '.pdf')
-        pp.savefig(fig, papertype='a4')
+        pp.savefig(fig)
         plt.close(fig)
 
     # plt.show()

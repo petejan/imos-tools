@@ -77,6 +77,8 @@ def add(netCDFfile, metadatafiles):
     ds_variables = ds.variables
 
     added_attribute = False
+    td = None
+    tr = None
 
     #print(ds_variables)
     dict1 = {}
@@ -90,6 +92,7 @@ def add(netCDFfile, metadatafiles):
             for row in csv_reader:
                 dict1 = {key: value for key, value in zip(headers, row)}
                 #print(dict1)
+                non_match_lst = []
 
                 try:
                     deployment_code = ds.deployment_code
@@ -105,9 +108,11 @@ def add(netCDFfile, metadatafiles):
                     if ('deployment_code' in dict1):
                         if len(dict1['deployment_code']) > 0 and not deployment_code:
                             match = False
+                            non_match_lst.append('deployment code length')
                         elif len(dict1['deployment_code']) > 0 and not re.search(dict1['deployment_code'], deployment_code): #dict1['deployment_code'] != deployment_code:
                         #if len(dict1['deployment_code']) > 0 and dict1['deployment_code'] != deployment_code:
                             match = False
+                            non_match_lst.append('deployment code')
                             #print("deployment not match : ", dict1['deployment_code'])
 
                     # match time
@@ -123,6 +128,7 @@ def add(netCDFfile, metadatafiles):
 
                             if time_end < td:
                                 match = False
+                                non_match_lst.append('time deployment')
                                 # print("Time end before deployment ", time_end, dict1['time_deployment'])
                     if 'time_recovery' in dict1:
                         if len(dict1['time_recovery']) > 0:
@@ -136,6 +142,7 @@ def add(netCDFfile, metadatafiles):
 
                             if time_start > tr:
                                 match = False
+                                non_match_lst.append('time recovery')
                                 #print("Time start after recovery ", time_start, dict1['time_recovery'], parser.parse(dict1['time_recovery'], ignoretz=True, dayfirst=False))
 
                     # match instrument
@@ -143,6 +150,7 @@ def add(netCDFfile, metadatafiles):
                     if len(dict1['model']) > 0:
                         if instrument_model.lower() != dict1['model'].lower():
                             match = False
+                            non_match_lst.append('instrument model ' + instrument_model + " " + dict1['model'])
                         else:
                             #print(instrument_model.lower(), dict1['model'].lower())
                             pass
@@ -150,6 +158,7 @@ def add(netCDFfile, metadatafiles):
                     if len(dict1['serial_number']) > 0:
                         if instrument_serial_number.lower() != dict1['serial_number'].lower():
                             match = False
+                            non_match_lst.append('instrument serial_number')
                         else:
                             #print(instrument_serial_number.lower(), dict1['serial_number'].lower())
                             pass
@@ -185,6 +194,10 @@ def add(netCDFfile, metadatafiles):
                                 #print("add variable %s attribute %s (%s) = %s" % (var_name, name, att_type, value))
                                 ds_variables[var_name].setncattr(name, value)
                                 added_attribute = True
+
+                    else:
+                        #print('non match', non_match_lst, dict1)
+                        pass
 
     if not added_attribute:
         print('no attributes added, file not changed')

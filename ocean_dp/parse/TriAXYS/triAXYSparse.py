@@ -1129,7 +1129,7 @@ def parse_wave(output_name, file):
 def parse_triaxys(files):
     output_name = "TriAXYS.nc"
 
-    inc_raw = False
+    inc_raw = True
 
     # create a list of files, scanning any directories
     filelist = []
