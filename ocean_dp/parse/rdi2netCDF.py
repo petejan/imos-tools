@@ -136,54 +136,58 @@ def rdi_parse(files):
     with open(filepath, "rb") as binary_file:
         data = binary_file.read(2)
         while data:
+            print()
             # print("hdr ", data)
             if data == b'\x7f\x7f':
                 sum = 0
-                for i in data:
-                    sum += i
+                for hdr_ens_n in data:
+                    sum += hdr_ens_n
 
                 data = binary_file.read(2)
                 (ensemble_len,) = struct.unpack("<H", data)
 
-                for i in data:
-                    sum += i
+                for hdr_ens_n in data:
+                    sum += hdr_ens_n
 
-                print("ensemble length ", ensemble_len)
+                #print("ensemble pos", binary_file.tell(), "length", ensemble_len)
                 ensemble = binary_file.read(ensemble_len-4)
-                for i in ensemble:
-                    sum += i
+                for hdr_ens_n in ensemble:
+                    sum += hdr_ens_n
 
                 sum = sum % 65536
                 cksum_data = binary_file.read(2)
                 if len(cksum_data) != 2:
+                    print("checksum error")
                     continue
                 (cksum,) = struct.unpack("<H", cksum_data)
-                print("checksum ", cksum, sum)
+                #print("checksum ", cksum, sum)
 
                 if cksum == sum:
                     header = struct.unpack(header_decoder["unpack"], ensemble[0:2])
                     header_decoded = dict(zip(header_decoder['keys'], header))
-                    print("header ", header)
+                    #print("header ", header_decoded)
 
-                    n = 2
+                    hdr_addr = 2
                     addrs = [0 for x in range(0, header_decoded["dataTypes"])]
-                    for i in range(0, header_decoded["dataTypes"]):
-                        addr_data = ensemble[n:n+2]
-                        addrs[i] = struct.unpack("<H", addr_data)[0]
-                        print("addr ", addrs[i])
-                        n += + 2
+                    for hdr_ens_n in range(0, header_decoded["dataTypes"]):
+                        addr_data = ensemble[hdr_addr:hdr_addr + 2]
+                        addrs[hdr_ens_n] = struct.unpack("<H", addr_data)[0]
+                        #print("data type", hdr_ens_n, "addr", addrs[hdr_ens_n])
+                        hdr_addr += 2
 
-                    while n < (ensemble_len - 6):
-                        data = ensemble[n:n+2]
-                        print(n, "data hdr ", data, 'total len', ensemble_len - 6)
-                        n += 2
+                        ens_pos = addrs[hdr_ens_n] - 4
+                        ens_type = ensemble[ens_pos:ens_pos+2]
+                        #print(hdr_addr, ens_pos, "ens type ", ens_type, 'total len', ensemble_len - 6)
+
                         try:
-                            if data == b'\x00\x00':  # fixed header
-                                data = ensemble[n:n+57]
-                                n += 57
+                            if ens_type == b'\x00\x00':  # fixed header
+                                data = ensemble[ens_pos+2:ens_pos+59]
                                 fixed = struct.unpack(fixed_decoder["unpack"], data)
                                 fixed_decoded = dict(zip(fixed_decoder['keys'], fixed))
-                                print("fixed ", fixed)
+                                #print("fixed ", fixed_decoded)
+                                
+                                coord_sys = (fixed_decoded['coord_trans'] >> 3) & 0x03
+                                ncOut.data_coordinates = inst_coords_decoder[coord_sys]
 
                                 num_cells = fixed_decoded['num_cells']
                                 num_beams = fixed_decoded['num_beam']
@@ -191,9 +195,9 @@ def rdi_parse(files):
                                 print('fixed header, num_cells', num_cells)
 
                                 # know how big a cell is now, create the cell based variables
-                                if not cellDim:
-                                    cellDim = ncOut.createDimension("CELL")
-                                    #cellDim = ncOut.createDimension("CELL", num_cells)
+                                if 'CELL' not in ncOut.dimensions:
+                                    #cellDim = ncOut.createDimension("CELL")
+                                    cellDim = ncOut.createDimension("CELL", num_cells)
                                     # create cell variables, one for each beam, generic names until we know the coordinates
                                     var_vel1 = ncOut.createVariable("V1", "f4", ("TIME", "CELL"), zlib=True, chunksizes=[1024, num_cells])
                                     var_vel1.units = 'm/s'
@@ -238,18 +242,23 @@ def rdi_parse(files):
                                 inst_system_text = inst_system_decoder[inst_system][0]
                                 #print("system ", inst_system_text)
 
-                            elif data == b'\x80\x00':  # variable header
-                                data = ensemble[n:n+63]
-                                n += 63
+                            elif ens_type == b'\x80\x00':  # variable header
+                                data = ensemble[ens_pos+2:ens_pos+65]
                                 variable = struct.unpack(variable_decoder["unpack"], data)
                                 variable_decoded = dict(zip(variable_decoder['keys'], variable))
-                                print("variable header ", variable)
+                                #print("variable header ", variable_decoded)
 
-                                ts = datetime.datetime(year=variable_decoded['rtc_cen']*100 + variable_decoded['rtc_year'],
-                                                       month=variable_decoded['rtc_month'], day=variable_decoded['rtc_day'],
-                                                       hour=variable_decoded['rtc_hour'], minute=variable_decoded['rtc_min'],
-                                                       second=variable_decoded['rtc_sec'],
-                                                       microsecond=variable_decoded['rtc_hsec']*1000*10)
+                                # ts = datetime.datetime(year=variable_decoded['rtc_cen']*100 + variable_decoded['rtc_year'],
+                                #                        month=variable_decoded['rtc_month'], day=variable_decoded['rtc_day'],
+                                #                        hour=variable_decoded['rtc_hour'], minute=variable_decoded['rtc_min'],
+                                #                        second=variable_decoded['rtc_sec'],
+                                #                        microsecond=variable_decoded['rtc_hsec']*1000*10)
+
+                                ts = datetime.datetime(year=2000 + variable_decoded['year'],
+                                                       month=variable_decoded['month'], day=variable_decoded['day'],
+                                                       hour=variable_decoded['hour'], minute=variable_decoded['minute'],
+                                                       second=variable_decoded['second'],
+                                                       microsecond=variable_decoded['hsec']*1000*10)
 
                                 print("ts = ", ts)
                                 if not ts_start:
@@ -268,8 +277,8 @@ def rdi_parse(files):
                                 var_txi[number_ensambles_read] = variable_decoded['adc0']*volt_scale_system[inst_system][1]/1000000
                                 var_sspeed[number_ensambles_read] = variable_decoded['speed_of_sound']
 
-                            if data == b'\x00\x01':  # velocity data
-                                data = ensemble[n:n+(num_beams*2)*num_cells]
+                            elif ens_type == b'\x00\x01':  # velocity data
+                                data = ensemble[ens_pos+2:ens_pos + 2 + (num_beams * 2) * num_cells]
                                 velocity = np.array(struct.unpack("<%dh" % (num_beams*num_cells), data))
                                 #print("velocity shape ", velocity.shape)
                                 v = velocity.reshape([num_cells, num_beams])
@@ -280,9 +289,8 @@ def rdi_parse(files):
                                 var_vel4[number_ensambles_read, :] = v[:, 3] / 1000
 
                                 #print("var vel shape ", var_vel1.shape)
-                                n += len(data)
-                            elif data == b'\x00\x02':  # correlation mag
-                                data = ensemble[n:n+num_beams*num_cells]
+                            elif ens_type == b'\x00\x02':  # correlation mag
+                                data = ensemble[ens_pos+2:ens_pos + 2 + num_beams * num_cells]
                                 np_corr = np.array(struct.unpack("<%dB" % (num_beams*num_cells), data)).reshape([num_cells, num_beams])
                                 #print('size corr', len(np_corr))
                                 if len(np_corr) > 0:
@@ -290,32 +298,30 @@ def rdi_parse(files):
                                     var_corr2[number_ensambles_read, :] = np_corr[:, 1]
                                     var_corr3[number_ensambles_read, :] = np_corr[:, 2]
                                     var_corr4[number_ensambles_read, :] = np_corr[:, 3]
-                                n += len(data)
-                            elif data == b'\x00\x03':  # echo intensity
-                                data = ensemble[n:n+num_beams*num_cells]
+                            elif ens_type == b'\x00\x03':  # echo intensity
+                                data = ensemble[ens_pos+2:ens_pos + 2 + num_beams * num_cells]
                                 np_echo_int = np.array(struct.unpack("<%dB" % (num_beams*num_cells), data)).reshape([num_cells, num_beams])
                                 var_echo_int1[number_ensambles_read, :] = np_echo_int[:, 0] * 0.45
                                 var_echo_int2[number_ensambles_read, :] = np_echo_int[:, 1] * 0.45
                                 var_echo_int3[number_ensambles_read, :] = np_echo_int[:, 2] * 0.45
                                 var_echo_int4[number_ensambles_read, :] = np_echo_int[:, 3] * 0.45
-                                n += len(data)
-                            elif data == b'\x00\x04':  # percent good
-                                data = ensemble[n:n+num_beams*num_cells]
+                            elif ens_type == b'\x00\x04':  # percent good
+                                data = ensemble[ens_pos+2:ens_pos + 2 + num_beams * num_cells]
                                 np_pg = np.array(struct.unpack("<%dB" % (4*num_cells), data)).reshape([num_cells, 4])
                                 var_per_good1[number_ensambles_read, :] = np_pg[:, 0]
                                 var_per_good2[number_ensambles_read, :] = np_pg[:, 1]
                                 var_per_good3[number_ensambles_read, :] = np_pg[:, 2]
                                 var_per_good4[number_ensambles_read, :] = np_pg[:, 3]
-                                n += len(data)
-                            elif data == b'\x00\x05':  # status data
-                                data = ensemble[n:n+num_beams*num_cells]
+                            elif ens_type == b'\x00\x05':  # status data
+                                data = ensemble[ens_pos+2:ens_pos + 2 + num_beams * num_cells]
                                 print(len(ensemble), num_beams*num_cells)
                                 np_status = np.array(struct.unpack("<%db" % (num_beams*num_cells), data)).reshape([num_cells, num_beams])
                                 var_status1[number_ensambles_read, :] = np_status[:, 0]
                                 var_status2[number_ensambles_read, :] = np_status[:, 1]
                                 var_status3[number_ensambles_read, :] = np_status[:, 2]
                                 var_status4[number_ensambles_read, :] = np_status[:, 3]
-                                n += len(data)
+                            else:
+                                print('unknown ens_type', ens_type[0], ens_type[1], 'hdr ens n', hdr_ens_n)
                         except struct.error as e:
                             print(num_cells, len(ensemble), num_beams * num_cells)
                             print(e)
@@ -340,9 +346,6 @@ def rdi_parse(files):
     ncOut.instrument_model = instrument_model
     ncOut.instrument_serial_number = str(instrument_serialnumber)
     ncOut.frequency = float(inst_system_decoder[inst_system][1])
-
-    coord_sys = (fixed_decoded['coord_trans'] >> 3) & 0x03
-    ncOut.data_coordinates = inst_coords_decoder[coord_sys]
 
     beam_names = {}
     beam_names[0] = ('BEAM1_VEL', 'BEAM2_VEL', 'BEAM3_VEL', 'BEAM4_VEL')
