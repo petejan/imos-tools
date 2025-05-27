@@ -140,7 +140,6 @@ packet_decode2netCDF[9] = {'decode': 'FWversion', 'attrib': 'nortek_firmware_ver
 attribute_list = []
 
 velocity_data = []
-vel_raw_mag = False
 vector_velocity_data = []
 vector_imu_data = []
 aquapro_data = []
@@ -152,6 +151,7 @@ coord_systems = ['ENU', 'XYZ', 'BEAM']
 
 
 def parse_file(filepath):
+    vel_raw_mag = None
 
     checksum_errors = 0
     no_sync = 0
