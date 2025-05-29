@@ -86,7 +86,7 @@ def resample(netCDF_file, sample_file, vars):
 
 
 if __name__ == "__main__":
-    # TODO: add argument for list of variables to add, eg --VARS TEMP,PSAL ....
+    # TODO: add argument for list of variables to add, eg -VARS TEMP,PSAL ....
     file = None
     data_file = None
     v = None
