@@ -24,6 +24,7 @@ from datetime import datetime, UTC
 from cftime import num2date
 from netCDF4 import Dataset, date2num
 import numpy as np
+import os
 
 from bs4 import BeautifulSoup
 import bs4
@@ -41,7 +42,7 @@ def parse_sbs(sbs_file):
 
     ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
 
-    outputName = sbs_file + ".nc"
+    outputName = (os.path.basename(sbs_file) + ".nc")
     print("output file : %s" % outputName)
 
     ncOut = Dataset(outputName, 'w', format='NETCDF4_CLASSIC')

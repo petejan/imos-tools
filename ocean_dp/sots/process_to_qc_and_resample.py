@@ -202,7 +202,7 @@ for fv00_file in ncFiles:
         fv01_file_list = ocean_dp.qc.global_range.global_range(fv01_file_list, 'DOX2', 350, 150)
         fv01_file_list = ocean_dp.qc.global_range.global_range(fv01_file_list, 'DOX2', 310, 180, 3)
         fv01_file_list = ocean_dp.qc.global_range.global_range(fv01_file_list, 'DOXS', 1.2, 0.5)
-        fv01_file_list = ocean_dp.qc.global_range.global_range(fv01_file_list, 'DOXS', 1.15, 0.7, 3)
+        fv01_file_list = ocean_dp.qc.global_range.global_range(fv01_file_list, 'DOXS', 1.15, 0.6, 3)
 
     if has_wave:
         # wave QC
@@ -372,6 +372,17 @@ for fv00_file in ncFiles:
         manual_var = 'PSAL'
         manual_reason = 'drift high'
         fv01_file_list = ocean_dp.qc.manual_by_date.maunal(fv01_file_list, manual_var, '2022-08-01', manual_flag, manual_reason, end_str=None)
+
+    if model == 'SBE37SMP-ODO-RS232' and deployment == 'SOFS-13-2024' and sn == '03723332':
+        manual_flag = 3
+        manual_var = 'PSAL'
+        manual_reason = 'suspect cracked cell'
+        fv01_file_list = ocean_dp.qc.manual_by_date.maunal(fv01_file_list, manual_var, '2024-05-16', manual_flag, manual_reason, end_str=None)
+    if model == 'Deep SeapHox2' and deployment == 'SOFS-13-2024' and sn == '0002026':
+        manual_flag = 3
+        manual_var = None
+        manual_reason = 'cable failed'
+        fv01_file_list = ocean_dp.qc.manual_by_date.maunal(fv01_file_list, manual_var, '2025-01-20', manual_flag, manual_reason, end_str=None)
 
     # need to propagate flags from temp -> PSAL, SIGMA-THETA0, OXSOL, DOX2
     #                              PSAL -> CNDC, SIGMA-THETA0, OXSOL, DOX2

@@ -189,7 +189,8 @@ def sbe_phox_parse(files):
 
     ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
 
-    outputName = files[0] + ".nc"
+    outputName = (os.path.basename(files[0]) + ".nc")
+
     print("output file : %s" % outputName)
     outputNames.append(outputName)
 

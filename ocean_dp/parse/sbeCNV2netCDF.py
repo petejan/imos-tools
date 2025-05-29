@@ -492,7 +492,7 @@ def parse(files):
 
         ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
 
-        outputName = filepath + ".nc"
+        outputName = (os.path.basename(filepath) + ".nc")
 
         print("output file : %s" % outputName)
 
