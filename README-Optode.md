@@ -12,8 +12,9 @@ python ~/GitHub/imos-tools/ocean_dp/attribution/add_optode_cal.py SOFS-13-optode
 ```
 
 ## add PSAL and water TEMP to file
+use the FV00 file here as merging the FV01 file creates _quality_control variables, which fail the conformance check for FV00 files. 
 ```
-python ~/GitHub/imos-tools/ocean_dp/processing/merge_resample.py SOFS-13-optode.csv.nc IMOS_DWM-SOTS_CPST_20240313_SOFS_FV00_SOFS-13-2024-SBE37SM-RS485-03708765-1m_END-20250415_C-20250430.nc
+python ~/GitHub/imos-tools/ocean_dp/processing/merge_resample.py -VARS TEMP,PSAL SOFS-13-optode.csv.nc IMOS_DWM-SOTS_CPST_20240313_SOFS_FV01_SOFS-13-2024-SBE37SM-RS485-03708765-1m_END-20250415_C-20250529.nc
 ```
 File should now also have PSAL and TEMP
 
