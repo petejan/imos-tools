@@ -319,6 +319,13 @@ for fv00_file in ncFiles:
     if (sn == '3996') and model == 'Starmon mini' and deployment == 'SOFS-10-2021':
         manual_flag = 3
         manual_reason = 'sensor data noisy'
+    if model == 'SBE37-SM' and deployment == 'SAZ47-26-2024' and sn == '2971':
+        manual_flag = 4
+        manual_var = 'PSAL'
+        manual_reason = 'drop in salinity, cell contamination'
+        maunal_date_start = '2024-04-13 12:00:00'
+        maunal_date_end = '2024-04-16 00:00:00'
+        
 
     if manual_flag:
         fv01_file_list = ocean_dp.qc.manual_by_date.maunal(fv01_file_list, manual_var, maunal_date_start, manual_flag, manual_reason, end_str=maunal_date_end)
@@ -389,6 +396,13 @@ for fv00_file in ncFiles:
         manual_var = None
         manual_reason = 'cable failed'
         fv01_file_list = ocean_dp.qc.manual_by_date.maunal(fv01_file_list, manual_var, '2025-01-20', manual_flag, manual_reason, end_str=None)
+
+    if model == 'SBE37SM-RS232' and deployment == 'SAZ47-26-2024' and sn == '03713264':
+        manual_flag = 3
+        manual_var = 'PSAL'
+        manual_reason = 'drift high'
+        fv01_file_list = ocean_dp.qc.manual_by_date.maunal(fv01_file_list, manual_var, '2024-07-01', manual_flag, manual_reason, end_str=None)
+        
 
     # need to propagate flags from temp -> PSAL, SIGMA-THETA0, OXSOL, DOX2
     #                              PSAL -> CNDC, SIGMA-THETA0, OXSOL, DOX2
