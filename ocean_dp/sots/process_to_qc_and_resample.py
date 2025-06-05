@@ -352,6 +352,12 @@ for fv00_file in ncFiles:
         manual_var = 'DOX2'
         manual_reason = 'drift low, biofouling'
         fv01_file_list = ocean_dp.qc.manual_by_date.maunal(fv01_file_list, manual_var, '2021-05-27', manual_flag, manual_reason, end_str=None)
+    if model == 'Optode 4831' and deployment == 'SOFS-13-2024':
+        manual_flag = 3
+        manual_var = 'DOX2'
+        manual_reason = 'drift low, biofouling'
+        fv01_file_list = ocean_dp.qc.manual_by_date.maunal(fv01_file_list, manual_var, '2025-01-08', manual_flag, manual_reason, end_str=None)
+
     if model == 'SBE37SMP-ODO-RS232' and deployment == 'SOFS-11-2022' and sn == '03715971':
         manual_flag = 4
         manual_var = 'PSAL'

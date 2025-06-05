@@ -6,7 +6,7 @@ GLOBAL,*,,,,,,,,,author_email,str,peter.jansen@csiro.au
 GLOBAL,*,,,,,,,,,citation,str,"The citation in a list of references is: 'IMOS [year-of-data-download], [Title], [data-access-URL], accessed [date-of-access].'."
 GLOBAL,*,,,,,,,,,institution,str,DWM-SOTS
 GLOBAL,*,,,,,,,,,principal_investigator,str,"Shadwick, Elizabeth; Shulz, Eric"
-GLOBAL,*,,,,,,,,,principal_investigator_email,str,elizabeth.shadwick@csiro.au, eshulz@bom.gov.au
+GLOBAL,*,,,,,,,,,principal_investigator_email,str,elizabeth.shadwick@csiro.au, eric.shulz@bom.gov.au
 GLOBAL,*,,,,,,,,,site_code,str,SOTS
 GLOBAL,*,,,,,,,,,geospatial_vertical_positive,str,down
 GLOBAL,*,,,,,,,,,geospatial_lat_units,str,degrees_north

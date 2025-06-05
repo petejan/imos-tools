@@ -23,8 +23,8 @@ GLOBAL,*,,,,,,,,,keywords,str,"Oceans>Ocean Temperature>Sea Surface,Temperature,
 GLOBAL,*,,,,,,,,,keywords_vocabulary,str,"IMOS parameter names. See https://github.com/aodn/imos-toolbox/blob/master/IMOS/imosParameters.txt"
 GLOBAL,*,,,,,,,,,license,str,http://creativecommons.org/licenses/by/4.0/
 GLOBAL,*,,,,,,,,,naming_authority,str,IMOS
-GLOBAL,*,,,,,,,,,principal_investigator,str,"Trull, Tom; Shulz, Eric; Shadwick, Elizabeth"
-GLOBAL,*,,,,,,,,,principal_investigator_email,str,"tom.trull@csiro.au; eshulz@bom.gov.au; elizabeth.shadwick@csiro.au"
+GLOBAL,*,,,,,,,,,principal_investigator,str,"Shadwick, Elizabeth; Shulz, Eric" 
+GLOBAL,*,,,,,,,,,principal_investigator_email,str,"elizabeth.shadwick@csiro.au; eric.shulz@bom.gov.au"
 GLOBAL,*,,,,,,,,,project,str,"Integrated Marine Observing System (IMOS)"
 GLOBAL,*,,,,,,,,,references,str,http://www.imos.org.au
 GLOBAL,*,,,,,,,,,source,str,"Mooring observation"

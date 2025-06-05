@@ -39,7 +39,9 @@ import re
 
 nameMap = {}
 nameMap["latitude"] = {'name': "YPOS", 'units': "degrees_north"}
+nameMap["lat"] = {'name': "YPOS", 'units': "degrees_north"}
 nameMap["longitude"] = {'name': "XPOS", 'units': 'degrees_east'}
+nameMap["lon"] = {'name': "XPOS", 'units': 'degrees_east'}
 nameMap["significantWaveHeight"] = {'name': "Hs", 'units': 'm'}
 nameMap["meanDirection"] = {'name': "WAVE_DIR_MEAN", 'units': 'degrees'}
 nameMap["meanDirectionalSpread"] = {'name': "WAVE_DIR_MEAN_SPREAD", 'units': 'degrees'}
@@ -47,6 +49,8 @@ nameMap["meanPeriod"] = {'name': "Tav", 'units': 's'}
 nameMap["peakDirection"] = {'name': "WAVE_DIR_PEAK", 'units': 'degrees'}
 nameMap["peakDirectionalSpread"] = {'name': "WAVE_DIR_PEAK_SPREAD", 'units': 'degrees'}
 nameMap["peakPeriod"] = {'name': "Tp", 'units': 's'}
+nameMap["OptodeBPhase"] = {'name': "BPHASE", 'long_name':' oxygen_optode_bphase', 'units': '1'}
+nameMap["OptodeTemp"] = {'name': "OTEMP", 'long_name':' oxygen_sensor_temperature', 'units': 'degrees_Celsius'}
 
 
 def csv_parse(f, model=None, serial=None):
@@ -114,7 +118,7 @@ def csv_parse(f, model=None, serial=None):
     ncOut = Dataset(outputName, 'w', format='NETCDF4_CLASSIC')
 
     if model:
-        ncOut.instrument = "SOFAR: " + model
+        ncOut.instrument = "Aandreaa:" + model
         ncOut.instrument_model = model
     if serial:
         ncOut.instrument_serial_number = serial

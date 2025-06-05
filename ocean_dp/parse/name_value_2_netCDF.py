@@ -21,6 +21,8 @@ import re
 import os
 
 from datetime import datetime, UTC
+from glob import glob
+
 from netCDF4 import date2num, num2date
 from netCDF4 import Dataset
 import numpy as np
@@ -49,18 +51,24 @@ import numpy as np
 # 2012-07-06 21:12:54 INFO: 7 done time 109 ,BV=NAN ,PT=NAN ,OBP=31.24 ,OT=9.33 ,CHL=231 ,NTU=4136 ,PAR=0.4664596 ,meanAccel=-9.767615 ,meanLoad=NAN
 # 2012-07-06 22:12:57 INFO: 7 done time 112 ,BV=NAN ,PT=NAN ,OBP=31.23 ,OT=9.4 ,CHL=325 ,NTU=3957 ,PAR=0.4665374 ,meanAccel=-9.770709 ,meanLoad=NAN
 
+name_map = {}
+name_map['lat'] = 'YPOS'
+name_map['lon'] = 'XPOS'
+name_map['PAR'] = 'PAR'
+name_map['OptodeBPhase'] = 'BPHASE'
+name_map['OptodeTemp'] = 'OTEMP'
 
-def parse(file, name):
+def parse(files, instrument, serial, vars):
 
     number_samples_read = 0
     data = []
     ts = []
     settings = []
-    instrument_model = 'CR1000'
-    instrument_serial_number = 'unknown'
+    instrument_model = instrument
+    instrument_serial_number = serial
     sep = ','
 
-    filepath = file[0]
+    filepath = files[0]
 
     with open(filepath, 'r', errors='ignore') as fp:
         line = fp.readline()
@@ -75,23 +83,24 @@ def parse(file, name):
             # turn name=value into dict, must be a better way
             names = []
             values = []
+            point = []
             for i in lineSplit[1:]:
                 nv = i.split("=")
                 if len(nv) > 1:
                     try:
-                        values.append(float(nv[1].strip(" ")))
-                        names.append(nv[0].strip(" "))
+                        name = nv[0].strip(" ")
+                        value = float(nv[1].strip(" "))
+                        #print(name, value)
+                        if name in vars and name in name_map:
+                            point.append((name_map[name], value))
+                            #print(point)
                     except ValueError: # bad float value
                         pass
 
-            name_value = dict(zip(names, values))
-            #print(t, name_value)
-
-            if name in names:
-                print(t, name_value)
-                data.append({'YPOS': name_value['lat'], 'XPOS': name_value['lon']})
-                ts.append(t)
-                number_samples_read = number_samples_read + 1
+            ts.append(t)
+            data.append(point)
+            print(t, point)
+            number_samples_read = number_samples_read + 1
 
             line = fp.readline()
 
@@ -101,7 +110,7 @@ def parse(file, name):
     if number_samples_read == 0:
         return
 
-    print('instrument ', instrument_model, 'serial', instrument_serial_number)
+    print('instrument', instrument_model, 'serial', instrument_serial_number)
 
     #
     # build the netCDF file
@@ -135,11 +144,13 @@ def parse(file, name):
     ncTimesOut.axis = "T"
     ncTimesOut[:] = date2num(ts, units=ncTimesOut.units, calendar=ncTimesOut.calendar)
 
-    for name in ['XPOS', 'YPOS']:
+    n = 0
+    for name in point:
         print(name)
 
-        ncVarOut = ncOut.createVariable(name, "f4", ("TIME",), fill_value=np.nan, zlib=True) # fill_value=nan otherwise defaults to max
-        ncVarOut[:] = [v[name] for v in data]
+        ncVarOut = ncOut.createVariable(name[0], "f4", ("TIME",), fill_value=np.nan, zlib=True) # fill_value=nan otherwise defaults to max
+        ncVarOut[:] = [v[n][1] for v in data]
+        n += 1
 
     ncOut.setncattr("time_coverage_start", num2date(ncTimesOut[0], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
     ncOut.setncattr("time_coverage_end", num2date(ncTimesOut[-1], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
@@ -152,5 +163,44 @@ def parse(file, name):
 
 
 if __name__ == "__main__":
-    parse(sys.argv[1:], 'lat')
+
+    files = []
+    instrument = None
+    inst_file_next = False
+    serial_n = None
+    serial_n_next = False
+    vars = None
+    vars_next = False
+    for f in sys.argv[1:]:
+        print('arg', f)
+        if f == '--inst':
+            inst_file_next = True
+        elif inst_file_next:
+            instrument = f
+            inst_file_next = False
+        if f == '--sn':
+            serial_n_next = True
+        elif serial_n_next:
+            serial_n = f
+            serial_n_next = False
+        if f == '--vars':
+            vars_next = True
+        elif vars_next:
+            vars = f.split(',')
+            vars_next = False
+        else:
+            files.extend(glob(f))
+
+    if instrument:
+        print('instrument', instrument)
+    else:
+        instrument = 'CR1000'
+    if serial_n:
+        print('serial_number', serial_n)
+    else:
+        serial_n = 'unknown'
+    if vars:
+        print('vars', vars)
+
+    parse(files, instrument, serial_n, vars)
 
