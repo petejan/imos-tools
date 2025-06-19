@@ -1,0 +1,32 @@
+[project]
+name = "imos-tools"
+version = "0.0.1"
+authors = [
+  { name="Peter Jansen", email="peter.jansen@csiro.au" },
+]
+description = "Tools for processing Ocean Sensor data to netCDF"
+readme = "README.md"
+requires-python = ">=3.9"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "pytz",
+    "geomag",
+    "netCDF4",
+    "gsw",
+    "oceansdb",
+    "psycopg2",
+    "si-prefix"
+]
+license = "MIT"
+license-files = ["LICEN[CS]E*"]
+
+[project.urls]
+Homepage = "https://github.com/petejan/imos-tools"
+Issues = "https://github.com/petejan/imos-tools/issues"
+
+[tool.setuptools]
+packages = ["ocean_dp"]
+
