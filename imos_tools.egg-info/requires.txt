@@ -1,7 +1,0 @@
-pytz
-geomag
-netCDF4
-gsw
-oceansdb
-psycopg2
-si-prefix
