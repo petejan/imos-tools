@@ -44,7 +44,7 @@ done_line_expr = r"(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}) INFO:.*done time.*OBP=\
 line_4831_expr = r"(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}) INFO: Optode Line : \s*(\d*)\s*(\d*) (.*)$"
 
 open_log_time_expr = r"(\d+) TIME (\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})"
-open_log_sample_expr = r"(\d+) 4831\t(\d+)\t[0-9.]+\t[0-9.]+\t([0-9.]+)\t([0-9.]+).*$"
+open_log_sample_expr = r"[^0-9]*(\d+) 4831\t(\d+)\t[0-9.]+\t[0-9.]+\t([0-9.]+)\t([0-9.]+).*$"
 open_log_sampleTxt_expr = r"(\d+) MEASUREMENT\t4831\t(\d+)\t.*\tTemperature\[Deg.C\]\t([0-9.]+)\tCalPhase\[Deg\]\t([0-9.]+).*$"
 
 # 2021-03-03 02:00:04 INFO: Optode Line : 4831 506 242.692 94.008 24.952 29.995 29.995 39.004 9.009 524.5 677.6 -21.1
@@ -133,6 +133,9 @@ def parse(file):
 
                 matchObj = re.match(open_log_time_expr, line)
                 if matchObj:
+                    ts_0 = datetime.strptime(matchObj.group(2), '%Y-%m-%d %H:%M:%S')
+
+                    print("optode log ts line", ts_0)
                     if ms_0:
                         ms = int(matchObj.group(1))
 
@@ -142,7 +145,7 @@ def parse(file):
                     ms_0 = int(matchObj.group(1))
                     ts_0 = datetime.strptime(matchObj.group(2), '%Y-%m-%d %H:%M:%S')
 
-                    print("optode log line", ms_0,  ts_0)
+                    print("optode log t0 line", ms_0)
 
                 matchObj = re.match(open_log_sample_expr, line)
                 if matchObj and ms_0:
@@ -153,7 +156,7 @@ def parse(file):
                     ts = ts_0 + timedelta(seconds=(ms - ms_0)/1000)
                     bp = float(matchObj.group(4))
                     ot = float(matchObj.group(3))
-                    print('bp', bp, line)
+                    print(ts, ms, 'bp', bp, line.strip())
 
                     t.append(ts)
                     bphase.append(bp)
@@ -182,9 +185,9 @@ def parse(file):
     print("samplesRead %d" % (number_samples_read))
 
     if number_samples_read == 0:
-        return
+        return -1
 
-        print('instrument ', instrument_model, 'serial', instrument_serial_number)
+    print('instrument ', instrument_model, 'serial', instrument_serial_number)
 
     #
     # build the netCDF file

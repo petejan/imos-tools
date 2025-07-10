@@ -1,9 +1,5 @@
 from netCDF4 import Dataset
 import numpy as np
-from ahrs.filters import EKF
-from ahrs.filters import Madgwick
-from ahrs.common.orientation import acc2q
-from ahrs.common.orientation import ecompass
 
 import sys
 

@@ -134,8 +134,8 @@ def datalogger(outputName, files):
     times.units = 'days since 1950-01-01 00:00:00'
     times.calendar = 'gregorian'
 
-    xpos_var = dataset.createVariable('XPOS', np.float, ('TIME',), fill_value=np.nan)
-    ypos_var = dataset.createVariable('YPOS', np.float, ('TIME',), fill_value=np.nan)
+    xpos_var = dataset.createVariable('XPOS', float, ('TIME',), fill_value=np.nan)
+    ypos_var = dataset.createVariable('YPOS', float, ('TIME',), fill_value=np.nan)
 
     bat_var = dataset.createVariable('vbat', np.float32, ('TIME',), fill_value=np.nan)
 
@@ -376,8 +376,8 @@ def datalogger(outputName, files):
                             lon = np.nan
 
                         if done:
-                            bat_var[t_idx] = np.float(done.group(2))
-                            mean_load_var[t_idx] = np.float(done.group(10))
+                            bat_var[t_idx] = float(done.group(2))
+                            mean_load_var[t_idx] = float(done.group(10))
                             if not obp_var:
                                 obp_var = dataset.createVariable('optode_bphase', np.float32, ('TIME',), fill_value=np.nan)
                                 otemp_var = dataset.createVariable('optode_temp', np.float32, ('TIME',), fill_value=np.nan)
@@ -385,15 +385,15 @@ def datalogger(outputName, files):
                                 ntu_var = dataset.createVariable('NTU', np.float32, ('TIME',), fill_value=np.nan)
                                 par_var = dataset.createVariable('PAR', np.float32, ('TIME',), fill_value=np.nan)
 
-                            obp_var[t_idx] = np.float(done.group(4))
-                            otemp_var[t_idx] = np.float(done.group(5))
-                            chl_var[t_idx] = np.float(done.group(6))
-                            ntu_var[t_idx] = np.float(done.group(7))
-                            par_var[t_idx] = np.float(done.group(8))
+                            obp_var[t_idx] = float(done.group(4))
+                            otemp_var[t_idx] = float(done.group(5))
+                            chl_var[t_idx] = float(done.group(6))
+                            ntu_var[t_idx] = float(done.group(7))
+                            par_var[t_idx] = float(done.group(8))
 
                         if done_pulse:
-                            bat_var[t_idx] = np.float(done_pulse.group(2))
-                            mean_load_var[t_idx] = np.float(done_pulse.group(5))
+                            bat_var[t_idx] = float(done_pulse.group(2))
+                            mean_load_var[t_idx] = float(done_pulse.group(5))
 
                         if end_time:
                             print('done write MRU samples', sample)
