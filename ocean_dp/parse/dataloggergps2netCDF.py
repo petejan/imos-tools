@@ -19,6 +19,8 @@ import os
 import re
 import sys
 
+import glob2
+
 from datetime import datetime, timedelta, UTC
 
 import pynmea2
@@ -109,7 +111,7 @@ def nmea_parse(files):
 
     ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
 
-    outputName = filepath + ".nc"
+    outputName = (os.path.basename(files[0]) + ".nc")
 
     print("output file : %s" % outputName)
 
@@ -152,4 +154,7 @@ def nmea_parse(files):
 
 
 if __name__ == "__main__":
-    nmea_parse(sys.argv[1:])
+    files = []
+    for f in sys.argv[1:]:
+        files.extend(glob2.glob(f))
+    nmea_parse(files)

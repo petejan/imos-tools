@@ -84,7 +84,7 @@ def rdi_parse(files):
     number_ensambles_read = 0
 
     # create the netCDF file
-    outputName = filepath + ".nc"
+    outputName = (os.path.basename(filepath) + ".nc")
 
     print("output file : %s" % outputName)
 

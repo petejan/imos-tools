@@ -21,6 +21,7 @@ import sys
 import numpy as np
 import datetime
 from dateutil import parser
+from glob2 import glob
 
 overwrite = False
 
@@ -96,8 +97,12 @@ def main(netCDFfile):
 
 
 if __name__ == "__main__":
+    files = []
     for f in sys.argv[1:]:
         if f == '-overwrite':
             overwrite = True
         else:
-            main(f)
+            files.extend(glob(f))
+
+    for f in files:
+        main(f)

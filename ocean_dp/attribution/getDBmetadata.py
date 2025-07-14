@@ -29,7 +29,9 @@ def print_line(typ, var_name, dep_code, model, serial_number, time_deployment, t
 
 
 def get_db_metadata(select):
-    conn = psycopg2.connect(host="localhost", database="IMOS-DEPLOY", user="pete", password="password")
+    #conn = psycopg2.connect(host="localhost", database="IMOS-DEPLOY", user="pete", password="password")
+    #conn = psycopg2.connect(host="localhost", database="IMOS-DEPLOY", user="CSIRO", password="imosHV00112j")
+    conn = psycopg2.connect(host="mooring-data2.it.csiro.au", database="IMOS-DEPLOY", user="readonly", password="password")
 
     # create a cursor
     cur_site = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
