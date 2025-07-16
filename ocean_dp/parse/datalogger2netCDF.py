@@ -44,7 +44,7 @@ from collections import namedtuple
 #  history
 #
 # convert time to netCDF cf-timeformat (double days since 1950-01-01 00:00:00 UTC)
-from setuptools.glob import glob2
+import glob2
 
 nameMap = {}
 nameMap["BV"] = "battery"
@@ -84,7 +84,7 @@ def create_nc_var(d_array, imu_times, name_name, imu_array, nc_var, done_ind, im
     d_array.fill(np.nan)
     print('len imu', len(imu_ind), len(done_ind), d_array.shape)
     for i in range(len(imu_ind)):
-        print(name_name, i, imu_times[i], imu_ind[i], done_ind[i])
+        #print(name_name, i, imu_times[i], imu_ind[i], done_ind[i])
         if len(d_array.shape) == 3:
             d_array[:, :, done_ind[i]] = imu_array[imu_ind[i]][name_name]
         else:
@@ -256,7 +256,7 @@ def datalogger(outputName, files):
                 elif (byte[0] >= 0x20) and (byte[0] < 128):  # start of string
                     if xs is None:
                         xs = bytearray()
-                        print('start of string', f.tell())
+                        #print('start of string', f.tell())
                     xs.append(byte[0])
 
                 elif (xs is not None) and (byte[0] == 13):
@@ -264,7 +264,7 @@ def datalogger(outputName, files):
                         s = xs.decode('ascii')
                         xs = None
 
-                        print('string', len(s), ' :', s)
+                        #print('string', len(s), ' :', s)
 
                         data_time = None
 
@@ -272,7 +272,7 @@ def datalogger(outputName, files):
                         matchobj = start_data.match(s)
                         if matchobj:
                             if sample > 0:  # save the sample data if we had some before the START_DATA
-                                print('** START, saving IMU sample data', start_time, sample)
+                                #print('** START, saving IMU sample data', start_time, sample)
                                 imu_array.append({'time': start_time, 'accel': accel_samples, 'q': quat_samples, 'mag': mag_samples, 'gyro': gyro_samples, 'load': load_samples})
                                 sample = 0
 
@@ -280,15 +280,15 @@ def datalogger(outputName, files):
                             if data_time > datetime(2030,1,1):
                                 data_time = data_time - timedelta(seconds=810989538)
 
-                            print('start_data time ', data_time)
+                            #print('start_data time ', data_time)
                             start_time = data_time
 
                         # check for end data
                         matchobj = end_data.match(s)
                         if matchobj:
-                            print('end data ', sample, 'last sample idx', samples_read)
+                            #print('end data ', sample, 'last sample idx', samples_read)
                             if sample > 0:  # save the sample data
-                                print('end of IMU sample data', start_time, sample)
+                                #print('end of IMU sample data', start_time, sample)
                                 imu_array.append({'time': start_time, 'accel': accel_samples, 'q': quat_samples, 'mag': mag_samples, 'gyro': gyro_samples, 'load': load_samples})
                                 sample = 0
 
@@ -299,12 +299,12 @@ def datalogger(outputName, files):
                             if data_time > datetime(2030,1,1):
                                 data_time = data_time - timedelta(seconds=810989538)
 
-                            print('done time ', data_time)
+                            #print('done time ', data_time)
                             start_time = data_time
 
                             # split the done string, extract name=value paris, for names in nameMap add to done_array
                             split = re.split(" ,| ", matchobj.group(2))
-                            print(split)
+                            #print(split)
                             done_dict = {'time': data_time}
                             for i in split:
                                 nv = i.split('=')
@@ -383,13 +383,13 @@ def datalogger(outputName, files):
                         matchobj = wave_raw_str.match(s)
                         if matchobj:
                             size_wave_file = int(matchobj.group(2))
-                            print("wave file size", size_wave_file)
+                            #print("wave file size", size_wave_file)
                             if size_wave_file < (3072 * (30+4)):
                                 have_load = False
                             else:
                                 have_load = True
                 else:
-                    print(file, 'junk ', byte[0], 'at', f.tell())
+                    #print(file, 'junk ', byte[0], 'at', f.tell())
 
                     pass
 
@@ -424,7 +424,7 @@ def datalogger(outputName, files):
         #print('imu ts', d['time'])
         imu_times.append(round_time(d['time']))
 
-    print('imu times index', np.where(np.in1d(done_times, imu_times)))
+    print('imu times index', np.where(np.isin(done_times, imu_times)))
 
     # gps data times
     gps_times = []
@@ -526,7 +526,7 @@ def datalogger(outputName, files):
             done_idx = done_ind[i]
             imu_idx = imu_ind[i]
 
-            print('sample_t', i, imu_array[imu_idx]['time'])
+            #print('sample_t', i, imu_array[imu_idx]['time'])
 
             d_array[done_idx] = (imu_array[imu_idx]['time'] - done_times[done_idx]).total_seconds()
 
@@ -646,7 +646,7 @@ if __name__ == "__main__":
     for f in sys.argv[2:]:
         files.extend(glob(f))
 
-    #files.sort()
+    files.sort()
     for f in files:
         print(f)
 

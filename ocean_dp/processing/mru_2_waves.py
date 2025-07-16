@@ -78,8 +78,8 @@ def add_wave_spectra(netCDFfile):
         dsOut = dsIn
     else:
         dsIn = Dataset(netCDFfile, 'r')
-        #fn = dsIn.instrument_imu_model + '-' + dsIn.instrument_imu_serial_number
-        fn = 'MPESS-OUT.nc'
+        fn = dsIn.instrument_imu_model + '-' + dsIn.instrument_imu_serial_number
+        #fn = 'MPESS-OUT.nc'
         dsOut = Dataset(fn + '.nc', 'w', format='NETCDF4_CLASSIC')
 
     dsIn.set_auto_mask(False)
@@ -100,9 +100,9 @@ def add_wave_spectra(netCDFfile):
         for a in var_time.ncattrs():
             dsOut.variables['TIME'].setncattr(a, var_time.getncattr(a))
 
-        #dsOut.instrument = dsIn.instrument_imu
-        #dsOut.instrument_model = dsIn.instrument_imu_model
-        #dsOut.instrument_serial_number = dsIn.instrument_imu_serial_number
+        dsOut.instrument = dsIn.instrument_imu
+        dsOut.instrument_model = dsIn.instrument_imu_model
+        dsOut.instrument_serial_number = dsIn.instrument_imu_serial_number
 
     # create frequency dimension
     if "FREQ" not in dsOut.dimensions:
