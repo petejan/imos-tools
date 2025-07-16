@@ -161,26 +161,6 @@ def add_wave_spectra(netCDFfile):
             if append_to_file:
                 accel_w_var[:, :, i] = accel_world[:, :]
 
-            # for j in range(0, 3072):
-            #     try:
-            #         accel_inst = var_accel[j, :, i]  # dimensions are sample_time, vector, TIME
-            #
-            #         print(j, accel_inst.shape, q.shape)
-            #
-            #         # read the quaternion, the IMU data is in w, x, y, z whereas Rotation.from_quant is in x, y, z, w
-            #
-            #         #r = Rotation.from_quat(np.transpose([q[j, 1], q[j, 2], q[j, 3], q[j, 0]]))
-            #         #accel_world[j, :] = r.apply(accel_inst)
-            #
-            #         accel_world[j, :] = point_rotation_by_quaternion(accel_inst, q[j, :])
-            #
-            #         accel_w_var[j, :, i] = accel_world[j, :]
-            #
-            #         print(j, accel_inst, accel_world[j, :])
-            #
-            #     except ValueError as v:
-            #         print(j, v)
-
             # convert accelerations to world coordinates
 
             print("rotation % s seconds" % (time.time() - start))

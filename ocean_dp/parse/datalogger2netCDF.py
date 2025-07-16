@@ -44,7 +44,16 @@ from collections import namedtuple
 #  history
 #
 # convert time to netCDF cf-timeformat (double days since 1950-01-01 00:00:00 UTC)
+from setuptools.glob import glob2
 
+nameMap = {}
+nameMap["BV"] = "battery"
+nameMap["OBP"] = "OPTODE_BPHASE"
+nameMap["OT"] = "OPTODE_TEMP"
+nameMap["CHL"] = "ECO_FLNTUS_CPHL"
+nameMap["NTU"] = "ECO_FLNTUS_TURB"
+nameMap["PAR"] = "PAR_VOLT"
+nameMap["meanLoad"] = "mean_load"
 
 def gps_dm_degree (lat_dm, lat_ns):
     lat_d = int(lat_dm / 100)
@@ -70,6 +79,21 @@ def round_time(dt=None, roundTo=3600):
     return dt + timedelta(0, rounding-seconds, -dt.microsecond)
 
 
+def create_nc_var(d_array, imu_times, name_name, imu_array, nc_var, done_ind, imu_ind):
+
+    d_array.fill(np.nan)
+    print('len imu', len(imu_ind), len(done_ind), d_array.shape)
+    for i in range(len(imu_ind)):
+        print(name_name, i, imu_times[i], imu_ind[i], done_ind[i])
+        if len(d_array.shape) == 3:
+            d_array[:, :, done_ind[i]] = imu_array[imu_ind[i]][name_name]
+        else:
+            d_array[:, done_ind[i]] = imu_array[imu_ind[i]][name_name]
+
+    nc_var[:] = d_array
+
+# TODO make this able to take zip files
+
 def datalogger(outputName, files):
 
     decode_dict = {'StabQ0': 0, 'StabQ1': 1, 'StabQ2': 2, 'StabQ3': 3,
@@ -89,95 +113,66 @@ def datalogger(outputName, files):
 
     start_data = re.compile(r'(\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2}) \*\*\*\*\*\* START RAW MRU DATA \*\*\*\*\*\*')
     end_data = re.compile(r'(\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2}) \*\*\*\*\*\* END DATA \*\*\*\*\*\*')
-    done_str = re.compile(r'(\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2}) INFO: \d done time \d+ ,BV=(\S+) ,PT=(\S+) ,OBP=(\S+) ,OT=(\S+) ,CHL=(\S+) ,NTU=(\S+) PAR=(\S+) ,meanAccel=(\S+) ,meanLoad=(\S+)')
-    done_pulse_str = re.compile(r'(\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2}) INFO: \d done time \d+ ,BV=(\S+) ,PT=(\S+) ,meanAccel=(\S+) ,meanLoad=(\S+)')
+    done_str = re.compile(r'(\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2}) INFO: \d done time \d+ ,(.*)$')
+    wave_raw_str = re.compile(r'(\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2}) INFO: WAVE RAW DATA File Length = (\d+)')
 
     gps_fix = re.compile(r'(\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2}) INFO : GPS Fix (\d+) Latitude (\S+) Longitude (\S+) sats (\S+) HDOP (\S+)')
     gps_fix2 = re.compile(r'(\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2}) INFO : GPS RMC Fix (\d+) Latitude (\S+) Longitude (\S+)')
 
     gps_rmc = re.compile(r'(\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2}) INFO: GPS String \'GPRMC\' string (\S+)')
 
-    # TODO: also check RMC strings for date time offset
-
     sn = re.compile(r'(\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2}) INFO: Station Name (\S+)')
     sn_imu = re.compile(r'(\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2}) INFO: MRU SerialNumber (\d+)')
+    sn_imu2 = re.compile(r'(\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2}) INFO: MRU SerialNumber 0x\S+ (\d+)')
+    sn_imu_hex = re.compile(r'(\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2}) INFO: MRU SerialNumber (0x\S+)')
 
-    #
-    # build the netCDF file
-    #
+    sofs_2_fn_time = re.compile(r'.*(\d{4}\-\d{2}\-\d{2}T\d{2}\d{2}\d{2}).bin')
 
-    # TODO: sort time
-
-    ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
-
-    print("output file : %s" % outputName)
-
-    dataset = Dataset(outputName, 'w', format='NETCDF4_CLASSIC')
-
-    dataset.instrument = "Campbell Scientific; CR1000"
-    dataset.instrument_model = "CR1000"
-    dataset.instrument_serial_number = "unknown"
-
-    dataset.instrument_imu = "LORD Sensing Microstrain ; 3DM-GX1"
-    dataset.instrument_imu_model = "3DM-GX1"
-    dataset.instrument_imu_serial_number = "unknown"
-
-    time_dim = dataset.createDimension('TIME', None)
-    sample_dim = dataset.createDimension('SAMPLE', 3072)
-
-    f = dataset.createDimension('FREQ', 256)
-    v = dataset.createDimension('VECTOR', 3)
-    q = dataset.createDimension('QUAT', 4)
-
-    times = dataset.createVariable('TIME', np.float64, ('TIME',))
-
-    times.units = 'days since 1950-01-01 00:00:00'
-    times.calendar = 'gregorian'
-
-    xpos_var = dataset.createVariable('XPOS', float, ('TIME',), fill_value=np.nan)
-    ypos_var = dataset.createVariable('YPOS', float, ('TIME',), fill_value=np.nan)
-
-    bat_var = dataset.createVariable('vbat', np.float32, ('TIME',), fill_value=np.nan)
-
-    mean_load_var = dataset.createVariable('mean_load', np.float32, ('TIME',), fill_value=np.nan)
-
-    accel_var = dataset.createVariable('accel', np.float32, ('TIME', 'SAMPLE', 'VECTOR'), fill_value=np.nan)
-    mag_var = dataset.createVariable('mag_field', np.float32, ('TIME', 'SAMPLE', 'VECTOR'), fill_value=np.nan)
-    gyro_var = dataset.createVariable('gyro_rate', np.float32, ('TIME', 'SAMPLE', 'VECTOR'), fill_value=np.nan)
-    quat_var = dataset.createVariable('quaternion', np.float32, ('TIME', 'SAMPLE', 'QUAT'), fill_value=np.nan)
-    quat_var.comment = 'quaternion order is W, X, Y, Z'
-
-    obp_var = None
-
-    load_var = dataset.createVariable('load', np.float32, ('TIME', 'SAMPLE'), fill_value=np.nan)
-
-    # TODO: process the output of this parser into frequency spectra, wave height
+    # process the output of this parser into frequency spectra, wave height, done with mru_2_waves.py
 
     # TODO: process all historical data, Pulse, SOFS-1 .... to SOFS-10
 
+    instrument_serial_number = 'unknown'
+    instrument_imu_serial_number = 'unknown'
+
     ts_start = None
     ts_end = None
-    t_idx = None
-    t0 = 0
-    t_last = 0
-    samples_red = 0
+
     sample = 0
-    last_sample = -1
-    times_dict = {}
-    n_times = -1
-    start_time = None
-    end_time = None
+    have_load = True
+
+    done_array = []
+    imu_array = []
+    gps_array = []
+    rmc_array = []
+
+    pos = 0
+    samples_read = 0
+
+    xs = None
 
     for file in files:
-        lat = np.nan
-        lon = np.nan
+
+        print('file name', file)
+        sample = 0  # reset IMU sample number at start of new file, needed for SOFS-2 as it has no 'END OF DATA'
+        start_time = None
+        matchobj = sofs_2_fn_time.match(file)
+        if matchobj:
+            start_time = datetime.strptime(matchobj.group(1), "%Y-%m-%dT%H%M%S")
+            print('file name timestamp', start_time)
 
         with open(file, "rb") as f:
             byte = f.read(1)
             while byte != b"":
-                if byte[0] == 0x0c: # start of IMU stabQ packet
-                    packet = f.read(30+4)
-                    if len(packet) == 34:
+                if byte[0] == 0x0c:  # start of IMU stabQ packet
+                    pos = f.tell()
+
+                    p_len = 30
+                    if have_load:
+                        p_len = p_len + 4
+
+                    packet = f.read(p_len)
+                    if len(packet) == p_len:
                         # check the checksum
                         decode_s = struct.unpack('>15H', packet[0:30])
                         cksum = 12
@@ -186,7 +181,12 @@ def datalogger(outputName, files):
                         cksum = cksum & 0xffff
                         if cksum == decode_s[14]:
                             # check sum ok, decode the packet
-                            decode = struct.unpack('>4h3h3h3hHHf', packet)
+                            samples_read += 1
+
+                            if have_load:
+                                decode = struct.unpack('>4h3h3h3hHHf', packet)
+                            else:
+                                decode = struct.unpack('>4h3h3h3hHH', packet)
 
                             # scale each value in the packet
                             decode_scale = []
@@ -194,18 +194,20 @@ def datalogger(outputName, files):
                                 d = decode[x] * scale[x]
                                 decode_scale.append(d)
 
-                            # create a dict from the decoded data (could just use indexes, but this is clearer
-                            #decode = decoder._asdict(decoder._make(decode_scale))
-                            # print('decode ', decode)
+                            # print decoded data as dict
+                            #decode_d = dict(zip(decode_dict, decode))
+                            #print('decode timer', decode_d['Timer'], 'sample', sample)
 
-                            # save data to netCDF
+                            # save data to arrays
                             if sample == 0:
-                                accel_samples = np.zeros([3072, 3])
-                                mag_samples = np.zeros([3072, 3])
-                                gyro_samples = np.zeros([3072, 3])
-                                quat_samples = np.zeros([3072, 4])
+                                accel_samples = np.full([3072, 3], np.nan)
+                                mag_samples = np.full([3072, 3], np.nan)
+                                gyro_samples = np.full([3072, 3], np.nan)
+                                quat_samples = np.full([3072, 4], np.nan)
 
-                                load_samples = np.zeros([3072])
+                                load_samples = np.full([3072], np.nan)
+
+                                samples_read = 0
 
                             if sample < 3072:
                                 accel_samples[sample, 0] = decode_scale[decode_dict['AccelX']]
@@ -225,214 +227,411 @@ def datalogger(outputName, files):
                                 gyro_samples[sample, 1] = decode_scale[decode_dict['CompAngleRateY']]
                                 gyro_samples[sample, 2] = decode_scale[decode_dict['CompAngleRateZ']]
 
-                                load_samples[sample] = decode_scale[decode_dict['Load']]
+                                if have_load:
+                                    load_samples[sample] = decode_scale[decode_dict['Load']]
 
-                            # accel_var[t_idx, sample, 0] = decode_scale[decode_dict['AccelX']]
-                            # accel_var[t_idx, sample, 1] = decode_scale[decode_dict['AccelY']]
-                            # accel_var[t_idx, sample, 2] = decode_scale[decode_dict['AccelZ']]
-                            #
-                            # quat_var[t_idx, sample, 0] = decode_scale[decode_dict['StabQ0']]
-                            # quat_var[t_idx, sample, 1] = decode_scale[decode_dict['StabQ1']]
-                            # quat_var[t_idx, sample, 2] = decode_scale[decode_dict['StabQ2']]
-                            # quat_var[t_idx, sample, 3] = decode_scale[decode_dict['StabQ3']]
-                            #
-                            # mag_var[t_idx, sample, 0] = decode_scale[decode_dict['MagFieldX']]
-                            # mag_var[t_idx, sample, 1] = decode_scale[decode_dict['MagFieldY']]
-                            # mag_var[t_idx, sample, 2] = decode_scale[decode_dict['MagFieldZ']]
-                            #
-                            # gyro_var[t_idx, sample, 0] = decode_scale[decode_dict['CompAngleRateX']]
-                            # gyro_var[t_idx, sample, 1] = decode_scale[decode_dict['CompAngleRateY']]
-                            # gyro_var[t_idx, sample, 2] = decode_scale[decode_dict['CompAngleRateZ']]
-                            #
-                            # load_var[t_idx, sample] = decode_scale[decode_dict['Load']]
+                                #print('IMU sample',sample,  accel_samples[sample, 2], gyro_samples[sample, 2])
 
-                            # find the sample index from the IMU timer, need to detect missed samples in the record
-                            if sample == 0:
-                                t0 = int(decode_scale[decode_dict['Timer']] * 5)/5
+                                # find the sample index from the IMU timer, need to detect missed samples in the record
+                                if sample == 0:
+                                    t0 = int(decode_scale[decode_dict['Timer']] * 5)/5
 
-                            sample_t = int((decode_scale[decode_dict['Timer']] - t0) * 5 + 0.5)
-                            if (sample_t - sample) != 0:
-                                print('time sample ', sample, sample_t, t0, decode_scale[decode_dict['Timer']], (decode_scale[decode_dict["Timer"]] - t0) * 5)
+                                sample_t = int((decode_scale[decode_dict['Timer']] - t0) * 5 + 0.5)
+                                if (sample_t - sample) != 0:
+                                    print('re-sync time sample', sample, 'sample_t', sample_t, 'first time', t0, 'timer', decode_scale[decode_dict['Timer']], 'timer since sample 0', (decode_scale[decode_dict["Timer"]] - t0) * 5)
 
-                            sample = sample_t
+                                sample = sample_t
 
-                            sample += 1
-                            last_sample = sample
+                                sample += 1
 
-                            samples_red += 1
+                            else:
+                                sample = 0
+
                         else:
-                            print('bad checksum ', f.tell())
+                            print(file, 'bad checksum', f.tell())
+                            f.seek(pos+1)
                     else:
-                        print('short packet', samples_red, sample)
+                        print(file, 'short packet', sample)
 
-                elif byte[0] > 0x20: # start of string
-                    xs = bytearray()
-                    while byte and (byte[0] != 13):
-                        if byte[0] < 128:
-                            xs.append(byte[0])
-                        byte = f.read(1)
-                    s = xs.decode('ascii')
-                    #print('string : ', s)
+                elif (byte[0] >= 0x20) and (byte[0] < 128):  # start of string
+                    if xs is None:
+                        xs = bytearray()
+                        print('start of string', f.tell())
+                    xs.append(byte[0])
 
-                    data_time = None
+                elif (xs is not None) and (byte[0] == 13):
 
-                    # check for start of data
-                    matchobj = start_data.match(s)
-                    if matchobj:
-                        data_time = datetime.strptime(matchobj.group(1), "%Y-%m-%d %H:%M:%S")
-                        print('start_data time ', data_time)
-                        start_time = data_time
+                        s = xs.decode('ascii')
+                        xs = None
 
-                        sample = 0
-                        samples_red = 0
+                        print('string', len(s), ' :', s)
 
-                    # check for end data
-                    matchobj = end_data.match(s)
-                    if matchobj:
-                        print('end data ', start_time, sample, samples_red)
-                        end_time = start_time
-                        data_time = end_time
+                        data_time = None
 
-                    done = None
-                    # check for done
-                    matchobj = done_str.match(s)
-                    if matchobj:
-                        data_time = datetime.strptime(matchobj.group(1), "%Y-%m-%d %H:%M:%S")
-                        print('done time ', data_time)
-                        done = matchobj
-                        start_time = None
-                        print('done', s)
+                        # check for start of data
+                        matchobj = start_data.match(s)
+                        if matchobj:
+                            if sample > 0:  # save the sample data if we had some before the START_DATA
+                                print('** START, saving IMU sample data', start_time, sample)
+                                imu_array.append({'time': start_time, 'accel': accel_samples, 'q': quat_samples, 'mag': mag_samples, 'gyro': gyro_samples, 'load': load_samples})
+                                sample = 0
 
-                    # check for done_pulse
-                    done_pulse = None
-                    matchobj = done_pulse_str.match(s)
-                    if matchobj:
-                        data_time = datetime.strptime(matchobj.group(1), "%Y-%m-%d %H:%M:%S")
-                        print('done time ', data_time)
-                        done_pulse = matchobj
-                        print('done_pulse', s)
+                            data_time = datetime.strptime(matchobj.group(1), "%Y-%m-%d %H:%M:%S")
+                            if data_time > datetime(2030,1,1):
+                                data_time = data_time - timedelta(seconds=810989538)
 
-                    # check for gps fix
-                    gps = None
-                    matchobj = gps_fix.match(s)
-                    if matchobj:
-                        data_time = datetime.strptime(matchobj.group(1), "%Y-%m-%d %H:%M:%S")
-                        #print('time ', data_time)
+                            print('start_data time ', data_time)
+                            start_time = data_time
 
-                        gps = matchobj
-                        print('gps', s)
+                        # check for end data
+                        matchobj = end_data.match(s)
+                        if matchobj:
+                            print('end data ', sample, 'last sample idx', samples_read)
+                            if sample > 0:  # save the sample data
+                                print('end of IMU sample data', start_time, sample)
+                                imu_array.append({'time': start_time, 'accel': accel_samples, 'q': quat_samples, 'mag': mag_samples, 'gyro': gyro_samples, 'load': load_samples})
+                                sample = 0
 
-                    matchobj = gps_fix2.match(s)
-                    if matchobj:
-                        data_time = datetime.strptime(matchobj.group(1), "%Y-%m-%d %H:%M:%S")
-                        #print('time ', data_time)
+                        # check for done
+                        matchobj = done_str.match(s)
+                        if matchobj:
+                            data_time = datetime.strptime(matchobj.group(1), "%Y-%m-%d %H:%M:%S")
+                            if data_time > datetime(2030,1,1):
+                                data_time = data_time - timedelta(seconds=810989538)
 
-                        gps = matchobj
-                        print('gps', s)
+                            print('done time ', data_time)
+                            start_time = data_time
 
-                    matchobj = gps_rmc.match(s)
-                    if matchobj:
-                        data_time = datetime.strptime(matchobj.group(1), "%Y-%m-%d %H:%M:%S")
-                        rmc_split = matchobj.group(2).split(',')
-                        #print('rmc split', rmc_split)
-                        if rmc_split[2] == 'A':
-                            try:
-                                lat_dm = float(rmc_split[3])
-                                lat_ns = rmc_split[4]
-                                lon_dm = float(rmc_split[5])
-                                lon_ew = rmc_split[6]
+                            # split the done string, extract name=value paris, for names in nameMap add to done_array
+                            split = re.split(" ,| ", matchobj.group(2))
+                            print(split)
+                            done_dict = {'time': data_time}
+                            for i in split:
+                                nv = i.split('=')
+                                name = nv[0]
+                                if name in nameMap:
+                                    try:
+                                        value = float(nv[1])
+                                    except (ValueError, IndexError):
+                                        value = np.nan
+                                    done_dict.update({nameMap[name]: value})
 
-                                lat = gps_dm_degree(lat_dm, lat_ns)
-                                lon = gps_dm_degree(lon_dm, lon_ew)
+                            done_array.append(done_dict)
 
-                                data_time_rmc = datetime.strptime(rmc_split[9] + ' ' + rmc_split[1] + '000', "%d%m%y %H%M%S.%f")
+                        # check for gps fix
+                        gps = None
+                        matchobj = gps_fix.match(s)
+                        if matchobj:
+                            data_time = datetime.strptime(matchobj.group(1), "%Y-%m-%d %H:%M:%S")
+                            if data_time > datetime(2030,1,1):
+                                data_time = data_time - timedelta(seconds=810989538)
 
-                            except ValueError:
-                                pass
+                            #print('gps fix time ', data_time)
+                            gps_array.append({'time': data_time, 'lon': float(matchobj.group(4))*-1, 'lat': float(matchobj.group(3))})
 
-                        #print('time ', data_time, data_time_rmc, lat, lon, rmc_split)
+                        matchobj = gps_fix2.match(s)
+                        if matchobj:
+                            data_time = datetime.strptime(matchobj.group(1), "%Y-%m-%d %H:%M:%S")
+                            if data_time > datetime(2030,1,1):
+                                data_time = data_time - timedelta(seconds=810989538)
 
-                    # update time bounds if we got a time
-                    if data_time:
-                        data_time = round_time(data_time)
+                            #print('gps fix time ', data_time)
+                            gps_array.append({'time': data_time, 'lon': float(matchobj.group(4))*-1, 'lat': float(matchobj.group(3))})
 
-                        # check is this time is in the existing times
-                        if data_time in times_dict:
-                            t_idx = times_dict.get(data_time)
+                        matchobj = gps_rmc.match(s)
+                        if matchobj:
+                            data_time = datetime.strptime(matchobj.group(1), "%Y-%m-%d %H:%M:%S")
+                            if data_time > datetime(2030,1,1):
+                                data_time = data_time - timedelta(seconds=810989538)
+
+                            rmc_split = matchobj.group(2).split(',')
+                            #print('rmc split', rmc_split)
+                            if rmc_split[2] == 'A':
+                                try:
+                                    lat_dm = float(rmc_split[3])
+                                    lat_ns = rmc_split[4]
+                                    lon_dm = float(rmc_split[5])
+                                    lon_ew = rmc_split[6]
+
+                                    lat = gps_dm_degree(lat_dm, lat_ns)
+                                    lon = gps_dm_degree(lon_dm, lon_ew)
+
+                                    data_time_rmc = datetime.strptime(rmc_split[9] + ' ' + rmc_split[1] + '000', "%d%m%y %H%M%S.%f")
+                                    #print('rmc time ', data_time, data_time_rmc)
+
+                                    rmc_array.append({'time': data_time, 'gps_time': data_time_rmc, 'lat': lat, 'lon': lon})
+                                except ValueError:
+                                    pass
+
+                        # check for serial number
+                        matchobj = sn.match(s)
+                        if matchobj:
+                            instrument_serial_number = matchobj.group(2)
+
+                        matchobj = sn_imu2.match(s)
+                        if matchobj:
+                            instrument_imu_serial_number = matchobj.group(2)
                         else:
-                            n_times += 1
-                            t_idx = n_times
-                            times_dict[data_time] = t_idx
+                            matchobj = sn_imu.match(s)
+                            if matchobj:
+                                instrument_imu_serial_number = matchobj.group(2)
 
-                        #print('got time', data_time, t_idx, n_times)
-                        times[t_idx] = date2num(data_time, units=times.units, calendar=times.calendar)
-                        if gps:
-                            # xpos_var[t_idx] = -np.float(gps.group(4))
-                            # ypos_var[t_idx] = np.float(gps.group(3))
-                            xpos_var[t_idx] = lon
-                            ypos_var[t_idx] = lat
+                        matchobj = sn_imu_hex.match(s)
+                        if matchobj:
+                            instrument_imu_serial_number = str(int(matchobj.group(2), base=16))
 
-                            lat = np.nan
-                            lon = np.nan
-
-                        if done:
-                            bat_var[t_idx] = float(done.group(2))
-                            mean_load_var[t_idx] = float(done.group(10))
-                            if not obp_var:
-                                obp_var = dataset.createVariable('optode_bphase', np.float32, ('TIME',), fill_value=np.nan)
-                                otemp_var = dataset.createVariable('optode_temp', np.float32, ('TIME',), fill_value=np.nan)
-                                chl_var = dataset.createVariable('CHL', np.float32, ('TIME',), fill_value=np.nan)
-                                ntu_var = dataset.createVariable('NTU', np.float32, ('TIME',), fill_value=np.nan)
-                                par_var = dataset.createVariable('PAR', np.float32, ('TIME',), fill_value=np.nan)
-
-                            obp_var[t_idx] = float(done.group(4))
-                            otemp_var[t_idx] = float(done.group(5))
-                            chl_var[t_idx] = float(done.group(6))
-                            ntu_var[t_idx] = float(done.group(7))
-                            par_var[t_idx] = float(done.group(8))
-
-                        if done_pulse:
-                            bat_var[t_idx] = float(done_pulse.group(2))
-                            mean_load_var[t_idx] = float(done_pulse.group(5))
-
-                        if end_time:
-                            print('done write MRU samples', sample)
-
-                            accel_var[t_idx] = accel_samples
-                            gyro_var[t_idx] = gyro_samples
-                            mag_var[t_idx] = mag_samples
-                            quat_var[t_idx] = quat_samples
-                            load_var[t_idx] = load_samples
-
-                            end_time = None
-
-                        # keep time stats, start (first) and end (last), maybe should use min/max
-                        ts_end = data_time
-                        if ts_start is None:
-                            ts_start = data_time
-
-                    # check for serial number
-                    matchobj = sn.match(s)
-                    if matchobj:
-                        dataset.instrument_serial_number = matchobj.group(2)
-
-                    matchobj = sn_imu.match(s)
-                    if matchobj:
-                        dataset.instrument_imu_serial_number = matchobj.group(2)
+                        matchobj = wave_raw_str.match(s)
+                        if matchobj:
+                            size_wave_file = int(matchobj.group(2))
+                            print("wave file size", size_wave_file)
+                            if size_wave_file < (3072 * (30+4)):
+                                have_load = False
+                            else:
+                                have_load = True
                 else:
-                    #print('junk ', byte[0])
+                    print(file, 'junk ', byte[0], 'at', f.tell())
+
                     pass
 
                 byte = f.read(1)
 
-    print('final times', n_times, times[0], times[-1])
+        # add the last record if we did not get a START_DATA
+        if sample > 0:
+            print('end-of-file saving IMU sample data', start_time, sample)
+            imu_array.append({'time': start_time, 'accel': accel_samples, 'q': quat_samples, 'mag': mag_samples, 'gyro': gyro_samples, 'load': load_samples})
 
+    # print serial number information
+    print('instrument serial number', instrument_serial_number)
+    print('instrument_imu serial number', instrument_imu_serial_number)
+
+    # done data times
+    done_array.sort(key=lambda x: x.get('time'))
+    done_times = []
+    for d in done_array:
+        #print(d['time'])
+        done_times.append(round_time(d['time']))
+
+    n_times = len(done_times)
+    #print('final times', n_times, done_times[0], done_times[-1])
+
+    ts_start = min(done_times)
+    ts_end = max(done_times)
+
+    # imu data times
+    imu_times = []
+    imu_array.sort(key=lambda x: x.get('time'))
+    for d in imu_array:
+        #print('imu ts', d['time'])
+        imu_times.append(round_time(d['time']))
+
+    print('imu times index', np.where(np.in1d(done_times, imu_times)))
+
+    # gps data times
+    gps_times = []
+    gps_array.sort(key=lambda x: x.get('time'))
+    for d in gps_array:
+        #print('gps ts', d['time'])
+        gps_times.append(round_time(d['time']))
+
+    #
+    # build the netCDF file
+    #
+
+    # TODO: sort time
+
+    ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
+
+    print("output file : %s" % outputName)
+
+    dataset = Dataset(outputName, 'w', format='NETCDF4_CLASSIC')
+
+    dataset.instrument = "Campbell Scientific; CR1000"
+    dataset.instrument_model = "CR1000"
+    dataset.instrument_serial_number = instrument_serial_number
+
+    dataset.instrument_imu = "LORD Sensing Microstrain ; 3DM-GX1"
+    dataset.instrument_imu_model = "3DM-GX1"
+    dataset.instrument_imu_serial_number = instrument_imu_serial_number
+
+    time_dim = dataset.createDimension('TIME', len(done_times))
+    # create the time array
+    times = dataset.createVariable('TIME', np.float64, ('TIME',))
+
+    times.units = 'days since 1950-01-01 00:00:00 UTC'
+    times.calendar = 'gregorian'
+    times.comment = 'start of 10 minute sampling window'
+
+    if len(imu_array) > 0:
+        sample_dim = dataset.createDimension('sample_time', 3072)
+        v = dataset.createDimension('vector', 3)
+        q = dataset.createDimension('quaternion', 4)
+
+        sample_t_var = dataset.createVariable('sample_time', np.float32, ('sample_time', ))  # create the cooridnate variable
+        sample_t_var[:] = np.arange(0, 3072) * 0.2
+        sample_t_var.units = 'seconds'
+        sample_t_var.long_name = 'time_of_sample within window'
+
+        imu_sample_var = dataset.createVariable('TIME_SAMPLE_START', float, ('TIME',), fill_value=np.nan)
+        imu_sample_var.units = 'seconds'
+        imu_sample_var.comment = 'time offset to start of samples'
+
+        accel_var = dataset.createVariable('acceleration', np.float32, ('sample_time', 'vector', 'TIME'), fill_value=np.nan, zlib=True)
+        mag_var = dataset.createVariable('magnetic', np.float32, ('sample_time', 'vector', 'TIME'), fill_value=np.nan, zlib=True)
+        gyro_var = dataset.createVariable('rotational_velocity', np.float32, ('sample_time', 'vector', 'TIME'), fill_value=np.nan, zlib=True)
+
+        quat_var = dataset.createVariable('orientation', np.float32, ('sample_time', 'quaternion', 'TIME'), fill_value=np.nan, zlib=True)
+        quat_var.comment = 'quaternion order is W, X, Y, Z'
+
+        if have_load:
+            load_var = dataset.createVariable('load', np.float32, ('sample_time', 'TIME'), fill_value=np.nan, zlib=True)
+
+    if len(gps_array) > 0:
+        xpos_var = dataset.createVariable('XPOS', float, ('TIME',), fill_value=np.nan)
+        ypos_var = dataset.createVariable('YPOS', float, ('TIME',), fill_value=np.nan)
+        gps_sample_var = dataset.createVariable('TIME_GPS_FIX', float, ('TIME',), fill_value=np.nan)
+        gps_sample_var.units = 'seconds'
+        gps_sample_var.comment = 'time offset to gps fix'
+
+    if len(rmc_array) > 0:
+        rmc_diff_var = dataset.createVariable('TIME_DIFF', float, ('TIME',), fill_value=np.nan)
+        rmc_diff_var.units = 'seconds'
+        rmc_diff_var.comment = 'difference between TIME and utc time from gps'
+
+    print("write time data samples", len(done_array))
+    times[:] = date2num(done_times, units=times.units, calendar=times.calendar)
+
+    # for each value in done array, add a netCDF variable for that name
+    for n in done_array[0]:
+        print('done string variable', n)
+        if n != 'time':
+            done_var = dataset.createVariable(n, np.float32, ('TIME',), fill_value=np.nan)
+
+            # done_var[:] = [v[n] for v in done_array]
+            for i in range(len(done_array)):
+                try:
+                    done_var[i] = done_array[i][n]
+                except KeyError:
+                    pass
+
+    if len(imu_array) > 0:
+        print("write imu, samples", len(imu_array))
+
+        xy, done_ind, imu_ind = np.intersect1d(done_times, imu_times, return_indices=True)
+        print('done times idx', len(done_ind), done_ind)
+        print('imu times idx', len(imu_ind), imu_ind)
+        print('xy times idx', len(xy), xy)
+
+        d_array = np.full([len(done_times)], np.nan)
+        for i in range(len(xy)):
+            done_idx = done_ind[i]
+            imu_idx = imu_ind[i]
+
+            print('sample_t', i, imu_array[imu_idx]['time'])
+
+            d_array[done_idx] = (imu_array[imu_idx]['time'] - done_times[done_idx]).total_seconds()
+
+        imu_sample_var[:] = d_array
+
+        d_array = np.empty([3072, 3, len(done_times)])
+        create_nc_var(d_array, imu_times, 'accel', imu_array, accel_var, done_ind, imu_ind)
+        create_nc_var(d_array, imu_times, 'mag', imu_array, mag_var, done_ind, imu_ind)
+        create_nc_var(d_array, imu_times, 'gyro', imu_array, gyro_var, done_ind, imu_ind)
+
+        d_array = np.empty([3072, 4, len(done_times)])
+        create_nc_var(d_array, imu_times, 'q', imu_array, quat_var, done_ind, imu_ind)
+
+        if have_load:
+            d_array = np.empty([3072, len(done_times)])
+            create_nc_var(d_array, imu_times, 'load', imu_array, load_var, done_ind, imu_ind)
+
+    if len(gps_array) > 0:
+        print("write gps data samples", len(gps_array))
+
+        # indices = np.in1d(gps_times, done_times)
+        # print('gps indicies', indices)
+        # xy, done_ind, gps_ind = np.intersect1d(done_times, gps_times, return_indices=True)
+        # print('done times idx', len(done_ind), done_ind)
+        # print('imu times idx', len(gps_ind), gps_ind)
+        # print('xy times idx', len(xy), xy)
+
+        d_array = np.full([len(done_times)], np.nan)
+        y_array = np.full([len(done_times)], np.nan)
+        x_array = np.full([len(done_times)], np.nan)
+
+        # for i in range(len(gps_times)):
+        #     done_idx = np.where(np.asarray(done_times) == gps_times[i])
+        #
+        #     if len(done_idx) > 0:
+        #         if len(done_idx[0]) > 0:
+        #             done_i = done_idx[0][0]
+        #             print('gps time', gps_array[i]['time'], done_i)
+        #             x_array[done_i] = gps_array[i]['lon']
+        #             y_array[done_i] = gps_array[i]['lat']
+        #             d_array[done_i] = (gps_array[i]['time'] - done_times[done_i]).total_seconds()
+
+        j = 0
+        for i in range(len(done_times)):
+            while j < len(gps_times):
+                if gps_times[j] >= done_times[i]:
+                    break
+                j += 1
+            while j < len(gps_times):
+                if gps_times[j] == done_times[i]:
+                    #print('gps time', gps_times[j], i)
+                    x_array[i] = gps_array[j]['lon']
+                    y_array[i] = gps_array[j]['lat']
+                    d_array[i] = (gps_array[j]['time'] - done_times[i]).total_seconds()
+                elif gps_times[j] > done_times[i]:
+                    break
+                j += 1
+
+        gps_sample_var[:] = d_array
+        xpos_var[:] = x_array
+        ypos_var[:] = y_array
+
+    if len(rmc_array) > 0:
+        print("write rmc time diff samples", len(rmc_array))
+
+        rmc_times = []
+        rmc_array.sort(key=lambda x: x.get('time'))
+        for d in rmc_array:
+            #print('rmc ts', d['time'])
+            rmc_times.append(round_time(d['time']))
+
+        d_array = np.full([len(done_times)], np.nan)
+
+        # for i in range(len(rmc_array)):
+        #     done_idx = np.where(np.asarray(done_times) == rmc_times[i])
+        #
+        #     if len(done_idx) > 0:
+        #         if len(done_idx[0]) > 0:
+        #             done_i = done_idx[0][0]
+        #             #print('rmc time', rmc_array[i]['time'])
+        #             d_array[done_i] = (rmc_array[i]['time'] - rmc_array[i]['gps_time']).total_seconds()
+
+        j = 0
+        for i in range(len(done_times)):
+            while j < len(rmc_times):
+                if rmc_times[j] >= done_times[i]:
+                    break
+                j += 1
+            while j < len(rmc_times):
+                if rmc_times[j] == done_times[i]:
+                    #print('gps time', gps_times[j], i)
+                    d_array[i] = (rmc_array[j]['time'] - rmc_array[j]['gps_time']).total_seconds()
+                elif rmc_times[j] > done_times[i]:
+                    break
+                j += 1
+
+        rmc_diff_var[:] = d_array
+
+    # create the time coverage attributes
     dataset.setncattr("time_coverage_start", ts_start.strftime(ncTimeFormat))
     dataset.setncattr("time_coverage_end", ts_end.strftime(ncTimeFormat))
 
     # add creating and history entry
     dataset.setncattr("date_created", datetime.now(UTC).strftime(ncTimeFormat))
-    dataset.setncattr("history", datetime.now(UTC).strftime("%Y-%m-%d") + " created from file " + os.path.basename(files[0]))
+    dataset.setncattr("history", datetime.now(UTC).strftime("%Y-%m-%d") + " created from file " + os.path.basename(files[0]) + "...")
 
     dataset.close()
 
@@ -446,5 +645,9 @@ if __name__ == "__main__":
     files = []
     for f in sys.argv[2:]:
         files.extend(glob(f))
+
+    #files.sort()
+    for f in files:
+        print(f)
 
     datalogger(outfile, files)
