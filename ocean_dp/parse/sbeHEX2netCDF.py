@@ -68,7 +68,7 @@ def prase_hex(hex_file, xml_file):
     # record instrument config in netCDF metadata
     dataset.instrument_model = data_dict['SBE_InstrumentConfiguration']['Instrument']['DeviceType']
     dataset.instrument = "Sea-Bird Electronics ; " + dataset.instrument_model
-    dataset.instrument_serial_number = sensor_dict[temp_idx]['TemperatureSensor']['SerialNumber']
+    dataset.instrument_serial_number = '037' + sensor_dict[temp_idx]['TemperatureSensor']['SerialNumber'].zfill(5)
 
     # create the time array
     time_dim = dataset.createDimension('TIME', len(raw_data))
