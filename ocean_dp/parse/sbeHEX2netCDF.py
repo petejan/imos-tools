@@ -9,8 +9,10 @@ import seabirdscientific.cal_coefficients as cal
 import seabirdscientific.conversion as conv
 import xmltodict
 from cftime import date2num
+from glob2 import glob
 
 from netCDF4 import Dataset
+from numpy.ma.core import ones_like
 from seabirdscientific.conversion import potential_density_from_t_c_p
 
 def prase_hex(hex_file, xml_file):
@@ -21,7 +23,7 @@ def prase_hex(hex_file, xml_file):
     #print(data_dict)
 
     sensor_dict = data_dict['SBE_InstrumentConfiguration']['Instrument']['SensorArray']['Sensor']
-    
+
     # find sensor index for temperature, pressure, conductivity and oxygen
     temp_idx = None
     pres_idx = None
@@ -49,9 +51,9 @@ def prase_hex(hex_file, xml_file):
     sensor_list = []
     if temp_idx is not None:
         sensor_list.append(id.Sensors.Temperature)
-    if pres_idx is not None:
-        sensor_list.append(id.Sensors.Conductivity)
     if cndc_idx is not None:
+        sensor_list.append(id.Sensors.Conductivity)
+    if pres_idx is not None:
         sensor_list.append(id.Sensors.Pressure)
     if dox_idx is not None:
         sensor_list.append(id.Sensors.SBE63)
@@ -112,6 +114,13 @@ def prase_hex(hex_file, xml_file):
             if not k.startswith('@'):
                 var_temp.setncattr('calibration_'+k, tcal_vals[k])
 
+    # use moored pressure if no pressure sensor
+    moored_pressure = None
+    if pres_idx is None:
+        moored_pressure = float(data_dict['SBE_InstrumentConfiguration']['Instrument']['MooredPressure'])
+        print('moored pressure', moored_pressure)
+        pressure = moored_pressure * ones_like(temperature)
+
     # pressure data
     if pres_idx is not None:
         pCal = cal.PressureCoefficients
@@ -170,6 +179,8 @@ def prase_hex(hex_file, xml_file):
         # create the salinity
         var_psal = dataset.createVariable('PSAL', np.float32, ('TIME',))
         var_psal[:] = salinity
+        if moored_pressure is not None:
+            var_psal.comment_pressure = 'using moored pressure ' + str(moored_pressure) + ' dbar for salinity calculation'
 
         var_cndc.setncattr('calibration_SerialNumber', sensor_dict[cndc_idx]['ConductivitySensor']['SerialNumber'])
         var_cndc.setncattr('calibration_CalibrationDate', sensor_dict[cndc_idx]['ConductivitySensor']['CalibrationDate'])
@@ -239,8 +250,22 @@ def prase_hex(hex_file, xml_file):
 
 if __name__ == "__main__":
 
-    hex_file = sys.argv[1]
-    xmlcon_file = sys.argv[2]
+    # process command line arguments
+    files = []
+    for f in sys.argv[1:]:
+        files.extend(glob(f))
+    files.sort()
 
-    prase_hex(hex_file, xmlcon_file)
+    hex_file = ''
+    xmlcon_file = ''
+    for f in range(0, len(files)):
+        if files[f].endswith('.hex'):
+            hex_file = files[f]
+        if files[f].endswith('.xmlcon'):
+            xmlcon_file = files[f]
+
+        if os.path.basename(hex_file).replace(".hex","") == os.path.basename(xmlcon_file).replace(".xmlcon",""):
+            prase_hex(hex_file, xmlcon_file)
+            hex_file = ''
+            xmlcon_file = ''
 
