@@ -41,7 +41,10 @@ def format_attributes(netCDFfile):
     for att in sorted(attrs, key=str.lower):  # or  key=lambda s: s.lower()
         value = di[att]
         if type(value) is str:
-            value = value.format(**di)
+            try:
+                value = value.format(**di)
+            except KeyError:
+                pass
         ds.setncattr(att, value)
         #print("attr : ", att, " = " , value)
 
