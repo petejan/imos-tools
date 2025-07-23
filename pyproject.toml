@@ -19,7 +19,7 @@ dependencies = [
     "oceansdb",
     "psycopg2",
     "si-prefix",
-    "python-deteutil",
+    "python-dateutil",
     "glob2"
 ]
 license = "MIT"
