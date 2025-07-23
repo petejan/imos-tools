@@ -18,7 +18,9 @@ dependencies = [
     "gsw",
     "oceansdb",
     "psycopg2",
-    "si-prefix"
+    "si-prefix",
+    "python-deteutil",
+    "glob2"
 ]
 license = "MIT"
 license-files = ["LICEN[CS]E*"]

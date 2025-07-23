@@ -78,8 +78,8 @@ def add_wave_spectra(netCDFfile):
         dsOut = dsIn
     else:
         dsIn = Dataset(netCDFfile, 'r')
-        #fn = dsIn.instrument_imu_model + '-' + dsIn.instrument_imu_serial_number
-        fn = 'MPESS-OUT.nc'
+        fn = dsIn.instrument_imu_model + '-' + dsIn.instrument_imu_serial_number
+        #fn = 'MPESS-OUT.nc'
         dsOut = Dataset(fn + '.nc', 'w', format='NETCDF4_CLASSIC')
 
     dsIn.set_auto_mask(False)
@@ -100,9 +100,9 @@ def add_wave_spectra(netCDFfile):
         for a in var_time.ncattrs():
             dsOut.variables['TIME'].setncattr(a, var_time.getncattr(a))
 
-        #dsOut.instrument = dsIn.instrument_imu
-        #dsOut.instrument_model = dsIn.instrument_imu_model
-        #dsOut.instrument_serial_number = dsIn.instrument_imu_serial_number
+        dsOut.instrument = dsIn.instrument_imu
+        dsOut.instrument_model = dsIn.instrument_imu_model
+        dsOut.instrument_serial_number = dsIn.instrument_imu_serial_number
 
     # create frequency dimension
     if "FREQ" not in dsOut.dimensions:
@@ -160,26 +160,6 @@ def add_wave_spectra(netCDFfile):
 
             if append_to_file:
                 accel_w_var[:, :, i] = accel_world[:, :]
-
-            # for j in range(0, 3072):
-            #     try:
-            #         accel_inst = var_accel[j, :, i]  # dimensions are sample_time, vector, TIME
-            #
-            #         print(j, accel_inst.shape, q.shape)
-            #
-            #         # read the quaternion, the IMU data is in w, x, y, z whereas Rotation.from_quant is in x, y, z, w
-            #
-            #         #r = Rotation.from_quat(np.transpose([q[j, 1], q[j, 2], q[j, 3], q[j, 0]]))
-            #         #accel_world[j, :] = r.apply(accel_inst)
-            #
-            #         accel_world[j, :] = point_rotation_by_quaternion(accel_inst, q[j, :])
-            #
-            #         accel_w_var[j, :, i] = accel_world[j, :]
-            #
-            #         print(j, accel_inst, accel_world[j, :])
-            #
-            #     except ValueError as v:
-            #         print(j, v)
 
             # convert accelerations to world coordinates
 

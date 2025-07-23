@@ -6,8 +6,6 @@ create a virtual python environment
 active virtual enviroment                               
 > ~ % source venvs/ocean_db/bin/activate
 (ocean_db) > imos-tools % pip install --upgrade pip
-(ocean_db) > pip install glob2
-(ocean_db) > pip install python-dateutil
 ```
 install ocean_dp as module
 ```
