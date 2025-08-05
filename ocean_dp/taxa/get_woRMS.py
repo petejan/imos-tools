@@ -19,10 +19,15 @@ while more_to_process:
     oid_list = []
 
     i = 0
+    cur = con.cursor()
     for name in names:
-        print(i, name[0], name[1])
-        names_list.append(name[1])
-        oid_list.append(name[0])
+        if 'µ' not in name[1]:  # unicode upsets the query, don't query these names
+            print(i, 'oid=', name[0], 'name=', name[1])
+            names_list.append(name[1])
+            oid_list.append(name[0])
+        else:
+            cur.execute('UPDATE PLANKTON_SOTS_PHYTOPLANKTON SET WORMS_APHIA_ID=-1 WHERE oid=\'%d\'' % (name[0]))
+
         i = i + 1
 
     if i == 0:
@@ -32,22 +37,38 @@ while more_to_process:
     scinames["_arrayType"] = "string[]"
     scinames["scientificname"] = names_list
 
+    #print('names list', scinames["scientificname"])
+
     j = 0
     array_of_results_array = cl.service.matchAphiaRecordsByNames(scinames, like="true", fuzzy="false", marine_only="true")
-    print('number of results', len(array_of_results_array))
+    print('number of Aphid results', len(array_of_results_array))
 
     cur = con.cursor()
+    if len(array_of_results_array) == 0:
+        print("something went wrong, AphiaID returned no results")
+        more_to_process = False
+
     for results_array in array_of_results_array:
         a_id = -1
         genus = None
         family = None
+        print('length of results', len(results_array))
         for aphia_object in results_array:
     #        print(aphia_object)
-            print(j, oid_list[j], 'AphiaID=%s scientific_name=%s genus=%s family=%s' % (aphia_object.AphiaID, aphia_object.scientificname, aphia_object.genus, aphia_object.family))
+            print(j, oid_list[j], names_list[j], 'AphiaID=%s scientific_name=%s genus=%s family=%s' % (aphia_object.AphiaID, aphia_object.scientificname, aphia_object.genus, aphia_object.family))
             a_id = aphia_object.AphiaID
-            genus = aphia_object.genus
-            family = aphia_object.family
-        cur.execute('UPDATE PLANKTON_SOTS_PHYTOPLANKTON SET WORMS_APHIA_ID=\'%s\',GENUS=\'%s\',FAMILY=\'%s\' WHERE oid=\'%d\'' % (a_id, genus, family, oid_list[j]))
+            if aphia_object.genus is not None:
+                genus = '\'' + aphia_object.genus + '\''
+            else:
+                genus = 'NULL'
+            if aphia_object.family is not None:
+                family = '\'' + aphia_object.family + '\''
+            else:
+                family = 'NULL'
+            cur.execute('UPDATE PLANKTON_SOTS_PHYTOPLANKTON SET WORMS_APHIA_ID=\'%s\',GENUS=%s,FAMILY=%s,SPECIES=\'%s\' WHERE oid=\'%d\'' % (a_id, genus, family, aphia_object.scientificname, oid_list[j]))
+        if a_id == -1:
+            cur.execute('UPDATE PLANKTON_SOTS_PHYTOPLANKTON SET WORMS_APHIA_ID=-1 WHERE oid=\'%d\'' % (oid_list[j]))
+
         j = j + 1
 
     con.commit()

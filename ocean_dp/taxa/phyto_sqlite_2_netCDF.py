@@ -41,8 +41,9 @@ from dateutil.tz import *
 # 2023-09-01
 # AODN geo server http://geoserver-123.aodn.org.au/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=imos:bgc_phytoplankton_abundance_raw_data&outputFormat=csv
 # is one line per sample, may counts per line
+#
+# data from inside CSIRO, does not have method column
 # http://pluto.it.csiro.au:8888/ords/orabn1/f?p=191 internal link
-
 # Imos Site Code,Sots Year,Sots Deployment,Sample Number,Sample Date,Sample Time,Longitude,Latitude,Taxon Name,Family,Genus Name,Species Name,Taxon Eco Group,Aphia Id,Taxon Start Date,Cell Per Litre,Biovolume Um3 Per L,Sample Comments,Deployment Voyage,Retrieval Voyage,Deployment Date,Retrieval Date
 # SOTS_RAS,2010,SOTS_RAS2010PULSE_7,2,12-SEP-10,12-SEP-10,142.2566,-46.9347333,Centric diatom < 10 µm,,,,Centric diatom,,29-SEP-08,105,20616.684,,SS2010_V07,SS2011_V01,12-SEP-10,17-APR-11
 # SOTS_RAS,2010,SOTS_RAS2010PULSE_7,2,12-SEP-10,12-SEP-10,142.2566,-46.9347333,Ciliate 10-20 µm,,,,Ciliate,11,,26,,,SS2010_V07,SS2011_V01,12-SEP-10,17-APR-11
@@ -108,6 +109,8 @@ ncTimesOut.calendar = "gregorian"
 ncTimesOut.axis = "T"
 
 date_time = [parse(x) for x in phyto['SAMPLE_TIME']]
+print(phyto['SAMPLE_TIME'])
+
 t_num = date2num(date_time, ncTimesOut.units)
 
 ncTimesOut[:] = t_num
@@ -149,19 +152,25 @@ nc_cell_Out.standard_name = 'number_concentration_of_biological_taxon_in_sea_wat
 
 nc_bv_out = ncOut.createVariable('VOLUME', 'f4', ('OBS',), zlib=True, fill_value=np.nan)
 nc_bv_out.units = 'm^3/litre'
-nc_bv_out[:] = phyto['BIOVOLUME_UM3_PER_L'].values
+nc_bv_out[:] = [np.nan if x == '' else float(x) for x in phyto['BIOVOLUME_UM3_PER_L'].values]
 
-nc_method_out = ncOut.createVariable('METHOD', 'i1', ('OBS',), zlib=True, fill_value=-1)
-nc_method_out.units = '1'
-nc_method_out.long_name = 'analysis method'
-nc_method_out.units = '0 = Light Microscope, 1 = Scanning Electron Microscope'
-nc_method_out[:] = [0 if x == 'LM' else 1 if x == 'SEM' else -1 for x in phyto['METHOD']]
+# nc_method_out = ncOut.createVariable('METHOD', 'i1', ('OBS',), zlib=True, fill_value=-1)
+# nc_method_out.units = '1'
+# nc_method_out.long_name = 'analysis method'
+# nc_method_out.units = '0 = Light Microscope, 1 = Scanning Electron Microscope'
+# nc_method_out[:] = [0 if x == 'LM' else 1 if x == 'SEM' else -1 for x in phyto['METHOD']]
+
+# nc_sample_n_out = ncOut.createVariable('SAMPLE_NUMBER', 'i2', ('OBS'), zlib=True, fill_value=-1)
+# nc_sample_n_out.comment = 'sample number'
+# nc_sample_n_out.units = '1'
+# sample_n = [-1 if x == '' else float(x) for x in phyto['SAMPLE_NUMBER'].values]
+# nc_sample_n_out[:] = sample_n
 
 #nc_aphia_id_out = ncOut.createVariable('APHIA_ID', 'i4', ('OBS', 'strlen80'), zlib=True, fill_value=-1)
-nc_aphia_id_out = ncOut.createVariable('APHIA_ID', 'i4', ('OBS'), zlib=True)
+nc_aphia_id_out = ncOut.createVariable('APHIA_ID', 'i4', ('OBS'), zlib=True, fill_value=-1)
 #nc_aphia_id_out.valid_min = int(0)
 nc_aphia_id_out.comment = 'https://www.marinespecies.org/aphia.php'
-aphia_id = phyto['WORMS_APHIA_ID'].values
+aphia_id = [-1 if x == '' or x is None else float(x) for x in phyto['WORMS_APHIA_ID'].values]
 nc_aphia_id_out[:] = aphia_id
 
 create_obs_idx(ncOut, family, 'FAMILY')
