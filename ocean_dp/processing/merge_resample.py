@@ -31,6 +31,11 @@ def resample(netCDF_file, sample_file, vars):
 
     ds = Dataset(netCDF_file, 'a')
 
+    copy_qc = False
+    if 'file_version' in ds.ncattrs():
+        if not ds.file_version.startswith('Level 0'):
+            copy_qc = True
+
     time_var = ds.variables["TIME"]
     qc_in_level = 1
 
@@ -58,9 +63,9 @@ def resample(netCDF_file, sample_file, vars):
                 new_var.sensor_serial_number = ds_sample.instrument_serial_number
                 new_var[:] = new_data
 
-                if add_qc:
+                if add_qc and copy_qc:
                     new_var_qc = ds.createVariable(v+"_quality_control", "i1", var.dimensions, fill_value=99)
-                    new_var_qc[:] = 8
+                    new_var_qc[:] = 7
                     new_var_qc.quality_control_conventions = "IMOS standard flags"
                     new_var_qc.flag_values = np.array([0, 1, 2, 3, 4, 6, 7, 9], dtype=np.int8)
                     new_var_qc.flag_meanings = 'unknown good_data probably_good_data probably_bad_data bad_data not_deployed interpolated missing_value'
