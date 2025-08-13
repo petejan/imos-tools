@@ -143,7 +143,7 @@ def parse(filepath, start_date):
     number_samples_read = 0
 
     # create the netCDF file
-    outputName = filepath + ".nc"
+    outputName = os.path.basename(filepath) + ".nc"
 
     print("output file : %s" % outputName)
 
@@ -225,53 +225,56 @@ def parse(filepath, start_date):
             if data[decode_idx['used']] == 42405 and data[decode_idx['year']] < 40 and data[decode_idx['year']] > 5:
 
                 # decode the time
-                ts = datetime.datetime(int(data[decode_idx['year']]+2000), int(data[decode_idx['mon']]), int(data[decode_idx['day']]),
-                                       int(data[decode_idx['hour']]), int(data[decode_idx['min']]), 0)
+                try:
+                    ts = datetime.datetime(int(data[decode_idx['year']]+2000), int(data[decode_idx['mon']]), int(data[decode_idx['day']]),
+                                           int(data[decode_idx['hour']]), int(data[decode_idx['min']]), 0)
 
-                if ts > start_date:
-                    # hack as sometimes the time jumps back, seems to be a fault in the logger, mostly when minutes roll over
-                    if (last_ts is not None) and (ts < last_ts) and not step_back:
-                        print('time step back', ts)
-                        ts = last_ts + datetime.timedelta(minutes=1)
-                        step_back = True
+                    if start_date is None or ts > start_date:
+                        # hack as sometimes the time jumps back, seems to be a fault in the logger, mostly when minutes roll over
+                        if (last_ts is not None) and (ts < last_ts) and not step_back:
+                            print('time step back', ts)
+                            ts = last_ts + datetime.timedelta(seconds=30)
+                            step_back = True
 
-                    # keep the first timestamp
-                    if ts_start is None:
-                        ts_start = ts
-                        print('start time', ts_start)
+                        # keep the first timestamp
+                        if ts_start is None:
+                            ts_start = ts
+                            print('start time', ts_start)
 
-                    # keep sample number, only keep data where time is increasing
-                    if last_ts is None or (ts > last_ts):
-                        step_back = False
-                        # save data to cache
-                        data_array[sample_cache_n] = np.asarray(data)
-                        data_array[sample_cache_n] = data_array[sample_cache_n] / data_scale + data_offset
-                        # re-use data[0] as time (was hour)
-                        data_array[sample_cache_n, 0] = date2num(ts, calendar=t_cal, units=t_unit)
+                        # keep sample number, only keep data where time is increasing
+                        if last_ts is None or (ts > last_ts):
+                            step_back = False
+                            # save data to cache
+                            data_array[sample_cache_n] = np.asarray(data)
+                            data_array[sample_cache_n] = data_array[sample_cache_n] / data_scale + data_offset
+                            # re-use data[0] as time (was hour)
+                            data_array[sample_cache_n, 0] = date2num(ts, calendar=t_cal, units=t_unit)
 
-                        sample_cache_n += 1
-                        number_samples_read += 1
+                            sample_cache_n += 1
+                            number_samples_read += 1
 
-                        # cache full, write to netCDF file
-                        if sample_cache_n >= data_array.shape[0]:
-                            # some user feedback
-                            feedback = []
-                            for x in range(len(data)):
-                                feedback.append(decode[x]['key'] + '=' + str(data[x]))
-                            print(number_samples_read, ts, ','.join(feedback))
+                            # cache full, write to netCDF file
+                            if sample_cache_n >= data_array.shape[0]:
+                                # some user feedback
+                                feedback = []
+                                for x in range(len(data)):
+                                    feedback.append(decode[x]['key'] + '=' + str(data[x]))
+                                print(number_samples_read, ts, ','.join(feedback))
 
-                            ncTimesOut[sample_cache_start:number_samples_read] = data_array[:, 0]
-                            for x in range(len(data)):
-                                # print(x, data_decoded[x], metadata[x])
-                                if vars[x]:
-                                    vars[x][sample_cache_start:number_samples_read] = data_array[:, x]
+                                ncTimesOut[sample_cache_start:number_samples_read] = data_array[:, 0]
+                                for x in range(len(data)):
+                                    # print(x, data_decoded[x], metadata[x])
+                                    if vars[x]:
+                                        vars[x][sample_cache_start:number_samples_read] = data_array[:, x]
 
-                            sample_cache_start = number_samples_read
-                            sample_cache_n = 0
+                                sample_cache_start = number_samples_read
+                                sample_cache_n = 0
 
-                        last_ts = ts
-                    else:
-                        print('non-monotonic time,', number_samples_read, ts, last_ts)
+                            last_ts = ts
+                        else:
+                            print('non-monotonic time,', number_samples_read, ts, last_ts)
+                except ValueError:
+                    pass
 
             data_raw = binary_file.read(64)
 
@@ -309,7 +312,7 @@ def parse(filepath, start_date):
 
 if __name__ == "__main__":
     start_date = None
-    if len(sys.argv) > 1:
+    if len(sys.argv) > 2:
         start_date = datetime.datetime.strptime(sys.argv[2], "%Y-%m-%d")
 
     parse(sys.argv[1], start_date)
