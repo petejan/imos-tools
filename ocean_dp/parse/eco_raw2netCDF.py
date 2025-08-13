@@ -62,9 +62,7 @@ nameMap["NTU"] = "TURB"
 # parse the file
 #
 
-line_re = r'(\d{2}/\d{2}/\d{2}\s\d{2}:\d{2}:\d{2})\s([0-9\t\- ]*)$'
-
-line_re_test = r'(\d{2}/\d{2}/\d{2}\s\d{2}:\d{2}:\d{2})(?:\t\-?([0-9]+))+$'
+line_re = r'.*(\d{2}/\d{2}/\d{2}.*\d{2}:\d{2}:\d{2})\s([0-9\t\- ]*)$'
 
 dev_sn_expr = r'ECO\s*(?P<inst>\S*)-(?P<serial>\S*)'
 dev_col_expr = r'COLUMNS=(?P<cols>\d*)'
