@@ -77,6 +77,8 @@ ave_exp = '\[(.*)\] Ave.(.*)$'
 dat_exp = '\[(.*)\] Dat.(.*)$'
 clk_exp = '\[(.*)\] Clk.(.*)$'
 
+line_re = r'.*(\d{2}/\d{2}/\d{2}.*\d{2}:\d{2}:\d{2})\s([0-9\t\- ]*)$'
+
 #
 # parse the file
 #
@@ -93,7 +95,8 @@ def eco_parse(files):
     instrument_ave_setting = None
     instrument_date = None
     instrument_time = None
-    ts_last = datetime(1900,1,1);
+    last_time = datetime(1900,1,1)
+    first_line_values = 0
 
     with open(filepath, 'r', errors='ignore') as fp:
         line = fp.readline()
@@ -118,18 +121,37 @@ def eco_parse(files):
                 if matchObj:
                     instrument_time = [matchObj.group(1), matchObj.group(2)]
 
-                line_split = line.split("\t")
-                #print(line_split, len(line_split))
-                if (len(line_split) >= 3) & (line[0] != '['):
+                line_s = line.strip()
+                matchObj = re.match(line_re, line_s)
+                if matchObj:
+                    #print('match line', matchObj.group(1))
+                    try:
+                        ts = datetime.strptime(matchObj.group(1), "%m/%d/%y\t%H:%M:%S")
+                        #print('time stamp', ts)
+                        values_split = matchObj.group(2).split('\t')
+                        #print('values', values_split)
+                        # print(len(values_split), values_split)
+                        # assume the fist line has the correct number of values
+                        if first_line_values == 0:
+                            first_line_values = len(values_split)
+                        # does this line have the same number of values as the first
+                        if len(values_split) == first_line_values and ts > last_time:
 
-                    t = line_split[0] + " " + line_split[1]
-                    ts = datetime.strptime(t, "%m/%d/%y %H:%M:%S")
-                    if ts == ts_last: # sometimes we end up with the same timestamp
-                        ts = ts + timedelta(seconds=0.9)
-                    ts_last = ts
-                    time.append(ts)
-                    value.append(float(line_split[2]))
-                    number_samples += 1
+                            values = [float(x) if len(x) <= 5 else np.nan for x in values_split]
+                            print(ts, values)
+
+                            # if values[0] == 700 and values[2] == 695 and values[4] == 460 and values[6] > 500:
+                            # if values[0] == 695 and values[2] == 700:
+                            if ts == last_time:
+                                ts = ts + timedelta(seconds=0.1)
+                            last_time = ts
+                            time.append(ts)
+                            value.append(values)
+                            print(ts, values)
+
+                            number_samples += 1
+                    except ValueError:
+                        pass
 
             line = fp.readline()
 
@@ -157,7 +179,9 @@ def eco_parse(files):
 
     time_diff = timedelta(0)
     if instrument_time and instrument_date:
-        date_download = datetime.strptime(instrument_time[0], '%a %b %d %H:%M:%S.%f %Y')
+        print('instrument time', instrument_time, 'instrument date', instrument_date)
+
+        date_download = datetime.strptime(instrument_time[0], '%Y-%m-%d %H:%M:%S.%f')
         inst_time = datetime.strptime(instrument_date[1] + " " + instrument_time[1], '%m/%d/%y %H:%M:%S')
 
         time_diff = date_download - inst_time
