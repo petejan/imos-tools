@@ -6,4 +6,4 @@ data
 *~
 .idea/*
 venv/*
-imos-tools.egg-info
+imos-tools.egg-info/*
