@@ -201,8 +201,8 @@ for fv00_file in ncFiles:
 
         fv01_file_list = ocean_dp.qc.global_range.global_range(fv01_file_list, 'DOX2', 350, 150)
         fv01_file_list = ocean_dp.qc.global_range.global_range(fv01_file_list, 'DOX2', 310, 180, 3)
-        fv01_file_list = ocean_dp.qc.global_range.global_range(fv01_file_list, 'DOXS', 1.2, 0.5)
-        fv01_file_list = ocean_dp.qc.global_range.global_range(fv01_file_list, 'DOXS', 1.15, 0.6, 3)
+        #fv01_file_list = ocean_dp.qc.global_range.global_range(fv01_file_list, 'DOXS', 1.2, 0.5)
+        #fv01_file_list = ocean_dp.qc.global_range.global_range(fv01_file_list, 'DOXS', 1.15, 0.6, 3)
 
     if has_wave:
         # wave QC
