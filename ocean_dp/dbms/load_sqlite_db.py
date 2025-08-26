@@ -115,10 +115,11 @@ def sqlite_insert(files):
 
         # load variables
         for var_name in nc.variables: #nc.variables:
-            print('variable', var_name)
             is_aux = vars[var_name]
 
             var = nc.variables[var_name]
+            print('variable', var_name, var.dimensions, var.shape)
+
             var.set_auto_mask(False)
             nd = np.nan
             if hasattr(var, 'coordinates'):

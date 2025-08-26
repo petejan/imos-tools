@@ -17,6 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 import sys
+import os
 
 from datetime import datetime, timedelta, UTC
 from dateutil import parser
@@ -163,7 +164,7 @@ def eco_parse(files):
 
     ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
 
-    outputName = filepath + ".nc"
+    outputName = os.path.basename(filepath) + ".nc"
 
     print("output file : %s" % outputName)
 

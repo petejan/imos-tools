@@ -55,6 +55,7 @@ def add_solar(netCDFfiles):
         out_files.append(fn_new)
 
         ds = Dataset(fn_new, 'a')
+        ds.set_auto_mask(False)
 
         lat = ds.variables['LATITUDE'][:]
         lon = ds.variables['LONGITUDE'][:]
@@ -85,8 +86,11 @@ def add_solar(netCDFfiles):
 
         print('time start ', dt_utc[0])
 
-        altitude_deg = get_altitude_fast(lat, lon, dt)
-        rad = extraterrestrial_irrad(lat, lon, dt, 1361)
+        altitude_deg = []
+        rad = []
+        for d in dt_utc:
+            altitude_deg.append(get_altitude_fast(lat, lon, d))
+            rad.append(extraterrestrial_irrad(lat, lon, d, 1361))
 
         if ndepth > 0:
             #depth_var = ds.variables['PRES']

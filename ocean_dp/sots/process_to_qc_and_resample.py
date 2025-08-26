@@ -44,6 +44,9 @@ import ocean_dp.processing.add_oxsol
 import ocean_dp.processing.calc_DOX_to_DOX2
 import ocean_dp.processing.apply_scale_offset_attributes
 from ocean_dp.processing.down_sample import down_sample
+import ocean_dp.processing.add_incoming_radiation
+import ocean_dp.qc.par_climate_range
+
 import ocean_dp.file_name.imosNetCDFfileName
 
 
@@ -217,7 +220,7 @@ for fv00_file in ncFiles:
 
         print('par_qc:', fv01_file_list)
 
-        fv01_file_list = ocean_dp.qc.global_range.global_range(fv01_file_list, 'Hm0', 25, 0)
+        fv01_file_list = ocean_dp.qc.global_range.global_range(fv01_file_list, 'PAR', 25, 0)
 
         ocean_dp.processing.add_incoming_radiation.add_solar(fv01_file_list)
 
