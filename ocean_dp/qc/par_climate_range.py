@@ -19,7 +19,7 @@
 from netCDF4 import Dataset, num2date
 import sys
 
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 
 import numpy as np
 from dateutil import parser

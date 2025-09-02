@@ -16,6 +16,7 @@ dependencies = [
     "geomag",
     "netCDF4",
     "gsw",
+    "pysolar",
     "oceansdb",
     "psycopg2",
     "si-prefix",

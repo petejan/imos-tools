@@ -52,6 +52,10 @@ from dateutil.tz import *
 # SOTS_RAS,2010,SOTS_RAS2010PULSE_7,2,12-SEP-10,12-SEP-10,142.2566,-46.9347333,Gymnodinioid dinoflagellate 10-20 µm,Gymnodiniaceae,,,Dinoflagellate,109392,29-SEP-08,263,193890.557,,SS2010_V07,SS2011_V01,12-SEP-10,17-APR-11
 # SOTS_RAS,2010,SOTS_RAS2010PULSE_7,2,12-SEP-10,12-SEP-10,142.2566,-46.9347333,Leptocylindrus mediterraneus,Leptocylindraceae,Leptocylindrus,mediterraneus,Centric diatom,149230,29-SEP-08,26,245044.02,,SS2010_V07,SS2011_V01,12-SEP-10,17-APR-11
 
+# 2025-09-01
+#
+# data from http://imos-data.s3-website-ap-southeast-2.amazonaws.com/IMOS/BGC_DB/harvested_from_CSIRO/bgc_phyto_raw.csv
+
 
 def create_obs_idx(ncOut, var, name):
 
@@ -74,20 +78,23 @@ def create_obs_idx(ncOut, var, name):
         i += 1
 
 
-fn = 'phyto.sqlite'
+fn = 'phyto_bgc.sqlite'
 
-cnx = sqlite3.connect('phyto.sqlite')
-phyto = pd.read_sql_query("SELECT * FROM PLANKTON_SOTS_PHYTOPLANKTON ORDER BY SAMPLE_TIME", cnx)
+cnx = sqlite3.connect(fn)
+#phyto = pd.read_sql_query("SELECT * FROM bgc_phyto_raw JOIN bgc_trip USING (TRIP_CODE) WHERE STATIONCODE = 'SOTS_RAS' ORDER BY SAMPLEDATEUTC ", cnx)
+phyto = pd.read_sql_query("SELECT * FROM bgc_phyto_raw JOIN bgc_trip USING (TRIP_CODE) JOIN SOTS_RAS ON (SAMPLEDATEUTC between cmddddateinposition and cmddddateoutposition) WHERE TRIP_CODE LIKE 'SOTS_RAS%' ORDER BY SAMPLEDATEUTC", cnx)
 
 print(phyto)
 
 print('number samples', len(phyto))
 
-family = phyto.groupby(['FAMILY'])
+#family = phyto.groupby(['FAMILY'])
 genus = phyto.groupby(['GENUS'])
 species = phyto.groupby(['SPECIES'])
 taxon = phyto.groupby(['TAXON_NAME'])
-taxon_group = phyto.groupby(['TAXON_ECO_GROUP'])
+taxon_group = phyto.groupby(['TAXON_GROUP'])
+
+deployment = phyto.groupby(['cmdddname'], sort=False)
 
 outputName = fn + '.nc'
 
@@ -96,11 +103,12 @@ ncOut = Dataset(outputName, 'w', format='NETCDF4')
 
 oDim = ncOut.createDimension('OBS', len(phyto))
 sDim = ncOut.createDimension('strlen80', 80)
-fDim = ncOut.createDimension('nFAMILY', len(family))
+#fDim = ncOut.createDimension('nFAMILY', len(family))
 gDim = ncOut.createDimension('nGENUS', len(genus))
 sDim = ncOut.createDimension('nSPECIES', len(species))
 tDim = ncOut.createDimension('nTAXON', len(taxon))
 tgDim = ncOut.createDimension('nTAXON_GROUP', len(taxon_group))
+depDim = ncOut.createDimension('nDEPLOYMENT_CODE', len(deployment))
 
 ncTimesOut = ncOut.createVariable('TIME', 'd', ('OBS',), zlib=True)
 ncTimesOut.long_name = "time"
@@ -108,8 +116,9 @@ ncTimesOut.units = "days since 1950-01-01 00:00:00 UTC"
 ncTimesOut.calendar = "gregorian"
 ncTimesOut.axis = "T"
 
-date_time = [parse(x) for x in phyto['SAMPLE_TIME']]
-print(phyto['SAMPLE_TIME'])
+#date_time = [parse(x) for x in phyto['SAMPLE_TIME']]
+date_time = [parse(x) for x in phyto['SAMPLEDATEUTC']]
+print('first datetime', date_time[0])
 
 t_num = date2num(date_time, ncTimesOut.units)
 
@@ -144,21 +153,28 @@ ncDNom.valid_max = 10000
 ncDNom.valid_min = 0
 ncDNom[0] = 0.0
 
+nc_cell_Out = ncOut.createVariable('SAMPLE_DEPTH', 'f4', ('OBS',), zlib=True, fill_value=np.nan)
+nc_cell_Out.units = 'm'
+#nc_cell_Out[:] = phyto['CELL_PER_LITRE'].values
+nc_cell_Out[:] = phyto['PHYTOSAMPLEDEPTH_M'].values
+nc_cell_Out.long_name = 'sample_depth'
 
 nc_cell_Out = ncOut.createVariable('CELL', 'f4', ('OBS',), zlib=True, fill_value=np.nan)
 nc_cell_Out.units = 'litre-1'
-nc_cell_Out[:] = phyto['CELL_PER_LITRE'].values
+#nc_cell_Out[:] = phyto['CELL_PER_LITRE'].values
+nc_cell_Out[:] = phyto['CELL_L'].values
 nc_cell_Out.standard_name = 'number_concentration_of_biological_taxon_in_sea_water'
 
 nc_bv_out = ncOut.createVariable('VOLUME', 'f4', ('OBS',), zlib=True, fill_value=np.nan)
 nc_bv_out.units = 'm^3/litre'
-nc_bv_out[:] = [np.nan if x == '' else float(x) for x in phyto['BIOVOLUME_UM3_PER_L'].values]
+#nc_bv_out[:] = [np.nan if x == '' else float(x) for x in phyto['BIOVOLUME_UM3L'].values]
+nc_bv_out[:] = [np.nan if x == '' else float(x) for x in phyto['BIOVOLUME_UM3L'].values]
 
-# nc_method_out = ncOut.createVariable('METHOD', 'i1', ('OBS',), zlib=True, fill_value=-1)
-# nc_method_out.units = '1'
-# nc_method_out.long_name = 'analysis method'
-# nc_method_out.units = '0 = Light Microscope, 1 = Scanning Electron Microscope'
-# nc_method_out[:] = [0 if x == 'LM' else 1 if x == 'SEM' else -1 for x in phyto['METHOD']]
+nc_method_out = ncOut.createVariable('METHOD', 'i1', ('OBS',), zlib=True, fill_value=-1)
+nc_method_out.units = '1'
+nc_method_out.long_name = 'analysis method'
+nc_method_out.units = '0 = Light Microscope, 1 = Scanning Electron Microscope'
+nc_method_out[:] = [0 if x == 'LM' else 1 if x == 'SEM' else -1 for x in phyto['METHODS']]
 
 # nc_sample_n_out = ncOut.createVariable('SAMPLE_NUMBER', 'i2', ('OBS'), zlib=True, fill_value=-1)
 # nc_sample_n_out.comment = 'sample number'
@@ -170,14 +186,16 @@ nc_bv_out[:] = [np.nan if x == '' else float(x) for x in phyto['BIOVOLUME_UM3_PE
 nc_aphia_id_out = ncOut.createVariable('APHIA_ID', 'i4', ('OBS'), zlib=True, fill_value=-1)
 #nc_aphia_id_out.valid_min = int(0)
 nc_aphia_id_out.comment = 'https://www.marinespecies.org/aphia.php'
-aphia_id = [-1 if x == '' or x is None else float(x) for x in phyto['WORMS_APHIA_ID'].values]
+#aphia_id = [-1 if x == '' or x is None else float(x) for x in phyto['WORMS_APHIA_ID'].values]
+aphia_id = [-1 if x == '' or x is None else float(x) for x in phyto['SPCODE'].values]
 nc_aphia_id_out[:] = aphia_id
 
-create_obs_idx(ncOut, family, 'FAMILY')
+#create_obs_idx(ncOut, family, 'FAMILY')
 create_obs_idx(ncOut, genus, 'GENUS')
 create_obs_idx(ncOut, species, 'SPECIES')
 create_obs_idx(ncOut, taxon, 'TAXON')
 create_obs_idx(ncOut, taxon_group, 'TAXON_GROUP')
+create_obs_idx(ncOut, deployment, 'DEPLOYMENT_CODE')
 
 ncOut.variables['TAXON'].standard_name = 'biological_taxon_name'
 ncOut.variables['APHIA_ID'].standard_name = 'biological_taxon_identifier' # these are not really WoRMS (AphidID) codes eg aphia:104464 , but should be

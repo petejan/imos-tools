@@ -120,6 +120,14 @@ This can include any other data sources (PAR, FLNTUS, pCO2, ...)
 
     python3 ocean_dp\processing\calc_mld.py SOFS-10-2021.sqlite.nc
 
+## add gridding attributes
+
+    python -m ocean_dp.attribution.addAttributes SOFS-13-2024.sqlite.nc metadata\gridded.metadata.csv
+
+## rename to imosFile
+
+    python -m ocean_dp.file_name.imosNetCDFfileName SOFS-13-2024.sqlite.nc
+
 This can be used directly in MatLAB,
 
 ```matlab
