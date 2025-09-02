@@ -8,6 +8,7 @@ sqlite3 phyto_bgc.sqlite ".import --csv bgc_phyto_raw.csv bgc_phyto_raw"
 sqlite3 phyto_bgc.sqlite ".import --csv bgc_trip.csv bgc_trip"
 sqlite3 phyto_bgc.sqlite ".import --csv phytoinfo.csv phytoinfo"
 
+sqlite3 phyto_bgc.sqlite ".import --csv SOTS-RAS-deployments.csv SOTS_RAS"
 
 sqlite3 phyto_bgc.sqlite "ALTER TABLE phytoinfo ADD WORMS_APHIA_ID TEXT"
 sqlite3 phyto_bgc.sqlite "ALTER TABLE phytoinfo ADD FAMILY TEXT"
