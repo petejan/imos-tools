@@ -57,6 +57,7 @@ from dateutil.tz import *
 # data from http://imos-data.s3-website-ap-southeast-2.amazonaws.com/IMOS/BGC_DB/harvested_from_CSIRO/bgc_phyto_raw.csv
 
 
+# create a index for each 'group'
 def create_obs_idx(ncOut, var, name):
 
     nc_out = ncOut.createVariable(name, 'S1', ('n'+name, 'strlen80',), zlib=True)
@@ -68,39 +69,40 @@ def create_obs_idx(ncOut, var, name):
         #print(f[0][0])
         try:
             nc_out[i] = stringtoarr(f[0][0], 80, dtype='U')
-            # s = np.array(f[0], 'S80')
-            # nc_out[i] = stringtochar(f[0][0], encoding='utf-8')
-            # nc_out[i] = f[0].encode('utf-8')
-            # nc_out[i] = f[0]
         except UnicodeEncodeError:
             pass
         nc_idx_out[f[1].index] = i
         i += 1
 
 
+# connect to database, and select 'SOTS RAS' data from data table, combined with trip table and SOTS deployment table
 fn = 'phyto_bgc.sqlite'
 
 cnx = sqlite3.connect(fn)
-#phyto = pd.read_sql_query("SELECT * FROM bgc_phyto_raw JOIN bgc_trip USING (TRIP_CODE) WHERE STATIONCODE = 'SOTS_RAS' ORDER BY SAMPLEDATEUTC ", cnx)
 phyto = pd.read_sql_query("SELECT * FROM bgc_phyto_raw JOIN bgc_trip USING (TRIP_CODE) JOIN SOTS_RAS ON (SAMPLEDATEUTC between cmddddateinposition and cmddddateoutposition) WHERE TRIP_CODE LIKE 'SOTS_RAS%' ORDER BY SAMPLEDATEUTC", cnx)
 
 print(phyto)
-
 print('number samples', len(phyto))
 
+
+# create a 'group' for GENUS, SPECIES, TAXON_NAME and TAXON_GROUP, these are used to create an index for each OBS
 #family = phyto.groupby(['FAMILY'])
 genus = phyto.groupby(['GENUS'])
 species = phyto.groupby(['SPECIES'])
 taxon = phyto.groupby(['TAXON_NAME'])
 taxon_group = phyto.groupby(['TAXON_GROUP'])
 
+# get the deployment code for SOTS RAS
 deployment = phyto.groupby(['cmdddname'], sort=False)
 
+
+# create a netCDF file
 outputName = fn + '.nc'
 
 ncOut = Dataset(outputName, 'w', format='NETCDF4')
 #ncOut.comment = 'data downloaded from https://www.cmar.csiro.au/geoserver/ows?service=wfs&version=2.0.0&request=GetFeature&typeName=imos:PLANKTON_SOTS_PHYTOPLANKTON&srsName=EPSG%3A4326&sortby=imos:SAMPLE_TIME&outputFormat=csv'
 
+# create dimensions, one for each group and a OBS dimension for each observation (count and biovolume) of a species
 oDim = ncOut.createDimension('OBS', len(phyto))
 sDim = ncOut.createDimension('strlen80', 80)
 #fDim = ncOut.createDimension('nFAMILY', len(family))
@@ -110,6 +112,7 @@ tDim = ncOut.createDimension('nTAXON', len(taxon))
 tgDim = ncOut.createDimension('nTAXON_GROUP', len(taxon_group))
 depDim = ncOut.createDimension('nDEPLOYMENT_CODE', len(deployment))
 
+# create the TIME variable for each observation
 ncTimesOut = ncOut.createVariable('TIME', 'd', ('OBS',), zlib=True)
 ncTimesOut.long_name = "time"
 ncTimesOut.units = "days since 1950-01-01 00:00:00 UTC"
@@ -124,6 +127,7 @@ t_num = date2num(date_time, ncTimesOut.units)
 
 ncTimesOut[:] = t_num
 
+# add the CF coordinates
 ncLat = ncOut.createVariable('LATITUDE', 'd', (), zlib=True)
 ncLat.long_name = "latitude"
 ncLat.units = "degrees_north"
@@ -153,12 +157,14 @@ ncDNom.valid_max = 10000
 ncDNom.valid_min = 0
 ncDNom[0] = 0.0
 
+# each 'obs' has a sample depth
 nc_cell_Out = ncOut.createVariable('SAMPLE_DEPTH', 'f4', ('OBS',), zlib=True, fill_value=np.nan)
 nc_cell_Out.units = 'm'
 #nc_cell_Out[:] = phyto['CELL_PER_LITRE'].values
 nc_cell_Out[:] = phyto['PHYTOSAMPLEDEPTH_M'].values
 nc_cell_Out.long_name = 'sample_depth'
 
+# not the count and biovolume
 nc_cell_Out = ncOut.createVariable('CELL', 'f4', ('OBS',), zlib=True, fill_value=np.nan)
 nc_cell_Out.units = 'litre-1'
 #nc_cell_Out[:] = phyto['CELL_PER_LITRE'].values
@@ -170,6 +176,7 @@ nc_bv_out.units = 'm^3/litre'
 #nc_bv_out[:] = [np.nan if x == '' else float(x) for x in phyto['BIOVOLUME_UM3L'].values]
 nc_bv_out[:] = [np.nan if x == '' else float(x) for x in phyto['BIOVOLUME_UM3L'].values]
 
+# add a 'METHOD' variable to hold light microscope or SEM
 nc_method_out = ncOut.createVariable('METHOD', 'i1', ('OBS',), zlib=True, fill_value=-1)
 nc_method_out.units = '1'
 nc_method_out.long_name = 'analysis method'
@@ -182,6 +189,8 @@ nc_method_out[:] = [0 if x == 'LM' else 1 if x == 'SEM' else -1 for x in phyto['
 # sample_n = [-1 if x == '' else float(x) for x in phyto['SAMPLE_NUMBER'].values]
 # nc_sample_n_out[:] = sample_n
 
+# add the World Register of Marine Species WORMS_APHIA_ID (the species code) for each observation
+# urn:lsid:marinespecies.org:taxname:
 #nc_aphia_id_out = ncOut.createVariable('APHIA_ID', 'i4', ('OBS', 'strlen80'), zlib=True, fill_value=-1)
 nc_aphia_id_out = ncOut.createVariable('APHIA_ID', 'i4', ('OBS'), zlib=True, fill_value=-1)
 #nc_aphia_id_out.valid_min = int(0)
@@ -190,16 +199,18 @@ nc_aphia_id_out.comment = 'https://www.marinespecies.org/aphia.php'
 aphia_id = [-1 if x == '' or x is None else float(x) for x in phyto['SPCODE'].values]
 nc_aphia_id_out[:] = aphia_id
 
+# create the indexes for each grouping
 #create_obs_idx(ncOut, family, 'FAMILY')
 create_obs_idx(ncOut, genus, 'GENUS')
 create_obs_idx(ncOut, species, 'SPECIES')
 create_obs_idx(ncOut, taxon, 'TAXON')
-create_obs_idx(ncOut, taxon_group, 'TAXON_GROUP')
+create_obs_idx(ncOut, taxon_group, 'TAXON_GROUP') # this is Infraphylum on WoRMS
 create_obs_idx(ncOut, deployment, 'DEPLOYMENT_CODE')
 
 ncOut.variables['TAXON'].standard_name = 'biological_taxon_name'
 ncOut.variables['APHIA_ID'].standard_name = 'biological_taxon_identifier' # these are not really WoRMS (AphidID) codes eg aphia:104464 , but should be
 
+# final metadata
 ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
 
 # add timespan attributes
@@ -213,6 +224,7 @@ ncOut.setncattr("history", datetime.now(UTC).strftime("%Y-%m-%d") + " created fr
 ncOut.setncattr("contributor_name", "Eriksen, Ruth")
 ncOut.setncattr("contributor_role", "phytoplankton identification")
 
+# hard coded location for SOTS
 ncOut.geospatial_lat_max = -47.0
 ncOut.geospatial_lat_min = -47.0
 
@@ -220,5 +232,3 @@ ncOut.geospatial_lon_min = 142.0
 ncOut.geospatial_lon_max = 142.0
 
 ncOut.close()
-
-
