@@ -19,6 +19,7 @@ import sys
 import gsw
 import numpy as np
 from datetime import datetime, UTC
+from glob2 import glob
 
 
 # add density to a data file with TEMP, PSAL, PRES variables, many assumptions are made about the input file
@@ -133,5 +134,9 @@ def add_density(netCDFfile):
 
 
 if __name__ == "__main__":
+    files = []
     for f in sys.argv[1:]:
+        files.extend(glob(f))
+
+    for f in files:
         add_density(f)
