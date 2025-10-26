@@ -1709,7 +1709,7 @@ GLOBAL,,,processing_site_code,25,2015-03-20,2016-04-14,,,,deployment_code,str,SO
 GLOBAL,,,CR1000,SOFS-5-42881,2015-03-20,2016-04-14,,,,deployment_code,str,SOFS-5-2015
 GLOBAL,,,ACR8242XS,33555,2015-03-20,2016-04-14,,,,deployment_code,str,SOFS-5-2015
 GLOBAL,,,ACR8242XS,35970,2015-03-20,2016-04-14,,,,deployment_code,str,SOFS-5-2015
-GLOBAL,,,LI-190SA,unknown,2015-03-20,2016-04-14,,,,deployment_code,str,SOFS-5-2015
+GLOBAL,,,LI-190SA,Q47470,2015-03-20,2016-04-14,,,,deployment_code,str,SOFS-5-2015
 GLOBAL,,,3DM-GX1,5357,2015-03-20,2016-04-14,,,,deployment_code,str,SOFS-5-2015
 GLOBAL,,,9602-LP,3.00E+14,2015-03-20,2016-04-14,,,,deployment_code,str,SOFS-5-2015
 GLOBAL,,,9602-N,3.00E+14,2015-03-20,2016-04-14,,,,deployment_code,str,SOFS-5-2015
@@ -1787,15 +1787,15 @@ GLOBAL,,SOFS-5-2015,,,2015-03-20,2016-04-14,,,,time_deployment_end,str,2016-04-1
 GLOBAL,,SOFS-5-2015,,,,,,,,voyage_deployment,str,http://www.cmar.csiro.au/data/trawler/survey_details.cfm?survey=IN2015_V01
 GLOBAL,,SOFS-5-2015,,,,,,,,voyage_recovery,str,http://www.cmar.csiro.au/data/trawler/survey_details.cfm?survey=IN2016_V02
 GLOBAL,,SOFS-5-2015,LI-190SA,unknown,2015-03-20,2016-04-14,,,,instrument_serial_number,str,Q47470
-VAR_ATT,PAR,SOFS-5-2015,LI-190SA,unknown,2015-03-20,2016-04-14,,,,calibration_date,str,"March 02, 2012"
-VAR_ATT,PAR,SOFS-5-2015,LI-190SA,unknown,2015-03-20,2016-04-14,,,,calibration_units,str,umol s-1 m-2 per uamp
-VAR_ATT,PAR,SOFS-5-2015,LI-190SA,unknown,2015-03-20,2016-04-14,,,,calibration_constant,str,8.19
-VAR_ATT,PAR,SOFS-5-2015,LI-190SA,unknown,2015-03-20,2016-04-14,,,,calibration_multiplier,str,-122.04
-VAR_ATT,PAR,SOFS-5-2015,LI-190SA,unknown,2015-03-20,2016-04-14,,,,calibration_resistor,str,604
-VAR_ATT,PAR,SOFS-5-2015,LI-190SA,unknown,2015-03-20,2016-04-14,,,,comment_scale_offset,str,202.05 0
-VAR_ATT,PAR,SOFS-5-2015,LI-190SA,unknown,2015-03-20,2016-04-14,,,,standard_name,str,surface_downwelling_photosynthetic_photon_flux_in_air
-VAR_ATT,PAR,SOFS-5-2015,LI-190SA,unknown,2015-03-20,2016-04-14,,,,long_name,str,surface_downwelling_photosynthetic_photon_flux_in_air
-VAR_ATT,PAR,SOFS-5-2015,LI-190SA,unknown,2015-03-20,2016-04-14,,,,units,str,umol/m^2/s
+VAR_ATT,PAR,SOFS-5-2015,LI-190SA,Q47470,2015-03-20,2016-04-14,,,,calibration_date,str,"March 02, 2012"
+VAR_ATT,PAR,SOFS-5-2015,LI-190SA,Q47470,2015-03-20,2016-04-14,,,,calibration_units,str,umol s-1 m-2 per uamp
+VAR_ATT,PAR,SOFS-5-2015,LI-190SA,Q47470,2015-03-20,2016-04-14,,,,calibration_constant,str,8.19
+VAR_ATT,PAR,SOFS-5-2015,LI-190SA,Q47470,2015-03-20,2016-04-14,,,,calibration_multiplier,str,-122.04
+VAR_ATT,PAR,SOFS-5-2015,LI-190SA,Q47470,2015-03-20,2016-04-14,,,,calibration_resistor,str,604
+VAR_ATT,PAR,SOFS-5-2015,LI-190SA,Q47470,2015-03-20,2016-04-14,,,,comment_scale_offset,str,202.05 0
+VAR_ATT,PAR,SOFS-5-2015,LI-190SA,Q47470,2015-03-20,2016-04-14,,,,standard_name,str,surface_downwelling_photosynthetic_photon_flux_in_air
+VAR_ATT,PAR,SOFS-5-2015,LI-190SA,Q47470,2015-03-20,2016-04-14,,,,long_name,str,surface_downwelling_photosynthetic_photon_flux_in_air
+VAR_ATT,PAR,SOFS-5-2015,LI-190SA,Q47470,2015-03-20,2016-04-14,,,,units,str,umol/m^2/s
 
 VAR,NOMINAL_DEPTH,SOFS-5-2015,MF-AZFP,55046,2015-03-20,2016-04-14,NOMINAL_DEPTH,(),(),,float64,30
 VAR,NOMINAL_DEPTH,SOFS-5-2015,DCS,197,2015-03-20,2016-04-14,NOMINAL_DEPTH,(),(),,float64,200
@@ -1815,7 +1815,7 @@ VAR,NOMINAL_DEPTH,SOFS-5-2015,processing_site_code,25,2015-03-20,2016-04-14,NOMI
 VAR,NOMINAL_DEPTH,SOFS-5-2015,CR1000,SOFS-5-42881,2015-03-20,2016-04-14,NOMINAL_DEPTH,(),(),,float64,0
 VAR,NOMINAL_DEPTH,SOFS-5-2015,ACR8242XS,33555,2015-03-20,2016-04-14,NOMINAL_DEPTH,(),(),,float64,4400
 VAR,NOMINAL_DEPTH,SOFS-5-2015,ACR8242XS,35970,2015-03-20,2016-04-14,NOMINAL_DEPTH,(),(),,float64,4400
-VAR,NOMINAL_DEPTH,SOFS-5-2015,LI-190SA,unknown,2015-03-20,2016-04-14,NOMINAL_DEPTH,(),(),,float64,-1.8
+VAR,NOMINAL_DEPTH,SOFS-5-2015,LI-190SA,Q47470,2015-03-20,2016-04-14,NOMINAL_DEPTH,(),(),,float64,-1.8
 VAR,NOMINAL_DEPTH,SOFS-5-2015,3DM-GX1,5357,2015-03-20,2016-04-14,NOMINAL_DEPTH,(),(),,float64,0
 VAR,NOMINAL_DEPTH,SOFS-5-2015,9602-LP,3.00E+14,2015-03-20,2016-04-14,NOMINAL_DEPTH,(),(),,float64,0
 VAR,NOMINAL_DEPTH,SOFS-5-2015,9602-N,3.00E+14,2015-03-20,2016-04-14,NOMINAL_DEPTH,(),(),,float64,0

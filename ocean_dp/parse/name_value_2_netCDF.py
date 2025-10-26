@@ -74,7 +74,7 @@ def parse(files, instrument, serial, vars):
         line = fp.readline()
         while line:
             line = line.strip('"')
-            #print("Line ", line)
+            print("Line ", line)
             lineSplit = line.strip().split(sep)
             #print('Split ', lineSplit)
 
@@ -91,8 +91,10 @@ def parse(files, instrument, serial, vars):
                         name = nv[0].strip(" ")
                         value = float(nv[1].strip(" "))
                         #print(name, value)
-                        if name in vars and name in name_map:
-                            point.append((name_map[name], value))
+                        if name in name_map:
+                            if name in vars:
+                                point.append((name_map[name], value))
+
                             #print(point)
                     except ValueError: # bad float value
                         pass
@@ -105,6 +107,7 @@ def parse(files, instrument, serial, vars):
             line = fp.readline()
 
     # trim data
+    print('data shape', len(data))
     print("samplesRead %d" % (number_samples_read))
 
     if number_samples_read == 0:
@@ -124,9 +127,9 @@ def parse(files, instrument, serial, vars):
 
     ncOut = Dataset(outputName, 'w', format='NETCDF4_CLASSIC')
 
-    #ncOut.instrument = 'LI-COR ; ' + instrument_model
-    #ncOut.instrument_model = instrument_model
-    #ncOut.instrument_serial_number = instrument_serial_number
+    ncOut.instrument = 'LI-COR ; ' + instrument_model
+    ncOut.instrument_model = instrument_model
+    ncOut.instrument_serial_number = instrument_serial_number
 
     for s in settings:
         ncOut.setncattr("comment_file_settings_" + s[0], s[1])
@@ -145,8 +148,9 @@ def parse(files, instrument, serial, vars):
     ncTimesOut[:] = date2num(ts, units=ncTimesOut.units, calendar=ncTimesOut.calendar)
 
     n = 0
+    print('data first point', data[n][0])
     for name in point:
-        print(name)
+        print('point name', name)
 
         ncVarOut = ncOut.createVariable(name[0], "f4", ("TIME",), fill_value=np.nan, zlib=True) # fill_value=nan otherwise defaults to max
         ncVarOut[:] = [v[n][1] for v in data]

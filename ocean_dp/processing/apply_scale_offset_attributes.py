@@ -22,7 +22,7 @@ import gsw
 import numpy as np
 from datetime import datetime, UTC
 
-# add OXSOL to a data file with TEMP, PSAL, PRES variables, many assumptions are made about the input file
+# apply any scale/offset attributes to the variable
 
 ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
 
@@ -45,11 +45,12 @@ def apply_scale_offset(netCDFfiles):
             scale = float(scale_offset_split[0])
             offset = float(scale_offset_split[1])
 
-            v.renameAttribute('comment_scale_offset', 'comment_scale_offset_applied')
             v.comment_scale_offset_applied = "scale = " + str(scale) + " offset = " + str(offset)
 
             t = v[:]
             v[:] = t * float(scale) + float(offset)
+
+            v.delncattr('comment_scale_offset')
 
             # update the history attribute
             try:

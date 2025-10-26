@@ -98,7 +98,7 @@ def add_solar(netCDFfiles):
             depth = np.ones_like(rad) * ndepth
             par = rad * np.exp(-0.04 * depth) * 2.114
         else:
-            par = rad * 2.114
+            par = [float(r) * 2.114 for r in rad]
 
         print("altitude", altitude_deg[0], " rad ", rad[0])
 
