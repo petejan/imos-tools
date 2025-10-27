@@ -49,6 +49,10 @@ def parseRAW(file, dataset, summary_file):
 
         pkt_len, type, ts = struct.unpack('<l4sq', hdr_data)
 
+        if pkt_len - 8 - 4 < 0:
+            note = 'negative packet length'
+            break
+
         us = ts/10
         dt = datetime(1601, 1, 1) + timedelta(microseconds=us)
         if first_time is None:
