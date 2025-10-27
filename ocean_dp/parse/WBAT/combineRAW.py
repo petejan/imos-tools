@@ -188,6 +188,8 @@ def parseRAW(file, out_file):
     par_xml = None
     first_time = None
 
+    resample_3_4 = False
+
     raw_samples = 0
 
     packet = read_packet(f)
@@ -212,32 +214,34 @@ def parseRAW(file, out_file):
         data_out = datagram['content']
 
         # re-write data
-        if data['type'] == 'RAW3':
-            old_samples = int((len(data_out) - 140) / 4 / 4 / 2)
-            new_samples = int(old_samples * 3 / 4)
-            print('   RAW3: new_samples, old_samples', new_samples, old_samples)
-            new_len = (new_samples * 4 * 4 * 2) + 140
-            data_out = bytearray(new_len)
+        if resample_3_4:
+            if data['type'] == 'RAW3':
+                old_samples = int((len(data_out) - 140) / 4 / 4 / 2)
+                new_samples = int(old_samples * 3 / 4)
+                print('   RAW3: new_samples, old_samples', new_samples, old_samples)
+                new_len = (new_samples * 4 * 4 * 2) + 140
+                data_out = bytearray(new_len)
 
-            # copy the header
-            data_out[0:140] = datagram['content'][0:140]
+                # copy the header
+                data_out[0:140] = datagram['content'][0:140]
 
-            # modify the data_type pos from 1032 (complex32 4 channel to complex32 3 channel)
-            data_type_pos = 128
-            old_dt = struct.unpack('<h', data_out[data_type_pos:data_type_pos+2])
-            print(' new n_complex', 776, old_dt)
-            data_out[data_type_pos:data_type_pos+2] = struct.pack('<h', 776)
+                # modify the data_type pos from 1032 (complex32 4 channel to complex32 3 channel)
+                data_type_pos = 128
+                old_dt = struct.unpack('<h', data_out[data_type_pos:data_type_pos+2])
+                print(' new n_complex', 776, old_dt)
+                data_out[data_type_pos:data_type_pos+2] = struct.pack('<h', 776)
 
-            # now shuffle samples
-            #  channel old 4 : new 3
-            #    samples 2 (real imag)
-            #       complex 4 bytes
-            samples_pos = 140
+                # now shuffle samples
+                #  channel old 4 : new 3
+                #    samples 2 (real imag)
+                #       complex 4 bytes
+                samples_pos = 140
 
-            for i in range(0, old_samples):
-                #print('   RAW3: shuffle', i)
-                data_out[samples_pos + (i*4*3*2):samples_pos + (i*4*3*2)+8*3] = datagram['content'][samples_pos + (i*4*4*2):samples_pos + (i*4*4*2)+8*3]
+                for i in range(0, old_samples):
+                    #print('   RAW3: shuffle', i)
+                    data_out[samples_pos + (i*4*3*2):samples_pos + (i*4*3*2)+8*3] = datagram['content'][samples_pos + (i*4*4*2):samples_pos + (i*4*4*2)+8*3]
 
+        # remove deplicate XML0 packets
         if data['type'] == 'XML0':
             if 'Configuration' in data['datagram_content']:
                 print('   XML0: ', data['datagram_content'])

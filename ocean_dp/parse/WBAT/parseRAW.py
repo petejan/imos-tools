@@ -34,11 +34,20 @@ def parseRAW(file, dataset, summary_file):
 
     samples_in_file = 0
 
-    hdr_len = 4*4
-    d = f.read(hdr_len)
-    while d:
+    dt = None
+    N1 = None
+    N2 = None
 
-        pkt_len, type, ts = struct.unpack('<l4sq', d)
+    hdr_len = 4*4
+    hdr_data = f.read(hdr_len)
+    note = ""
+    while hdr_data:
+
+        if len(hdr_data) < 16:
+            note = 'not enough bytes to read header'
+            break
+
+        pkt_len, type, ts = struct.unpack('<l4sq', hdr_data)
 
         us = ts/10
         dt = datetime(1601, 1, 1) + timedelta(microseconds=us)
@@ -48,6 +57,22 @@ def parseRAW(file, dataset, summary_file):
         print(' packet', pkt_len, type, dt)
 
         d = f.read(pkt_len - 8 - 4)
+        if not d:
+            note = 'no more bytes'
+            break
+
+        d_end = f.read(4)
+        # if len(d) != 4:
+        #     print('not enough bytes to read end length')
+        #     break
+
+        len_end, = struct.unpack('<l', d_end)
+
+        print(' len_end', len_end)
+
+        if len_end != pkt_len:
+            note = 'lengths dont match'
+            break
 
         if type == b'XML0':
             xml = d.decode('utf-8')
@@ -103,8 +128,9 @@ def parseRAW(file, dataset, summary_file):
 
             print('  RAW3: size, tuples', sample_size_n, size_tuple_set)
 
-            total_filter_delay = (N1/2/D1 + N2/2) / D2
-            print('   total filter delay', total_filter_delay)
+            if N1 is not None and N2 is not None:
+                total_filter_delay = (N1/2/D1 + N2/2) / D2
+                print('   total filter delay', total_filter_delay)
 
             samples = struct.unpack('<' + str(data_samples * count * 2) + 'f', d[pos:])
 
@@ -144,18 +170,11 @@ def parseRAW(file, dataset, summary_file):
                 pos += 4
                 #print('    filter', i, 'coeff', filter_coeff)
 
-        d_end = f.read(4)
-        len_end, = struct.unpack('<l', d_end)
+        hdr_data = f.read(hdr_len)
 
-        print(' len_end', len_end)
+        print(' len_next', len(hdr_data))
 
-        d = f.read(hdr_len)
-
-        print(' len_next', len(d))
-
-    summary_file.write(',first_time,' + str(first_time) + ',last_time,' + str(dt) + ',samples_in_file,' + str(samples_in_file) + '\n')
-
-
+    summary_file.write(',first_time,' + str(first_time) + ',last_time,' + str(dt) + ',samples_in_file,' + str(samples_in_file) + ',' + note + '\n')
 
     print()
 
