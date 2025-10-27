@@ -45,7 +45,13 @@ def read_packet(file):
 
         d = file.read(pkt_len)
 
+        if len(d) != pkt_len:
+            return None
+        
         pkt_len_end = file.read(4)
+
+        if pkt_len_end != pkt_len:
+            return None
 
     return d
 
@@ -58,6 +64,9 @@ def write_packet(file, length, data):
 
 
 def decode_hdr(packet):
+
+    if len(packet) < 12:
+        return None
 
     datagram_type, ts = struct.unpack('<4sq', packet[0:12])
     content = packet[12:]

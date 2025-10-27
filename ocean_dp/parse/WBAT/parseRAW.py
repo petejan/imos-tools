@@ -47,7 +47,7 @@ def parseRAW(file, dataset, summary_file):
             note = 'not enough bytes to read header'
             break
 
-        pkt_len, type, ts = struct.unpack('<l4sq', hdr_data)
+        pkt_len, type, ts = struct.unpack('<L4sq', hdr_data)
 
         if pkt_len - 8 - 4 < 0:
             note = 'negative packet length'
@@ -70,7 +70,7 @@ def parseRAW(file, dataset, summary_file):
         #     print('not enough bytes to read end length')
         #     break
 
-        len_end, = struct.unpack('<l', d_end)
+        len_end, = struct.unpack('<L', d_end)
 
         print(' len_end', len_end)
 
