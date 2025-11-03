@@ -1,3 +1,4 @@
+import os
 import struct
 import sys
 from datetime import datetime, timedelta
@@ -47,12 +48,17 @@ def parseRAW(file, dataset, summary_file):
             note = 'not enough bytes to read header'
             break
 
-        pkt_len, type, ts = struct.unpack('<L4sq', hdr_data)
+        pkt_len, type, ts = struct.unpack('<L4sQ', hdr_data)
 
         if pkt_len - 8 - 4 < 0:
             note = 'negative packet length'
             break
 
+        if ts > 2000000000000000000:
+            note = 'timestamp out of range'
+            break
+
+        print(ts)
         us = ts/10
         dt = datetime(1601, 1, 1) + timedelta(microseconds=us)
         if first_time is None:
@@ -66,9 +72,9 @@ def parseRAW(file, dataset, summary_file):
             break
 
         d_end = f.read(4)
-        # if len(d) != 4:
-        #     print('not enough bytes to read end length')
-        #     break
+        if len(d_end) != 4:
+            print('not enough bytes to read end length')
+            break
 
         len_end, = struct.unpack('<L', d_end)
 
@@ -186,11 +192,13 @@ def parseRAW(file, dataset, summary_file):
 if __name__ == "__main__":
 
     text_file = open("summary.txt", "w")
-    dataset = Dataset('WBAT.nc', 'w', format='NETCDF4')
 
     files = []
     for f in sys.argv[1:]:
         files.extend(glob(f))
+
+    out_filename = os.path.splitext(os.path.basename(files[0]))[0] + '.nc'
+    dataset = Dataset(out_filename, 'w', format='NETCDF4')
 
     for f in files:
         parseRAW(f, dataset, text_file)

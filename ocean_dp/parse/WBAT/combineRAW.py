@@ -1,3 +1,4 @@
+import os.path
 import struct
 import sys
 from datetime import datetime, timedelta
@@ -39,21 +40,20 @@ def read_packet(file):
     d = None
 
     if pkt_len_bytes:
-        pkt_len, = struct.unpack('<l', pkt_len_bytes)
+        pkt_len, = struct.unpack('<L', pkt_len_bytes)
 
-        print('packet len', pkt_len)
+        #print('packet len', pkt_len)
 
         d = file.read(pkt_len)
 
-        if len(d) != pkt_len:
-            return None
-        
         pkt_len_end = file.read(4)
+        if pkt_len_end:
+            end_len, = struct.unpack('<L', pkt_len_end)
+            #print('parse', pkt_len, end_len)
+            if end_len == pkt_len:
+                return d
 
-        if pkt_len_end != pkt_len:
-            return None
-
-    return d
+    return None
 
 
 def write_packet(file, length, data):
@@ -68,11 +68,14 @@ def decode_hdr(packet):
     if len(packet) < 12:
         return None
 
-    datagram_type, ts = struct.unpack('<4sq', packet[0:12])
+    datagram_type, ts = struct.unpack('<4sQ', packet[0:12])
     content = packet[12:]
 
+    if ts > 2000000000000000000:
+        note = 'timestamp out of range'
+        return None
+
     # decode the time into a datetime
-    # us = ((ts_h * 2**32) + ts_l)/10
     us = ts / 10
     dt = datetime(1601, 1, 1) + timedelta(microseconds=us)
 
@@ -197,7 +200,7 @@ def parseRAW(file, out_file):
     par_xml = None
     first_time = None
 
-    resample_3_4 = False
+    resample_3_4 = True
 
     raw_samples = 0
 
@@ -225,6 +228,9 @@ def parseRAW(file, out_file):
         # re-write data
         if resample_3_4:
             if data['type'] == 'RAW3':
+                # TODO: should we change the ChannelID (from EKA 261185-0F ES38D to  EKA 261185-0F ES38-18DK)
+
+                # calculate number of samples new and old
                 old_samples = int((len(data_out) - 140) / 4 / 4 / 2)
                 new_samples = int(old_samples * 3 / 4)
                 print('   RAW3: new_samples, old_samples', new_samples, old_samples)
@@ -282,14 +288,18 @@ def parseRAW(file, out_file):
 if __name__ == "__main__":
 
 
-    out_file = open('outfile.raw', 'wb')
-
     files = []
     for f in sys.argv[1:]:
         files.extend(glob(f))
 
-    for f in files:
-        parseRAW(f, out_file)
+    if len(files) > 0:
+        out_filename = os.path.splitext(os.path.basename(files[0]))[0] + '-resample.raw'
+        out_file = open(out_filename, 'wb')
 
-    out_file.close()
+        files.sort()
+
+        for f in files:
+            parseRAW(f, out_file)
+
+        out_file.close()
 
