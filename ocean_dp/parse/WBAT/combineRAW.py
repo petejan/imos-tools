@@ -103,9 +103,9 @@ def pack_datagram(ts, datagram_type, content):
 def decode_XML(datagram):
 
     datagram_content = datagram.decode('utf-8')
-    print('  XML')
-    print()
-    print(datagram_content)
+    #print('  XML')
+    #print()
+    #print(datagram_content)
 
     return {'type': 'XML0', 'datagram_content': datagram_content}
 
@@ -209,19 +209,6 @@ def parseRAW(file, out_file):
         datagram = decode_hdr(packet)
 
         data = decode_datagram(datagram['datagram_type'], datagram['content'])
-        if data['type'] == 'FIL1':
-            stage = data['stage']
-            no_of_coeff = data['no_coeff']
-            decimation_factor = data['decimation_factor']
-            if stage == 1:
-                N1 = no_of_coeff
-                D1 = decimation_factor
-            if stage == 2:
-                N2 = no_of_coeff
-                D2 = decimation_factor
-
-                total_filter_delay = (N1 / 2 / D1 + N2 / 2) / D2
-                print('   total filter delay', total_filter_delay)
 
         data_out = datagram['content']
 
@@ -259,17 +246,23 @@ def parseRAW(file, out_file):
         # remove deplicate XML0 packets
         if data['type'] == 'XML0':
             if 'Configuration' in data['datagram_content']:
-                print('   XML0: ', data['datagram_content'])
+                #print('   XML0: ', data['datagram_content'])
                 if first_config:
                     data_out = None
+                else:
+                    config_string = data_out.decode('utf-8')
+                    config_string = config_string.replace('BeamType=\"1\"', 'BeamType=\"17\"')
+                    data_out = config_string.encode('utf-8')
                 first_config = True
+
             elif 'Environment' in data['datagram_content']:
-                print('   XML0: ', data['datagram_content'])
+                #print('   XML0: ', data['datagram_content'])
                 if first_env:
                     data_out = None
                 first_env = True
             elif 'Parameter' in data['datagram_content']:
-                print('   XML0: ', data['datagram_content'])
+                #print('   XML0: ', data['datagram_content'])
+                par_xml = data['datagram_content']
 
         # write out to combined file
         if data_out is not None:
