@@ -52,6 +52,11 @@ def getDateOrDefault(dataset, name, default):
 
     return value
 
+# find duplicates in data fils
+# select count(*), deployment_code, file_version, instrument_model, instrument_serial_number, group_concat(name)
+# 	from file group by deployment_code, file_version, instrument_serial_number
+# 	having count(*) > 1 order by deployment_code, file_version, date_created
+
 
 def sqlite_insert(con, http, opendap):
 
@@ -59,118 +64,130 @@ def sqlite_insert(con, http, opendap):
 
     nc = Dataset(opendap, "r")
 
-    title = getAttributeOrDefault(nc, 'title', None)
-
-    site_code = getAttributeOrDefault(nc, 'site_code', None)
-    platform_code = getAttributeOrDefault(nc, 'platform_code', None)
+    # title = getAttributeOrDefault(nc, 'title', None)
+    #
+    # site_code = getAttributeOrDefault(nc, 'site_code', None)
+    # platform_code = getAttributeOrDefault(nc, 'platform_code', None)
     deployment_code = getAttributeOrDefault(nc, 'deployment_code', None)
-    featureType = getAttributeOrDefault(nc, 'featureType', None)
-
-    geospatial_lat_min = float(getAttributeOrDefault(nc, 'geospatial_lat_min', None))
-    geospatial_lon_min = float(getAttributeOrDefault(nc, 'geospatial_lon_min', None))
-    geospatial_lat_max = float(getAttributeOrDefault(nc, 'geospatial_lat_max', None))
-    geospatial_lon_max = float(getAttributeOrDefault(nc, 'geospatial_lon_max', None))
-    geospatial_vertical_min = float(getAttributeOrDefault(nc, 'geospatial_vertical_min', None))
-    geospatial_vertical_max = float(getAttributeOrDefault(nc, 'geospatial_vertical_max', None))
-
+    model = getAttributeOrDefault(nc, 'instrument_model', None)
+    sn = getAttributeOrDefault(nc, 'instrument_serial_number', None)
+    depth = getAttributeOrDefault(nc, 'instrument_nominal_depth', None)
+    fv = getAttributeOrDefault(nc, 'file_version', None)
+    # featureType = getAttributeOrDefault(nc, 'featureType', None)
+    #
+    # geospatial_lat_min = float(getAttributeOrDefault(nc, 'geospatial_lat_min', None))
+    # geospatial_lon_min = float(getAttributeOrDefault(nc, 'geospatial_lon_min', None))
+    # geospatial_lat_max = float(getAttributeOrDefault(nc, 'geospatial_lat_max', None))
+    # geospatial_lon_max = float(getAttributeOrDefault(nc, 'geospatial_lon_max', None))
+    # geospatial_vertical_min = float(getAttributeOrDefault(nc, 'geospatial_vertical_min', None))
+    # geospatial_vertical_max = float(getAttributeOrDefault(nc, 'geospatial_vertical_max', None))
+    #
     date_created = getDateOrDefault(nc, 'date_created', None)
     if (date_created is None):
         date_created = getDateOrDefault(nc, 'date_update', None)
 
     time_deployment_start = getDateOrDefault(nc, 'time_deployment_start', None)
     time_deployment_end = getDateOrDefault(nc, 'time_deployment_end', None)
-
-    principal_investigator = getAttributeOrDefault(nc, 'principal_investigator', None)
-    print('file_name ', os.path.basename(http))
-
-    cur.execute("INSERT INTO file (name, http, opendap, title, site_code, platform_code, deployment_code, featuretype, "
-                "geospatial_lat_min, geospatial_lon_min, geospatial_vertical_min, "
-                "geospatial_lat_max, geospatial_lon_max, geospatial_vertical_max, "
-                "date_created, time_deployment_start, time_deployment_end, principal_investigator) RETURNING file_id"
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ",
-                (os.path.basename(http), http, opendap, title, site_code, platform_code, deployment_code, featureType,
-                 geospatial_lat_min, geospatial_lon_min, geospatial_vertical_min,
-                 geospatial_lat_max, geospatial_lon_max, geospatial_vertical_max,
-                 date_created, time_deployment_start, time_deployment_end, principal_investigator))
+    #
+    # principal_investigator = getAttributeOrDefault(nc, 'principal_investigator', None)
+    # print('file_name ', os.path.basename(http))
+    #
+    # cur.execute("INSERT INTO file (name, http, opendap, title, site_code, platform_code, deployment_code, featuretype, "
+    #             "geospatial_lat_min, geospatial_lon_min, geospatial_vertical_min, "
+    #             "geospatial_lat_max, geospatial_lon_max, geospatial_vertical_max, "
+    #             "date_created, time_deployment_start, time_deployment_end, principal_investigator)"
+    #             "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ",
+    #             (os.path.basename(http), http, opendap, title, site_code, platform_code, deployment_code, featureType,
+    #              geospatial_lat_min, geospatial_lon_min, geospatial_vertical_min,
+    #              geospatial_lat_max, geospatial_lon_max, geospatial_vertical_max,
+    #              date_created, time_deployment_start, time_deployment_end, principal_investigator))
+    # con.commit()
+    cur.execute("INSERT INTO file (name, http, opendap, deployment_code, "
+                "date_created, time_deployment_start, time_deployment_end, "
+                "instrument_model, instrument_serial_number, instrument_nominal_depth, file_version) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ",
+                (os.path.basename(http), http, opendap, deployment_code,
+                 date_created, time_deployment_start, time_deployment_end,
+                 model, sn, depth, fv))
     con.commit()
-
-    file_id = cur.lastrowid
-    print('file_id', file_id)
-
-    # load all global attributes
-    for at in nc.ncattrs():
-        print('global attribute', at)
-        name = at
-        value = nc.getncattr(at)
-        at_type = type(value).__name__
-        cur.execute('INSERT INTO global_attributes (file_id, name, value, type) VALUES (?,?,?,?)', [file_id, name, str(value), at_type])
-        con.commit()
-
-    # get list of auxcilliary variables as we don't load these
-    aux_vars = []
-    for var_name in nc.variables:
-        print('variable', var_name)
-        try:
-            aux_vars.extend(nc.variables[var_name].ancillary_variables.split(' '))
-        except AttributeError:
-            pass
-
-    # load variables
-    for var_name in nc.variables:
-        print('variable', var_name)
-        if var_name not in aux_vars:
-            var = nc.variables[var_name]
-            var.set_auto_mask(False)
-            # get the dimensions
-            dims = var.dimensions
-            shape = var.shape
-
-            # TODO use join here
-            var_dims = ''
-            for index in range(len(dims)):
-                if index > 0:
-                    var_dims += ','
-                var_dims += '%s[%d]' % (dims[index], shape[index])
-
-            try:
-                standard_name = var.getncattr('standard_name')
-            except AttributeError:
-                print ('no standard_name :', var.name)
-                standard_name = None
-
-            try:
-                long_name = var.getncattr('long_name')
-            except AttributeError:
-                print('no long_name :', var.name)
-                long_name = None
-
-            try:
-                aux_var = var.getncattr('ancillary_variables')
-            except AttributeError:
-                print ('no aux_vars', var_name)
-                aux_var = None
-
-            try:
-                units = var.getncattr('units')
-            except AttributeError:
-                print ('no units', var_name)
-                units = None
-
-            at_type = str(var.dtype)
-            cur.execute('INSERT INTO variables (file_id, name, standard_name, long_name, units, aux_vars, dimensions, type) VALUES (?,?,?,?,?,?,?,?)',
-                        [file_id, var_name, standard_name, long_name, units, aux_var, var_dims, at_type])
-            con.commit()
-
-            # load variable attributes
-            for at in var.ncattrs():
-                print('variable-attribute', at)
-                if not at.startswith('_'):
-                    name = at
-                    value = var.getncattr(at)
-                    at_type = type(value).__name__
-                    cur.execute('INSERT INTO variable_attributes (file_id, var_name, name, type, value) VALUES (?,?,?,?,?)',
-                                [file_id, var_name, name, at_type, str(value)])
-                    con.commit()
+    #
+    # file_id = cur.lastrowid
+    # print('file_id', file_id)
+    #
+    # # load all global attributes
+    # for at in nc.ncattrs():
+    #     print('global attribute', at)
+    #     name = at
+    #     value = nc.getncattr(at)
+    #     at_type = type(value).__name__
+    #     cur.execute('INSERT INTO global_attributes (file_id, name, value, type) VALUES (?,?,?,?)', [file_id, name, str(value), at_type])
+    #     con.commit()
+    #
+    # # get list of auxcilliary variables as we don't load these
+    # aux_vars = []
+    # for var_name in nc.variables:
+    #     print('variable', var_name)
+    #     try:
+    #         aux_vars.extend(nc.variables[var_name].ancillary_variables.split(' '))
+    #     except AttributeError:
+    #         pass
+    #
+    # # load variables
+    # for var_name in nc.variables:
+    #     print('variable', var_name)
+    #     if var_name not in aux_vars:
+    #         var = nc.variables[var_name]
+    #         var.set_auto_mask(False)
+    #         # get the dimensions
+    #         dims = var.dimensions
+    #         shape = var.shape
+    #
+    #         # TODO use join here
+    #         var_dims = ''
+    #         for index in range(len(dims)):
+    #             if index > 0:
+    #                 var_dims += ','
+    #             var_dims += '%s[%d]' % (dims[index], shape[index])
+    #
+    #         try:
+    #             standard_name = var.getncattr('standard_name')
+    #         except AttributeError:
+    #             print ('no standard_name :', var.name)
+    #             standard_name = None
+    #
+    #         try:
+    #             long_name = var.getncattr('long_name')
+    #         except AttributeError:
+    #             print('no long_name :', var.name)
+    #             long_name = None
+    #
+    #         try:
+    #             aux_var = var.getncattr('ancillary_variables')
+    #         except AttributeError:
+    #             print ('no aux_vars', var_name)
+    #             aux_var = None
+    #
+    #         try:
+    #             units = var.getncattr('units')
+    #         except AttributeError:
+    #             print ('no units', var_name)
+    #             units = None
+    #
+    #         at_type = str(var.dtype)
+    #         cur.execute('INSERT INTO variables (file_id, name, standard_name, long_name, units, aux_vars, dimensions, type) VALUES (?,?,?,?,?,?,?,?)',
+    #                     [file_id, var_name, standard_name, long_name, units, aux_var, var_dims, at_type])
+    #         con.commit()
+    #
+    #         # load variable attributes
+    #         for at in var.ncattrs():
+    #             print('variable-attribute', at)
+    #             if not at.startswith('_'):
+    #                 name = at
+    #                 value = var.getncattr(at)
+    #                 at_type = type(value).__name__
+    #                 cur.execute('INSERT INTO variable_attributes (file_id, var_name, name, type, value) VALUES (?,?,?,?,?)',
+    #                             [file_id, var_name, name, at_type, str(value)])
+    #                 con.commit()
 
     nc.close()
 
@@ -210,21 +227,18 @@ if __name__ == "__main__":
     now = datetime.now(UTC)
     dbname = 'thredds-' + now.strftime("%Y-%m-%d") + '.sqlite'
 
-    #con = sqlite3.connect(dbname, detect_types=sqlite3.PARSE_DECLTYPES)
-    con = psycopg2.connect(host='localhost', dbname='threddscat', user='postgres', password='secret')
+    con = sqlite3.connect(dbname, detect_types=sqlite3.PARSE_DECLTYPES)
+    #con = psycopg2.connect(host='localhost', dbname='threddscat', user='postgres', password='secret')
 
     cur = con.cursor()
-    # cur.execute("CREATE TABLE IF NOT EXISTS file (file_id integer primary key autoincrement, name TEXT, http TEXT, opendap TEXT"
-    #             ", title TEXT, site_code TEXT, platform_code TEXT, deployment_code TEXT, featuretype TEXT"
-    #             ", geospatial_lat_min REAL, geospatial_lon_min REAL, geospatial_vertical_min REAL"
-    #             ", geospatial_lat_max REAL, geospatial_lon_max REAL, geospatial_vertical_max REAL"
-    #             ", date_created TEXT, time_deployment_start TEXT, time_deployment_end TEXT, principal_investigator TEXT"
-    #             ")")
-    cur.execute("CREATE TABLE IF NOT EXISTS file (file_id serial primary key, name TEXT, http TEXT, opendap TEXT"
+    cur.execute("CREATE TABLE IF NOT EXISTS file (file_id integer primary key autoincrement, name TEXT, http TEXT, opendap TEXT"
                 ", title TEXT, site_code TEXT, platform_code TEXT, deployment_code TEXT, featuretype TEXT"
                 ", geospatial_lat_min REAL, geospatial_lon_min REAL, geospatial_vertical_min REAL"
                 ", geospatial_lat_max REAL, geospatial_lon_max REAL, geospatial_vertical_max REAL"
-                ", date_created TEXT, time_deployment_start TEXT, time_deployment_end TEXT, principal_investigator TEXT"
+                ", file_version TEXT, date_created TEXT, time_deployment_start TEXT, time_deployment_end TEXT"
+                ", principal_investigator TEXT "
+                ", instrument_model TEXT, instrument_serial_number TEXT"
+                ", instrument_nominal_depth TEXT"
                 ")")
     con.commit()
     cur.execute("CREATE TABLE IF NOT EXISTS global_attributes (file_id integer, name TEXT, type TEXT, value TEXT)")
