@@ -135,12 +135,12 @@ def parse_dir_spec(output_name, file):
                     if "FREQ" not in ds.dimensions:
                         freq_dim = ds.createDimension("FREQ", num_frequencies)
                         # print(freq_dim)
-                    if "DIR_SPEC" not in ds.dimensions:
-                        freq_dim = ds.createDimension("DIR_SPEC", num_dir)
+                    if "DIR" not in ds.dimensions:
+                        freq_dim = ds.createDimension("DIR", num_dir)
 
                     # create variables if needed
                     if "DIR_SPEC" not in ds.variables:
-                        ncVarOut = ds.createVariable("DIR_SPEC", "f4", ("TIME", "FREQ", "DIR_SPEC"), fill_value=np.nan)  # fill_value=nan otherwise defaults to max
+                        ncVarOut = ds.createVariable("DIR_SPEC", "f4", ("TIME", "FREQ", "DIR"), fill_value=np.nan)  # fill_value=nan otherwise defaults to max
                         ncVarOut.units = "m^2/Hz"
                         ncVarOut.comment = "from directional spectrum processed file"
                         ncVarOut.comment_processing_version = version
@@ -257,6 +257,7 @@ def parse_raw(output_name, file):
             cnt += 1
 
         num_samples = cnt
+        num_samples = 4800 ## TODO: Hack as number of samples changes
         print("raw total samples", num_samples)
 
         ts = datetime.datetime.strptime(line_split[0], "%y%m%d%H%M")
@@ -631,6 +632,7 @@ def parse_heave(output_name, file):
                 # print("num_freq_expr:matchObj.group() : ", matchObj.group())
                 # print("num_freq_expr:matchObj.group(1) : ", matchObj.group(1))
                 num_points = int(matchObj.group(1))
+                num_points = 1382 # TODO: HACK hard coded, some files are different number of samples
             matchObj = re.match(version_expr, line)
             if matchObj:
                 # print("freq_space_expr:matchObj.group() : ", matchObj.group())
