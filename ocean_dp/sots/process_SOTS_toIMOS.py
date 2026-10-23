@@ -29,18 +29,19 @@ for fn in ncFiles:
 
     # need to apply any timeoffset first
     try:
-        filename = ocean_dp.attribution.addAttributes.add(fn, ['metadata/pulse-saz-sofs-flux-timeoffset.metadata.csv'])
+        filename = ocean_dp.attribution.addAttributes.add(fn, ['sots-2025-timeoffset.metadata.csv'])
         print('file-name', filename)
         filename = ocean_dp.processing.apply_scale_offset_attributes.apply_scale_offset([filename])
 
-        metadata_files = ['metadata/pulse-saz-sofs-flux.metadata.csv',
-                                                           'metadata/imos.metadata.csv',
+        filename = ocean_dp.attribution.addAttributes.add(fn, ['sots-2025.metadata.csv'])
+
+        metadata_files = ['metadata/imos.metadata.csv',
                                                            'metadata/sots.metadata.csv',
                                                            'metadata/asimet.metadata.csv',
                                                            'metadata/variable.metadata.csv']
         filename = ocean_dp.attribution.addAttributes.add(fn, metadata_files)
 
-        filename = ocean_dp.attribution.addAttributes.add(fn, ['metadata/pulse-saz-sofs-flux-timeoffset.metadata.csv'])
+        filename = ocean_dp.attribution.addAttributes.add(fn, ['sots-2025-timeoffset.metadata.csv'])
         print('file-name', filename)
         filename = ocean_dp.processing.apply_scale_offset_attributes.apply_scale_offset([filename])
 

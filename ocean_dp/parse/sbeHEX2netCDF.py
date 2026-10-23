@@ -20,6 +20,9 @@
 from datetime import datetime, UTC
 import os
 import sys
+
+import pandas as pd
+import seabirdscientific.instrument_data
 from glob2 import glob
 
 import numpy as np
@@ -47,7 +50,7 @@ def add_cal_to_netCDF_var(var, cal_xml):
                 var.setncattr('calibration_' + k, float(cal_xml[k]))
 
 
-def prase_hex(hex_file, xml_file):
+def parse_hex(hex_file, xml_file):
 
     # open the xml file and parse to dict
     with open(xmlcon_file, 'r', encoding='utf-8') as file:
@@ -107,7 +110,7 @@ def prase_hex(hex_file, xml_file):
     dataset.instrument_serial_number = '037' + temp_cal_xml['SerialNumber'].zfill(5)
 
     # create the time array
-    time_dim = dataset.createDimension('TIME', len(raw_data))
+    time_dim = dataset.createDimension('TIME', len(raw_data['date time']))
     times = dataset.createVariable('TIME', np.float64, ('TIME',))
     times.long_name = "time"
     times.units = "days since 1950-01-01 00:00:00 UTC"
@@ -115,10 +118,8 @@ def prase_hex(hex_file, xml_file):
     times.axis = "T"
 
     # data frame stores date time as np.datetime64, convert to datetime, then to datenum based on time variable calendar and units
-    time_dt = [x.to_pydatetime() for x in raw_data['date time']]
+    time_dt = [x.values.astype('datetime64[us]').astype('O') for x in raw_data['date time']]
     times[:] = date2num(time_dt, calendar=times.calendar, units=times.units)
-
-    print(raw_data)
 
     mid_point = int(len(raw_data) / 2)
 
@@ -191,7 +192,7 @@ def prase_hex(hex_file, xml_file):
         cCal.ctcor = float(cndc_cal_xml['Coefficients'][1]['CTcor'])
         cCal.wbotc = float(cndc_cal_xml['Coefficients'][1]['WBOTC'])
 
-        conductivity = conv.convert_conductivity(conductivity_count=raw_data["conductivity"].values, temperature=temperature, pressure=pressure, coefs=cCal)
+        conductivity = conv.convert_conductivity(conductivity_count=raw_data["conductivity"].values, temperature=temperature, pressure=pressure, coefs=cCal, instrument_type=seabirdscientific.instrument_data.InstrumentType.SBE37SMPODO)
         print('conductivity=', conductivity[mid_point])
 
         # create the conductivity
@@ -219,7 +220,7 @@ def prase_hex(hex_file, xml_file):
         p_density = potential_density_from_t_c_p(temperature=temperature, pressure=pressure, conductivity=conductivity*10)
         print('p_density=', p_density[mid_point])
 
-        var_sigma_t0 = dataset.createVariable('SIGMA-T0', np.float32, ('TIME',))
+        var_sigma_t0 = dataset.createVariable('SIGMA_T0', np.float32, ('TIME',))
         var_sigma_t0[:] = p_density
         var_sigma_t0.units = 'kg/m^3'
 
@@ -278,12 +279,12 @@ def prase_hex(hex_file, xml_file):
     ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
 
     # create the time coverage attributes
-    dataset.setncattr("time_coverage_start", raw_data.iloc[0]['date time'].to_pydatetime().strftime(ncTimeFormat))
-    dataset.setncattr("time_coverage_end", raw_data.iloc[-1]['date time'].to_pydatetime().strftime(ncTimeFormat))
+    dataset.setncattr("time_coverage_start", time_dt[0].strftime(ncTimeFormat))
+    dataset.setncattr("time_coverage_end", time_dt[-1].strftime(ncTimeFormat))
 
     # add creating and history entry
     dataset.setncattr("date_created", datetime.now(UTC).strftime(ncTimeFormat))
-    dataset.setncattr("history", datetime.now(UTC).strftime("%Y-%m-%d") + " created from file " + os.path.basename(hex_file))
+    dataset.setncattr("history", datetime.now(UTC).strftime("%Y-%m-%d") + " created from file " + os.path.basename(hex_file) + " using " + os.path.basename(sys.argv[0]))
 
     dataset.close()
 
@@ -316,7 +317,7 @@ if __name__ == "__main__":
             xml_found = True
 
         if os.path.splitext(hex_file)[0] == os.path.splitext(xmlcon_file)[0]:
-            prase_hex(hex_file, xmlcon_file)
+            parse_hex(hex_file, xmlcon_file)
             match_found = True
             hex_file = ''
             xmlcon_file = ''
