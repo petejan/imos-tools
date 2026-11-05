@@ -111,7 +111,7 @@ def nmea_parse(files):
 
     ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
 
-    outputName = (os.path.basename(files[0]) + ".nc")
+    outputName = (os.path.basename(files[0]) + "-gps.nc")
 
     print("output file : %s" % outputName)
 

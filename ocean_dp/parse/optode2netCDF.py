@@ -195,7 +195,7 @@ def parse(file):
 
     ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
 
-    outputName = "optode-" + os.path.basename(files[0]) + ".nc"
+    outputName = os.path.basename(files[0]) + "-optode.nc"
 
     print("output file : %s" % outputName)
 

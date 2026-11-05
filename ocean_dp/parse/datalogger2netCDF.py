@@ -640,7 +640,7 @@ def datalogger(outputName, files):
 
 if __name__ == "__main__":
 
-    outfile = sys.argv[1]
+    outfile = os.path.basename(sys.argv[1] + '.nc')
 
     files = []
     for f in sys.argv[2:]:

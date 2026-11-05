@@ -18,6 +18,7 @@
 
 import sys
 import re
+import os
 
 from datetime import datetime, timedelta, UTC
 from zipfile import ZipFile
@@ -195,7 +196,7 @@ def output_netCDF(filepath):
 
     ncTimeFormat = "%Y-%m-%dT%H:%M:%SZ"
 
-    outputName = filepath + ".nc"
+    outputName = os.path.basename(filepath) + ".nc"
 
     print("output file : %s" % outputName)
     print("file timezone", timezone)
@@ -248,7 +249,7 @@ def output_netCDF(filepath):
     ncVarOut = ncOut.createVariable('RAD', "f4", ("WAVELENGTH", "TIME"), fill_value=np.nan, zlib=True)  # fill_value=nan otherwise defaults to max
     ncVarOut.units = units
     data_array = np.array([d for d in data])
-    print(data_array.shape)
+    print(data_array.shape, ncVarOut[:].shape)
     ncVarOut[:] = data_array.transpose()
 
     ncOut.setncattr("time_coverage_start", num2date(ncTimesOut[0], units=ncTimesOut.units, calendar=ncTimesOut.calendar).strftime(ncTimeFormat))
