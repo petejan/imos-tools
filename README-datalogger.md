@@ -25,7 +25,7 @@ python -m ocean_dp.sots.process_SOTS_toIMOS LOG00241.TXT.nc
 
 ## add calculate waves from the MRU data
 ```
-python -m ocean_dp.ftp.send IMOS_DWM-SOTS_OST_20250302_SOFS_FV00_SOFS-14-2025-Optode-4831-506-1m_END-20250706_C-20261105.nc
+python -m ocean_dp.processing.mru_2_waves IMOS_DWM-SOTS_OST_20250302_SOFS_FV00_SOFS-14-2025-Optode-4831-506-1m_END-20250706_C-20261105.nc
 ```
 
 # Oxygen
